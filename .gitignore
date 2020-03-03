@@ -1,0 +1,10 @@
+# OS, Editor & backup stuff
+*~
+*.swp
+*.bak
+/.idea
+
+# Dependencies
+/tools
+/vendor
+/composer.lock

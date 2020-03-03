@@ -1,0 +1,81 @@
+<?php declare(strict_types=1);
+
+namespace ju1ius\HtmlParser\Parser;
+
+final class TokenizerStates
+{
+    const DATA = 1;
+    const CHARACTER_REFERENCE_IN_DATA = 2;
+    const RCDATA = 3;
+    const CHARACTER_REFERENCE_IN_RCDATA = 4;
+    const RAWTEXT = 5;
+    const SCRIPT_DATA = 6;
+    const PLAINTEXT = 7;
+    const TAG_OPEN = 8;
+    const END_TAG_OPEN = 9;
+    const TAG_NAME = 10;
+    const RCDATA_LESS_THAN_SIGN = 11;
+    const RCDATA_END_TAG_OPEN = 12;
+    const RCDATA_END_TAG_NAME = 13;
+    const RAWTEXT_LESS_THAN_SIGN = 14;
+    const RAWTEXT_END_TAG_OPEN = 15;
+    const RAWTEXT_END_TAG_NAME = 16;
+    const SCRIPT_DATA_LESS_THAN_SIGN = 17;
+    const SCRIPT_DATA_END_TAG_OPEN = 18;
+    const SCRIPT_DATA_END_TAG_NAME = 19;
+    const SCRIPT_DATA_ESCAPE_START = 20;
+    const SCRIPT_DATA_ESCAPE_START_DASH = 21;
+    const SCRIPT_DATA_ESCAPED = 22;
+    const SCRIPT_DATA_ESCAPED_DASH = 23;
+    const SCRIPT_DATA_ESCAPED_DASH_DASH = 24;
+    const SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN = 25;
+    const SCRIPT_DATA_ESCAPED_END_TAG_OPEN = 26;
+    const SCRIPT_DATA_ESCAPED_END_TAG_NAME = 27;
+    const SCRIPT_DATA_DOUBLE_ESCAPE_START = 28;
+    const SCRIPT_DATA_DOUBLE_ESCAPED = 29;
+    const SCRIPT_DATA_DOUBLE_ESCAPED_DASH = 30;
+    const SCRIPT_DATA_DOUBLE_ESCAPED_DASH_DASH = 31;
+    const SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN = 32;
+    const SCRIPT_DATA_DOUBLE_ESCAPE_END = 33;
+    const BEFORE_ATTRIBUTE_NAME = 34;
+    const ATTRIBUTE_NAME = 35;
+    const AFTER_ATTRIBUTE_NAME = 36;
+    const BEFORE_ATTRIBUTE_VALUE = 37;
+    const ATTRIBUTE_VALUE_DOUBLE_QUOTED = 38;
+    const ATTRIBUTE_VALUE_SINGLE_QUOTED = 39;
+    const ATTRIBUTE_VALUE_UNQUOTED = 40;
+    const CHARACTER_REFERENCE_IN_ATTRIBUTE_VALUE = 41;
+    const AFTER_ATTRIBUTE_VALUE_QUOTED = 42;
+    const SELF_CLOSING_START_TAG = 43;
+    const BOGUS_COMMENT = 44;
+    // The ContinueBogusComment is not in the HTML5 spec, but we use
+    // it internally to keep track of whether we've started the bogus
+    // comment token yet.
+    const CONTINUE_BOGUS_COMMENT = 45;
+    const MARKUP_DECLARATION_OPEN = 46;
+    const COMMENT_START = 47;
+    const COMMENT_START_DASH = 48;
+    const COMMENT = 49;
+    const COMMENT_END_DASH = 50;
+    const COMMENT_END = 51;
+    const COMMENT_END_BANG = 52;
+    const DOCTYPE = 53;
+    const BEFORE_DOCTYPE_NAME = 54;
+    const DOCTYPE_NAME = 55;
+    const AFTER_DOCTYPE_NAME = 56;
+    const AFTER_DOCTYPE_PUBLIC_KEYWORD = 57;
+    const BEFORE_DOCTYPE_PUBLIC_IDENTIFIER = 58;
+    const DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED = 59;
+    const DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED = 60;
+    const AFTER_DOCTYPE_PUBLIC_IDENTIFIER = 61;
+    const BETWEEN_DOCTYPE_PUBLIC_AND_SYSTEM_IDENTIFIERS = 62;
+    const AFTER_DOCTYPE_SYSTEM_KEYWORD = 63;
+    const BEFORE_DOCTYPE_SYSTEM_IDENTIFIER = 64;
+    const DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED = 65;
+    const DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED = 66;
+    const AFTER_DOCTYPE_SYSTEM_IDENTIFIER = 67;
+    const BOGUS_DOCTYPE = 68;
+    const CDATA_SECTION = 69;
+    const CDATA_SECTION_BRACKET = 70;
+    const CDATA_SECTION_END = 71;
+}

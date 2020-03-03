@@ -1,0 +1,14 @@
+{# https://html.spec.whatwg.org/multipage/parsing.html#self-closing-start-tag-state #}
+{% import 'tokenizer/_macros.php.twig' as h -%}
+
+if ($cc === '>') {
+    // Set the self-closing flag of the current tag token.
+    $this->currentToken->selfClosing = true;
+    {{ h.emit_and_resume_in('DATA') }}
+} elseif ({{ h.is_eof() }}) {
+    // This is an eof-in-tag parse error.
+    {{ h.emit_eof() }}
+} else {
+    // This is an unexpected-solidus-in-tag parse error.
+    {{ h.reconsume_in('BEFORE_ATTRIBUTE_NAME') }}
+}

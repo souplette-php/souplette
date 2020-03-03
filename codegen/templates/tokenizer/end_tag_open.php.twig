@@ -1,0 +1,21 @@
+{#
+    @see https://html.spec.whatwg.org/multipage/parsing.html#end-tag-open-state
+#}
+{% import 'tokenizer/_macros.php.twig' as h -%}
+
+if ({{ h.is_alpha() }}) {
+    $this->currentToken = new Token(TokenTypes::END_TAG, '');
+    {{ h.reconsume_in('TAG_NAME') }}
+} elseif ($cc === '>') {
+    // This is a missing-end-tag-name parse error.
+    {{ h.advance_to('DATA') }}
+} elseif ({{ h.is_eof() }}) {
+    // This is an eof-before-tag-name parse error.
+    // Emit a U+003C LESS-THAN SIGN character token, a U+002F SOLIDUS character token and an end-of-file token.
+    $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, '</'));
+    {{ h.emit_eof() }}
+} else {
+    // This is an invalid-first-character-of-tag-name parse error.
+    $this->currentToken = new Token(TokenTypes::COMMENT, '');
+    {{ h.reconsume_in('BOGUS_COMMENT') }}
+}

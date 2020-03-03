@@ -1,0 +1,18 @@
+{#
+    @see https://html.spec.whatwg.org/multipage/parsing.html#after-attribute-value-quoted-state
+#}
+{% import 'tokenizer/_macros.php.twig' as h -%}
+
+if ({{ h.is_whitespace() }}) {
+    {{ h.advance_to('BEFORE_ATTRIBUTE_NAME') }}
+} elseif ($cc === '/') {
+    {{ h.advance_to('SELF_CLOSING_START_TAG') }}
+} elseif ($cc === '>') {
+    {{ h.emit_and_resume_in('DATA') }}
+} elseif ({{ h.is_eof() }}) {
+    // This is an eof-in-tag parse error.
+    {{ h.emit_eof() }}
+} else {
+    // This is a missing-whitespace-between-attributes parse error.
+    {{ h.reconsume_in('BEFORE_ATTRIBUTE_NAME') }}
+}

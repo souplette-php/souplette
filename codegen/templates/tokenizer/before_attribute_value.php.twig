@@ -1,0 +1,17 @@
+{#
+    @see https://html.spec.whatwg.org/multipage/parsing.html#before-attribute-value-state
+#}
+{% import 'tokenizer/_macros.php.twig' as h -%}
+
+if ({{ h.is_whitespace() }}) {
+    {{ h.advance_to('BEFORE_ATTRIBUTE_VALUE') }}
+} elseif ($cc === '"') {
+    {{ h.advance_to('ATTRIBUTE_VALUE_DOUBLE_QUOTED') }}
+} elseif ($cc === "'") {
+    {{ h.advance_to('ATTRIBUTE_VALUE_SINGLE_QUOTED') }}
+} elseif ($cc === '>') {
+    // This is a missing-attribute-value parse error.
+    {{ h.emit_and_resume_in('DATA') }}
+} else {
+    {{ h.reconsume_in('ATTRIBUTE_VALUE_UNQUOTED') }}
+}

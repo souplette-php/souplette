@@ -1,0 +1,23 @@
+{#
+ @see https://html.spec.whatwg.org/multipage/parsing.html#tag-name-state
+#}
+{% import 'tokenizer/_macros.php.twig' as h -%}
+if ({{ h.is_whitespace() }}) {
+    {{ h.advance_to('BEFORE_ATTRIBUTE_NAME') }}
+} elseif ($cc === '/') {
+    {{ h.advance_to('SELF_CLOSING_START_TAG') }}
+} elseif ($cc === '>') {
+    {{ h.emit_and_resume_in('DATA') }}
+} elseif ($cc === "\0") {
+    // This is an unexpected-null-character parse error.
+    // Append a U+FFFD REPLACEMENT CHARACTER character to the current tag token's tag name.
+    $this->currentToken->value .= "\u{FFFD}";
+    {{ h.advance_to('TAG_NAME') }}
+} elseif ({{ h.is_eof() }}) {
+    // This is an eof-in-tag parse error.
+    {{ h.emit_eof() }}
+} else {
+    $chars = $this->charsUntil("/> \t\f\n\0");
+    $this->currentToken->value .= strtolower($chars);
+    {{ h.update_and_reconsume_in('TAG_NAME') }}
+}

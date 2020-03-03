@@ -1,0 +1,86 @@
+{% macro is_eof() -%}
+$cc === null
+{%- endmacro %}
+
+{% macro is_whitespace() -%}
+{{- cc_in(' ', "\n", "\t", "\f") -}}
+{%- endmacro %}
+
+{% macro is_alpha() -%}
+ctype_alpha($cc)
+{%- endmacro %}
+
+{% macro start_attribute(name = "''", value = "''") %}
+$this->currentToken->attributes[] = [{{ name }}, {{ value }}];
+{% endmacro %}
+
+{% macro append_to_attr_name(value) %}
+$this->currentToken->attributes[count($this->currentToken->attributes) - 1][0] .= {{ value }};
+{% endmacro %}
+
+{% macro append_to_attr_value(value) %}
+$this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= {{ value }};
+{% endmacro %}
+
+{% macro update_cc() %}
+$cc = $this->input[$this->position] ?? null;
+{% endmacro %}
+
+{% macro update_and_reconsume_in(state_name) %}
+{{ _self.update_cc() }}
+{{ _self.reconsume_in(state_name) }}
+{% endmacro %}
+
+{#
+    We use this macro when the spec says "reconsume the current input character in the <mumble> state."
+#}
+{% macro reconsume_in(state_name) %}
+$this->state = TokenizerStates::{{ state_name }};
+goto {{ state_name }};
+{% endmacro reconsume_in %}
+
+{#
+    We use this macro when the spec says "consume the next input character ... and switch to the <mumble> state."
+#}
+{% macro advance_to(state_name) %}
+$this->state = TokenizerStates::{{ state_name }};
+$cc = $this->input[++$this->position] ?? null;
+goto {{ state_name }};
+{% endmacro advance_to %}
+
+{#
+    We use this macro when the spec says "consume the next input character" and it doesn't say "switch to ... state".
+#}
+{% macro consume(state_name) %}
+$cc = $this->input[++$this->position] ?? null;
+goto {{ state_name }};
+{% endmacro consume %}
+
+{#
+    Sometimes there's more complicated logic in the spec that separates when we consume the next input character
+    and when we switch to a particular state.
+    We handle those cases by advancing the source directly and using this macro to switch to the indicated state.
+#}
+{% macro switch_to(state_name) %}
+$this->state = TokenizerStates::{{ state_name }};
+$cc = $this->input[++$this->position] ?? null;
+goto {{ state_name }};
+{% endmacro switch_to %}
+
+{% macro emit_and_resume_in(state_name) %}
+$this->emitCurrentToken();
+$this->state = TokenizerStates::{{ state_name }};
+++$this->position;
+return true;
+{% endmacro emit_and_resume_in %}
+
+{% macro emit_eof() %}
+return false;
+{% endmacro %}
+
+{% macro flush_and_advance_to(state_name) %}
+do {
+    $this->state = TokenizerStates::{{ state_name }};
+    goto {{ state_name }};
+} while (false);
+{% endmacro flush_and_advance_to %}

@@ -1,0 +1,93 @@
+<?php declare(strict_types=1);
+
+namespace ju1ius\HtmlParser\Tests\Parser;
+
+use ju1ius\HtmlParser\Parser\Token;
+use ju1ius\HtmlParser\Parser\Tokenizer;
+use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\TestCase;
+
+class TokenizerTest extends TestCase
+{
+    /**
+     * @param string $input
+     * @param Token[] $expected
+     */
+    private static function assertTokensEquals(string $input, array $expected)
+    {
+        $tokenizer = new Tokenizer($input);
+        $actual = iterator_to_array($tokenizer->tokenize());
+        Assert::assertEquals($expected, $actual);
+    }
+
+    /**
+     * @dataProvider characterDataProvider
+     * @param string $input
+     * @param array $expected
+     */
+    public function testCharacterData(string $input, array $expected)
+    {
+        self::assertTokensEquals($input, $expected);
+    }
+
+    public function characterDataProvider()
+    {
+        yield [
+            'foo',
+            [Token::character('foo')],
+        ];
+    }
+
+    /**
+     * @dataProvider startTagProvider
+     * @param string $input
+     * @param array $expected
+     */
+    public function testStartTag(string $input, array $expected)
+    {
+        self::assertTokensEquals($input, $expected);
+    }
+
+    public function startTagProvider()
+    {
+        yield ['<a>', [Token::startTag('a')]];
+        yield ['<A>', [Token::startTag('a')]];
+        yield ['<bé>', [Token::startTag('bé')]];
+        yield ['<br/>', [Token::startTag('br', true)]];
+        yield ['<br />', [Token::startTag('br', true)]];
+    }
+
+    /**
+     * @dataProvider attributesProvider
+     * @param string $input
+     * @param array $expected
+     */
+    public function testAttributes(string $input, array $expected)
+    {
+        self::assertTokensEquals($input, $expected);
+    }
+
+    public function attributesProvider()
+    {
+        yield ['<a b c>', [Token::startTag('a', false, [['b', ''], ['c', '']])]];
+        yield ['<a b=c>', [Token::startTag('a', false, [['b', 'c']])]];
+        yield ['<a b="c">', [Token::startTag('a', false, [['b', 'c']])]];
+        yield ["<a b='c'>", [Token::startTag('a', false, [['b', 'c']])]];
+    }
+
+    /**
+     * @dataProvider endTagProvider
+     * @param string $input
+     * @param array $expected
+     */
+    public function testEndTag(string $input, array $expected)
+    {
+        self::assertTokensEquals($input, $expected);
+    }
+
+    public function endTagProvider()
+    {
+        yield ['</foo>', [Token::endTag('foo')]];
+        yield ['</foo >', [Token::endTag('foo')]];
+    }
+}

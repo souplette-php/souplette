@@ -1,0 +1,27 @@
+<?php declare(strict_types=1);
+/**
+ * This file was automatically generated.
+ * All modifications will be lost.
+ */
+namespace ju1ius\HtmlParser\Parser;
+
+final class Tokenizer extends AbstractTokenizer
+{
+    public function nextToken()
+    {
+        $cc = $this->input[$this->position] ?? null;
+        switch ($this->state) {
+        {% for current_state in state_names ~%}
+            case TokenizerStates::{{ current_state }}:
+            {{ current_state }}: {
+                {{ include(["tokenizer/#{current_state|lower}.php.twig", 'tokenizer/_unknown_state.php.twig']) }}
+            }
+            break;
+        {%- endfor ~%}
+            default:
+                throw new \LogicException("Unknown state: {$this->state}");
+                break;
+        }
+        return true;
+    }
+}

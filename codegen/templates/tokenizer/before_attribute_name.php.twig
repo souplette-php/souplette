@@ -1,0 +1,16 @@
+{#
+    @see https://html.spec.whatwg.org/multipage/parsing.html#before-attribute-name-state
+#}
+{% import 'tokenizer/_macros.php.twig' as h -%}
+if ({{ h.is_whitespace() }}) {
+    {{ h.consume('BEFORE_ATTRIBUTE_NAME') }}
+} elseif ($cc === '/' || $cc === '>' || {{ h.is_eof() }}) {
+    {{ h.reconsume_in('AFTER_ATTRIBUTE_NAME') }}
+} elseif ($cc === '=') {
+    {# This is an unexpected-equals-sign-before-attribute-name parse error. #}
+    {{ h.start_attribute('$cc') }}
+    {{ h.advance_to('ATTRIBUTE_NAME') }}
+} else {
+    {{~ h.start_attribute() ~}}
+    {{~ h.reconsume_in('ATTRIBUTE_NAME') ~}}
+}

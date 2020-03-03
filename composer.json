@@ -1,0 +1,34 @@
+{
+    "name": "ju1ius/html-parser",
+    "description": "Standard compliant HTML parser.",
+    "type": "library",
+    "version": "0.0.1",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "ju1ius",
+            "email": "jules.bernable@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "ju1ius\\HtmlParser\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ju1ius\\HtmlParser\\Tests\\": "tests",
+            "ju1ius\\HtmlParser\\Codegen\\": "codegen"
+        }
+    },
+    "require": {
+        "php": ">=7.1",
+        "ext-dom": "*",
+        "ext-mbstring": "*",
+        "ext-ctype": "*"
+    },
+    "require-dev": {
+        "ext-json": "*",
+        "twig/twig": "^3.0"
+    }
+}
