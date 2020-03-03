@@ -4,6 +4,9 @@
 *.bak
 /.idea
 
+# Temporary files
+/tmp
+
 # Dependencies
 /tools
 /vendor
