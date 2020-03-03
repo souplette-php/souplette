@@ -7,7 +7,7 @@ namespace ju1ius\HtmlParser\Parser;
 
 final class Tokenizer extends AbstractTokenizer
 {
-    public function nextToken()
+    public function nextToken(): bool
     {
         $cc = $this->input[$this->position] ?? null;
         switch ($this->state) {
