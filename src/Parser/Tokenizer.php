@@ -40,7 +40,6 @@ final class Tokenizer extends AbstractTokenizer
                     $chars = $this->charsUntil("&<\0");
                     $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, $chars));
                     $cc = $this->input[$this->position] ?? null;
-
                     $this->state = TokenizerStates::DATA;
                     goto DATA;
                 }
@@ -179,7 +178,6 @@ final class Tokenizer extends AbstractTokenizer
                     $chars = $this->charsUntil("/> \t\f\n\0");
                     $this->currentToken->value .= strtolower($chars);
                     $cc = $this->input[$this->position] ?? null;
-
                     $this->state = TokenizerStates::TAG_NAME;
                     goto TAG_NAME;
                 }
@@ -314,7 +312,6 @@ final class Tokenizer extends AbstractTokenizer
                     // TODO: This is an unexpected-equals-sign-before-attribute-name parse error.
                     // Start a new attribute in the current tag token. Set that attribute's name to the current input character, and its value to the empty string.
                     $this->currentToken->attributes[] = [$cc, ''];
-
                     // Switch to the attribute name state.
                     $this->state = TokenizerStates::ATTRIBUTE_NAME;
                     $cc = $this->input[++$this->position] ?? null;
@@ -322,7 +319,6 @@ final class Tokenizer extends AbstractTokenizer
                 } else {
                     // Start a new attribute in the current tag token. Set that attribute name and value to the empty string.
                     $this->currentToken->attributes[] = ['', ''];
-
                     // Reconsume in the attribute name state.
                     $this->state = TokenizerStates::ATTRIBUTE_NAME;
                     goto ATTRIBUTE_NAME;
@@ -344,23 +340,19 @@ final class Tokenizer extends AbstractTokenizer
                     // TODO: This is an unexpected-null-character parse error.
                     // Append a U+FFFD REPLACEMENT CHARACTER character to the current attribute's name.
                     $this->currentToken->attributes[count($this->currentToken->attributes) - 1][0] .= "\u{FFFD}";
-
                     $cc = $this->input[++$this->position] ?? null;
                     goto ATTRIBUTE_NAME;
                 } elseif ($cc === '"' || $cc === '\'' || $cc === '<') {
                     // TODO: This is an unexpected-character-in-attribute-name parse error.
                     // Treat it as per the "anything else" entry below.
                     $this->currentToken->attributes[count($this->currentToken->attributes) - 1][0] .= $cc;
-
                     $cc = $this->input[++$this->position] ?? null;
                     goto ATTRIBUTE_NAME;
                 } else {
                     // Append the current input character to the current attribute's name.
                     $chars = $this->charsUntil("=<>/'\"\0 \n\t\f");
                     $this->currentToken->attributes[count($this->currentToken->attributes) - 1][0] .= strtolower($chars);
-
                     $cc = $this->input[$this->position] ?? null;
-
                     $this->state = TokenizerStates::ATTRIBUTE_NAME;
                     goto ATTRIBUTE_NAME;
                 }
@@ -395,7 +387,6 @@ final class Tokenizer extends AbstractTokenizer
                 } else {
                     // Start a new attribute in the current tag token. Set that attribute name and value to the empty string.
                     $this->currentToken->attributes[] = ['', ''];
-
                     // Reconsume in the attribute name state.
                     $this->state = TokenizerStates::ATTRIBUTE_NAME;
                     goto ATTRIBUTE_NAME;
@@ -451,7 +442,6 @@ final class Tokenizer extends AbstractTokenizer
                     // TODO: This is an unexpected-null-character parse error.
                     // Append a U+FFFD REPLACEMENT CHARACTER character to the current attribute's value.
                     $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= "\u{FFFD}";
-
                     $this->state = TokenizerStates::ATTRIBUTE_VALUE_DOUBLE_QUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto ATTRIBUTE_VALUE_DOUBLE_QUOTED;
@@ -463,9 +453,7 @@ final class Tokenizer extends AbstractTokenizer
                     // Append the current input character to the current attribute's value.
                     $chars = $this->charsUntil("\"&\0");
                     $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= $chars;
-
                     $cc = $this->input[$this->position] ?? null;
-
                     $this->state = TokenizerStates::ATTRIBUTE_VALUE_DOUBLE_QUOTED;
                     goto ATTRIBUTE_VALUE_DOUBLE_QUOTED;
                 }
@@ -489,7 +477,6 @@ final class Tokenizer extends AbstractTokenizer
                     // TODO: This is an unexpected-null-character parse error.
                     // Append a U+FFFD REPLACEMENT CHARACTER character to the current attribute's value.
                     $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= "\u{FFFD}";
-
                     $this->state = TokenizerStates::ATTRIBUTE_VALUE_SINGLE_QUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto ATTRIBUTE_VALUE_SINGLE_QUOTED;
@@ -501,9 +488,7 @@ final class Tokenizer extends AbstractTokenizer
                     // Append the current input character to the current attribute's value.
                     $chars = $this->charsUntil("'&\0");
                     $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= $chars;
-
                     $cc = $this->input[$this->position] ?? null;
-
                     $this->state = TokenizerStates::ATTRIBUTE_VALUE_SINGLE_QUOTED;
                     goto ATTRIBUTE_VALUE_SINGLE_QUOTED;
                 }
@@ -533,7 +518,6 @@ final class Tokenizer extends AbstractTokenizer
                     // TODO: This is an unexpected-null-character parse error.
                     // Append a U+FFFD REPLACEMENT CHARACTER character to the current attribute's value.
                     $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= "\u{FFFD}";
-
                     $this->state = TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto ATTRIBUTE_VALUE_UNQUOTED;
@@ -541,7 +525,6 @@ final class Tokenizer extends AbstractTokenizer
                     // TODO: This is an unexpected-character-in-unquoted-attribute-value parse error.
                     // Treat it as per the "anything else" entry below.
                     $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= $cc;
-
                     $this->state = TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto ATTRIBUTE_VALUE_UNQUOTED;
@@ -553,9 +536,7 @@ final class Tokenizer extends AbstractTokenizer
                     // Append the current input character to the current attribute's value.
                     $chars = $this->charsUntil("&\"'<>=`\0 \n\f\t");
                     $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= $chars;
-
                     $cc = $this->input[$this->position] ?? null;
-
                     $this->state = TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED;
                     goto ATTRIBUTE_VALUE_UNQUOTED;
                 }
