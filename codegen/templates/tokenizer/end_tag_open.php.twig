@@ -4,10 +4,13 @@
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
 if ({{ h.is_alpha() }}) {
+    // Create a new end tag token, set its tag name to the empty string.
     $this->currentToken = new Token(TokenTypes::END_TAG, '');
+    // Reconsume in the tag name state.
     {{ h.reconsume_in('TAG_NAME') }}
 } elseif ($cc === '>') {
-    // This is a missing-end-tag-name parse error.
+    // TODO: This is a missing-end-tag-name parse error.
+    // Switch to the data state.
     {{ h.advance_to('DATA') }}
 } elseif ({{ h.is_eof() }}) {
     // This is an eof-before-tag-name parse error.
@@ -15,7 +18,9 @@ if ({{ h.is_alpha() }}) {
     $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, '</'));
     {{ h.emit_eof() }}
 } else {
-    // This is an invalid-first-character-of-tag-name parse error.
+    // TODO: This is an invalid-first-character-of-tag-name parse error.
+    // Create a comment token whose data is the empty string.
     $this->currentToken = new Token(TokenTypes::COMMENT, '');
+    // Reconsume in the bogus comment state.
     {{ h.reconsume_in('BOGUS_COMMENT') }}
 }

@@ -3,14 +3,20 @@
 #}
 {% import 'tokenizer/_macros.php.twig' as h -%}
 if ({{ h.is_whitespace() }}) {
+    // Ignore the character.
     {{ h.consume('BEFORE_ATTRIBUTE_NAME') }}
 } elseif ($cc === '/' || $cc === '>' || {{ h.is_eof() }}) {
+    // Reconsume in the after attribute name state.
     {{ h.reconsume_in('AFTER_ATTRIBUTE_NAME') }}
 } elseif ($cc === '=') {
-    {# This is an unexpected-equals-sign-before-attribute-name parse error. #}
+    // TODO: This is an unexpected-equals-sign-before-attribute-name parse error.
+    // Start a new attribute in the current tag token. Set that attribute's name to the current input character, and its value to the empty string.
     {{ h.start_attribute('$cc') }}
+    // Switch to the attribute name state.
     {{ h.advance_to('ATTRIBUTE_NAME') }}
 } else {
+    // Start a new attribute in the current tag token. Set that attribute name and value to the empty string.
     {{~ h.start_attribute() ~}}
+    // Reconsume in the attribute name state.
     {{~ h.reconsume_in('ATTRIBUTE_NAME') ~}}
 }

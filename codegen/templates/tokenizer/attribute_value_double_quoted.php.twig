@@ -4,18 +4,23 @@
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
 if ($cc === '"') {
+    // Switch to the after attribute value (quoted) state.
     {{ h.advance_to('AFTER_ATTRIBUTE_VALUE_QUOTED') }}
 } elseif ($cc === '&') {
-    // Set the return state to the attribute value (double-quoted) state.
+    // TODO: Set the return state to the attribute value (double-quoted) state.
+    // Switch to the character reference state.
     {{ h.advance_to('CHARACTER_REFERENCE_IN_ATTRIBUTE_VALUE') }}
 } elseif ($cc === "\0") {
-    // This is an unexpected-null-character parse error.
+    // TODO: This is an unexpected-null-character parse error.
+    // Append a U+FFFD REPLACEMENT CHARACTER character to the current attribute's value.
     {{ h.append_to_attr_value('"\\u{FFFD}"') }}
     {{ h.advance_to(current_state) }}
 } elseif ({{ h.is_eof() }}) {
-    // This is an eof-in-tag parse error.
+    // TODO: This is an eof-in-tag parse error.
+    // Emit an end-of-file token.
     {{ h.emit_eof() }}
 } else {
+    // Append the current input character to the current attribute's value.
     $chars = $this->charsUntil("\"&\0");
     {{ h.append_to_attr_value('$chars') }}
     {{ h.update_and_reconsume_in(current_state) }}

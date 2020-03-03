@@ -4,17 +4,24 @@
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
 if ({{ h.is_whitespace() }}) {
+    // Ignore the character.
     {{ h.consume(current_state) }}
 } elseif ($cc === '/') {
+    // Switch to the self-closing start tag state.
     {{ h.advance_to('SELF_CLOSING_START_TAG') }}
 } elseif ($cc === '=') {
+    // Switch to the before attribute value state.
     {{ h.advance_to('BEFORE_ATTRIBUTE_VALUE') }}
 } elseif ($cc === '>') {
+    // Switch to the data state. Emit the current tag token.
     {{ h.emit_and_resume_in('DATA') }}
 } elseif ({{ h.is_eof() }}) {
-    // This is an eof-in-tag parse error.
+    // TODO: This is an eof-in-tag parse error.
+    // Emit an end-of-file token.
     {{ h.emit_eof() }}
 } else {
+    // Start a new attribute in the current tag token. Set that attribute name and value to the empty string.
     {{ h.start_attribute() }}
+    // Reconsume in the attribute name state.
     {{ h.reconsume_in('ATTRIBUTE_NAME') }}
 }

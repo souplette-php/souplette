@@ -4,24 +4,28 @@
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
 if ({{ h.is_whitespace() }}) {
+    // Switch to the before attribute name state.
     {{ h.advance_to('BEFORE_ATTRIBUTE_NAME') }}
 } elseif ($cc === '&') {
-    // Set the return state to the attribute value (unquoted) state.
+    // TODO: Set the return state to the attribute value (unquoted) state.
+    // Switch to the character reference state.
     {{ h.advance_to('CHARACTER_REFERENCE_IN_ATTRIBUTE_VALUE') }}
 } elseif ($cc === '>') {
+    // Switch to the data state. Emit the current tag token.
     {{ h.emit_and_resume_in('DATA') }}
 } elseif ($cc === "\0") {
-    // This is an unexpected-null-character parse error.
+    // TODO: This is an unexpected-null-character parse error.
     // Append a U+FFFD REPLACEMENT CHARACTER character to the current attribute's value.
     {{ h.append_to_attr_value('"\\u{FFFD}"') }}
     {{ h.advance_to(current_state) }}
 } elseif ($cc === '"' || $cc === "'" || $cc === '<' || $cc === '=' || $cc === '`') {
-    // This is an unexpected-character-in-unquoted-attribute-value parse error.
+    // TODO: This is an unexpected-character-in-unquoted-attribute-value parse error.
     // Treat it as per the "anything else" entry below.
     {{ h.append_to_attr_value('$cc') }}
     {{ h.advance_to(current_state) }}
 } elseif ({{ h.is_eof() }}) {
-    // This is an eof-in-tag parse error.
+    // TODO: This is an eof-in-tag parse error.
+    // Emit an end-of-file token.
     {{ h.emit_eof() }}
 } else {
     // Append the current input character to the current attribute's value.

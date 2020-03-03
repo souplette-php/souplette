@@ -4,14 +4,19 @@
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
 if ({{ h.is_whitespace() }}) {
+    // Ignore the character.
     {{ h.advance_to('BEFORE_ATTRIBUTE_VALUE') }}
 } elseif ($cc === '"') {
+    // Switch to the attribute value (double-quoted) state.
     {{ h.advance_to('ATTRIBUTE_VALUE_DOUBLE_QUOTED') }}
 } elseif ($cc === "'") {
+    // Switch to the attribute value (single-quoted) state.
     {{ h.advance_to('ATTRIBUTE_VALUE_SINGLE_QUOTED') }}
 } elseif ($cc === '>') {
-    // This is a missing-attribute-value parse error.
+    // TODO: This is a missing-attribute-value parse error.
+    // Switch to the data state. Emit the current tag token.
     {{ h.emit_and_resume_in('DATA') }}
 } else {
+    // Reconsume in the attribute value (unquoted) state.
     {{ h.reconsume_in('ATTRIBUTE_VALUE_UNQUOTED') }}
 }
