@@ -10,6 +10,10 @@ $cc === null
 ctype_alpha($cc)
 {%- endmacro %}
 
+{% macro set_return_state(state_name) -%}
+$this->returnState = TokenizerStates::{{ state_name }};
+{%- endmacro %}
+
 {% macro start_attribute(name = "''", value = "''") %}
 $this->currentToken->attributes[] = [{{ name }}, {{ value }}];
 {% endmacro %}

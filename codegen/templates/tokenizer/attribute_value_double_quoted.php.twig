@@ -7,7 +7,8 @@ if ($cc === '"') {
     // Switch to the after attribute value (quoted) state.
     {{ h.advance_to('AFTER_ATTRIBUTE_VALUE_QUOTED') }}
 } elseif ($cc === '&') {
-    // TODO: Set the return state to the attribute value (double-quoted) state.
+    // Set the return state to the attribute value (double-quoted) state.
+    {{ h.set_return_state(current_state) }}
     // Switch to the character reference state.
     {{ h.advance_to('CHARACTER_REFERENCE_IN_ATTRIBUTE_VALUE') }}
 } elseif ($cc === "\0") {

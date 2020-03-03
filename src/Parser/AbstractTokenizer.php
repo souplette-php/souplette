@@ -12,6 +12,10 @@ abstract class AbstractTokenizer
      */
     public $state;
     /**
+     * @var int
+     */
+    protected $returnState;
+    /**
      * @var string
      */
     protected $input;

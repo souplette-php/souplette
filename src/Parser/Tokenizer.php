@@ -14,7 +14,8 @@ final class Tokenizer extends AbstractTokenizer
             case TokenizerStates::DATA:
             DATA: {
                 if ($cc === '&') {
-                    // TODO: Set the return state to the data state.
+                    // Set the return state to the data state.
+                    $this->returnState = TokenizerStates::DATA;
                     // Switch to the character reference state.
                     $this->state = TokenizerStates::CHARACTER_REFERENCE_IN_DATA;
                     $cc = $this->input[++$this->position] ?? null;
@@ -440,7 +441,8 @@ final class Tokenizer extends AbstractTokenizer
                     $cc = $this->input[++$this->position] ?? null;
                     goto AFTER_ATTRIBUTE_VALUE_QUOTED;
                 } elseif ($cc === '&') {
-                    // TODO: Set the return state to the attribute value (double-quoted) state.
+                    // Set the return state to the attribute value (double-quoted) state.
+                    $this->returnState = TokenizerStates::ATTRIBUTE_VALUE_DOUBLE_QUOTED;
                     // Switch to the character reference state.
                     $this->state = TokenizerStates::CHARACTER_REFERENCE_IN_ATTRIBUTE_VALUE;
                     $cc = $this->input[++$this->position] ?? null;
@@ -477,7 +479,8 @@ final class Tokenizer extends AbstractTokenizer
                     $cc = $this->input[++$this->position] ?? null;
                     goto AFTER_ATTRIBUTE_VALUE_QUOTED;
                 } elseif ($cc === '&') {
-                    // TODO: Set the return state to the attribute value (single-quoted) state.
+                    // Set the return state to the attribute value (single-quoted) state.
+                    $this->returnState = TokenizerStates::ATTRIBUTE_VALUE_SINGLE_QUOTED;
                     // Switch to the character reference state.
                     $this->state = TokenizerStates::CHARACTER_REFERENCE_IN_ATTRIBUTE_VALUE;
                     $cc = $this->input[++$this->position] ?? null;
@@ -514,7 +517,8 @@ final class Tokenizer extends AbstractTokenizer
                     $cc = $this->input[++$this->position] ?? null;
                     goto BEFORE_ATTRIBUTE_NAME;
                 } elseif ($cc === '&') {
-                    // TODO: Set the return state to the attribute value (unquoted) state.
+                    // Set the return state to the attribute value (unquoted) state.
+                    $this->returnState = TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED;
                     // Switch to the character reference state.
                     $this->state = TokenizerStates::CHARACTER_REFERENCE_IN_ATTRIBUTE_VALUE;
                     $cc = $this->input[++$this->position] ?? null;

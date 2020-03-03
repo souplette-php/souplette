@@ -4,7 +4,8 @@
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
 if ($cc === '&') {
-    // TODO: Set the return state to the data state.
+    // Set the return state to the data state.
+    {{ h.set_return_state(current_state) }}
     // Switch to the character reference state.
     {{ h.advance_to('CHARACTER_REFERENCE_IN_DATA') }}
 } elseif ($cc === '<') {
