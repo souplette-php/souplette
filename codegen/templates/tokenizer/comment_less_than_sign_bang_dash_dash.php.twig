@@ -1,0 +1,13 @@
+{#
+    @see https://html.spec.whatwg.org/multipage/parsing.html#comment-less-than-sign-bang-dash-dash-state
+#}
+{% import 'tokenizer/_macros.php.twig' as h -%}
+
+if ($cc === '>' || $cc === null) {
+    // Reconsume in the comment end state.
+    {{ h.reconsume_in('COMMENT_END') }}
+} else {
+    // TODO: This is a nested-comment parse error.
+    // Reconsume in the comment end state.
+    {{ h.reconsume_in('COMMENT_END') }}
+}

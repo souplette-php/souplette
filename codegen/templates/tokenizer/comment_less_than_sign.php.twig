@@ -1,0 +1,18 @@
+{#
+    @see https://html.spec.whatwg.org/multipage/parsing.html#comment-less-than-sign-state
+#}
+{% import 'tokenizer/_macros.php.twig' as h -%}
+
+if ($cc === '!') {
+    // Append the current input character to the comment token's data.
+    $this->currentToken->value .= $cc;
+    // Switch to the comment less-than sign bang state.
+    {{ h.advance_to('COMMENT_LESS_THAN_SIGN_BANG') }}
+} elseif ($cc === '<') {
+    // Append the current input character to the comment token's data.
+    $this->currentToken->value .= $cc;
+    {{ h.advance_to(current_state) }}
+} else {
+    // Reconsume in the comment state.
+    {{ h.reconsume_in('COMMENT') }}
+}

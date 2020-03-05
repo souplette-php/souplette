@@ -119,4 +119,19 @@ class TokenizerTest extends TestCase
         yield ['&#38;', [Token::character('&')]];
         yield ['&#x26;', [Token::character('&')]];
     }
+
+    /**
+     * @dataProvider commentsProvider
+     * @param string $input
+     * @param array $expected
+     */
+    public function testComments(string $input, array $expected)
+    {
+        self::assertTokensEquals($input, $expected);
+    }
+
+    public function commentsProvider()
+    {
+        yield ['<!-- comment -->', [Token::comment(' comment ')]];
+    }
 }

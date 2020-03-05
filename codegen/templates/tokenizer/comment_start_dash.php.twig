@@ -3,4 +3,22 @@
 #}
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
-throw new \Exception('Not Implemented: {{current_state}}');
+if ($cc === '-') {
+    // Switch to the comment end state.
+    {{ h.advance_to('COMMENT_END') }}
+} elseif ($cc === '>') {
+    // TODO: This is an abrupt-closing-of-empty-comment parse error.
+    // Switch to the data state. Emit the comment token.
+    {{ h.emit_and_resume_in('DATA') }}
+} elseif ($cc === null) {
+    // TODO: This is an eof-in-comment parse error.
+    // Emit the comment token.
+    $this->tokenQueue->enqueue($this->currentToken);
+    // Emit an end-of-file token.
+    {{ h.emit_eof() }}
+} else {
+    // Append a U+002D HYPHEN-MINUS character (-) to the comment token's data.
+    $this->currentToken->value .= '-';
+    // Reconsume in the comment state.
+    {{ h.reconsume_in('COMMENT') }}
+}

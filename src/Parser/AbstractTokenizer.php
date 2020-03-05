@@ -138,11 +138,11 @@ abstract class AbstractTokenizer
             $this->appropriateEndTag = $token->value;
         } elseif ($token->type === TokenTypes::END_TAG) {
             if ($token->attributes) {
-                // When an end tag token is emitted with attributes, that is an end-tag-with-attributes parse error.
+                // TODO: that is an end-tag-with-attributes parse error.
                 $token->attributes = null;
             }
             if ($token->selfClosing) {
-                // When an end tag token is emitted with its self-closing flag set, that is an end-tag-with-trailing-solidus parse error.
+                // TODO: that is an end-tag-with-trailing-solidus parse error.
                 $token->selfClosing = false;
             }
         }

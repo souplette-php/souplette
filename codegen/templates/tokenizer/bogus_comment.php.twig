@@ -3,4 +3,21 @@
 #}
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
-throw new \Exception('Not Implemented: {{current_state}}');
+if ($cc === '>') {
+    // Switch to the data state. Emit the comment token.
+    {{ h.emit_and_resume_in('DATA') }}
+} elseif ($cc === null) {
+    // Emit the comment. Emit an end-of-file token.
+    $this->tokenQueue->enqueue($this->currentToken);
+    {{ h.emit_eof() }}
+} elseif ($cc === "\0") {
+    // TODO: This is an unexpected-null-character parse error.
+    // Append a U+FFFD REPLACEMENT CHARACTER character to the comment token's data.
+    $this->currentToken->value .= "\u{FFFD}";
+    {{ h.advance_to(current_state) }}
+} else {
+    // Append the current input character to the comment token's data.
+    $chars = $this->charsUntil(">\0");
+    $this->currentToken->value .= $chars;
+    {{ h.advance_to(current_state) }}
+}

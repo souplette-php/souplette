@@ -604,7 +604,31 @@ final class Tokenizer extends AbstractTokenizer
             break;
             case TokenizerStates::BOGUS_COMMENT:
             BOGUS_COMMENT: {
-                throw new \Exception('Not Implemented: BOGUS_COMMENT');
+                if ($cc === '>') {
+                    // Switch to the data state. Emit the comment token.
+                    $this->emitCurrentToken();
+                    $this->state = TokenizerStates::DATA;
+                    ++$this->position;
+                    return true;
+                } elseif ($cc === null) {
+                    // Emit the comment. Emit an end-of-file token.
+                    $this->tokenQueue->enqueue($this->currentToken);
+                    return false;
+                } elseif ($cc === "\0") {
+                    // TODO: This is an unexpected-null-character parse error.
+                    // Append a U+FFFD REPLACEMENT CHARACTER character to the comment token's data.
+                    $this->currentToken->value .= "\u{FFFD}";
+                    $this->state = TokenizerStates::BOGUS_COMMENT;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto BOGUS_COMMENT;
+                } else {
+                    // Append the current input character to the comment token's data.
+                    $chars = $this->charsUntil(">\0");
+                    $this->currentToken->value .= $chars;
+                    $this->state = TokenizerStates::BOGUS_COMMENT;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto BOGUS_COMMENT;
+                }
             }
             break;
             case TokenizerStates::CONTINUE_BOGUS_COMMENT:
@@ -614,37 +638,217 @@ final class Tokenizer extends AbstractTokenizer
             break;
             case TokenizerStates::MARKUP_DECLARATION_OPEN:
             MARKUP_DECLARATION_OPEN: {
-                throw new \Exception('Not Implemented: MARKUP_DECLARATION_OPEN');
+                if (strpos($this->input, '--', $this->position) === $this->position) {
+                    // Consume those two characters
+                    $this->position += 1;
+                    // create a comment token whose data is the empty string,
+                    $this->currentToken = new Token(TokenTypes::COMMENT, '');
+                    // and switch to the comment start state.
+                    $this->state = TokenizerStates::COMMENT_START;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto COMMENT_START;
+                } elseif (stripos($this->input, 'DOCTYPE', $this->position) === $this->position) {
+                    // Consume those characters
+                    $this->position += 7;
+                    // and switch to the DOCTYPE state.
+                    $this->state = TokenizerStates::DOCTYPE;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto DOCTYPE;
+                } elseif (strpos($this->input, '[CDATA[', $this->position) === $this->position) {
+                    // Consume those characters.
+                    $this->position += 7;
+                    if (false) {
+                        // TODO: If there is an adjusted current node and it is not an element in the HTML namespace,
+                        // https://html.spec.whatwg.org/multipage/parsing.html#adjusted-current-node
+                        // then switch to the CDATA section state.
+                        $this->state = TokenizerStates::CDATA_SECTION;
+                        $cc = $this->input[++$this->position] ?? null;
+                        goto CDATA_SECTION;
+                    } else {
+                        // TODO: this is a cdata-in-html-content parse error.
+                        // Create a comment token whose data is the "[CDATA[" string.
+                        $this->currentToken = new Token(TokenTypes::COMMENT, '[CDATA[');
+                        // Switch to the bogus comment state.
+                        $this->state = TokenizerStates::BOGUS_COMMENT;
+                        $cc = $this->input[++$this->position] ?? null;
+                        goto BOGUS_COMMENT;
+                    }
+                } else {
+                    // TODO: This is an incorrectly-opened-comment parse error.
+                    // Create a comment token whose data is the empty string.
+                    $this->currentToken = new Token(TokenTypes::COMMENT, '');
+                    // Switch to the bogus comment state (don't consume anything in the current state).
+                    $this->state = TokenizerStates::BOGUS_COMMENT;
+                    goto BOGUS_COMMENT;
+                }
             }
             break;
             case TokenizerStates::COMMENT_START:
             COMMENT_START: {
-                throw new \Exception('Not Implemented: COMMENT_START');
+                if ($cc === '-') {
+                    // Switch to the comment start dash state.
+                    $this->state = TokenizerStates::COMMENT_START_DASH;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto COMMENT_START_DASH;
+                } elseif ($cc === '>') {
+                    // TODO: This is an abrupt-closing-of-empty-comment parse error.
+                    // Switch to the data state. Emit the comment token.
+                    $this->emitCurrentToken();
+                    $this->state = TokenizerStates::DATA;
+                    ++$this->position;
+                    return true;
+                } else {
+                    // Reconsume in the comment state.
+                    $this->state = TokenizerStates::COMMENT;
+                    goto COMMENT;
+                }
             }
             break;
             case TokenizerStates::COMMENT_START_DASH:
             COMMENT_START_DASH: {
-                throw new \Exception('Not Implemented: COMMENT_START_DASH');
+                if ($cc === '-') {
+                    // Switch to the comment end state.
+                    $this->state = TokenizerStates::COMMENT_END;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto COMMENT_END;
+                } elseif ($cc === '>') {
+                    // TODO: This is an abrupt-closing-of-empty-comment parse error.
+                    // Switch to the data state. Emit the comment token.
+                    $this->emitCurrentToken();
+                    $this->state = TokenizerStates::DATA;
+                    ++$this->position;
+                    return true;
+                } elseif ($cc === null) {
+                    // TODO: This is an eof-in-comment parse error.
+                    // Emit the comment token.
+                    $this->tokenQueue->enqueue($this->currentToken);
+                    // Emit an end-of-file token.
+                    return false;
+                } else {
+                    // Append a U+002D HYPHEN-MINUS character (-) to the comment token's data.
+                    $this->currentToken->value .= '-';
+                    // Reconsume in the comment state.
+                    $this->state = TokenizerStates::COMMENT;
+                    goto COMMENT;
+                }
             }
             break;
             case TokenizerStates::COMMENT:
             COMMENT: {
-                throw new \Exception('Not Implemented: COMMENT');
+                if ($cc === '<') {
+                    // Append the current input character to the comment token's data.
+                    $this->currentToken->value .= $cc;
+                    // Switch to the comment less-than sign state.
+                    $this->state = TokenizerStates::COMMENT_LESS_THAN_SIGN;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto COMMENT_LESS_THAN_SIGN;
+                } elseif ($cc === '-') {
+                    // Switch to the comment end dash state.
+                    $this->state = TokenizerStates::COMMENT_END_DASH;
+                    goto COMMENT_END_DASH;
+                } elseif ($cc === "\0") {
+                    // TODO: This is an unexpected-null-character parse error.
+                    // Append a U+FFFD REPLACEMENT CHARACTER character to the comment token's data.
+                    $this->currentToken->value .= "\u{FFFD}";
+                    $this->state = TokenizerStates::COMMENT;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto COMMENT;
+                } elseif ($cc === null) {
+                    // TODO: This is an eof-in-comment parse error.
+                    // Emit the comment token. Emit an end-of-file token.
+                    $this->tokenQueue->enqueue($this->currentToken);
+                    return false;
+                } else {
+                    // Append the current input character to the comment token's data.
+                    $chars = $this->charsUntil("<-\0");
+                    $this->currentToken->value .= $chars;
+                    $this->state = TokenizerStates::COMMENT;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto COMMENT;
+                }
             }
             break;
             case TokenizerStates::COMMENT_END_DASH:
             COMMENT_END_DASH: {
-                throw new \Exception('Not Implemented: COMMENT_END_DASH');
+                if ($cc === '-') {
+                    // Switch to the comment end state
+                    $this->state = TokenizerStates::COMMENT_END;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto COMMENT_END;
+                } elseif ($cc === null) {
+                    // TODO: This is an eof-in-comment parse error.
+                    // Emit the comment token. Emit an end-of-file token.
+                    $this->tokenQueue->enqueue($this->currentToken);
+                    return false;
+                } else {
+                    // Append a U+002D HYPHEN-MINUS character (-) to the comment token's data.
+                    $this->currentToken->value .= '-';
+                    // Reconsume in the comment state.
+                    $this->state = TokenizerStates::COMMENT;
+                    goto COMMENT;
+                }
             }
             break;
             case TokenizerStates::COMMENT_END:
             COMMENT_END: {
-                throw new \Exception('Not Implemented: COMMENT_END');
+                if ($cc === '>') {
+                    $this->emitCurrentToken();
+                    $this->state = TokenizerStates::DATA;
+                    ++$this->position;
+                    return true;
+                } elseif ($cc === '!') {
+                    // Switch to the comment end bang state.
+                    $this->state = TokenizerStates::COMMENT_END_BANG;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto COMMENT_END_BANG;
+                } elseif ($cc === '-') {
+                    // Append a U+002D HYPHEN-MINUS character (-) to the comment token's data.
+                    $this->currentToken->value .= '-';
+                    $this->state = TokenizerStates::COMMENT_END;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto COMMENT_END;
+                } elseif ($cc === null) {
+                    // TODO: This is an eof-in-comment parse error.
+                    // Emit the comment token. Emit an end-of-file token.
+                    $this->tokenQueue->enqueue($this->currentToken);
+                    return false;
+                } else {
+                    // Append two U+002D HYPHEN-MINUS characters (-) to the comment token's data.
+                    $this->currentToken->value .= '--';
+                    // Reconsume in the comment state.
+                    $this->state = TokenizerStates::COMMENT;
+                    goto COMMENT;
+                }
             }
             break;
             case TokenizerStates::COMMENT_END_BANG:
             COMMENT_END_BANG: {
-                throw new \Exception('Not Implemented: COMMENT_END_BANG');
+                if ($cc === '-') {
+                    // Append two U+002D HYPHEN-MINUS characters (-) and a U+0021 EXCLAMATION MARK character (!) to the comment token's data.
+                    $this->currentToken->value .= '--!';
+                    // Switch to the comment end dash state.
+                    $this->state = TokenizerStates::COMMENT_END_DASH;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto COMMENT_END_DASH;
+                } elseif ($cc === '>') {
+                    // TODO: This is an incorrectly-closed-comment parse error.
+                    // Switch to the data state. Emit the comment token.
+                    $this->emitCurrentToken();
+                    $this->state = TokenizerStates::DATA;
+                    ++$this->position;
+                    return true;
+                } elseif ($cc === null) {
+                    // TODO: This is an eof-in-comment parse error.
+                    // Emit the comment token. Emit an end-of-file token.
+                    $this->tokenQueue->enqueue($this->currentToken);
+                    return false;
+                } else {
+                    // Append two U+002D HYPHEN-MINUS characters (-) and a U+0021 EXCLAMATION MARK character (!) to the comment token's data.
+                    $this->currentToken->value .= '--!';
+                    // Reconsume in the comment state.
+                    $this->state = TokenizerStates::COMMENT;
+                    goto COMMENT;
+                }
             }
             break;
             case TokenizerStates::DOCTYPE:
@@ -1013,6 +1217,70 @@ final class Tokenizer extends AbstractTokenizer
                     // Reconsume in the return state.
                     $this->state = $this->returnState;
                     goto INITIAL;
+                }
+            }
+            break;
+            case TokenizerStates::COMMENT_LESS_THAN_SIGN:
+            COMMENT_LESS_THAN_SIGN: {
+                if ($cc === '!') {
+                    // Append the current input character to the comment token's data.
+                    $this->currentToken->value .= $cc;
+                    // Switch to the comment less-than sign bang state.
+                    $this->state = TokenizerStates::COMMENT_LESS_THAN_SIGN_BANG;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto COMMENT_LESS_THAN_SIGN_BANG;
+                } elseif ($cc === '<') {
+                    // Append the current input character to the comment token's data.
+                    $this->currentToken->value .= $cc;
+                    $this->state = TokenizerStates::COMMENT_LESS_THAN_SIGN;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto COMMENT_LESS_THAN_SIGN;
+                } else {
+                    // Reconsume in the comment state.
+                    $this->state = TokenizerStates::COMMENT;
+                    goto COMMENT;
+                }
+            }
+            break;
+            case TokenizerStates::COMMENT_LESS_THAN_SIGN_BANG:
+            COMMENT_LESS_THAN_SIGN_BANG: {
+                if ($cc === '-') {
+                    // Switch to the comment less-than sign bang dash state.
+                    $this->state = TokenizerStates::COMMENT_LESS_THAN_SIGN_BANG_DASH;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto COMMENT_LESS_THAN_SIGN_BANG_DASH;
+                } else {
+                    // Reconsume in the comment state.
+                    $this->state = TokenizerStates::COMMENT;
+                    goto COMMENT;
+                }
+            }
+            break;
+            case TokenizerStates::COMMENT_LESS_THAN_SIGN_BANG_DASH:
+            COMMENT_LESS_THAN_SIGN_BANG_DASH: {
+                if ($cc === '-') {
+                    // Switch to the comment less-than sign bang dash dash state.
+                    $this->state = TokenizerStates::COMMENT_LESS_THAN_SIGN_BANG_DASH_DASH;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto COMMENT_LESS_THAN_SIGN_BANG_DASH_DASH;
+                } else {
+                    // Reconsume in the comment end dash state.
+                    $this->state = TokenizerStates::COMMENT_END_DASH;
+                    goto COMMENT_END_DASH;
+                }
+            }
+            break;
+            case TokenizerStates::COMMENT_LESS_THAN_SIGN_BANG_DASH_DASH:
+            COMMENT_LESS_THAN_SIGN_BANG_DASH_DASH: {
+                if ($cc === '>' || $cc === null) {
+                    // Reconsume in the comment end state.
+                    $this->state = TokenizerStates::COMMENT_END;
+                    goto COMMENT_END;
+                } else {
+                    // TODO: This is a nested-comment parse error.
+                    // Reconsume in the comment end state.
+                    $this->state = TokenizerStates::COMMENT_END;
+                    goto COMMENT_END;
                 }
             }
             break;

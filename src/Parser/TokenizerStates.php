@@ -56,6 +56,10 @@ final class TokenizerStates
     const COMMENT_START = 47;
     const COMMENT_START_DASH = 48;
     const COMMENT = 49;
+    const COMMENT_LESS_THAN_SIGN = 200;
+    const COMMENT_LESS_THAN_SIGN_BANG = 201;
+    const COMMENT_LESS_THAN_SIGN_BANG_DASH = 202;
+    const COMMENT_LESS_THAN_SIGN_BANG_DASH_DASH = 203;
     const COMMENT_END_DASH = 50;
     const COMMENT_END = 51;
     const COMMENT_END_BANG = 52;
@@ -88,5 +92,4 @@ final class TokenizerStates
     const DECIMAL_CHARACTER_REFERENCE = 106;
     const NUMERIC_CHARACTER_REFERENCE_END = 107;
     const AMBIGUOUS_AMPERSAND = 108;
-
 }
