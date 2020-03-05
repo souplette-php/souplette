@@ -3,4 +3,39 @@
 #}
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
-throw new \Exception('Not Implemented: {{current_state}}');
+if ({{ h.is_whitespace() }}) {
+    // Ignore the character.
+    {{ h.advance_to('BEFORE_DOCTYPE_NAME') }}
+} elseif ($cc === "\0") {
+    // TODO: This is an unexpected-null-character parse error.
+    // Create a new DOCTYPE token.
+    $this->currentToken = new Token(TokenTypes::DOCTYPE, '');
+    // Set the token's name to a U+FFFD REPLACEMENT CHARACTER character.
+    $this->currentToken->name = "u\{FFFD}";
+    // Switch to the DOCTYPE name state.
+    {{ h.advance_to('DOCTYPE_NAME') }}
+} elseif ($cc === '>') {
+    // TODO: This is a missing-doctype-name parse error.
+    // Create a new DOCTYPE token.
+    $this->currentToken = new Token(TokenTypes::DOCTYPE, '');
+    // Set its force-quirks flag to on.
+    $this->currentToken->forceQuirks = true;
+    // Switch to the data state. Emit the token.
+    {{ h.emit_and_resume_in('DATA') }}
+} elseif ({{ h.is_eof() }}) {
+    // TODO: This is an eof-in-doctype parse error.
+    // Create a new DOCTYPE token.
+    $this->currentToken = new Token(TokenTypes::DOCTYPE, '');
+    // Set its force-quirks flag to on.
+    $this->currentToken->forceQuirks = true;
+    // Emit the token. Emit an end-of-file token.
+    $this->tokenQueue->enqueue($this->currentToken);
+    {{ h.emit_eof() }}
+} else {
+    // Create a new DOCTYPE token.
+    $this->currentToken = new Token(TokenTypes::DOCTYPE, '');
+    // Set the token's name to the current input character.
+    $this->currentToken->name = strtolower($cc);
+    // Switch to the DOCTYPE name state.
+    {{ h.advance_to('DOCTYPE_NAME') }}
+}

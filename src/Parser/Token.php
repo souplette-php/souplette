@@ -15,6 +15,11 @@ final class Token
     public $value;
 
     /**
+     * @var string
+     */
+    public $name;
+
+    /**
      * @var bool
      */
     public $selfClosing = false;
@@ -24,15 +29,22 @@ final class Token
      */
     public $attributes;
 
+    /**
+     * @var bool
+     */
+    public $forceQuirks;
+
     public function __construct(int $type, string $value)
     {
         $this->type = $type;
         $this->value = $value;
     }
 
-    public static function doctype(): self
+    public static function doctype(string $name): self
     {
-        return new self(TokenTypes::DOCTYPE, '');
+        $token = new self(TokenTypes::DOCTYPE, '');
+        $token->name = $name;
+        return $token;
     }
 
     public static function character(string $value): self

@@ -134,4 +134,19 @@ class TokenizerTest extends TestCase
     {
         yield ['<!-- comment -->', [Token::comment(' comment ')]];
     }
+
+    /**
+     * @dataProvider doctypeProvider
+     * @param string $input
+     * @param array $expected
+     */
+    public function testDoctype(string $input, array $expected)
+    {
+        self::assertTokensEquals($input, $expected);
+    }
+
+    public function doctypeProvider()
+    {
+        yield ['<!DOCTYPE html>', [Token::doctype('html')]];
+    }
 }

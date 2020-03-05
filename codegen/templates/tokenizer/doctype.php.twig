@@ -3,4 +3,23 @@
 #}
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
-throw new \Exception('Not Implemented: {{current_state}}');
+if ({{ h.is_whitespace() }}) {
+    // Switch to the before DOCTYPE name state.
+    {{ h.advance_to('BEFORE_DOCTYPE_NAME') }}
+} elseif ($cc === '>') {
+    // Reconsume in the before DOCTYPE name state.
+    {{ h.reconsume_in('BEFORE_DOCTYPE_NAME') }}
+} elseif ({{ h.is_eof() }}) {
+    // TODO: This is an eof-in-doctype parse error.
+    // Create a new DOCTYPE token.
+    $token = new Token(TokenTypes::DOCTYPE, '');
+    // Set its force-quirks flag to on.
+    $token->forceQuirks = true;
+    // Emit the token. Emit an end-of-file token.
+    $this->tokenQueue->enqueue($token);
+    {{ h.emit_eof() }}
+} else {
+    // TODO: This is a missing-whitespace-before-doctype-name parse error.
+    // Reconsume in the before DOCTYPE name state.
+    {{ h.reconsume_in('BEFORE_DOCTYPE_NAME') }}
+}

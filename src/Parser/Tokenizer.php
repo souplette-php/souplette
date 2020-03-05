@@ -633,7 +633,7 @@ final class Tokenizer extends AbstractTokenizer
             break;
             case TokenizerStates::CONTINUE_BOGUS_COMMENT:
             CONTINUE_BOGUS_COMMENT: {
-                throw new \Exception('Not Implemented: CONTINUE_BOGUS_COMMENT');
+                throw new \LogicException("Unknown state CONTINUE_BOGUS_COMMENT");
             }
             break;
             case TokenizerStates::MARKUP_DECLARATION_OPEN:
@@ -767,6 +767,70 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
+            case TokenizerStates::COMMENT_LESS_THAN_SIGN:
+            COMMENT_LESS_THAN_SIGN: {
+                if ($cc === '!') {
+                    // Append the current input character to the comment token's data.
+                    $this->currentToken->value .= $cc;
+                    // Switch to the comment less-than sign bang state.
+                    $this->state = TokenizerStates::COMMENT_LESS_THAN_SIGN_BANG;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto COMMENT_LESS_THAN_SIGN_BANG;
+                } elseif ($cc === '<') {
+                    // Append the current input character to the comment token's data.
+                    $this->currentToken->value .= $cc;
+                    $this->state = TokenizerStates::COMMENT_LESS_THAN_SIGN;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto COMMENT_LESS_THAN_SIGN;
+                } else {
+                    // Reconsume in the comment state.
+                    $this->state = TokenizerStates::COMMENT;
+                    goto COMMENT;
+                }
+            }
+            break;
+            case TokenizerStates::COMMENT_LESS_THAN_SIGN_BANG:
+            COMMENT_LESS_THAN_SIGN_BANG: {
+                if ($cc === '-') {
+                    // Switch to the comment less-than sign bang dash state.
+                    $this->state = TokenizerStates::COMMENT_LESS_THAN_SIGN_BANG_DASH;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto COMMENT_LESS_THAN_SIGN_BANG_DASH;
+                } else {
+                    // Reconsume in the comment state.
+                    $this->state = TokenizerStates::COMMENT;
+                    goto COMMENT;
+                }
+            }
+            break;
+            case TokenizerStates::COMMENT_LESS_THAN_SIGN_BANG_DASH:
+            COMMENT_LESS_THAN_SIGN_BANG_DASH: {
+                if ($cc === '-') {
+                    // Switch to the comment less-than sign bang dash dash state.
+                    $this->state = TokenizerStates::COMMENT_LESS_THAN_SIGN_BANG_DASH_DASH;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto COMMENT_LESS_THAN_SIGN_BANG_DASH_DASH;
+                } else {
+                    // Reconsume in the comment end dash state.
+                    $this->state = TokenizerStates::COMMENT_END_DASH;
+                    goto COMMENT_END_DASH;
+                }
+            }
+            break;
+            case TokenizerStates::COMMENT_LESS_THAN_SIGN_BANG_DASH_DASH:
+            COMMENT_LESS_THAN_SIGN_BANG_DASH_DASH: {
+                if ($cc === '>' || $cc === null) {
+                    // Reconsume in the comment end state.
+                    $this->state = TokenizerStates::COMMENT_END;
+                    goto COMMENT_END;
+                } else {
+                    // TODO: This is a nested-comment parse error.
+                    // Reconsume in the comment end state.
+                    $this->state = TokenizerStates::COMMENT_END;
+                    goto COMMENT_END;
+                }
+            }
+            break;
             case TokenizerStates::COMMENT_END_DASH:
             COMMENT_END_DASH: {
                 if ($cc === '-') {
@@ -852,22 +916,158 @@ final class Tokenizer extends AbstractTokenizer
             break;
             case TokenizerStates::DOCTYPE:
             DOCTYPE: {
-                throw new \Exception('Not Implemented: DOCTYPE');
+                if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
+                    // Switch to the before DOCTYPE name state.
+                    $this->state = TokenizerStates::BEFORE_DOCTYPE_NAME;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto BEFORE_DOCTYPE_NAME;
+                } elseif ($cc === '>') {
+                    // Reconsume in the before DOCTYPE name state.
+                    $this->state = TokenizerStates::BEFORE_DOCTYPE_NAME;
+                    goto BEFORE_DOCTYPE_NAME;
+                } elseif ($cc === null) {
+                    // TODO: This is an eof-in-doctype parse error.
+                    // Create a new DOCTYPE token.
+                    $token = new Token(TokenTypes::DOCTYPE, '');
+                    // Set its force-quirks flag to on.
+                    $token->forceQuirks = true;
+                    // Emit the token. Emit an end-of-file token.
+                    $this->tokenQueue->enqueue($token);
+                    return false;
+                } else {
+                    // TODO: This is a missing-whitespace-before-doctype-name parse error.
+                    // Reconsume in the before DOCTYPE name state.
+                    $this->state = TokenizerStates::BEFORE_DOCTYPE_NAME;
+                    goto BEFORE_DOCTYPE_NAME;
+                }
             }
             break;
             case TokenizerStates::BEFORE_DOCTYPE_NAME:
             BEFORE_DOCTYPE_NAME: {
-                throw new \Exception('Not Implemented: BEFORE_DOCTYPE_NAME');
+                if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
+                    // Ignore the character.
+                    $this->state = TokenizerStates::BEFORE_DOCTYPE_NAME;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto BEFORE_DOCTYPE_NAME;
+                } elseif ($cc === "\0") {
+                    // TODO: This is an unexpected-null-character parse error.
+                    // Create a new DOCTYPE token.
+                    $this->currentToken = new Token(TokenTypes::DOCTYPE, '');
+                    // Set the token's name to a U+FFFD REPLACEMENT CHARACTER character.
+                    $this->currentToken->name = "u\{FFFD}";
+                    // Switch to the DOCTYPE name state.
+                    $this->state = TokenizerStates::DOCTYPE_NAME;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto DOCTYPE_NAME;
+                } elseif ($cc === '>') {
+                    // TODO: This is a missing-doctype-name parse error.
+                    // Create a new DOCTYPE token.
+                    $this->currentToken = new Token(TokenTypes::DOCTYPE, '');
+                    // Set its force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Switch to the data state. Emit the token.
+                    $this->emitCurrentToken();
+                    $this->state = TokenizerStates::DATA;
+                    ++$this->position;
+                    return true;
+                } elseif ($cc === null) {
+                    // TODO: This is an eof-in-doctype parse error.
+                    // Create a new DOCTYPE token.
+                    $this->currentToken = new Token(TokenTypes::DOCTYPE, '');
+                    // Set its force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Emit the token. Emit an end-of-file token.
+                    $this->tokenQueue->enqueue($this->currentToken);
+                    return false;
+                } else {
+                    // Create a new DOCTYPE token.
+                    $this->currentToken = new Token(TokenTypes::DOCTYPE, '');
+                    // Set the token's name to the current input character.
+                    $this->currentToken->name = strtolower($cc);
+                    // Switch to the DOCTYPE name state.
+                    $this->state = TokenizerStates::DOCTYPE_NAME;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto DOCTYPE_NAME;
+                }
             }
             break;
             case TokenizerStates::DOCTYPE_NAME:
             DOCTYPE_NAME: {
-                throw new \Exception('Not Implemented: DOCTYPE_NAME');
+                if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
+                    // Switch to the after DOCTYPE name state.
+                    $this->state = TokenizerStates::AFTER_DOCTYPE_NAME;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto AFTER_DOCTYPE_NAME;
+                } elseif ($cc === '>') {
+                    // Switch to the data state. Emit the current DOCTYPE token.
+                    $this->emitCurrentToken();
+                    $this->state = TokenizerStates::DATA;
+                    ++$this->position;
+                    return true;
+                } elseif ($cc === "\0") {
+                    // TODO: This is an unexpected-null-character parse error.
+                    // Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's name.
+                    $this->currentToken->name .= "u\{FFFD}";
+                    $this->state = TokenizerStates::DOCTYPE_NAME;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto DOCTYPE_NAME;
+                } elseif ($cc === null) {
+                    // TODO: This is an eof-in-doctype parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Emit the token. Emit an end-of-file token.
+                    $this->tokenQueue->enqueue($this->currentToken);
+                    return false;
+                } else {
+                    // Append the current input character to the current DOCTYPE token's name.
+                    $chars = $this->charsUntil(Characters::WHITESPACE . ">\0");
+                    $this->currentToken->name .= strtolower($chars);
+                    $cc = $this->input[$this->position] ?? null;
+                    $this->state = TokenizerStates::DOCTYPE_NAME;
+                    goto DOCTYPE_NAME;
+                }
             }
             break;
             case TokenizerStates::AFTER_DOCTYPE_NAME:
             AFTER_DOCTYPE_NAME: {
-                throw new \Exception('Not Implemented: AFTER_DOCTYPE_NAME');
+                if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
+                    // Ignore the character.
+                    $this->state = TokenizerStates::AFTER_DOCTYPE_NAME;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto AFTER_DOCTYPE_NAME;
+                } elseif ($cc === '>') {
+                    // Switch to the data state. Emit the current DOCTYPE token.
+                    $this->emitCurrentToken();
+                    $this->state = TokenizerStates::DATA;
+                    ++$this->position;
+                    return true;
+                } elseif ($cc === null) {
+                    // TODO: This is an eof-in-doctype parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Emit the token. Emit an end-of-file token.
+                    $this->tokenQueue->enqueue($this->currentToken);
+                    return false;
+                } else {
+                    if (0 === substr_compare($this->input, 'PUBLIC', $this->position, 6, true)) {
+                        // consume those characters and switch to the after DOCTYPE public keyword state.
+                        $this->position += 6;
+                        $this->state = TokenizerStates::AFTER_DOCTYPE_PUBLIC_KEYWORD;
+                        goto AFTER_DOCTYPE_PUBLIC_KEYWORD;
+                    } elseif (0 === substr_compare($this->input, 'SYSTEM', $this->position, 6, true)) {
+                        // consume those characters and switch to the after DOCTYPE system keyword state.
+                        $this->position += 6;
+                        $this->state = TokenizerStates::AFTER_DOCTYPE_SYSTEM_KEYWORD;
+                        goto AFTER_DOCTYPE_SYSTEM_KEYWORD;
+                    } else {
+                        // TODO: this is an invalid-character-sequence-after-doctype-name parse error.
+                        // Set the DOCTYPE token's force-quirks flag to on.
+                        $this->currentToken->forceQuirks = true;
+                        // Reconsume in the bogus DOCTYPE state.
+                        $this->state = TokenizerStates::BOGUS_DOCTYPE;
+                        goto BOGUS_DOCTYPE;
+                    }
+                }
             }
             break;
             case TokenizerStates::AFTER_DOCTYPE_PUBLIC_KEYWORD:
@@ -1216,70 +1416,6 @@ final class Tokenizer extends AbstractTokenizer
                     // Reconsume in the return state.
                     $this->state = $this->returnState;
                     goto INITIAL;
-                }
-            }
-            break;
-            case TokenizerStates::COMMENT_LESS_THAN_SIGN:
-            COMMENT_LESS_THAN_SIGN: {
-                if ($cc === '!') {
-                    // Append the current input character to the comment token's data.
-                    $this->currentToken->value .= $cc;
-                    // Switch to the comment less-than sign bang state.
-                    $this->state = TokenizerStates::COMMENT_LESS_THAN_SIGN_BANG;
-                    $cc = $this->input[++$this->position] ?? null;
-                    goto COMMENT_LESS_THAN_SIGN_BANG;
-                } elseif ($cc === '<') {
-                    // Append the current input character to the comment token's data.
-                    $this->currentToken->value .= $cc;
-                    $this->state = TokenizerStates::COMMENT_LESS_THAN_SIGN;
-                    $cc = $this->input[++$this->position] ?? null;
-                    goto COMMENT_LESS_THAN_SIGN;
-                } else {
-                    // Reconsume in the comment state.
-                    $this->state = TokenizerStates::COMMENT;
-                    goto COMMENT;
-                }
-            }
-            break;
-            case TokenizerStates::COMMENT_LESS_THAN_SIGN_BANG:
-            COMMENT_LESS_THAN_SIGN_BANG: {
-                if ($cc === '-') {
-                    // Switch to the comment less-than sign bang dash state.
-                    $this->state = TokenizerStates::COMMENT_LESS_THAN_SIGN_BANG_DASH;
-                    $cc = $this->input[++$this->position] ?? null;
-                    goto COMMENT_LESS_THAN_SIGN_BANG_DASH;
-                } else {
-                    // Reconsume in the comment state.
-                    $this->state = TokenizerStates::COMMENT;
-                    goto COMMENT;
-                }
-            }
-            break;
-            case TokenizerStates::COMMENT_LESS_THAN_SIGN_BANG_DASH:
-            COMMENT_LESS_THAN_SIGN_BANG_DASH: {
-                if ($cc === '-') {
-                    // Switch to the comment less-than sign bang dash dash state.
-                    $this->state = TokenizerStates::COMMENT_LESS_THAN_SIGN_BANG_DASH_DASH;
-                    $cc = $this->input[++$this->position] ?? null;
-                    goto COMMENT_LESS_THAN_SIGN_BANG_DASH_DASH;
-                } else {
-                    // Reconsume in the comment end dash state.
-                    $this->state = TokenizerStates::COMMENT_END_DASH;
-                    goto COMMENT_END_DASH;
-                }
-            }
-            break;
-            case TokenizerStates::COMMENT_LESS_THAN_SIGN_BANG_DASH_DASH:
-            COMMENT_LESS_THAN_SIGN_BANG_DASH_DASH: {
-                if ($cc === '>' || $cc === null) {
-                    // Reconsume in the comment end state.
-                    $this->state = TokenizerStates::COMMENT_END;
-                    goto COMMENT_END;
-                } else {
-                    // TODO: This is a nested-comment parse error.
-                    // Reconsume in the comment end state.
-                    $this->state = TokenizerStates::COMMENT_END;
-                    goto COMMENT_END;
                 }
             }
             break;

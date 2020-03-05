@@ -3,4 +3,33 @@
 #}
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
-throw new \Exception('Not Implemented: {{current_state}}');
+if ({{ h.is_whitespace() }}) {
+    // Ignore the character.
+    {{ h.advance_to('AFTER_DOCTYPE_NAME') }}
+} elseif ($cc === '>') {
+    // Switch to the data state. Emit the current DOCTYPE token.
+    {{ h.emit_and_resume_in('DATA') }}
+} elseif ({{ h.is_eof() }}) {
+    // TODO: This is an eof-in-doctype parse error.
+    // Set the DOCTYPE token's force-quirks flag to on.
+    $this->currentToken->forceQuirks = true;
+    // Emit the token. Emit an end-of-file token.
+    $this->tokenQueue->enqueue($this->currentToken);
+    {{ h.emit_eof() }}
+} else {
+    if (0 === substr_compare($this->input, 'PUBLIC', $this->position, 6, true)) {
+        // consume those characters and switch to the after DOCTYPE public keyword state.
+        $this->position += 6;
+        {{ h.reconsume_in('AFTER_DOCTYPE_PUBLIC_KEYWORD') }}
+    } elseif (0 === substr_compare($this->input, 'SYSTEM', $this->position, 6, true)) {
+        // consume those characters and switch to the after DOCTYPE system keyword state.
+        $this->position += 6;
+        {{ h.reconsume_in('AFTER_DOCTYPE_SYSTEM_KEYWORD') }}
+    } else {
+        // TODO: this is an invalid-character-sequence-after-doctype-name parse error.
+        // Set the DOCTYPE token's force-quirks flag to on.
+        $this->currentToken->forceQuirks = true;
+        // Reconsume in the bogus DOCTYPE state.
+        {{ h.reconsume_in('BOGUS_DOCTYPE') }}
+    }
+}

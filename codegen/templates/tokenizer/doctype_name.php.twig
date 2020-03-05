@@ -3,4 +3,27 @@
 #}
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
-throw new \Exception('Not Implemented: {{current_state}}');
+if ({{ h.is_whitespace() }}) {
+    // Switch to the after DOCTYPE name state.
+    {{ h.advance_to('AFTER_DOCTYPE_NAME') }}
+} elseif ($cc === '>') {
+    // Switch to the data state. Emit the current DOCTYPE token.
+    {{ h.emit_and_resume_in('DATA') }}
+} elseif ($cc === "\0") {
+    // TODO: This is an unexpected-null-character parse error.
+    // Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's name.
+    $this->currentToken->name .= "u\{FFFD}";
+    {{ h.advance_to(current_state) }}
+} elseif ({{ h.is_eof() }}) {
+    // TODO: This is an eof-in-doctype parse error.
+    // Set the DOCTYPE token's force-quirks flag to on.
+    $this->currentToken->forceQuirks = true;
+    // Emit the token. Emit an end-of-file token.
+    $this->tokenQueue->enqueue($this->currentToken);
+    {{ h.emit_eof() }}
+} else {
+    // Append the current input character to the current DOCTYPE token's name.
+    $chars = $this->charsUntil(Characters::WHITESPACE . ">\0");
+    $this->currentToken->name .= strtolower($chars);
+    {{ h.update_and_reconsume_in('DOCTYPE_NAME') }}
+}
