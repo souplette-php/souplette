@@ -809,7 +809,6 @@ final class Tokenizer extends AbstractTokenizer
                     if (
                         // If the character reference was consumed as part of an attribute,
                         $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_DOUBLE_QUOTED || $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_SINGLE_QUOTED || $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED
-
                         // and the last character matched is not a U+003B SEMICOLON character (;),
                         && $this->temporaryBuffer[-1] === ';'
                         // and the next input character is either a U+003D EQUALS SIGN character (=) or an ASCII alphanumeric,
@@ -998,8 +997,7 @@ final class Tokenizer extends AbstractTokenizer
             AMBIGUOUS_AMPERSAND: {
                 if (ctype_alnum($cc)) {
                     // If the character reference was consumed as part of an attribute
-                    if ($this->returnState === TokenizerStates::ATTRIBUTE_VALUE_DOUBLE_QUOTED || $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_SINGLE_QUOTED || $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED
-                ) {
+                    if ($this->returnState === TokenizerStates::ATTRIBUTE_VALUE_DOUBLE_QUOTED || $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_SINGLE_QUOTED || $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED) {
                         // then append the current input character to the current attribute's value.
                         $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= $cc;
                     } else {

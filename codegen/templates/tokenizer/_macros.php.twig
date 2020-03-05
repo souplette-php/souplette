@@ -16,7 +16,7 @@ $this->returnState = TokenizerStates::{{ state_name }};
 
 {% macro is_attribute_return_state() -%}
 $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_DOUBLE_QUOTED || $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_SINGLE_QUOTED || $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED
-{% endmacro %}
+{%- endmacro %}
 
 {% macro start_attribute(name = "''", value = "''") -%}
 $this->currentToken->attributes[] = [{{ name }}, {{ value }}];
