@@ -14,7 +14,7 @@ final class Tokenizer extends AbstractTokenizer
         {% for current_state in state_names ~%}
             case TokenizerStates::{{ current_state }}:
             {{ current_state }}: {
-                {{ include(["tokenizer/#{current_state|lower}.php.twig", 'tokenizer/_unknown_state.php.twig']) }}
+                {{~ include(["tokenizer/#{current_state|lower}.php.twig", 'tokenizer/_unknown_state.php.twig'])|indent(4) }}
             }
             break;
         {%- endfor ~%}
