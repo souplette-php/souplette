@@ -5,10 +5,13 @@
  */
 namespace ju1ius\HtmlParser\Parser;
 
+use ju1ius\HtmlParser\Parser\Entities\EntityLookup;
+
 final class Tokenizer extends AbstractTokenizer
 {
     public function nextToken(): bool
     {
+        INITIAL:
         $cc = $this->input[$this->position] ?? null;
         switch ($this->state) {
         {% for current_state in state_names ~%}

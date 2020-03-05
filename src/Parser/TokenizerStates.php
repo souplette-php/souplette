@@ -78,4 +78,10 @@ final class TokenizerStates
     const CDATA_SECTION = 69;
     const CDATA_SECTION_BRACKET = 70;
     const CDATA_SECTION_END = 71;
+    //
+    const CHARACTER_REFERENCE = 100;
+    const NAMED_CHARACTER_REFERENCE = 101;
+    const NUMERIC_CHARACTER_REFERENCE = 102;
+    const AMBIGUOUS_AMPERSAND = 103;
+
 }

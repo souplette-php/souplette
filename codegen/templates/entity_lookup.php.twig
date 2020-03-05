@@ -1,0 +1,15 @@
+<?php declare(strict_types=1);
+/**
+ * This file was automatically generated.
+ * All modifications will be lost.
+ */
+namespace ju1ius\HtmlParser\Parser\Entities;
+
+final class EntityLookup
+{
+    public const NAMED_ENTITIES = [
+        {% for entity, value in entity_lookup %}
+            {{ entity }} => {{ value }},
+        {% endfor %}
+    ];
+}

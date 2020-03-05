@@ -5,10 +5,13 @@
  */
 namespace ju1ius\HtmlParser\Parser;
 
+use ju1ius\HtmlParser\Parser\Entities\EntityLookup;
+
 final class Tokenizer extends AbstractTokenizer
 {
     public function nextToken(): bool
     {
+        INITIAL:
         $cc = $this->input[$this->position] ?? null;
         switch ($this->state) {
             case TokenizerStates::DATA:
@@ -17,9 +20,9 @@ final class Tokenizer extends AbstractTokenizer
                     // Set the return state to the data state.
                     $this->returnState = TokenizerStates::DATA;
                     // Switch to the character reference state.
-                    $this->state = TokenizerStates::CHARACTER_REFERENCE_IN_DATA;
+                    $this->state = TokenizerStates::CHARACTER_REFERENCE;
                     $cc = $this->input[++$this->position] ?? null;
-                    goto CHARACTER_REFERENCE_IN_DATA;
+                    goto CHARACTER_REFERENCE;
                 } elseif ($cc === '<') {
                     // Switch to the tag open state.
                     $this->state = TokenizerStates::TAG_OPEN;
@@ -737,6 +740,115 @@ final class Tokenizer extends AbstractTokenizer
             case TokenizerStates::CDATA_SECTION_END:
             CDATA_SECTION_END: {
                 throw new \Exception('Not Implemented: CDATA_SECTION_END');
+            }
+            break;
+            case TokenizerStates::CHARACTER_REFERENCE:
+            CHARACTER_REFERENCE: {
+                // Set the temporary buffer to the empty string. Append a U+0026 AMPERSAND (&) character to the temporary buffer.
+                $this->temporaryBuffer = '&';
+                if (ctype_alnum($cc)) {
+                    // Reconsume in the named character reference state.
+                    $this->state = TokenizerStates::NAMED_CHARACTER_REFERENCE;
+                    goto NAMED_CHARACTER_REFERENCE;
+                } elseif ($cc === '#') {
+                    // Append the current input character to the temporary buffer.
+                    $this->temporaryBuffer .= $cc;
+                    // Switch to the numeric character reference state.
+                    $this->state = TokenizerStates::NUMERIC_CHARACTER_REFERENCE;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto NUMERIC_CHARACTER_REFERENCE;
+                } else {
+                    // Flush code points consumed as a character reference.
+                    $this->flushCodePointsConsumedAsACharacterReference();
+                    // Reconsume in the return state.
+                    $this->state = $this->returnState;
+                    goto INITIAL;
+                }
+            }
+            break;
+            case TokenizerStates::NAMED_CHARACTER_REFERENCE:
+            NAMED_CHARACTER_REFERENCE: {
+                // Consume the maximum number of characters possible,
+                // with the consumed characters matching one of the identifiers of the named character references table (in a case-sensitive manner).
+                // Append each character to the temporary buffer when it's consumed.
+                $entity = null;
+                $pos = $this->position;
+                $node = $this->entitySearch;
+                // Consume characters and compare these to a substring of the entity names until the substring no longer matches.
+                while (true) {
+                    $c = $this->input[$pos] ?? null;
+                    if ($c === null) {
+                        break;
+                    }
+                    if (!isset($node->children[$c])) {
+                        break;
+                    }
+                    $node = $node->children[$c];
+                    $this->temporaryBuffer .= $c;
+                    $pos++;
+                }
+                // At this point we have a string that starts with some characters that may match an entity
+                // Try to find the longest entity the string will match to take care of &noti for instance.
+                $node = $this->entitySearch;
+                $lastTerminalIndex = null;
+                for ($i = 1; $i < strlen($this->temporaryBuffer); $i++) {
+                    $c = $this->temporaryBuffer[$i];
+                    if (!isset($node->children[$c])) {
+                        break;
+                    }
+                    $node = $node->children[$c];
+                    if ($node->value) {
+                        $lastTerminalIndex = $i;
+                    }
+                }
+                if ($lastTerminalIndex !== null) {
+                    $entity = substr($this->temporaryBuffer, 1, $lastTerminalIndex);
+                    $this->position += strlen($entity);
+                }
+                if ($entity !== null) {
+                    if (
+                        // If the character reference was consumed as part of an attribute,
+                        $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_DOUBLE_QUOTED || $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_SINGLE_QUOTED || $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED
+
+                        // and the last character matched is not a U+003B SEMICOLON character (;),
+                        && $this->temporaryBuffer[-1] === ';'
+                        // and the next input character is either a U+003D EQUALS SIGN character (=) or an ASCII alphanumeric,
+                        && 1 === strspn($this->input, '='.Characters::ALNUM, $this->position + 1, 1)
+                    ) {
+                        // then, for historical reasons, flush code points consumed as a character reference and switch to the return state.
+                        $this->flushCodePointsConsumedAsACharacterReference();
+                    } else {
+                        // Otherwise:
+                        // 1. If the last character matched is not a U+003B SEMICOLON character (;),
+                        if ($this->temporaryBuffer[-1] !== ';') {
+                            // TODO: this is a missing-semicolon-after-character-reference parse error.
+                        }
+                        // 2. Set the temporary buffer to the empty string. Append the decoded character reference to the temporary buffer.
+                        $this->temporaryBuffer = EntityLookup::NAMED_ENTITIES[$entity];
+                        // 3. Flush code points consumed as a character reference.
+                        $this->flushCodePointsConsumedAsACharacterReference();
+                        // Switch to the return state.
+                        $this->state = $this->returnState;
+                        goto INITIAL;
+                    }
+                } else {
+                    // Flush code points consumed as a character reference.
+                    $this->flushCodePointsConsumedAsACharacterReference();
+                    // Switch to the ambiguous ampersand state.
+                    $this->state = TokenizerStates::AMBIGUOUS_AMPERSAND;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto AMBIGUOUS_AMPERSAND;
+                }
+            }
+            break;
+            case TokenizerStates::NUMERIC_CHARACTER_REFERENCE:
+            NUMERIC_CHARACTER_REFERENCE: {
+                throw new \LogicException("Unknown state NUMERIC_CHARACTER_REFERENCE");
+            }
+            break;
+            case TokenizerStates::AMBIGUOUS_AMPERSAND:
+            AMBIGUOUS_AMPERSAND: {
+                throw new \LogicException("Unknown state AMBIGUOUS_AMPERSAND");
             }
             break;
             default:

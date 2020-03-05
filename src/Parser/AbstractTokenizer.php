@@ -2,6 +2,7 @@
 
 namespace ju1ius\HtmlParser\Parser;
 
+use ju1ius\HtmlParser\Parser\Entities\EntitySearch;
 use SplQueue;
 use SplStack;
 
@@ -39,10 +40,19 @@ abstract class AbstractTokenizer
      * @var string
      */
     protected $appropriateEndTag;
+    /**
+     * @var string
+     */
+    protected $temporaryBuffer;
+    /**
+     * @var EntitySearch
+     */
+    protected $entitySearch;
 
     public function __construct(string $input)
     {
         $this->input = $input;
+        $this->entitySearch = EntitySearch::create();
     }
 
     abstract public function nextToken();
@@ -61,6 +71,7 @@ abstract class AbstractTokenizer
     private function reset(): void
     {
         $this->position = 0;
+        $this->temporaryBuffer = '';
         $this->tokenQueue = new SplQueue();
         $this->openElements = new SplStack();
         $this->state = TokenizerStates::DATA;
@@ -132,5 +143,22 @@ abstract class AbstractTokenizer
             }
         }
         $this->tokenQueue->enqueue($token);
+    }
+
+    /**
+     * @see https://html.spec.whatwg.org/multipage/parsing.html#flush-code-points-consumed-as-a-character-reference
+     */
+    protected function flushCodePointsConsumedAsACharacterReference(): void
+    {
+        // https://html.spec.whatwg.org/multipage/parsing.html#charref-in-attribute
+        $rs = $this->returnState;
+        $isForAttribute = $rs === TokenizerStates::ATTRIBUTE_VALUE_DOUBLE_QUOTED
+            || $rs === TokenizerStates::ATTRIBUTE_VALUE_SINGLE_QUOTED
+            || $rs === TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED;
+        if ($isForAttribute) {
+            $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= $this->temporaryBuffer;
+            return;
+        }
+        $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, $this->temporaryBuffer));
     }
 }

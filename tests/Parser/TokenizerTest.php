@@ -2,6 +2,7 @@
 
 namespace ju1ius\HtmlParser\Tests\Parser;
 
+use ju1ius\HtmlParser\Parser\Entities\EntityLookup;
 use ju1ius\HtmlParser\Parser\Token;
 use ju1ius\HtmlParser\Parser\Tokenizer;
 use PHPUnit\Framework\Assert;
@@ -89,5 +90,31 @@ class TokenizerTest extends TestCase
     {
         yield ['</foo>', [Token::endTag('foo')]];
         yield ['</foo >', [Token::endTag('foo')]];
+    }
+
+    /**
+     * @dataProvider entitiesProvider
+     * @param string $input
+     * @param array $expected
+     */
+    public function testEntities(string $input, array $expected)
+    {
+        self::assertTokensEquals($input, $expected);
+    }
+
+    public function entitiesProvider()
+    {
+        yield ['&amp;', [Token::character("\u{26}")]];
+        // See examples at https://html.spec.whatwg.org/multipage/parsing.html#named-character-reference-state
+        yield ["I'm &notit; I tell you", [
+            Token::character("I'm "),
+            Token::character(EntityLookup::NAMED_ENTITIES['not']),
+            Token::character("it; I tell you"),
+        ]];
+        yield ["I'm &notin; I tell you", [
+            Token::character("I'm "),
+            Token::character(EntityLookup::NAMED_ENTITIES['notin;']),
+            Token::character(" I tell you"),
+        ]];
     }
 }
