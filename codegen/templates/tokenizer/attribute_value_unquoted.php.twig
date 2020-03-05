@@ -10,7 +10,7 @@ if ({{ h.is_whitespace() }}) {
     // Set the return state to the attribute value (unquoted) state.
     {{ h.set_return_state(current_state) }}
     // Switch to the character reference state.
-    {{ h.advance_to('CHARACTER_REFERENCE_IN_ATTRIBUTE_VALUE') }}
+    {{ h.advance_to('CHARACTER_REFERENCE') }}
 } elseif ($cc === '>') {
     // Switch to the data state. Emit the current tag token.
     {{ h.emit_and_resume_in('DATA') }}

@@ -438,9 +438,9 @@ final class Tokenizer extends AbstractTokenizer
                     // Set the return state to the attribute value (double-quoted) state.
                     $this->returnState = TokenizerStates::ATTRIBUTE_VALUE_DOUBLE_QUOTED;
                     // Switch to the character reference state.
-                    $this->state = TokenizerStates::CHARACTER_REFERENCE_IN_ATTRIBUTE_VALUE;
+                    $this->state = TokenizerStates::CHARACTER_REFERENCE;
                     $cc = $this->input[++$this->position] ?? null;
-                    goto CHARACTER_REFERENCE_IN_ATTRIBUTE_VALUE;
+                    goto CHARACTER_REFERENCE;
                 } elseif ($cc === "\0") {
                     // TODO: This is an unexpected-null-character parse error.
                     // Append a U+FFFD REPLACEMENT CHARACTER character to the current attribute's value.
@@ -473,9 +473,9 @@ final class Tokenizer extends AbstractTokenizer
                     // Set the return state to the attribute value (single-quoted) state.
                     $this->returnState = TokenizerStates::ATTRIBUTE_VALUE_SINGLE_QUOTED;
                     // Switch to the character reference state.
-                    $this->state = TokenizerStates::CHARACTER_REFERENCE_IN_ATTRIBUTE_VALUE;
+                    $this->state = TokenizerStates::CHARACTER_REFERENCE;
                     $cc = $this->input[++$this->position] ?? null;
-                    goto CHARACTER_REFERENCE_IN_ATTRIBUTE_VALUE;
+                    goto CHARACTER_REFERENCE;
                 } elseif ($cc === "\0") {
                     // TODO: This is an unexpected-null-character parse error.
                     // Append a U+FFFD REPLACEMENT CHARACTER character to the current attribute's value.
@@ -508,9 +508,9 @@ final class Tokenizer extends AbstractTokenizer
                     // Set the return state to the attribute value (unquoted) state.
                     $this->returnState = TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED;
                     // Switch to the character reference state.
-                    $this->state = TokenizerStates::CHARACTER_REFERENCE_IN_ATTRIBUTE_VALUE;
+                    $this->state = TokenizerStates::CHARACTER_REFERENCE;
                     $cc = $this->input[++$this->position] ?? null;
-                    goto CHARACTER_REFERENCE_IN_ATTRIBUTE_VALUE;
+                    goto CHARACTER_REFERENCE;
                 } elseif ($cc === '>') {
                     // Switch to the data state. Emit the current tag token.
                     $this->emitCurrentToken();
@@ -638,31 +638,31 @@ final class Tokenizer extends AbstractTokenizer
             break;
             case TokenizerStates::MARKUP_DECLARATION_OPEN:
             MARKUP_DECLARATION_OPEN: {
-                if (strpos($this->input, '--', $this->position) === $this->position) {
+                if (0 === substr_compare($this->input, '--', $this->position, 2)) {
                     // Consume those two characters
-                    $this->position += 1;
+                    $this->position += 2;
                     // create a comment token whose data is the empty string,
                     $this->currentToken = new Token(TokenTypes::COMMENT, '');
                     // and switch to the comment start state.
+                    $cc = $this->input[$this->position] ?? null;
                     $this->state = TokenizerStates::COMMENT_START;
-                    $cc = $this->input[++$this->position] ?? null;
                     goto COMMENT_START;
-                } elseif (stripos($this->input, 'DOCTYPE', $this->position) === $this->position) {
+                } elseif (0 === substr_compare($this->input, 'DOCTYPE', $this->position, 7, true)) {
                     // Consume those characters
                     $this->position += 7;
                     // and switch to the DOCTYPE state.
+                    $cc = $this->input[$this->position] ?? null;
                     $this->state = TokenizerStates::DOCTYPE;
-                    $cc = $this->input[++$this->position] ?? null;
                     goto DOCTYPE;
-                } elseif (strpos($this->input, '[CDATA[', $this->position) === $this->position) {
+                } elseif (0 === substr_compare($this->input, '[CDATA[', $this->position, 7, true)) {
                     // Consume those characters.
                     $this->position += 7;
+                    $cc = $this->input[$this->position] ?? null;
                     if (false) {
                         // TODO: If there is an adjusted current node and it is not an element in the HTML namespace,
                         // https://html.spec.whatwg.org/multipage/parsing.html#adjusted-current-node
                         // then switch to the CDATA section state.
                         $this->state = TokenizerStates::CDATA_SECTION;
-                        $cc = $this->input[++$this->position] ?? null;
                         goto CDATA_SECTION;
                     } else {
                         // TODO: this is a cdata-in-html-content parse error.
@@ -670,7 +670,6 @@ final class Tokenizer extends AbstractTokenizer
                         $this->currentToken = new Token(TokenTypes::COMMENT, '[CDATA[');
                         // Switch to the bogus comment state.
                         $this->state = TokenizerStates::BOGUS_COMMENT;
-                        $cc = $this->input[++$this->position] ?? null;
                         goto BOGUS_COMMENT;
                     }
                 } else {

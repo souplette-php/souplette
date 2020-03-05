@@ -10,6 +10,10 @@ $cc === null
 ctype_alpha($cc)
 {%- endmacro %}
 
+{% macro peek_value(value, case_insensitive = false) -%}
+0 === substr_compare($this->input, {{ value }}, $this->position, {{ value|length }}, {{ case_insensitive }})
+{% endmacro %}
+
 {% macro set_return_state(state_name) -%}
 $this->returnState = TokenizerStates::{{ state_name }};
 {%- endmacro %}
