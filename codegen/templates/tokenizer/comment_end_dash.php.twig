@@ -9,7 +9,7 @@ if ($cc === '-') {
 } elseif ($cc === null) {
     // TODO: This is an eof-in-comment parse error.
     // Emit the comment token. Emit an end-of-file token.
-    $this->tokenQueue->enqueue($this->currentToken);
+    {{ h.emit_current_token() }}
     {{ h.emit_eof() }}
 } else {
     // Append a U+002D HYPHEN-MINUS character (-) to the comment token's data.

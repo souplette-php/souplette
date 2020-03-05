@@ -14,7 +14,7 @@ if ({{ h.is_whitespace() }}) {
     // Set the DOCTYPE token's force-quirks flag to on.
     $this->currentToken->forceQuirks = true;
     // Emit the token. Emit an end-of-file token.
-    $this->tokenQueue->enqueue($this->currentToken);
+    {{ h.emit_current_token() }}
     {{ h.emit_eof() }}
 } else {
     if (0 === substr_compare($this->input, 'PUBLIC', $this->position, 6, true)) {

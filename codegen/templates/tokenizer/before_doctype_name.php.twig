@@ -29,7 +29,7 @@ if ({{ h.is_whitespace() }}) {
     // Set its force-quirks flag to on.
     $this->currentToken->forceQuirks = true;
     // Emit the token. Emit an end-of-file token.
-    $this->tokenQueue->enqueue($this->currentToken);
+    {{ h.emit_current_token() }}
     {{ h.emit_eof() }}
 } else {
     // Create a new DOCTYPE token.

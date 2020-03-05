@@ -84,6 +84,10 @@ $cc = $this->input[++$this->position] ?? null;
 goto {{ state_name }};
 {%- endmacro switch_to %}
 
+{% macro emit_current_token() -%}
+$this->tokenQueue->enqueue($this->currentToken);
+{%- endmacro %}
+
 {% macro emit_and_resume_in(state_name) -%}
 $this->emitCurrentToken();
 $this->state = TokenizerStates::{{ state_name }};

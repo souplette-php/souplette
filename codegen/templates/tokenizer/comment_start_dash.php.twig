@@ -13,7 +13,7 @@ if ($cc === '-') {
 } elseif ($cc === null) {
     // TODO: This is an eof-in-comment parse error.
     // Emit the comment token.
-    $this->tokenQueue->enqueue($this->currentToken);
+    {{ h.emit_current_token() }}
     // Emit an end-of-file token.
     {{ h.emit_eof() }}
 } else {

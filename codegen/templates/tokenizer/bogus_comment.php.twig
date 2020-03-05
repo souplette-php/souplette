@@ -8,7 +8,7 @@ if ($cc === '>') {
     {{ h.emit_and_resume_in('DATA') }}
 } elseif ($cc === null) {
     // Emit the comment. Emit an end-of-file token.
-    $this->tokenQueue->enqueue($this->currentToken);
+    {{ h.emit_current_token() }}
     {{ h.emit_eof() }}
 } elseif ($cc === "\0") {
     // TODO: This is an unexpected-null-character parse error.
