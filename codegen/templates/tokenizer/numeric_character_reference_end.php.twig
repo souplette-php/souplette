@@ -1,0 +1,63 @@
+{#
+    @see https://html.spec.whatwg.org/multipage/parsing.html#umeric-character-reference-end-state
+#}
+{% import 'tokenizer/_macros.php.twig' as h -%}
+$refCode = $this->characterReferenceCode;
+if ($refCode === 0x00) {
+    // TODO: this is a null-character-reference parse error.
+    // Set the character reference code to 0xFFFD.
+    $this->characterReferenceCode = 0xFFFD;
+} elseif ($refCode > 0x10FFFF) {
+    // TODO: this is a character-reference-outside-unicode-range parse error.
+    // Set the character reference code to 0xFFFD.
+    $this->characterReferenceCode = 0xFFFD;
+} elseif ($refCode >= 0xD800 && $refCode <= 0xDFFF) {
+    // A surrogate is a code point that is in the range U+D800 to U+DFFF, inclusive.
+    // TODO: this is a surrogate-character-reference parse error.
+    // Set the character reference code to 0xFFFD.
+    $this->characterReferenceCode = 0xFFFD;
+} elseif (
+    // If the number is a noncharacter
+    ($refCode >= 0xFDD0 && $refCode <= 0xFDEF)
+    || $refCode === 0x0FFFE || $refCode === 0x0FFFF
+    || $refCode === 0x1FFFE || $refCode === 0x1FFFF
+    || $refCode === 0x2FFFE || $refCode === 0x2FFFF
+    || $refCode === 0x3FFFE || $refCode === 0x3FFFF
+    || $refCode === 0x4FFFE || $refCode === 0x4FFFF
+    || $refCode === 0x5FFFE || $refCode === 0x5FFFF
+    || $refCode === 0x6FFFE || $refCode === 0x6FFFF
+    || $refCode === 0x7FFFE || $refCode === 0x7FFFF
+    || $refCode === 0x8FFFE || $refCode === 0x8FFFF
+    || $refCode === 0x9FFFE || $refCode === 0x9FFFF
+    || $refCode === 0xAFFFE || $refCode === 0xAFFFF
+    || $refCode === 0xBFFFE || $refCode === 0xBFFFF
+    || $refCode === 0xCFFFE || $refCode === 0xCFFFF
+    || $refCode === 0xDFFFE || $refCode === 0xDFFFF
+    || $refCode === 0xEFFFE || $refCode === 0xEFFFF
+    || $refCode === 0xFFFFE || $refCode === 0xFFFFF
+    || $refCode === 0x10FFFE || $refCode === 0x10FFFF
+) {
+    // TODO: this is a noncharacter-character-reference parse error.
+} elseif (
+    // the number is 0x0D
+    $refCode === 0x0D
+    // or a control that's not ASCII whitespace
+    || (
+        (
+            ($refCode >= 0x00 && $refCode <= 0x1F) || ($refCode >= 0x7F && $refCode <= 0x9F)
+        )
+        && ($refCode < 128 && !ctype_space($refCode))
+    )
+) {
+    // TODO: then this is a control-character-reference parse error
+    if (isset(EntityLookup::NUMERIC_CTRL_REPLACEMENTS[$refCode])) {
+        $this->characterReferenceCode = EntityLookup::NUMERIC_CTRL_REPLACEMENTS[$refCode];
+    }
+}
+// Set the temporary buffer to the empty string.
+// Append a code point equal to the character reference code to the temporary buffer.
+$this->temporaryBuffer = \IntlChar::chr($this->characterReferenceCode);
+// Flush code points consumed as a character reference.
+$this->flushCodePointsConsumedAsACharacterReference();
+// Switch to the return state.
+{{ h.reconsume_in_return_state() }}

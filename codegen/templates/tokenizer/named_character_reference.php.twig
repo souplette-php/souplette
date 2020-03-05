@@ -41,8 +41,10 @@ if ($entity !== null) {
         // and the next input character is either a U+003D EQUALS SIGN character (=) or an ASCII alphanumeric,
         && 1 === strspn($this->input, '='.Characters::ALNUM, $this->position + 1, 1)
     ) {
-        // then, for historical reasons, flush code points consumed as a character reference and switch to the return state.
+        // then, for historical reasons, flush code points consumed as a character reference
         $this->flushCodePointsConsumedAsACharacterReference();
+        // and switch to the return state.
+        {{ h.reconsume_in_return_state() }}
     } else {
         // Otherwise:
         // 1. If the last character matched is not a U+003B SEMICOLON character (;),
@@ -54,8 +56,7 @@ if ($entity !== null) {
         // 3. Flush code points consumed as a character reference.
         $this->flushCodePointsConsumedAsACharacterReference();
         // Switch to the return state.
-        $this->state = $this->returnState;
-        goto INITIAL;
+        {{ h.reconsume_in_return_state() }}
     }
 } else {
     // Flush code points consumed as a character reference.

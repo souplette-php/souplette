@@ -47,6 +47,11 @@ $this->state = TokenizerStates::{{ state_name }};
 goto {{ state_name }};
 {%- endmacro reconsume_in %}
 
+{% macro reconsume_in_return_state() -%}
+$this->state = $this->returnState;
+goto INITIAL;
+{%- endmacro %}
+
 {#
     We use this macro when the spec says "consume the next input character ... and switch to the <mumble> state."
 #}

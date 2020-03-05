@@ -1,0 +1,16 @@
+{#
+    @see https://html.spec.whatwg.org/multipage/parsing.html#decimal-character-reference-state
+#}
+{% import 'tokenizer/_macros.php.twig' as h -%}
+
+$chars = $this->charsWhile(Characters::NUM);
+$this->characterReferenceCode = (int)$chars;
+$cc = $this->input[$this->position];
+if ($cc === ';') {
+    // Switch to the numeric character reference end state.
+    {{ h.advance_to('NUMERIC_CHARACTER_REFERENCE_END') }}
+} else {
+    // TODO: This is a missing-semicolon-after-character-reference parse error.
+    // Reconsume in the numeric character reference end state.
+    {{ h.reconsume_in('NUMERIC_CHARACTER_REFERENCE_END') }}
+}

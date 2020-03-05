@@ -48,6 +48,10 @@ abstract class AbstractTokenizer
      * @var EntitySearch
      */
     protected $entitySearch;
+    /**
+     * @var int
+     */
+    protected $characterReferenceCode;
 
     public function __construct(string $input)
     {

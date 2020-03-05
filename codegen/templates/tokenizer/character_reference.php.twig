@@ -17,6 +17,5 @@ if (ctype_alnum($cc)) {
     // Flush code points consumed as a character reference.
     $this->flushCodePointsConsumedAsACharacterReference();
     // Reconsume in the return state.
-    $this->state = $this->returnState;
-    goto INITIAL;
+    {{ h.reconsume_in_return_state() }}
 }

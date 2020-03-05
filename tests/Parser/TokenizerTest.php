@@ -104,7 +104,7 @@ class TokenizerTest extends TestCase
 
     public function entitiesProvider()
     {
-        yield ['&amp;', [Token::character("\u{26}")]];
+        yield ['&amp;', [Token::character(EntityLookup::NAMED_ENTITIES['amp;'])]];
         // See examples at https://html.spec.whatwg.org/multipage/parsing.html#named-character-reference-state
         yield ["I'm &notit; I tell you", [
             Token::character("I'm "),
@@ -116,5 +116,7 @@ class TokenizerTest extends TestCase
             Token::character(EntityLookup::NAMED_ENTITIES['notin;']),
             Token::character(" I tell you"),
         ]];
+        yield ['&#38;', [Token::character('&')]];
+        yield ['&#x26;', [Token::character('&')]];
     }
 }

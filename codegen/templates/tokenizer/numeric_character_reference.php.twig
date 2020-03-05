@@ -1,0 +1,16 @@
+{#
+    @see https://html.spec.whatwg.org/multipage/parsing.html#numeric-character-reference-state
+#}
+{% import 'tokenizer/_macros.php.twig' as h -%}
+
+// Set the character reference code to zero (0).
+$this->characterReferenceCode = 0;
+if ($cc === 'x' || $cc === 'X') {
+    // Append the current input character to the temporary buffer.
+    $this->temporaryBuffer .= $cc;
+    // Switch to the hexadecimal character reference start state.
+    {{ h.advance_to('HEXADECIMAL_CHARACTER_REFERENCE_START') }}
+} else {
+    // Reconsume in the decimal character reference start state.
+    {{ h.reconsume_in('DECIMAL_CHARACTER_REFERENCE_START') }}
+}

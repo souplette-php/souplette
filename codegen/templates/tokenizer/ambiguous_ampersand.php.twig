@@ -1,0 +1,22 @@
+{#
+    @see https://html.spec.whatwg.org/multipage/parsing.html#ambiguous-ampersand-state
+#}
+{% import 'tokenizer/_macros.php.twig' as h -%}
+
+if (ctype_alnum($cc)) {
+    // If the character reference was consumed as part of an attribute
+    if ({{ h.is_attribute_return_state() }}) {
+        // then append the current input character to the current attribute's value.
+        {{ h.append_to_attr_value('$cc') }}
+    } else {
+        // Otherwise, emit the current input character as a character token.
+        $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, $cc));
+    }
+} elseif ($cc === ';') {
+    // TODO: This is an unknown-named-character-reference parse error.
+    // Reconsume in the return state.
+    {{ h.reconsume_in_return_state() }}
+} else {
+    // Reconsume in the return state.
+    {{ h.reconsume_in_return_state() }}
+}

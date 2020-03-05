@@ -815,8 +815,11 @@ final class Tokenizer extends AbstractTokenizer
                         // and the next input character is either a U+003D EQUALS SIGN character (=) or an ASCII alphanumeric,
                         && 1 === strspn($this->input, '='.Characters::ALNUM, $this->position + 1, 1)
                     ) {
-                        // then, for historical reasons, flush code points consumed as a character reference and switch to the return state.
+                        // then, for historical reasons, flush code points consumed as a character reference
                         $this->flushCodePointsConsumedAsACharacterReference();
+                        // and switch to the return state.
+                        $this->state = $this->returnState;
+                        goto INITIAL;
                     } else {
                         // Otherwise:
                         // 1. If the last character matched is not a U+003B SEMICOLON character (;),
@@ -843,12 +846,176 @@ final class Tokenizer extends AbstractTokenizer
             break;
             case TokenizerStates::NUMERIC_CHARACTER_REFERENCE:
             NUMERIC_CHARACTER_REFERENCE: {
-                throw new \LogicException("Unknown state NUMERIC_CHARACTER_REFERENCE");
+                // Set the character reference code to zero (0).
+                $this->characterReferenceCode = 0;
+                if ($cc === 'x' || $cc === 'X') {
+                    // Append the current input character to the temporary buffer.
+                    $this->temporaryBuffer .= $cc;
+                    // Switch to the hexadecimal character reference start state.
+                    $this->state = TokenizerStates::HEXADECIMAL_CHARACTER_REFERENCE_START;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto HEXADECIMAL_CHARACTER_REFERENCE_START;
+                } else {
+                    // Reconsume in the decimal character reference start state.
+                    $this->state = TokenizerStates::DECIMAL_CHARACTER_REFERENCE_START;
+                    goto DECIMAL_CHARACTER_REFERENCE_START;
+                }
+            }
+            break;
+            case TokenizerStates::HEXADECIMAL_CHARACTER_REFERENCE_START:
+            HEXADECIMAL_CHARACTER_REFERENCE_START: {
+                if (ctype_xdigit($cc)) {
+                    // Reconsume in the hexadecimal character reference state.
+                    $this->state = TokenizerStates::HEXADECIMAL_CHARACTER_REFERENCE;
+                    goto HEXADECIMAL_CHARACTER_REFERENCE;
+                } else {
+                    // TODO: This is an absence-of-digits-in-numeric-character-reference parse error.
+                    // Flush code points consumed as a character reference.
+                    $this->flushCodePointsConsumedAsACharacterReference();
+                    // Reconsume in the return state.
+                    $this->state = $this->returnState;
+                    goto INITIAL;
+                }
+            }
+            break;
+            case TokenizerStates::DECIMAL_CHARACTER_REFERENCE_START:
+            DECIMAL_CHARACTER_REFERENCE_START: {
+                if (ctype_digit($cc)) {
+                    // Reconsume in the decimal character reference state.
+                    $this->state = TokenizerStates::DECIMAL_CHARACTER_REFERENCE;
+                    goto DECIMAL_CHARACTER_REFERENCE;
+                } else {
+                    // TODO: This is an absence-of-digits-in-numeric-character-reference parse error.
+                    // Flush code points consumed as a character reference.
+                    $this->flushCodePointsConsumedAsACharacterReference();
+                    // Reconsume in the return state.
+                    $this->state = $this->returnState;
+                    goto INITIAL;
+                }
+            }
+            break;
+            case TokenizerStates::HEXADECIMAL_CHARACTER_REFERENCE:
+            HEXADECIMAL_CHARACTER_REFERENCE: {
+                $chars = $this->charsWhile(Characters::HEX);
+                $this->characterReferenceCode = hexdec($chars);
+                $cc = $this->input[$this->position];
+                if ($cc === ';') {
+                    // Switch to the numeric character reference end state.
+                    $this->state = TokenizerStates::NUMERIC_CHARACTER_REFERENCE_END;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto NUMERIC_CHARACTER_REFERENCE_END;
+                } else {
+                    // TODO: This is a missing-semicolon-after-character-reference parse error.
+                    // Reconsume in the numeric character reference end state.
+                    $this->state = TokenizerStates::NUMERIC_CHARACTER_REFERENCE_END;
+                    goto NUMERIC_CHARACTER_REFERENCE_END;
+                }
+            }
+            break;
+            case TokenizerStates::DECIMAL_CHARACTER_REFERENCE:
+            DECIMAL_CHARACTER_REFERENCE: {
+                $chars = $this->charsWhile(Characters::NUM);
+                $this->characterReferenceCode = (int)$chars;
+                $cc = $this->input[$this->position];
+                if ($cc === ';') {
+                    // Switch to the numeric character reference end state.
+                    $this->state = TokenizerStates::NUMERIC_CHARACTER_REFERENCE_END;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto NUMERIC_CHARACTER_REFERENCE_END;
+                } else {
+                    // TODO: This is a missing-semicolon-after-character-reference parse error.
+                    // Reconsume in the numeric character reference end state.
+                    $this->state = TokenizerStates::NUMERIC_CHARACTER_REFERENCE_END;
+                    goto NUMERIC_CHARACTER_REFERENCE_END;
+                }
+            }
+            break;
+            case TokenizerStates::NUMERIC_CHARACTER_REFERENCE_END:
+            NUMERIC_CHARACTER_REFERENCE_END: {
+                $refCode = $this->characterReferenceCode;
+                if ($refCode === 0x00) {
+                    // TODO: this is a null-character-reference parse error.
+                    // Set the character reference code to 0xFFFD.
+                    $this->characterReferenceCode = 0xFFFD;
+                } elseif ($refCode > 0x10FFFF) {
+                    // TODO: this is a character-reference-outside-unicode-range parse error.
+                    // Set the character reference code to 0xFFFD.
+                    $this->characterReferenceCode = 0xFFFD;
+                } elseif ($refCode >= 0xD800 && $refCode <= 0xDFFF) {
+                    // A surrogate is a code point that is in the range U+D800 to U+DFFF, inclusive.
+                    // TODO: this is a surrogate-character-reference parse error.
+                    // Set the character reference code to 0xFFFD.
+                    $this->characterReferenceCode = 0xFFFD;
+                } elseif (
+                    // If the number is a noncharacter
+                    ($refCode >= 0xFDD0 && $refCode <= 0xFDEF)
+                    || $refCode === 0x0FFFE || $refCode === 0x0FFFF
+                    || $refCode === 0x1FFFE || $refCode === 0x1FFFF
+                    || $refCode === 0x2FFFE || $refCode === 0x2FFFF
+                    || $refCode === 0x3FFFE || $refCode === 0x3FFFF
+                    || $refCode === 0x4FFFE || $refCode === 0x4FFFF
+                    || $refCode === 0x5FFFE || $refCode === 0x5FFFF
+                    || $refCode === 0x6FFFE || $refCode === 0x6FFFF
+                    || $refCode === 0x7FFFE || $refCode === 0x7FFFF
+                    || $refCode === 0x8FFFE || $refCode === 0x8FFFF
+                    || $refCode === 0x9FFFE || $refCode === 0x9FFFF
+                    || $refCode === 0xAFFFE || $refCode === 0xAFFFF
+                    || $refCode === 0xBFFFE || $refCode === 0xBFFFF
+                    || $refCode === 0xCFFFE || $refCode === 0xCFFFF
+                    || $refCode === 0xDFFFE || $refCode === 0xDFFFF
+                    || $refCode === 0xEFFFE || $refCode === 0xEFFFF
+                    || $refCode === 0xFFFFE || $refCode === 0xFFFFF
+                    || $refCode === 0x10FFFE || $refCode === 0x10FFFF
+                ) {
+                    // TODO: this is a noncharacter-character-reference parse error.
+                } elseif (
+                    // the number is 0x0D
+                    $refCode === 0x0D
+                    // or a control that's not ASCII whitespace
+                    || (
+                        (
+                            ($refCode >= 0x00 && $refCode <= 0x1F) || ($refCode >= 0x7F && $refCode <= 0x9F)
+                        )
+                        && ($refCode < 128 && !ctype_space($refCode))
+                    )
+                ) {
+                    // TODO: then this is a control-character-reference parse error
+                    if (isset(EntityLookup::NUMERIC_CTRL_REPLACEMENTS[$refCode])) {
+                        $this->characterReferenceCode = EntityLookup::NUMERIC_CTRL_REPLACEMENTS[$refCode];
+                    }
+                }
+                // Set the temporary buffer to the empty string.
+                // Append a code point equal to the character reference code to the temporary buffer.
+                $this->temporaryBuffer = \IntlChar::chr($this->characterReferenceCode);
+                // Flush code points consumed as a character reference.
+                $this->flushCodePointsConsumedAsACharacterReference();
+                // Switch to the return state.
+                $this->state = $this->returnState;
+                goto INITIAL;
             }
             break;
             case TokenizerStates::AMBIGUOUS_AMPERSAND:
             AMBIGUOUS_AMPERSAND: {
-                throw new \LogicException("Unknown state AMBIGUOUS_AMPERSAND");
+                if (ctype_alnum($cc)) {
+                    // If the character reference was consumed as part of an attribute
+                    if ($this->returnState === TokenizerStates::ATTRIBUTE_VALUE_DOUBLE_QUOTED || $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_SINGLE_QUOTED || $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED
+                ) {
+                        // then append the current input character to the current attribute's value.
+                        $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= $cc;
+                    } else {
+                        // Otherwise, emit the current input character as a character token.
+                        $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, $cc));
+                    }
+                } elseif ($cc === ';') {
+                    // TODO: This is an unknown-named-character-reference parse error.
+                    // Reconsume in the return state.
+                    $this->state = $this->returnState;
+                    goto INITIAL;
+                } else {
+                    // Reconsume in the return state.
+                    $this->state = $this->returnState;
+                    goto INITIAL;
+                }
             }
             break;
             default:
