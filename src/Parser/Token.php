@@ -34,16 +34,28 @@ final class Token
      */
     public $forceQuirks;
 
+    /**
+     * @var string
+     */
+    public $publicIdentifier;
+
+    /**
+     * @var string
+     */
+    public $systemIdentifier;
+
     public function __construct(int $type, string $value)
     {
         $this->type = $type;
         $this->value = $value;
     }
 
-    public static function doctype(string $name): self
+    public static function doctype(string $name, ?string $publicId = null, ?string $systemId = null): self
     {
         $token = new self(TokenTypes::DOCTYPE, '');
         $token->name = $name;
+        $token->publicIdentifier = $publicId;
+        $token->systemIdentifier = $systemId;
         return $token;
     }
 

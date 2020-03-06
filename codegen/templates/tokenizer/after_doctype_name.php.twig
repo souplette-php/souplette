@@ -20,11 +20,11 @@ if ({{ h.is_whitespace() }}) {
     if (0 === substr_compare($this->input, 'PUBLIC', $this->position, 6, true)) {
         // consume those characters and switch to the after DOCTYPE public keyword state.
         $this->position += 6;
-        {{ h.reconsume_in('AFTER_DOCTYPE_PUBLIC_KEYWORD') }}
+        {{ h.update_and_reconsume_in('AFTER_DOCTYPE_PUBLIC_KEYWORD') }}
     } elseif (0 === substr_compare($this->input, 'SYSTEM', $this->position, 6, true)) {
         // consume those characters and switch to the after DOCTYPE system keyword state.
         $this->position += 6;
-        {{ h.reconsume_in('AFTER_DOCTYPE_SYSTEM_KEYWORD') }}
+        {{ h.update_and_reconsume_in('AFTER_DOCTYPE_SYSTEM_KEYWORD') }}
     } else {
         // TODO: this is an invalid-character-sequence-after-doctype-name parse error.
         // Set the DOCTYPE token's force-quirks flag to on.

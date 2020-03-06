@@ -3,4 +3,30 @@
 #}
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
-throw new \Exception('Not Implemented: {{current_state}}');
+if ($cc === '"') {
+    // Switch to the after DOCTYPE system identifier state.
+    {{ h.advance_to('AFTER_DOCTYPE_SYSTEM_IDENTIFIER') }}
+} elseif ($cc === '>') {
+    // TODO: This is an abrupt-doctype-system-identifier parse error.
+    // Set the DOCTYPE token's force-quirks flag to on.
+    $this->currentToken->forceQuirks = true;
+    // Switch to the data state. Emit that DOCTYPE token.
+    {{ h.emit_and_resume_in('DATA') }}
+} elseif ($cc === "\0") {
+    // TODO: This is an unexpected-null-character parse error.
+    // Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's system identifier.
+    $this->currentToken->systemIdentifier .= "\u{FFFD}";
+    {{ h.advance_to(current_state) }}
+} elseif ($cc === null) {
+    // TODO: This is an eof-in-doctype parse error.
+    // Set the DOCTYPE token's force-quirks flag to on.
+    $this->currentToken->forceQuirks = true;
+    // Emit that DOCTYPE token. Emit an end-of-file token.
+    {{ h.emit_current_token() }}
+    {{ h.emit_eof() }}
+} else {
+    // Append the current input character to the current DOCTYPE token's system identifier.
+    $chars = $this->charsUntil("\">\0");
+    $this->currentToken->systemIdentifier .= $chars;
+    {{ h.update_and_reconsume_in(current_state) }}
+}

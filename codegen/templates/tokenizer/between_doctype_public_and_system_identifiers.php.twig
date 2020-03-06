@@ -3,4 +3,33 @@
 #}
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
-throw new \Exception('Not Implemented: {{current_state}}');
+if ({{ h.is_whitespace() }}) {
+    // Ignore the character
+    {{ h.advance_to(current_state) }}
+} elseif ($cc === '>') {
+    // Switch to the data state. Emit the current DOCTYPE token.
+    {{ h.emit_and_resume_in('DATA') }}
+} elseif ($cc === '"') {
+    // Set the DOCTYPE token's system identifier to the empty string (not missing)
+    $this->currentToken->systemIdentifier = '';
+    // switch to the DOCTYPE system identifier (double-quoted) state.
+    {{ h.advance_to('DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED') }}
+} elseif ($cc === "'") {
+    // Set the DOCTYPE token's system identifier to the empty string (not missing)
+    $this->currentToken->systemIdentifier = '';
+    // switch to the DOCTYPE system identifier (single-quoted) state.
+    {{ h.advance_to('DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED') }}
+} elseif ($cc === null) {
+    // TODO: This is an eof-in-doctype parse error.
+    // Set the DOCTYPE token's force-quirks flag to on.
+    $this->currentToken->forceQuirks = true;
+    // Emit that DOCTYPE token. Emit an end-of-file token.
+    {{ h.emit_current_token() }}
+    {{ h.emit_eof() }}
+} else {
+    // TODO: This is a missing-quote-before-doctype-system-identifier parse error.
+    // Set the DOCTYPE token's force-quirks flag to on.
+    $this->currentToken->forceQuirks = true;
+    // Reconsume in the bogus DOCTYPE state.
+    {{ h.reconsume_in('BOGUS_DOCTYPE') }}
+}

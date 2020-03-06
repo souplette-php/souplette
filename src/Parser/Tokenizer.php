@@ -1052,11 +1052,13 @@ final class Tokenizer extends AbstractTokenizer
                     if (0 === substr_compare($this->input, 'PUBLIC', $this->position, 6, true)) {
                         // consume those characters and switch to the after DOCTYPE public keyword state.
                         $this->position += 6;
+                        $cc = $this->input[$this->position] ?? null;
                         $this->state = TokenizerStates::AFTER_DOCTYPE_PUBLIC_KEYWORD;
                         goto AFTER_DOCTYPE_PUBLIC_KEYWORD;
                     } elseif (0 === substr_compare($this->input, 'SYSTEM', $this->position, 6, true)) {
                         // consume those characters and switch to the after DOCTYPE system keyword state.
                         $this->position += 6;
+                        $cc = $this->input[$this->position] ?? null;
                         $this->state = TokenizerStates::AFTER_DOCTYPE_SYSTEM_KEYWORD;
                         goto AFTER_DOCTYPE_SYSTEM_KEYWORD;
                     } else {
@@ -1072,62 +1074,497 @@ final class Tokenizer extends AbstractTokenizer
             break;
             case TokenizerStates::AFTER_DOCTYPE_PUBLIC_KEYWORD:
             AFTER_DOCTYPE_PUBLIC_KEYWORD: {
-                throw new \Exception('Not Implemented: AFTER_DOCTYPE_PUBLIC_KEYWORD');
+                if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
+                    // Switch to the before DOCTYPE public identifier state.
+                    $this->state = TokenizerStates::BEFORE_DOCTYPE_PUBLIC_IDENTIFIER;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto BEFORE_DOCTYPE_PUBLIC_IDENTIFIER;
+                } elseif ($cc === '"') {
+                    // TODO: This is a missing-whitespace-after-doctype-public-keyword parse error.
+                    // Set the DOCTYPE token's public identifier to the empty string (not missing)
+                    $this->currentToken->publicIdentifier = '';
+                    // switch to the DOCTYPE public identifier (double-quoted) state.
+                    $this->state = TokenizerStates::DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED;
+                } elseif ($cc === "'") {
+                    // TODO: This is a missing-whitespace-after-doctype-public-keyword parse error.
+                    // Set the DOCTYPE token's public identifier to the empty string (not missing)
+                    $this->currentToken->publicIdentifier = '';
+                    // switch to the DOCTYPE public identifier (single-quoted) state.
+                    $this->state = TokenizerStates::DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED;
+                } elseif ($cc === '>') {
+                    // TODO: This is a missing-doctype-public-identifier parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Switch to the data state. Emit that DOCTYPE token.
+                    $this->emitCurrentToken();
+                    $this->state = TokenizerStates::DATA;
+                    ++$this->position;
+                    return true;
+                } elseif ($cc === null) {
+                    // TODO: This is an eof-in-doctype parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Emit that DOCTYPE token. Emit an end-of-file token.
+                    $this->tokenQueue->enqueue($this->currentToken);
+                    return false;
+                } else {
+                    // TODO: This is a missing-quote-before-doctype-public-identifier parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Reconsume in the bogus DOCTYPE state.
+                    $this->state = TokenizerStates::BOGUS_DOCTYPE;
+                    goto BOGUS_DOCTYPE;
+                }
             }
             break;
             case TokenizerStates::BEFORE_DOCTYPE_PUBLIC_IDENTIFIER:
             BEFORE_DOCTYPE_PUBLIC_IDENTIFIER: {
-                throw new \Exception('Not Implemented: BEFORE_DOCTYPE_PUBLIC_IDENTIFIER');
+                if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
+                    // Ignore the character.
+                    $this->state = TokenizerStates::BEFORE_DOCTYPE_PUBLIC_IDENTIFIER;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto BEFORE_DOCTYPE_PUBLIC_IDENTIFIER;
+                } elseif ($cc === '"') {
+                    // Set the DOCTYPE token's public identifier to the empty string (not missing)
+                    $this->currentToken->publicIdentifier = '';
+                    // switch to the DOCTYPE public identifier (double-quoted) state.
+                    $this->state = TokenizerStates::DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED;
+                } elseif ($cc === "'") {
+                    // Set the DOCTYPE token's public identifier to the empty string (not missing)
+                    $this->currentToken->publicIdentifier = '';
+                    // switch to the DOCTYPE public identifier (single-quoted) state.
+                    $this->state = TokenizerStates::DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED;
+                } elseif ($cc === '>') {
+                    // TODO: This is a missing-doctype-public-identifier parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Switch to the data state. Emit that DOCTYPE token.
+                    $this->emitCurrentToken();
+                    $this->state = TokenizerStates::DATA;
+                    ++$this->position;
+                    return true;
+                } elseif ($cc === null) {
+                    // TODO: This is an eof-in-doctype parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Emit that DOCTYPE token. Emit an end-of-file token.
+                    $this->tokenQueue->enqueue($this->currentToken);
+                    return false;
+                } else {
+                    // TODO: This is a missing-quote-before-doctype-public-identifier parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Reconsume in the bogus DOCTYPE state.
+                    $this->state = TokenizerStates::BOGUS_DOCTYPE;
+                    goto BOGUS_DOCTYPE;
+                }
             }
             break;
             case TokenizerStates::DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED:
             DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED: {
-                throw new \Exception('Not Implemented: DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED');
+                if ($cc === '"') {
+                    // Switch to the after DOCTYPE public identifier state.
+                    $this->state = TokenizerStates::AFTER_DOCTYPE_PUBLIC_IDENTIFIER;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto AFTER_DOCTYPE_PUBLIC_IDENTIFIER;
+                } elseif ($cc === '>') {
+                    // TODO: This is an abrupt-doctype-public-identifier parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Switch to the data state. Emit that DOCTYPE token.
+                    $this->emitCurrentToken();
+                    $this->state = TokenizerStates::DATA;
+                    ++$this->position;
+                    return true;
+                } elseif ($cc === "\0") {
+                    // TODO: This is an unexpected-null-character parse error.
+                    // Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's public identifier.
+                    $this->currentToken->publicIdentifier .= "\u{FFFD}";
+                    $this->state = TokenizerStates::DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED;
+                } elseif ($cc === null) {
+                    // TODO: This is an eof-in-doctype parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Emit that DOCTYPE token. Emit an end-of-file token.
+                    $this->tokenQueue->enqueue($this->currentToken);
+                    return false;
+                } else {
+                    // Append the current input character to the current DOCTYPE token's public identifier.
+                    $chars = $this->charsUntil("\">\0");
+                    $this->currentToken->publicIdentifier .= $chars;
+                    $cc = $this->input[$this->position] ?? null;
+                    $this->state = TokenizerStates::DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED;
+                    goto DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED;
+                }
             }
             break;
             case TokenizerStates::DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED:
             DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED: {
-                throw new \Exception('Not Implemented: DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED');
+                if ($cc === "'") {
+                    // Switch to the after DOCTYPE public identifier state.
+                    $this->state = TokenizerStates::AFTER_DOCTYPE_PUBLIC_IDENTIFIER;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto AFTER_DOCTYPE_PUBLIC_IDENTIFIER;
+                } elseif ($cc === '>') {
+                    // TODO: This is an abrupt-doctype-public-identifier parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Switch to the data state. Emit that DOCTYPE token.
+                    $this->emitCurrentToken();
+                    $this->state = TokenizerStates::DATA;
+                    ++$this->position;
+                    return true;
+                } elseif ($cc === "\0") {
+                    // TODO: This is an unexpected-null-character parse error.
+                    // Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's public identifier.
+                    $this->currentToken->publicIdentifier .= "\u{FFFD}";
+                    $this->state = TokenizerStates::DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED;
+                } elseif ($cc === null) {
+                    // TODO: This is an eof-in-doctype parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Emit that DOCTYPE token. Emit an end-of-file token.
+                    $this->tokenQueue->enqueue($this->currentToken);
+                    return false;
+                } else {
+                    // Append the current input character to the current DOCTYPE token's public identifier.
+                    $chars = $this->charsUntil("'>\0");
+                    $this->currentToken->publicIdentifier .= $chars;
+                    $cc = $this->input[$this->position] ?? null;
+                    $this->state = TokenizerStates::DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED;
+                    goto DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED;
+                }
             }
             break;
             case TokenizerStates::AFTER_DOCTYPE_PUBLIC_IDENTIFIER:
             AFTER_DOCTYPE_PUBLIC_IDENTIFIER: {
-                throw new \Exception('Not Implemented: AFTER_DOCTYPE_PUBLIC_IDENTIFIER');
+                if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
+                    // Switch to the between DOCTYPE public and system identifiers state.
+                    $this->state = TokenizerStates::BETWEEN_DOCTYPE_PUBLIC_AND_SYSTEM_IDENTIFIERS;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto BETWEEN_DOCTYPE_PUBLIC_AND_SYSTEM_IDENTIFIERS;
+                } elseif ($cc === '>') {
+                    // Switch to the data state. Emit the current DOCTYPE token.
+                    $this->emitCurrentToken();
+                    $this->state = TokenizerStates::DATA;
+                    ++$this->position;
+                    return true;
+                } elseif ($cc === '"') {
+                    // TODO: This is a missing-whitespace-between-doctype-public-and-system-identifiers parse error.
+                    // Set the DOCTYPE token's system identifier to the empty string (not missing)
+                    $this->currentToken->systemIdentifier = '';
+                    // switch to the DOCTYPE system identifier (double-quoted) state.
+                    $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
+                } elseif ($cc === "'") {
+                    // TODO: This is a missing-whitespace-between-doctype-public-and-system-identifiers parse error.
+                    // Set the DOCTYPE token's system identifier to the empty string (not missing)
+                    $this->currentToken->systemIdentifier = '';
+                    // switch to the DOCTYPE system identifier (single-quoted) state.
+                    $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
+                } elseif ($cc === null) {
+                    // TODO: This is an eof-in-doctype parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Emit that DOCTYPE token. Emit an end-of-file token.
+                    $this->tokenQueue->enqueue($this->currentToken);
+                    return false;
+                } else {
+                    // TODO: This is a missing-quote-before-doctype-system-identifier parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Reconsume in the bogus DOCTYPE state.
+                    $this->state = TokenizerStates::BOGUS_DOCTYPE;
+                    goto BOGUS_DOCTYPE;
+                }
             }
             break;
             case TokenizerStates::BETWEEN_DOCTYPE_PUBLIC_AND_SYSTEM_IDENTIFIERS:
             BETWEEN_DOCTYPE_PUBLIC_AND_SYSTEM_IDENTIFIERS: {
-                throw new \Exception('Not Implemented: BETWEEN_DOCTYPE_PUBLIC_AND_SYSTEM_IDENTIFIERS');
+                if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
+                    // Ignore the character
+                    $this->state = TokenizerStates::BETWEEN_DOCTYPE_PUBLIC_AND_SYSTEM_IDENTIFIERS;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto BETWEEN_DOCTYPE_PUBLIC_AND_SYSTEM_IDENTIFIERS;
+                } elseif ($cc === '>') {
+                    // Switch to the data state. Emit the current DOCTYPE token.
+                    $this->emitCurrentToken();
+                    $this->state = TokenizerStates::DATA;
+                    ++$this->position;
+                    return true;
+                } elseif ($cc === '"') {
+                    // Set the DOCTYPE token's system identifier to the empty string (not missing)
+                    $this->currentToken->systemIdentifier = '';
+                    // switch to the DOCTYPE system identifier (double-quoted) state.
+                    $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
+                } elseif ($cc === "'") {
+                    // Set the DOCTYPE token's system identifier to the empty string (not missing)
+                    $this->currentToken->systemIdentifier = '';
+                    // switch to the DOCTYPE system identifier (single-quoted) state.
+                    $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
+                } elseif ($cc === null) {
+                    // TODO: This is an eof-in-doctype parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Emit that DOCTYPE token. Emit an end-of-file token.
+                    $this->tokenQueue->enqueue($this->currentToken);
+                    return false;
+                } else {
+                    // TODO: This is a missing-quote-before-doctype-system-identifier parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Reconsume in the bogus DOCTYPE state.
+                    $this->state = TokenizerStates::BOGUS_DOCTYPE;
+                    goto BOGUS_DOCTYPE;
+                }
             }
             break;
             case TokenizerStates::AFTER_DOCTYPE_SYSTEM_KEYWORD:
             AFTER_DOCTYPE_SYSTEM_KEYWORD: {
-                throw new \Exception('Not Implemented: AFTER_DOCTYPE_SYSTEM_KEYWORD');
+                if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
+                    // Switch to the before DOCTYPE system identifier state.
+                    $this->state = TokenizerStates::BEFORE_DOCTYPE_SYSTEM_IDENTIFIER;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto BEFORE_DOCTYPE_SYSTEM_IDENTIFIER;
+                } elseif ($cc === '"') {
+                    // TODO: This is a missing-whitespace-after-doctype-system-keyword parse error.
+                    // Set the DOCTYPE token's system identifier to the empty string (not missing)
+                    $this->currentToken->systemIdentifier = '';
+                    // switch to the DOCTYPE system identifier (double-quoted) state.
+                    $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
+                } elseif ($cc === "'") {
+                    // TODO: This is a missing-whitespace-after-doctype-system-keyword parse error.
+                    // Set the DOCTYPE token's system identifier to the empty string (not missing)
+                    $this->currentToken->systemIdentifier = '';
+                    // switch to the DOCTYPE system identifier (single-quoted) state.
+                    $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
+                } elseif ($cc === '>') {
+                    // TODO: This is a missing-doctype-system-identifier parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Switch to the data state. Emit that DOCTYPE token.
+                    $this->emitCurrentToken();
+                    $this->state = TokenizerStates::DATA;
+                    ++$this->position;
+                    return true;
+                } elseif ($cc === null) {
+                    // TODO: This is an eof-in-doctype parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Emit that DOCTYPE token. Emit an end-of-file token.
+                    $this->tokenQueue->enqueue($this->currentToken);
+                    return false;
+                } else {
+                    // TODO: This is a missing-quote-before-doctype-system-identifier parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Reconsume in the bogus DOCTYPE state.
+                    $this->state = TokenizerStates::BOGUS_DOCTYPE;
+                    goto BOGUS_DOCTYPE;
+                }
             }
             break;
             case TokenizerStates::BEFORE_DOCTYPE_SYSTEM_IDENTIFIER:
             BEFORE_DOCTYPE_SYSTEM_IDENTIFIER: {
-                throw new \Exception('Not Implemented: BEFORE_DOCTYPE_SYSTEM_IDENTIFIER');
+                if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
+                    // Ignore the character
+                    $this->state = TokenizerStates::BEFORE_DOCTYPE_SYSTEM_IDENTIFIER;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto BEFORE_DOCTYPE_SYSTEM_IDENTIFIER;
+                } elseif ($cc === '"') {
+                    // Set the DOCTYPE token's system identifier to the empty string (not missing)
+                    $this->currentToken->systemIdentifier = '';
+                    // switch to the DOCTYPE system identifier (double-quoted) state.
+                    $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
+                } elseif ($cc === "'") {
+                    // Set the DOCTYPE token's system identifier to the empty string (not missing)
+                    $this->currentToken->systemIdentifier = '';
+                    // switch to the DOCTYPE system identifier (single-quoted) state.
+                    $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
+                } elseif ($cc === '>') {
+                    // TODO: This is a missing-doctype-system-identifier parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    // Switch to the data state. Emit that DOCTYPE token.
+                    $this->emitCurrentToken();
+                    $this->state = TokenizerStates::DATA;
+                    ++$this->position;
+                    return true;
+                } elseif ($cc === null) {
+                    // TODO: This is an eof-in-doctype parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Emit that DOCTYPE token. Emit an end-of-file token.
+                    $this->tokenQueue->enqueue($this->currentToken);
+                    return false;
+                } else {
+                    // TODO: This is a missing-quote-before-doctype-system-identifier parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Reconsume in the bogus DOCTYPE state.
+                    $this->state = TokenizerStates::BOGUS_DOCTYPE;
+                    goto BOGUS_DOCTYPE;
+                }
             }
             break;
             case TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED:
             DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED: {
-                throw new \Exception('Not Implemented: DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED');
+                if ($cc === '"') {
+                    // Switch to the after DOCTYPE system identifier state.
+                    $this->state = TokenizerStates::AFTER_DOCTYPE_SYSTEM_IDENTIFIER;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto AFTER_DOCTYPE_SYSTEM_IDENTIFIER;
+                } elseif ($cc === '>') {
+                    // TODO: This is an abrupt-doctype-system-identifier parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Switch to the data state. Emit that DOCTYPE token.
+                    $this->emitCurrentToken();
+                    $this->state = TokenizerStates::DATA;
+                    ++$this->position;
+                    return true;
+                } elseif ($cc === "\0") {
+                    // TODO: This is an unexpected-null-character parse error.
+                    // Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's system identifier.
+                    $this->currentToken->systemIdentifier .= "\u{FFFD}";
+                    $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
+                } elseif ($cc === null) {
+                    // TODO: This is an eof-in-doctype parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Emit that DOCTYPE token. Emit an end-of-file token.
+                    $this->tokenQueue->enqueue($this->currentToken);
+                    return false;
+                } else {
+                    // Append the current input character to the current DOCTYPE token's system identifier.
+                    $chars = $this->charsUntil("\">\0");
+                    $this->currentToken->systemIdentifier .= $chars;
+                    $cc = $this->input[$this->position] ?? null;
+                    $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
+                    goto DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
+                }
             }
             break;
             case TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED:
             DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED: {
-                throw new \Exception('Not Implemented: DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED');
+                if ($cc === "'") {
+                    // Switch to the after DOCTYPE system identifier state.
+                    $this->state = TokenizerStates::AFTER_DOCTYPE_SYSTEM_IDENTIFIER;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto AFTER_DOCTYPE_SYSTEM_IDENTIFIER;
+                } elseif ($cc === '>') {
+                    // TODO: This is an abrupt-doctype-system-identifier parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Switch to the data state. Emit that DOCTYPE token.
+                    $this->emitCurrentToken();
+                    $this->state = TokenizerStates::DATA;
+                    ++$this->position;
+                    return true;
+                } elseif ($cc === "\0") {
+                    // TODO: This is an unexpected-null-character parse error.
+                    // Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's system identifier.
+                    $this->currentToken->systemIdentifier .= "\u{FFFD}";
+                    $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
+                } elseif ($cc === null) {
+                    // TODO: This is an eof-in-doctype parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Emit that DOCTYPE token. Emit an end-of-file token.
+                    $this->tokenQueue->enqueue($this->currentToken);
+                    return false;
+                } else {
+                    // Append the current input character to the current DOCTYPE token's system identifier.
+                    $chars = $this->charsUntil("'>\0");
+                    $this->currentToken->systemIdentifier .= $chars;
+                    $cc = $this->input[$this->position] ?? null;
+                    $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
+                    goto DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
+                }
             }
             break;
             case TokenizerStates::AFTER_DOCTYPE_SYSTEM_IDENTIFIER:
             AFTER_DOCTYPE_SYSTEM_IDENTIFIER: {
-                throw new \Exception('Not Implemented: AFTER_DOCTYPE_SYSTEM_IDENTIFIER');
+                if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
+                    // Ignore the character.
+                    $this->state = TokenizerStates::AFTER_DOCTYPE_SYSTEM_IDENTIFIER;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto AFTER_DOCTYPE_SYSTEM_IDENTIFIER;
+                } elseif ($cc === '>') {
+                    // Switch to the data state. Emit the current DOCTYPE token.
+                    $this->emitCurrentToken();
+                    $this->state = TokenizerStates::DATA;
+                    ++$this->position;
+                    return true;
+                } elseif ($cc === null) {
+                    // TODO: This is an eof-in-doctype parse error.
+                    // Set the DOCTYPE token's force-quirks flag to on.
+                    $this->currentToken->forceQuirks = true;
+                    // Emit that DOCTYPE token. Emit an end-of-file token.
+                    $this->tokenQueue->enqueue($this->currentToken);
+                    return false;
+                } else {
+                    // TODO: This is an unexpected-character-after-doctype-system-identifier parse error.
+                    // Reconsume in the bogus DOCTYPE state. (This does not set the DOCTYPE token's force-quirks flag to on.)
+                    $this->state = TokenizerStates::BOGUS_DOCTYPE;
+                    goto BOGUS_DOCTYPE;
+                }
             }
             break;
             case TokenizerStates::BOGUS_DOCTYPE:
             BOGUS_DOCTYPE: {
-                throw new \Exception('Not Implemented: BOGUS_DOCTYPE');
+                if ($cc === '>') {
+                    // Switch to the data state. Emit the DOCTYPE token.
+                    $this->emitCurrentToken();
+                    $this->state = TokenizerStates::DATA;
+                    ++$this->position;
+                    return true;
+                } elseif ($cc === "\0") {
+                    // TODO: This is an unexpected-null-character parse error.
+                    // Ignore the character.
+                    $this->state = TokenizerStates::BOGUS_DOCTYPE;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto BOGUS_DOCTYPE;
+                } elseif ($cc === null) {
+                    // Emit the DOCTYPE token. Emit an end-of-file token.
+                    $this->tokenQueue->enqueue($this->currentToken);
+                    return false;
+                } else {
+                    // Ignore the character
+                    $this->state = TokenizerStates::BOGUS_DOCTYPE;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto BOGUS_DOCTYPE;
+                }
             }
             break;
             case TokenizerStates::CDATA_SECTION:

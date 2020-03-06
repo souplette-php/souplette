@@ -148,5 +148,13 @@ class TokenizerTest extends TestCase
     public function doctypeProvider()
     {
         yield ['<!DOCTYPE html>', [Token::doctype('html')]];
+        yield [
+            '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">',
+            [Token::doctype('html', '-//W3C//DTD HTML 4.01 Transitional//EN', 'http://www.w3.org/TR/html4/loose.dtd')]
+        ];
+        yield [
+            '<!DOCTYPE foo SYSTEM "http://www.example.com/foo.dtd">',
+            [Token::doctype('foo', null, 'http://www.example.com/foo.dtd')]
+        ];
     }
 }
