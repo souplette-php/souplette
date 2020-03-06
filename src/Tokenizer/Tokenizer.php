@@ -1857,7 +1857,6 @@ final class Tokenizer extends AbstractTokenizer
                 // Consume the maximum number of characters possible,
                 // with the consumed characters matching one of the identifiers of the named character references table (in a case-sensitive manner).
                 // Append each character to the temporary buffer when it's consumed.
-                $entity = null;
                 $pos = $this->position;
                 $node = $this->entitySearch;
                 // Consume characters and compare these to a substring of the entity names until the substring no longer matches.
@@ -1877,7 +1876,7 @@ final class Tokenizer extends AbstractTokenizer
                 // Try to find the longest entity the string will match to take care of &noti for instance.
                 $node = $this->entitySearch;
                 $lastTerminalIndex = null;
-                for ($i = 1; $i < strlen($this->temporaryBuffer); $i++) {
+                for ($i = 1, $l = strlen($this->temporaryBuffer); $i < $l; $i++) {
                     $c = $this->temporaryBuffer[$i];
                     if (!isset($node->children[$c])) {
                         break;
@@ -1888,10 +1887,7 @@ final class Tokenizer extends AbstractTokenizer
                     }
                 }
                 if ($lastTerminalIndex !== null) {
-                    $entity = substr($this->temporaryBuffer, 1, $lastTerminalIndex);
-                    $this->position += strlen($entity);
-                }
-                if ($entity !== null) {
+                    $this->position += $lastTerminalIndex;
                     if (
                         // If the character reference was consumed as part of an attribute,
                         $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_DOUBLE_QUOTED || $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_SINGLE_QUOTED || $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED
@@ -1912,6 +1908,7 @@ final class Tokenizer extends AbstractTokenizer
                             // TODO: this is a missing-semicolon-after-character-reference parse error.
                         }
                         // 2. Set the temporary buffer to the empty string. Append the decoded character reference to the temporary buffer.
+                        $entity = substr($this->temporaryBuffer, 1, $lastTerminalIndex);
                         $this->temporaryBuffer = EntityLookup::NAMED_ENTITIES[$entity];
                         // 3. Flush code points consumed as a character reference.
                         $this->flushCodePointsConsumedAsACharacterReference();
