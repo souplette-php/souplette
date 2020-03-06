@@ -20,8 +20,14 @@ final class TokenTypes
         self::CHARACTER => 'CHARACTER',
     ];
 
-    public static function name(int $type): string
+    public static function nameOf($tokenOrType): string
     {
+        if ($tokenOrType instanceof Token) {
+            $type = $tokenOrType->type;
+        } else {
+            $type = (int)$tokenOrType;
+        }
+
         if (!isset(self::NAMES[$type])) {
             throw new \UnexpectedValueException("Unknown token type: {$type}");
         }
