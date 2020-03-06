@@ -15,7 +15,7 @@ $cmd = sprintf(
     '%s fix --quiet --using-cache=no --rules=%s %s',
     realpath(__DIR__.'/../tools/php-cs-fixer'),
     sprintf("'%s'", json_encode($rules)),
-    realpath(__DIR__.'/../src/Parser/Tokenizer.php')
+    realpath(__DIR__.'/../src/Tokenizer/Tokenizer.php')
 );
 //echo $cmd . PHP_EOL;
 passthru($cmd);

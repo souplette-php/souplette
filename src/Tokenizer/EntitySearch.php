@@ -1,6 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace ju1ius\HtmlParser\Parser\Entities;
+namespace ju1ius\HtmlParser\Tokenizer;
+
+use ju1ius\HtmlParser\Tokenizer\EntitySearchNode;
+use ju1ius\HtmlParser\Tokenizer\EntityLookup;
 
 final class EntitySearch extends EntitySearchNode
 {

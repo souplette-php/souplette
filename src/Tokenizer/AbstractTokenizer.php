@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace ju1ius\HtmlParser\Parser;
+namespace ju1ius\HtmlParser\Tokenizer;
 
-use ju1ius\HtmlParser\Parser\Entities\EntitySearch;
+use ju1ius\HtmlParser\Tokenizer\EntitySearch;
 use SplQueue;
 use SplStack;
 

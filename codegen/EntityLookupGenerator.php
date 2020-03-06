@@ -15,7 +15,7 @@ final class EntityLookupGenerator
         $twig = $this->createEnvironment();
         $context = $this->createContext();
         $code = $twig->render('entity_lookup.php.twig', $context);
-        file_put_contents(__DIR__.'/../src/Parser/Entities/EntityLookup.php', $code);
+        file_put_contents(__DIR__.'/../src/Tokenizer/EntityLookup.php', $code);
     }
 
     private function createEnvironment(): Environment

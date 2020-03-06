@@ -3,9 +3,7 @@
  * This file was automatically generated.
  * All modifications will be lost.
  */
-namespace ju1ius\HtmlParser\Parser;
-
-use ju1ius\HtmlParser\Parser\Entities\EntityLookup;
+namespace ju1ius\HtmlParser\Tokenizer;
 
 final class Tokenizer extends AbstractTokenizer
 {

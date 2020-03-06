@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace ju1ius\HtmlParser\Tests\Parser;
+namespace ju1ius\HtmlParser\Tests\Tokenizer;
 
-use ju1ius\HtmlParser\Parser\Entities\EntityLookup;
-use ju1ius\HtmlParser\Parser\Token;
-use ju1ius\HtmlParser\Parser\Tokenizer;
+use ju1ius\HtmlParser\Tokenizer\EntityLookup;
+use ju1ius\HtmlParser\Tokenizer\Token;
+use ju1ius\HtmlParser\Tokenizer\Tokenizer;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 

@@ -3,7 +3,7 @@
 namespace ju1ius\HtmlParser\Codegen;
 
 use ju1ius\HtmlParser\Codegen\Twig\TokenizerExtension;
-use ju1ius\HtmlParser\Parser\TokenizerStates;
+use ju1ius\HtmlParser\Tokenizer\TokenizerStates;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
@@ -14,7 +14,7 @@ final class TokenizerGenerator
         $twig = $this->createEnvironment();
         $context = $this->createContext();
         $code = $twig->render('tokenizer.php.twig', $context);
-        file_put_contents(__DIR__.'/../src/Parser/Tokenizer.php', $code);
+        file_put_contents(__DIR__.'/../src/Tokenizer/Tokenizer.php', $code);
     }
 
     private function createEnvironment(): Environment

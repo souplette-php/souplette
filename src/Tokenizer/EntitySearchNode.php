@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace ju1ius\HtmlParser\Parser\Entities;
+namespace ju1ius\HtmlParser\Tokenizer;
 
 class EntitySearchNode
 {

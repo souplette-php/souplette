@@ -3,7 +3,7 @@
  * This file was automatically generated.
  * All modifications will be lost.
  */
-namespace ju1ius\HtmlParser\Parser\Entities;
+namespace ju1ius\HtmlParser\Tokenizer;
 
 final class EntityLookup
 {
