@@ -1569,17 +1569,63 @@ final class Tokenizer extends AbstractTokenizer
             break;
             case TokenizerStates::CDATA_SECTION:
             CDATA_SECTION: {
-                throw new \Exception('Not Implemented: CDATA_SECTION');
+                // NOTE: U+0000 NULL characters are handled in the tree construction stage,
+                // as part of the in foreign content insertion mode, which is the only place where CDATA sections can appear.
+                if ($cc === ']') {
+                    // Switch to the CDATA section bracket state.
+                    $this->state = TokenizerStates::CDATA_SECTION_BRACKET;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto CDATA_SECTION_BRACKET;
+                } elseif ($cc === null) {
+                    // TODO: This is an eof-in-cdata parse error.
+                    // Emit an end-of-file token.
+                    return false;
+                } else {
+                    // Emit the current input character as a character token.
+                    $chars = $this->charsUntil(']');
+                    $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, $chars));
+                    $cc = $this->input[$this->position] ?? null;
+                    $this->state = TokenizerStates::CDATA_SECTION;
+                    goto CDATA_SECTION;
+                }
             }
             break;
             case TokenizerStates::CDATA_SECTION_BRACKET:
             CDATA_SECTION_BRACKET: {
-                throw new \Exception('Not Implemented: CDATA_SECTION_BRACKET');
+                if ($cc === ']') {
+                    // Switch to the CDATA section end state.
+                    $this->state = TokenizerStates::CDATA_SECTION_END;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto CDATA_SECTION_END;
+                } else {
+                    // Emit a U+005D RIGHT SQUARE BRACKET character token.
+                    $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, ']'));
+                    // Reconsume in the CDATA section state.
+                    $this->state = TokenizerStates::CDATA_SECTION;
+                    goto CDATA_SECTION;
+                }
             }
             break;
             case TokenizerStates::CDATA_SECTION_END:
             CDATA_SECTION_END: {
-                throw new \Exception('Not Implemented: CDATA_SECTION_END');
+                if ($cc === ']') {
+                    // Emit a U+005D RIGHT SQUARE BRACKET character token.
+                    $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, ']'));
+                    $this->state = TokenizerStates::CDATA_SECTION_END;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto CDATA_SECTION_END;
+                } elseif ($cc === '>') {
+                    // Switch to the data state.
+                    $this->state = TokenizerStates::DATA;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto DATA;
+                } else {
+                    // Emit two U+005D RIGHT SQUARE BRACKET character tokens.
+                    $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, ']]'));
+                    // Reconsume in the CDATA section state.
+                    $this->state = TokenizerStates::CDATA_SECTION;
+                    goto CDATA_SECTION;
+                }
             }
             break;
             case TokenizerStates::CHARACTER_REFERENCE:

@@ -157,4 +157,20 @@ class TokenizerTest extends TestCase
             [Token::doctype('foo', null, 'http://www.example.com/foo.dtd')]
         ];
     }
+
+    /**
+     * @dataProvider cdataProvider
+     * @param string $input
+     * @param array $expected
+     */
+    public function testCdata(string $input, array $expected)
+    {
+        self::assertTokensEquals($input, $expected);
+    }
+
+    public function cdataProvider()
+    {
+        // CDATA in html is treated as a bogus comment
+        yield ['<![CDATA[ foo ]]>', [Token::comment('[CDATA[ foo ]]')]];
+    }
 }

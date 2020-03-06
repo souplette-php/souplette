@@ -3,4 +3,18 @@
 #}
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
-throw new \Exception('Not Implemented: {{current_state}}');
+// NOTE: U+0000 NULL characters are handled in the tree construction stage,
+// as part of the in foreign content insertion mode, which is the only place where CDATA sections can appear.
+if ($cc === ']') {
+    // Switch to the CDATA section bracket state.
+    {{ h.advance_to('CDATA_SECTION_BRACKET') }}
+} elseif ($cc === null) {
+    // TODO: This is an eof-in-cdata parse error.
+    // Emit an end-of-file token.
+    {{ h.emit_eof() }}
+} else {
+    // Emit the current input character as a character token.
+    $chars = $this->charsUntil(']');
+    $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, $chars));
+    {{ h.update_and_reconsume_in('CDATA_SECTION') }}
+}

@@ -3,4 +3,16 @@
 #}
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
-throw new \Exception('Not Implemented: {{current_state}}');
+if ($cc === ']') {
+    // Emit a U+005D RIGHT SQUARE BRACKET character token.
+    $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, ']'));
+    {{ h.advance_to('CDATA_SECTION_END') }}
+} elseif ($cc === '>') {
+    // Switch to the data state.
+    {{ h.advance_to('DATA') }}
+} else {
+    // Emit two U+005D RIGHT SQUARE BRACKET character tokens.
+    $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, ']]'));
+    // Reconsume in the CDATA section state.
+    {{ h.reconsume_in('CDATA_SECTION') }}
+}
