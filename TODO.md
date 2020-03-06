@@ -4,7 +4,7 @@
   - [x] RCDATA
   - [ ] CHARACTER_REFERENCE_IN_RCDATA
   - [x] RAWTEXT
-  - [ ] SCRIPT_DATA
+  - [x] SCRIPT_DATA
   - [x] PLAINTEXT
   - [x] TAG_OPEN
   - [x] END_TAG_OPEN
