@@ -2,84 +2,61 @@
 
 namespace ju1ius\HtmlParser\Tokenizer;
 
-final class Token
+use ju1ius\HtmlParser\Tokenizer\Token\Character;
+use ju1ius\HtmlParser\Tokenizer\Token\Comment;
+use ju1ius\HtmlParser\Tokenizer\Token\Doctype;
+use ju1ius\HtmlParser\Tokenizer\Token\EndTag;
+use ju1ius\HtmlParser\Tokenizer\Token\StartTag;
+
+abstract class Token
 {
     /**
      * @var int
      */
     public $type;
 
-    /**
-     * @var string
-     */
-    public $value;
-
-    /**
-     * @var string
-     */
-    public $name;
-
-    /**
-     * @var bool
-     */
-    public $selfClosing = false;
-
-    /**
-     * @var array|null
-     */
-    public $attributes;
-
-    /**
-     * @var bool
-     */
-    public $forceQuirks;
-
-    /**
-     * @var string
-     */
-    public $publicIdentifier;
-
-    /**
-     * @var string
-     */
-    public $systemIdentifier;
-
-    public function __construct(int $type, string $value)
+    public static function doctype(string $name, ?string $publicId = null, ?string $systemId = null, bool $forceQuirks = false): Doctype
     {
-        $this->type = $type;
-        $this->value = $value;
-    }
-
-    public static function doctype(string $name, ?string $publicId = null, ?string $systemId = null): self
-    {
-        $token = new self(TokenTypes::DOCTYPE, '');
+        $token = new Doctype();
         $token->name = $name;
+        $token->forceQuirks = $forceQuirks;
         $token->publicIdentifier = $publicId;
         $token->systemIdentifier = $systemId;
+
         return $token;
     }
 
-    public static function character(string $value): self
+    public static function character(string $data): Character
     {
-        return new self(TokenTypes::CHARACTER, $value);
+        $token = new Character();
+        $token->data = $data;
+
+        return $token;
     }
 
-    public static function comment(string $value): self
+    public static function comment(string $data): Comment
     {
-        return new self(TokenTypes::COMMENT, $value);
+        $token = new Comment();
+        $token->data = $data;
+
+        return $token;
     }
 
-    public static function startTag(string $name, bool $selfClosing = false, ?array $attributes = null): self
+    public static function startTag(string $name, bool $selfClosing = false, ?array $attributes = null): StartTag
     {
-        $token = new self(TokenTypes::START_TAG, $name);
+        $token = new StartTag();
+        $token->name = $name;
         $token->selfClosing = $selfClosing;
         $token->attributes = $attributes;
 
         return $token;
     }
 
-    public static function endTag(string $name): self
+    public static function endTag(string $name): EndTag
     {
-        return new self(TokenTypes::END_TAG, $name);
+        $token = new EndTag();
+        $token->name = $name;
+
+        return $token;
     }
 }

@@ -5,12 +5,12 @@
 
 if ($cc === '!') {
     // Append the current input character to the comment token's data.
-    $this->currentToken->value .= $cc;
+    $this->currentToken->data .= $cc;
     // Switch to the comment less-than sign bang state.
     {{ h.advance_to('COMMENT_LESS_THAN_SIGN_BANG') }}
 } elseif ($cc === '<') {
     // Append the current input character to the comment token's data.
-    $this->currentToken->value .= $cc;
+    $this->currentToken->data .= $cc;
     {{ h.advance_to(current_state) }}
 } else {
     // Reconsume in the comment state.

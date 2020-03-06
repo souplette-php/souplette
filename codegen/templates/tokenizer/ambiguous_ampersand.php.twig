@@ -10,7 +10,7 @@ if (ctype_alnum($cc)) {
         {{ h.append_to_attr_value('$cc') }}
     } else {
         // Otherwise, emit the current input character as a character token.
-        $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, $cc));
+        $this->tokenQueue->enqueue(new Character($cc));
     }
 } elseif ($cc === ';') {
     // TODO: This is an unknown-named-character-reference parse error.

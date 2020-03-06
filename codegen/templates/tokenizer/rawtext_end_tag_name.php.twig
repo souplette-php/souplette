@@ -25,7 +25,7 @@ if ({{ h.is_whitespace() }}) {
 } else {
     // Emit a U+003C LESS-THAN SIGN character token, a U+002F SOLIDUS character token,
     // and a character token for each of the characters in the temporary buffer (in the order they were added to the buffer).
-    $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, '</' . $this->temporaryBuffer));
+    $this->tokenQueue->enqueue(new Character('</' . $this->temporaryBuffer));
     // Reconsume in the RAWTEXT state.
     {{ h.reconsume_in('RAWTEXT') }}
 }

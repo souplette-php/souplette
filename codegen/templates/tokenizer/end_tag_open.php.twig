@@ -5,7 +5,7 @@
 
 if ({{ h.is_alpha() }}) {
     // Create a new end tag token, set its tag name to the empty string.
-    $this->currentToken = new Token(TokenTypes::END_TAG, '');
+    $this->currentToken = new EndTag();
     // Reconsume in the tag name state.
     {{ h.reconsume_in('TAG_NAME') }}
 } elseif ($cc === '>') {
@@ -15,12 +15,12 @@ if ({{ h.is_alpha() }}) {
 } elseif ({{ h.is_eof() }}) {
     // This is an eof-before-tag-name parse error.
     // Emit a U+003C LESS-THAN SIGN character token, a U+002F SOLIDUS character token and an end-of-file token.
-    $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, '</'));
+    $this->tokenQueue->enqueue(new Character('</'));
     {{ h.emit_eof() }}
 } else {
     // TODO: This is an invalid-first-character-of-tag-name parse error.
     // Create a comment token whose data is the empty string.
-    $this->currentToken = new Token(TokenTypes::COMMENT, '');
+    $this->currentToken = new Comment('');
     // Reconsume in the bogus comment state.
     {{ h.reconsume_in('BOGUS_COMMENT') }}
 }

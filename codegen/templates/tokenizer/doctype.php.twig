@@ -12,7 +12,7 @@ if ({{ h.is_whitespace() }}) {
 } elseif ({{ h.is_eof() }}) {
     // TODO: This is an eof-in-doctype parse error.
     // Create a new DOCTYPE token.
-    $token = new Token(TokenTypes::DOCTYPE, '');
+    $token = new Doctype();
     // Set its force-quirks flag to on.
     $token->forceQuirks = true;
     // Emit the token. Emit an end-of-file token.

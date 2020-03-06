@@ -2,7 +2,7 @@
 
 namespace ju1ius\HtmlParser\Tokenizer;
 
-use ju1ius\HtmlParser\Tokenizer\EntitySearch;
+use ju1ius\HtmlParser\Tokenizer\Token\Character;
 use SplQueue;
 use SplStack;
 
@@ -135,7 +135,7 @@ abstract class AbstractTokenizer
     {
         $token = $this->currentToken;
         if ($token->type === TokenTypes::START_TAG) {
-            $this->appropriateEndTag = $token->value;
+            $this->appropriateEndTag = $token->name;
         } elseif ($token->type === TokenTypes::END_TAG) {
             if ($token->attributes) {
                 // TODO: that is an end-tag-with-attributes parse error.
@@ -163,6 +163,6 @@ abstract class AbstractTokenizer
             $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= $this->temporaryBuffer;
             return;
         }
-        $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, $this->temporaryBuffer));
+        $this->tokenQueue->enqueue(new Character($this->temporaryBuffer));
     }
 }

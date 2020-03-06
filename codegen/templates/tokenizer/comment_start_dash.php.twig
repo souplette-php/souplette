@@ -18,7 +18,7 @@ if ($cc === '-') {
     {{ h.emit_eof() }}
 } else {
     // Append a U+002D HYPHEN-MINUS character (-) to the comment token's data.
-    $this->currentToken->value .= '-';
+    $this->currentToken->data .= '-';
     // Reconsume in the comment state.
     {{ h.reconsume_in('COMMENT') }}
 }

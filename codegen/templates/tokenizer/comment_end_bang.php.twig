@@ -5,7 +5,7 @@
 
 if ($cc === '-') {
     // Append two U+002D HYPHEN-MINUS characters (-) and a U+0021 EXCLAMATION MARK character (!) to the comment token's data.
-    $this->currentToken->value .= '--!';
+    $this->currentToken->data .= '--!';
     // Switch to the comment end dash state.
     {{ h.advance_to('COMMENT_END_DASH') }}
 } elseif ($cc === '>') {
@@ -19,7 +19,7 @@ if ($cc === '-') {
     {{ h.emit_eof() }}
 } else {
     // Append two U+002D HYPHEN-MINUS characters (-) and a U+0021 EXCLAMATION MARK character (!) to the comment token's data.
-    $this->currentToken->value .= '--!';
+    $this->currentToken->data .= '--!';
     // Reconsume in the comment state.
     {{ h.reconsume_in('COMMENT') }}
 }

@@ -10,7 +10,7 @@ if ($cc === '/') {
     {{ h.advance_to('RCDATA_END_TAG_OPEN') }}
 } else {
     // Emit a U+003C LESS-THAN SIGN character token.
-    $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, '<'));
+    $this->tokenQueue->enqueue(new Character('<'));
     // Reconsume in the RCDATA state.
     {{ h.reconsume_in('RCDATA') }}
 }

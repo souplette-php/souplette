@@ -7,7 +7,7 @@ if (0 === substr_compare($this->input, '--', $this->position, 2)) {
     // Consume those two characters
     $this->position += 2;
     // create a comment token whose data is the empty string,
-    $this->currentToken = new Token(TokenTypes::COMMENT, '');
+    $this->currentToken = new Comment('');
     // and switch to the comment start state.
     {{ h.update_and_reconsume_in('COMMENT_START') }}
 } elseif (0 === substr_compare($this->input, 'DOCTYPE', $this->position, 7, true)) {
@@ -27,14 +27,14 @@ if (0 === substr_compare($this->input, '--', $this->position, 2)) {
     } else {
         // TODO: this is a cdata-in-html-content parse error.
         // Create a comment token whose data is the "[CDATA[" string.
-        $this->currentToken = new Token(TokenTypes::COMMENT, '[CDATA[');
+        $this->currentToken = new Comment('[CDATA[');
         // Switch to the bogus comment state.
         {{ h.reconsume_in('BOGUS_COMMENT') }}
     }
 } else {
     // TODO: This is an incorrectly-opened-comment parse error.
     // Create a comment token whose data is the empty string.
-    $this->currentToken = new Token(TokenTypes::COMMENT, '');
+    $this->currentToken = new Comment('');
     // Switch to the bogus comment state (don't consume anything in the current state).
     {{ h.reconsume_in('BOGUS_COMMENT') }}
 }

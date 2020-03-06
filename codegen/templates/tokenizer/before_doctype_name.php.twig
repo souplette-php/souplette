@@ -9,7 +9,7 @@ if ({{ h.is_whitespace() }}) {
 } elseif ($cc === "\0") {
     // TODO: This is an unexpected-null-character parse error.
     // Create a new DOCTYPE token.
-    $this->currentToken = new Token(TokenTypes::DOCTYPE, '');
+    $this->currentToken = new Doctype();
     // Set the token's name to a U+FFFD REPLACEMENT CHARACTER character.
     $this->currentToken->name = "u\{FFFD}";
     // Switch to the DOCTYPE name state.
@@ -17,7 +17,7 @@ if ({{ h.is_whitespace() }}) {
 } elseif ($cc === '>') {
     // TODO: This is a missing-doctype-name parse error.
     // Create a new DOCTYPE token.
-    $this->currentToken = new Token(TokenTypes::DOCTYPE, '');
+    $this->currentToken = new Doctype();
     // Set its force-quirks flag to on.
     $this->currentToken->forceQuirks = true;
     // Switch to the data state. Emit the token.
@@ -25,7 +25,7 @@ if ({{ h.is_whitespace() }}) {
 } elseif ({{ h.is_eof() }}) {
     // TODO: This is an eof-in-doctype parse error.
     // Create a new DOCTYPE token.
-    $this->currentToken = new Token(TokenTypes::DOCTYPE, '');
+    $this->currentToken = new Doctype();
     // Set its force-quirks flag to on.
     $this->currentToken->forceQuirks = true;
     // Emit the token. Emit an end-of-file token.
@@ -33,7 +33,7 @@ if ({{ h.is_whitespace() }}) {
     {{ h.emit_eof() }}
 } else {
     // Create a new DOCTYPE token.
-    $this->currentToken = new Token(TokenTypes::DOCTYPE, '');
+    $this->currentToken = new Doctype();
     // Set the token's name to the current input character.
     $this->currentToken->name = strtolower($cc);
     // Switch to the DOCTYPE name state.

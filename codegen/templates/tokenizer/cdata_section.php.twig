@@ -15,6 +15,6 @@ if ($cc === ']') {
 } else {
     // Emit the current input character as a character token.
     $chars = $this->charsUntil(']');
-    $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, $chars));
+    $this->tokenQueue->enqueue(new Character($chars));
     {{ h.update_and_reconsume_in('CDATA_SECTION') }}
 }

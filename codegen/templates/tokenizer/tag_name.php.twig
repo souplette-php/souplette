@@ -14,7 +14,7 @@ if ({{ h.is_whitespace() }}) {
 } elseif ($cc === "\0") {
     // This is an unexpected-null-character parse error.
     // Append a U+FFFD REPLACEMENT CHARACTER character to the current tag token's tag name.
-    $this->currentToken->value .= "\u{FFFD}";
+    $this->currentToken->name .= "\u{FFFD}";
     {{ h.advance_to('TAG_NAME') }}
 } elseif ({{ h.is_eof() }}) {
     // TODO: This is an eof-in-tag parse error.
@@ -23,6 +23,6 @@ if ({{ h.is_whitespace() }}) {
 } else {
     // Append the current input character to the current tag token's tag name.
     $chars = $this->charsUntil("/> \t\f\n\0");
-    $this->currentToken->value .= strtolower($chars);
+    $this->currentToken->name .= strtolower($chars);
     {{ h.update_and_reconsume_in('TAG_NAME') }}
 }
