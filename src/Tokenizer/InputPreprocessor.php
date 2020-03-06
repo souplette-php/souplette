@@ -2,8 +2,10 @@
 
 namespace ju1ius\HtmlParser\Tokenizer;
 
-final class InputStreamPreprocessor
+final class InputPreprocessor
 {
+    private const BOM = "\u{FEFF}";
+
     public static function convertToUtf8(string $input, string $fromEncoding = 'UTF-8'): string
     {
         $substitutionCharacter = mb_substitute_character();
@@ -12,8 +14,8 @@ final class InputStreamPreprocessor
         mb_substitute_character($substitutionCharacter);
 
         // One leading U+FEFF BYTE ORDER MARK character must be ignored if any are present.
-        if (0 === substr_compare($output, "\u{FEFF}", 0, 3)) {
-            $output = substr($output, 3);
+        if (0 === substr_compare($output, self::BOM, 0, strlen(self::BOM))) {
+            $output = substr($output, strlen(self::BOM));
         }
 
         return $output;
