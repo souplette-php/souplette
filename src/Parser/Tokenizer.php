@@ -121,7 +121,29 @@ final class Tokenizer extends AbstractTokenizer
             break;
             case TokenizerStates::SCRIPT_DATA:
             SCRIPT_DATA: {
-                throw new \Exception('Not Implemented: SCRIPT_DATA');
+                if ($cc === '<') {
+                    // Switch to the script data less-than sign state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_LESS_THAN_SIGN;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_LESS_THAN_SIGN;
+                } elseif ($cc === "\0") {
+                    // TODO: This is an unexpected-null-character parse error.
+                    // Emit a U+FFFD REPLACEMENT CHARACTER character token.
+                    $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, "\u{FFFD}"));
+                    $this->state = TokenizerStates::SCRIPT_DATA;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA;
+                } elseif ($cc === null) {
+                    // Emit an end-of-file token.
+                    return false;
+                } else {
+                    // Emit the current input character as a character token.
+                    $chars = $this->charsUntil("<\0");
+                    $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, $chars));
+                    $cc = $this->input[$this->position] ?? null;
+                    $this->state = TokenizerStates::SCRIPT_DATA;
+                    goto SCRIPT_DATA;
+                }
             }
             break;
             case TokenizerStates::PLAINTEXT:
