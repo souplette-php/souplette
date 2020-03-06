@@ -94,7 +94,29 @@ final class Tokenizer extends AbstractTokenizer
             break;
             case TokenizerStates::RAWTEXT:
             RAWTEXT: {
-                throw new \Exception('Not Implemented: RAWTEXT');
+                if ($cc === '<') {
+                    // Switch to the RAWTEXT less-than sign state.
+                    $this->state = TokenizerStates::RAWTEXT_LESS_THAN_SIGN;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto RAWTEXT_LESS_THAN_SIGN;
+                } elseif ($cc === "\0") {
+                    // TODO: This is an unexpected-null-character parse error.
+                    // Emit a U+FFFD REPLACEMENT CHARACTER character token.
+                    $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, "\u{FFFD}"));
+                    $this->state = TokenizerStates::RAWTEXT;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto RAWTEXT;
+                } elseif ($cc === null) {
+                    // Emit an end-of-file token.
+                    return false;
+                } else {
+                    // Emit the current input character as a character token.
+                    $chars = $this->charsUntil("<\0");
+                    $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, $chars));
+                    $cc = $this->input[$this->position] ?? null;
+                    $this->state = TokenizerStates::RAWTEXT;
+                    goto RAWTEXT;
+                }
             }
             break;
             case TokenizerStates::SCRIPT_DATA:
@@ -104,7 +126,24 @@ final class Tokenizer extends AbstractTokenizer
             break;
             case TokenizerStates::PLAINTEXT:
             PLAINTEXT: {
-                throw new \Exception('Not Implemented: PLAINTEXT');
+                if ($cc === "\0") {
+                    // TODO: This is an unexpected-null-character parse error.
+                    // Emit a U+FFFD REPLACEMENT CHARACTER character token.
+                    $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, "\u{FFFD}"));
+                    $this->state = TokenizerStates::PLAINTEXT;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto PLAINTEXT;
+                } elseif ($cc === null) {
+                    // Emit an end-of-file token.
+                    return false;
+                } else {
+                    // Emit the current input character as a character token.
+                    $chars = $this->charsUntil("\0");
+                    $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, $chars));
+                    $cc = $this->input[$this->position] ?? null;
+                    $this->state = TokenizerStates::PLAINTEXT;
+                    goto PLAINTEXT;
+                }
             }
             break;
             case TokenizerStates::TAG_OPEN:
@@ -285,17 +324,70 @@ final class Tokenizer extends AbstractTokenizer
             break;
             case TokenizerStates::RAWTEXT_LESS_THAN_SIGN:
             RAWTEXT_LESS_THAN_SIGN: {
-                throw new \Exception('Not Implemented: RAWTEXT_LESS_THAN_SIGN');
+                if ($cc === '/') {
+                    // Set the temporary buffer to the empty string.
+                    $this->temporaryBuffer = '';
+                    // Switch to the Switch to the RAWTEXT end tag open state.
+                    $this->state = TokenizerStates::RAWTEXT_END_TAG_OPEN;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto RAWTEXT_END_TAG_OPEN;
+                } else {
+                    // Emit a U+003C LESS-THAN SIGN character token.
+                    $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, '<'));
+                    // Reconsume in the RAWTEXT state.
+                    $this->state = TokenizerStates::RAWTEXT;
+                    goto RAWTEXT;
+                }
             }
             break;
             case TokenizerStates::RAWTEXT_END_TAG_OPEN:
             RAWTEXT_END_TAG_OPEN: {
-                throw new \Exception('Not Implemented: RAWTEXT_END_TAG_OPEN');
+                if (ctype_alpha($cc)) {
+                    // Create a new end tag token, set its tag name to the empty string.
+                    $this->currentToken = new Token(TokenTypes::END_TAG, '');
+                    // Reconsume in the RAWTEXT end tag name state.
+                    $this->state = TokenizerStates::RAWTEXT_END_TAG_NAME;
+                    goto RAWTEXT_END_TAG_NAME;
+                } else {
+                    // Emit a U+003C LESS-THAN SIGN character token and a U+002F SOLIDUS character token.
+                    $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, '</'));
+                    // Reconsume in the RAWTEXT state.
+                    $this->state = TokenizerStates::RAWTEXT;
+                    goto RAWTEXT;
+                }
             }
             break;
             case TokenizerStates::RAWTEXT_END_TAG_NAME:
             RAWTEXT_END_TAG_NAME: {
-                throw new \Exception('Not Implemented: RAWTEXT_END_TAG_NAME');
+                if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
+                    // TODO: If the current end tag token is an appropriate end tag token,
+                    // then switch to the before attribute name state.
+                    // Otherwise, treat it as per the "anything else" entry below.
+                } elseif ($cc === '/') {
+                    // TODO: If the current end tag token is an appropriate end tag token,
+                    // then switch to the self-closing start tag state.
+                    // Otherwise, treat it as per the "anything else" entry below.
+                } elseif ($cc === '>') {
+                    // TODO: If the current end tag token is an appropriate end tag token,
+                    // then switch to the data state and emit the current tag token.
+                    // Otherwise, treat it as per the "anything else" entry below.
+                } elseif (ctype_alpha($cc)) {
+                    $chars = $this->charsWhile(Characters::ALPHA);
+                    // Append the lowercase version of the current input character to the current tag token's tag name.
+                    $this->currentToken->name .= strtolower($chars);
+                    // Append the current input character to the temporary buffer.
+                    $this->temporaryBuffer .= $chars;
+                    $cc = $this->input[$this->position] ?? null;
+                    $this->state = TokenizerStates::RAWTEXT_END_TAG_NAME;
+                    goto RAWTEXT_END_TAG_NAME;
+                } else {
+                    // Emit a U+003C LESS-THAN SIGN character token, a U+002F SOLIDUS character token,
+                    // and a character token for each of the characters in the temporary buffer (in the order they were added to the buffer).
+                    $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, '</' . $this->temporaryBuffer));
+                    // Reconsume in the RAWTEXT state.
+                    $this->state = TokenizerStates::RAWTEXT;
+                    goto RAWTEXT;
+                }
             }
             break;
             case TokenizerStates::SCRIPT_DATA_LESS_THAN_SIGN:

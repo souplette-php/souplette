@@ -16,7 +16,7 @@ if ($cc === '&') {
     // TODO: This is an unexpected-null-character parse error.
     // Emit the current input character as a character token.
     $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, $cc));
-    {{ h.advance_to('DATA') }}
+    {{ h.advance_to(current_state) }}
 } elseif ({{ h.is_eof() }}) {
     // Emit an end-of-file token.
     {{ h.emit_eof() }}
@@ -24,5 +24,5 @@ if ($cc === '&') {
     // Emit the current input character as a character token.
     $chars = $this->charsUntil("&<\0");
     $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, $chars));
-    {{ h.update_and_reconsume_in('DATA') }}
+    {{ h.update_and_reconsume_in(current_state) }}
 }

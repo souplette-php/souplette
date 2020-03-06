@@ -3,4 +3,21 @@
 #}
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
-throw new \Exception('Not Implemented: {{current_state}}');
+if ($cc === '<') {
+    // Switch to the RAWTEXT less-than sign state.
+    {{ h.advance_to('RAWTEXT_LESS_THAN_SIGN') }}
+} elseif ($cc === "\0") {
+    // TODO: This is an unexpected-null-character parse error.
+    // Emit a U+FFFD REPLACEMENT CHARACTER character token.
+    $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, "\u{FFFD}"));
+    {{ h.advance_to(current_state) }}
+} elseif ({{ h.is_eof() }}) {
+    // Emit an end-of-file token.
+    {{ h.emit_eof() }}
+} else {
+    // Emit the current input character as a character token.
+    $chars = $this->charsUntil("<\0");
+    $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, $chars));
+    {{ h.update_and_reconsume_in(current_state) }}
+}
+
