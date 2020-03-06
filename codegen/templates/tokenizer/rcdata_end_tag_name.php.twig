@@ -3,4 +3,29 @@
 #}
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
-throw new \Exception('Not Implemented: {{current_state}}');
+if ({{ h.is_whitespace() }}) {
+    // TODO: If the current end tag token is an appropriate end tag token,
+    // then switch to the before attribute name state.
+    // Otherwise, treat it as per the "anything else" entry below.
+} elseif ($cc === '/') {
+    // TODO: If the current end tag token is an appropriate end tag token,
+    // then switch to the self-closing start tag state.
+    // Otherwise, treat it as per the "anything else" entry below.
+} elseif ($cc === '>') {
+    // TODO: If the current end tag token is an appropriate end tag token,
+    // then switch to the data state and emit the current tag token.
+    // Otherwise, treat it as per the "anything else" entry below.
+} elseif (ctype_alpha($cc)) {
+    $chars = $this->charsWhile(Characters::ALPHA);
+    // Append the lowercase version of the current input character to the current tag token's tag name.
+    $this->currentToken->name .= strtolower($chars);
+    // Append the current input character to the temporary buffer.
+    $this->temporaryBuffer .= $chars;
+    {{ h.update_and_reconsume_in(current_state) }}
+} else {
+    // Emit a U+003C LESS-THAN SIGN character token, a U+002F SOLIDUS character token,
+    // and a character token for each of the characters in the temporary buffer (in the order they were added to the buffer).
+    $this->tokenQueue->enqueue(new Token(TokenTypes::CHARACTER, '</' . $this->temporaryBuffer));
+    // Reconsume in the RCDATA state.
+    {{ h.reconsume_in('RCDATA') }}
+}
