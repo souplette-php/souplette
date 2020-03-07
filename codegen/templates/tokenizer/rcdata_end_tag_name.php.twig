@@ -16,7 +16,7 @@ if ({{ h.is_whitespace() }}) {
     // then switch to the data state and emit the current tag token.
     // Otherwise, treat it as per the "anything else" entry below.
 } elseif (ctype_alpha($cc)) {
-    {{ h.chars_while(constant('ju1ius\\HtmlParser\\Tokenizer\\Characters::ALPHA')) }}
+    {{ h.chars_while_alpha() }}
     // Append the lowercase version of the current input character to the current tag token's tag name.
     $this->currentToken->name .= strtolower($chars);
     // Append the current input character to the temporary buffer.

@@ -3,7 +3,7 @@
 #}
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
-{{ h.chars_while(constant('ju1ius\\HtmlParser\\Tokenizer\\Characters::HEX')) }}
+{{ h.chars_while_hex() }}
 $this->characterReferenceCode = hexdec($chars);
 $cc = $this->input[$this->position];
 if ($cc === ';') {

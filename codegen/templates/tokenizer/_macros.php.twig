@@ -22,6 +22,18 @@ ${{ return_var }} = substr($this->input, $this->position, $l);
 $this->position += $l;
 {%- endmacro %}
 
+{% macro chars_while_alpha(return_var = 'chars') -%}
+{{ _self.chars_while(constant('ju1ius\\HtmlParser\\Tokenizer\\Characters::ALPHA'), return_var) }}
+{%- endmacro %}
+
+{% macro chars_while_numeric(return_var = 'chars') -%}
+{{ _self.chars_while(constant('ju1ius\\HtmlParser\\Tokenizer\\Characters::NUM'), return_var) }}
+{%- endmacro %}
+
+{% macro chars_while_hex(return_var = 'chars') -%}
+{{ _self.chars_while(constant('ju1ius\\HtmlParser\\Tokenizer\\Characters::HEX'), return_var) }}
+{%- endmacro %}
+
 {% macro peek_value(value, case_insensitive = false) -%}
 0 === substr_compare($this->input, {{ value }}, $this->position, {{ value|length }}, {{ case_insensitive }})
 {% endmacro %}
