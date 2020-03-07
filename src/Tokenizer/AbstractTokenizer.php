@@ -58,6 +58,11 @@ abstract class AbstractTokenizer
         $this->entitySearch = EntitySearch::create();
     }
 
+    public function getErrors(): array
+    {
+        return $this->parseErrors;
+    }
+
     abstract public function nextToken();
 
     final public function tokenize()

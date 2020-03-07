@@ -2046,11 +2046,11 @@ final class Tokenizer extends AbstractTokenizer
                         goto INITIAL;
                     }
                 } else {
+                    $this->temporaryBuffer = '&';
                     // Flush code points consumed as a character reference.
                     $this->flushCodePointsConsumedAsACharacterReference();
                     // Switch to the ambiguous ampersand state.
                     $this->state = TokenizerStates::AMBIGUOUS_AMPERSAND;
-                    $cc = $this->input[++$this->position] ?? null;
                     goto AMBIGUOUS_AMPERSAND;
                 }
             }
@@ -2221,14 +2221,20 @@ final class Tokenizer extends AbstractTokenizer
             case TokenizerStates::AMBIGUOUS_AMPERSAND:
             AMBIGUOUS_AMPERSAND: {
                 if (ctype_alnum($cc)) {
+                    $l = strspn($this->input, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
                     // If the character reference was consumed as part of an attribute
                     if ($this->returnState === TokenizerStates::ATTRIBUTE_VALUE_DOUBLE_QUOTED || $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_SINGLE_QUOTED || $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED) {
                         // then append the current input character to the current attribute's value.
-                        $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= $cc;
+                        $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= $chars;
                     } else {
                         // Otherwise, emit the current input character as a character token.
-                        $this->tokenQueue->enqueue(new Character($cc));
+                        $this->tokenQueue->enqueue(new Character($chars));
                     }
+                    $cc = $this->input[$this->position] ?? null;
+                    $this->state = TokenizerStates::AMBIGUOUS_AMPERSAND;
+                    goto AMBIGUOUS_AMPERSAND;
                 } elseif ($cc === ';') {
                     // This is an unknown-named-character-reference parse error.
                     $this->parseErrors[] = [ParseErrors::UNKNOWN_NAMED_CHARACTER_REFERENCE, $this->position];

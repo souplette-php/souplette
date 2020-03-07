@@ -30,6 +30,10 @@ $this->position += $l;
 {{ _self.chars_while(constant('ju1ius\\HtmlParser\\Tokenizer\\Characters::NUM'), return_var) }}
 {%- endmacro %}
 
+{% macro chars_while_alnum(return_var = 'chars') -%}
+{{ _self.chars_while(constant('ju1ius\\HtmlParser\\Tokenizer\\Characters::ALNUM'), return_var) }}
+{%- endmacro %}
+
 {% macro chars_while_hex(return_var = 'chars') -%}
 {{ _self.chars_while(constant('ju1ius\\HtmlParser\\Tokenizer\\Characters::HEX'), return_var) }}
 {%- endmacro %}

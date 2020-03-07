@@ -40,4 +40,23 @@ class EntitiesTest extends TestCase
             Token::character("\u{009C}"),
         ]];
     }
+
+    /**
+     * @dataProvider invalidEntitiesInDataProvider
+     * @param string $input
+     * @param array $expected
+     */
+    public function testInvalidEntitiesInData(string $input, array $expected)
+    {
+        TokenizerAssert::tokensEquals($input, $expected);
+    }
+
+    public function invalidEntitiesInDataProvider()
+    {
+        yield ['&test=', [
+            Token::character('&'),
+            Token::character('test'),
+            Token::character('='),
+        ]];
+    }
 }

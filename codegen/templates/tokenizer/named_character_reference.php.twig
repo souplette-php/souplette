@@ -57,8 +57,9 @@ if ($lastTerminalIndex !== null) {
         {{ h.reconsume_in_return_state() }}
     }
 } else {
+    $this->temporaryBuffer = '&';
     // Flush code points consumed as a character reference.
     $this->flushCodePointsConsumedAsACharacterReference();
     // Switch to the ambiguous ampersand state.
-    {{ h.switch_to('AMBIGUOUS_AMPERSAND') }}
+    {{ h.reconsume_in('AMBIGUOUS_AMPERSAND') }}
 }
