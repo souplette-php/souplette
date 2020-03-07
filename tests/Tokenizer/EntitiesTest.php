@@ -34,5 +34,10 @@ class EntitiesTest extends TestCase
         ]];
         yield ['&#38;', [Token::character('&')]];
         yield ['&#x26;', [Token::character('&')]];
+        yield ['&acirc;&#128;&#156;', [
+            Token::character('â'),
+            Token::character("\u{0080}"),
+            Token::character("\u{009C}"),
+        ]];
     }
 }

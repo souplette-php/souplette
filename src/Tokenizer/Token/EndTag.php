@@ -7,11 +7,18 @@ use ju1ius\HtmlParser\Tokenizer\TokenTypes;
 
 final class EndTag extends Token
 {
-    public $type = TokenTypes::START_TAG;
+    /**
+     * @var int
+     */
+    public $type = TokenTypes::END_TAG;
     /**
      * @var string
      */
     public $name = '';
+    /**
+     * @var bool
+     */
+    public $selfClosing = false;
     /**
      * @var array|null
      */

@@ -20,6 +20,10 @@ final class TokenTypes
         self::CHARACTER => 'CHARACTER',
     ];
 
+    /**
+     * @param int|Token $tokenOrType
+     * @return string
+     */
     public static function nameOf($tokenOrType): string
     {
         if ($tokenOrType instanceof Token) {

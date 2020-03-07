@@ -24,6 +24,8 @@ class StartTagTest extends TestCase
         yield ['<bé>', [Token::startTag('bé')]];
         yield ['<br/>', [Token::startTag('br', true)]];
         yield ['<br />', [Token::startTag('br', true)]];
+        yield ['<a><b><c>', [Token::startTag('a'), Token::startTag('b'), Token::startTag('c')]];
+
     }
 
     /**
@@ -42,6 +44,10 @@ class StartTagTest extends TestCase
         yield ['<a b=c>', [Token::startTag('a', false, [['b', 'c']])]];
         yield ['<a b="c">', [Token::startTag('a', false, [['b', 'c']])]];
         yield ["<a b='c'>", [Token::startTag('a', false, [['b', 'c']])]];
+        yield ['<a b><c d=e>', [
+            Token::startTag('a', false, [['b', '']]),
+            Token::startTag('c', false, [['d', 'e']])
+        ]];
     }
 
 }
