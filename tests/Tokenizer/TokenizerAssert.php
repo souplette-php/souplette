@@ -10,12 +10,16 @@ final class TokenizerAssert
 {
     /**
      * @param string $input
-     * @param Token[] $expected
+     * @param Token[] $expectedTokens
+     * @param array|null $expectedErrors
      */
-    public static function tokensEquals(string $input, array $expected)
+    public static function tokensEquals(string $input, array $expectedTokens, ?array $expectedErrors = null)
     {
         $tokenizer = new Tokenizer($input);
-        $actual = iterator_to_array($tokenizer->tokenize());
-        Assert::assertEquals($expected, $actual);
+        $tokens = iterator_to_array($tokenizer->tokenize());
+        Assert::assertEquals($expectedTokens, $tokens);
+        if ($expectedErrors) {
+            Assert::assertEquals($expectedErrors, $tokenizer->getErrors());
+        }
     }
 }

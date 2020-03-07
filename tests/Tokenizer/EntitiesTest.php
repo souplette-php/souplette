@@ -3,6 +3,7 @@
 namespace ju1ius\HtmlParser\Tests\Tokenizer;
 
 use ju1ius\HtmlParser\Tokenizer\EntityLookup;
+use ju1ius\HtmlParser\Tokenizer\ParseErrors;
 use ju1ius\HtmlParser\Tokenizer\Token;
 use PHPUnit\Framework\TestCase;
 
@@ -44,11 +45,12 @@ class EntitiesTest extends TestCase
     /**
      * @dataProvider invalidEntitiesInDataProvider
      * @param string $input
-     * @param array $expected
+     * @param array $expectedTokens
+     * @param array $expectedErrors
      */
-    public function testInvalidEntitiesInData(string $input, array $expected)
+    public function testInvalidEntitiesInData(string $input, array $expectedTokens, array $expectedErrors = [])
     {
-        TokenizerAssert::tokensEquals($input, $expected);
+        TokenizerAssert::tokensEquals($input, $expectedTokens, $expectedErrors);
     }
 
     public function invalidEntitiesInDataProvider()
@@ -57,6 +59,13 @@ class EntitiesTest extends TestCase
             Token::character('&'),
             Token::character('test'),
             Token::character('='),
+        ]];
+        yield ['&foobar;', [
+            Token::character('&'),
+            Token::character('foobar'),
+            Token::character(';'),
+        ], [
+            [ParseErrors::UNKNOWN_NAMED_CHARACTER_REFERENCE, 7],
         ]];
     }
 }
