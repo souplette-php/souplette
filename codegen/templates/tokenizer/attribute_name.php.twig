@@ -21,7 +21,7 @@ if ({{ h.is_whitespace() }} || $cc === '/' || $cc === '>' || {{ h.is_eof() }}) {
     {{ h.consume('ATTRIBUTE_NAME') }}
 } else {
     // Append the current input character to the current attribute's name.
-    $chars = $this->charsUntil("=<>/'\"\0 \n\t\f");
+    {{ h.chars_until("=<>/'\"\0 \n\t\f") }}
     {{ h.append_to_attr_name('strtolower($chars)') }}
     {{ h.update_and_reconsume_in('ATTRIBUTE_NAME') }}
 }

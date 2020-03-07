@@ -10,6 +10,18 @@ $cc === null
 ctype_alpha($cc)
 {%- endmacro %}
 
+{% macro chars_until(bytes, return_var = 'chars') -%}
+$l = strcspn($this->input, {{ bytes|repr_bytes }}, $this->position);
+${{ return_var }} = substr($this->input, $this->position, $l);
+$this->position += $l;
+{%- endmacro %}
+
+{% macro chars_while(bytes, return_var = 'chars') -%}
+$l = strspn($this->input, {{ bytes|repr_bytes }}, $this->position);
+${{ return_var }} = substr($this->input, $this->position, $l);
+$this->position += $l;
+{%- endmacro %}
+
 {% macro peek_value(value, case_insensitive = false) -%}
 0 === substr_compare($this->input, {{ value }}, $this->position, {{ value|length }}, {{ case_insensitive }})
 {% endmacro %}

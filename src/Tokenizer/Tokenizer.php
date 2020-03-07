@@ -44,7 +44,9 @@ final class Tokenizer extends AbstractTokenizer
                     return false;
                 } else {
                     // Emit the current input character as a character token.
-                    $chars = $this->charsUntil("&<\0");
+                    $l = strcspn($this->input, "&<\0", $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
                     $this->tokenQueue->enqueue(new Character($chars));
                     $cc = $this->input[$this->position] ?? null;
                     $this->state = TokenizerStates::DATA;
@@ -83,7 +85,9 @@ final class Tokenizer extends AbstractTokenizer
                     return false;
                 } else {
                     // Emit the current input character as a character token.
-                    $chars = $this->charsUntil("&<\0");
+                    $l = strcspn($this->input, "&<\0", $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
                     $this->tokenQueue->enqueue(new Character($chars));
                     $cc = $this->input[$this->position] ?? null;
                     $this->state = TokenizerStates::RCDATA;
@@ -115,7 +119,9 @@ final class Tokenizer extends AbstractTokenizer
                     return false;
                 } else {
                     // Emit the current input character as a character token.
-                    $chars = $this->charsUntil("<\0");
+                    $l = strcspn($this->input, "<\0", $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
                     $this->tokenQueue->enqueue(new Character($chars));
                     $cc = $this->input[$this->position] ?? null;
                     $this->state = TokenizerStates::RAWTEXT;
@@ -142,7 +148,9 @@ final class Tokenizer extends AbstractTokenizer
                     return false;
                 } else {
                     // Emit the current input character as a character token.
-                    $chars = $this->charsUntil("<\0");
+                    $l = strcspn($this->input, "<\0", $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
                     $this->tokenQueue->enqueue(new Character($chars));
                     $cc = $this->input[$this->position] ?? null;
                     $this->state = TokenizerStates::SCRIPT_DATA;
@@ -164,7 +172,9 @@ final class Tokenizer extends AbstractTokenizer
                     return false;
                 } else {
                     // Emit the current input character as a character token.
-                    $chars = $this->charsUntil("\0");
+                    $l = strcspn($this->input, "\0", $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
                     $this->tokenQueue->enqueue(new Character($chars));
                     $cc = $this->input[$this->position] ?? null;
                     $this->state = TokenizerStates::PLAINTEXT;
@@ -272,7 +282,9 @@ final class Tokenizer extends AbstractTokenizer
                     return false;
                 } else {
                     // Append the current input character to the current tag token's tag name.
-                    $chars = $this->charsUntil("/> \t\f\n\0");
+                    $l = strcspn($this->input, "/> \t\f\n\0", $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
                     $this->currentToken->name .= strtolower($chars);
                     $cc = $this->input[$this->position] ?? null;
                     $this->state = TokenizerStates::TAG_NAME;
@@ -330,7 +342,9 @@ final class Tokenizer extends AbstractTokenizer
                     // then switch to the data state and emit the current tag token.
                     // Otherwise, treat it as per the "anything else" entry below.
                 } elseif (ctype_alpha($cc)) {
-                    $chars = $this->charsWhile(Characters::ALPHA);
+                    $l = strspn($this->input, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
                     // Append the lowercase version of the current input character to the current tag token's tag name.
                     $this->currentToken->name .= strtolower($chars);
                     // Append the current input character to the temporary buffer.
@@ -398,7 +412,9 @@ final class Tokenizer extends AbstractTokenizer
                     // then switch to the data state and emit the current tag token.
                     // Otherwise, treat it as per the "anything else" entry below.
                 } elseif (ctype_alpha($cc)) {
-                    $chars = $this->charsWhile(Characters::ALPHA);
+                    $l = strspn($this->input, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
                     // Append the lowercase version of the current input character to the current tag token's tag name.
                     $this->currentToken->name .= strtolower($chars);
                     // Append the current input character to the temporary buffer.
@@ -553,7 +569,9 @@ final class Tokenizer extends AbstractTokenizer
                     goto ATTRIBUTE_NAME;
                 } else {
                     // Append the current input character to the current attribute's name.
-                    $chars = $this->charsUntil("=<>/'\"\0 \n\t\f");
+                    $l = strcspn($this->input, "=<>/'\"\0 \n\t\f", $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
                     $this->currentToken->attributes[count($this->currentToken->attributes) - 1][0] .= strtolower($chars);
                     $cc = $this->input[$this->position] ?? null;
                     $this->state = TokenizerStates::ATTRIBUTE_NAME;
@@ -654,7 +672,9 @@ final class Tokenizer extends AbstractTokenizer
                     return false;
                 } else {
                     // Append the current input character to the current attribute's value.
-                    $chars = $this->charsUntil("\"&\0");
+                    $l = strcspn($this->input, "\"&\0", $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
                     $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= $chars;
                     $cc = $this->input[$this->position] ?? null;
                     $this->state = TokenizerStates::ATTRIBUTE_VALUE_DOUBLE_QUOTED;
@@ -689,7 +709,9 @@ final class Tokenizer extends AbstractTokenizer
                     return false;
                 } else {
                     // Append the current input character to the current attribute's value.
-                    $chars = $this->charsUntil("'&\0");
+                    $l = strcspn($this->input, "'&\0", $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
                     $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= $chars;
                     $cc = $this->input[$this->position] ?? null;
                     $this->state = TokenizerStates::ATTRIBUTE_VALUE_SINGLE_QUOTED;
@@ -737,7 +759,9 @@ final class Tokenizer extends AbstractTokenizer
                     return false;
                 } else {
                     // Append the current input character to the current attribute's value.
-                    $chars = $this->charsUntil("&\"'<>=`\0 \n\f\t");
+                    $l = strcspn($this->input, "&\"'<>=`\0 \n\f\t", $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
                     $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= $chars;
                     $cc = $this->input[$this->position] ?? null;
                     $this->state = TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED;
@@ -823,7 +847,9 @@ final class Tokenizer extends AbstractTokenizer
                     goto BOGUS_COMMENT;
                 } else {
                     // Append the current input character to the comment token's data.
-                    $chars = $this->charsUntil(">\0");
+                    $l = strcspn($this->input, ">\0", $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
                     $this->currentToken->data .= $chars;
                     $this->state = TokenizerStates::BOGUS_COMMENT;
                     $cc = $this->input[++$this->position] ?? null;
@@ -959,7 +985,9 @@ final class Tokenizer extends AbstractTokenizer
                     return false;
                 } else {
                     // Append the current input character to the comment token's data.
-                    $chars = $this->charsUntil("<-\0");
+                    $l = strcspn($this->input, "<-\0", $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
                     $this->currentToken->data .= $chars;
                     $this->state = TokenizerStates::COMMENT;
                     $cc = $this->input[++$this->position] ?? null;
@@ -1220,7 +1248,9 @@ final class Tokenizer extends AbstractTokenizer
                     return false;
                 } else {
                     // Append the current input character to the current DOCTYPE token's name.
-                    $chars = $this->charsUntil(Characters::WHITESPACE . ">\0");
+                    $l = strcspn($this->input, ">\0 \n\t\f", $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
                     $this->currentToken->name .= strtolower($chars);
                     $cc = $this->input[$this->position] ?? null;
                     $this->state = TokenizerStates::DOCTYPE_NAME;
@@ -1400,7 +1430,9 @@ final class Tokenizer extends AbstractTokenizer
                     return false;
                 } else {
                     // Append the current input character to the current DOCTYPE token's public identifier.
-                    $chars = $this->charsUntil("\">\0");
+                    $l = strcspn($this->input, "\">\0", $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
                     $this->currentToken->publicIdentifier .= $chars;
                     $cc = $this->input[$this->position] ?? null;
                     $this->state = TokenizerStates::DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED;
@@ -1440,7 +1472,9 @@ final class Tokenizer extends AbstractTokenizer
                     return false;
                 } else {
                     // Append the current input character to the current DOCTYPE token's public identifier.
-                    $chars = $this->charsUntil("'>\0");
+                    $l = strcspn($this->input, "'>\0", $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
                     $this->currentToken->publicIdentifier .= $chars;
                     $cc = $this->input[$this->position] ?? null;
                     $this->state = TokenizerStates::DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED;
@@ -1665,7 +1699,9 @@ final class Tokenizer extends AbstractTokenizer
                     return false;
                 } else {
                     // Append the current input character to the current DOCTYPE token's system identifier.
-                    $chars = $this->charsUntil("\">\0");
+                    $l = strcspn($this->input, "\">\0", $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
                     $this->currentToken->systemIdentifier .= $chars;
                     $cc = $this->input[$this->position] ?? null;
                     $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
@@ -1705,7 +1741,9 @@ final class Tokenizer extends AbstractTokenizer
                     return false;
                 } else {
                     // Append the current input character to the current DOCTYPE token's system identifier.
-                    $chars = $this->charsUntil("'>\0");
+                    $l = strcspn($this->input, "'>\0", $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
                     $this->currentToken->systemIdentifier .= $chars;
                     $cc = $this->input[$this->position] ?? null;
                     $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
@@ -1782,7 +1820,9 @@ final class Tokenizer extends AbstractTokenizer
                     return false;
                 } else {
                     // Emit the current input character as a character token.
-                    $chars = $this->charsUntil(']');
+                    $l = strcspn($this->input, ']', $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
                     $this->tokenQueue->enqueue(new Character($chars));
                     $cc = $this->input[$this->position] ?? null;
                     $this->state = TokenizerStates::CDATA_SECTION;
@@ -1978,7 +2018,9 @@ final class Tokenizer extends AbstractTokenizer
             break;
             case TokenizerStates::HEXADECIMAL_CHARACTER_REFERENCE:
             HEXADECIMAL_CHARACTER_REFERENCE: {
-                $chars = $this->charsWhile(Characters::HEX);
+                $l = strspn($this->input, 'abcdefABCDEF0123456789', $this->position);
+                $chars = substr($this->input, $this->position, $l);
+                $this->position += $l;
                 $this->characterReferenceCode = hexdec($chars);
                 $cc = $this->input[$this->position];
                 if ($cc === ';') {
@@ -1996,7 +2038,9 @@ final class Tokenizer extends AbstractTokenizer
             break;
             case TokenizerStates::DECIMAL_CHARACTER_REFERENCE:
             DECIMAL_CHARACTER_REFERENCE: {
-                $chars = $this->charsWhile(Characters::NUM);
+                $l = strspn($this->input, '0123456789', $this->position);
+                $chars = substr($this->input, $this->position, $l);
+                $this->position += $l;
                 $this->characterReferenceCode = (int)$chars;
                 $cc = $this->input[$this->position];
                 if ($cc === ';') {

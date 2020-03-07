@@ -23,7 +23,7 @@ if ({{ h.is_whitespace() }}) {
     {{ h.emit_eof() }}
 } else {
     // Append the current input character to the current DOCTYPE token's name.
-    $chars = $this->charsUntil(Characters::WHITESPACE . ">\0");
+    {{ h.chars_until(">\0 \n\t\f") }}
     $this->currentToken->name .= strtolower($chars);
     {{ h.update_and_reconsume_in('DOCTYPE_NAME') }}
 }

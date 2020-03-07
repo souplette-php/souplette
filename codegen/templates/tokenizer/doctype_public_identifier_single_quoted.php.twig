@@ -26,7 +26,7 @@ if ($cc === "'") {
     {{ h.emit_eof() }}
 } else {
     // Append the current input character to the current DOCTYPE token's public identifier.
-    $chars = $this->charsUntil("'>\0");
+    {{ h.chars_until("'>\0") }}
     $this->currentToken->publicIdentifier .= $chars;
     {{ h.update_and_reconsume_in(current_state) }}
 }

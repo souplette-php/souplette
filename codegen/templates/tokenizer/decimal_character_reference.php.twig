@@ -3,7 +3,7 @@
 #}
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
-$chars = $this->charsWhile(Characters::NUM);
+{{ h.chars_while(constant('ju1ius\\HtmlParser\\Tokenizer\\Characters::NUM')) }}
 $this->characterReferenceCode = (int)$chars;
 $cc = $this->input[$this->position];
 if ($cc === ';') {

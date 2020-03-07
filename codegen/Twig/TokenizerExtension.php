@@ -2,6 +2,7 @@
 
 namespace ju1ius\HtmlParser\Codegen\Twig;
 
+use ju1ius\HtmlParser\Codegen\Utils;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
@@ -19,6 +20,7 @@ class TokenizerExtension extends AbstractExtension
     {
         return [
             new TwigFilter('indent', [$this, 'indent']),
+            new TwigFilter('repr_bytes', [$this, 'reprBytes']),
         ];
     }
 
@@ -53,5 +55,25 @@ class TokenizerExtension extends AbstractExtension
         }
 
         return implode("\n", $output);
+    }
+
+    public function reprBytes(string $bytes)
+    {
+        $output = [];
+        $quoteChar = ctype_print($bytes) ? "'" : '"';
+        for ($i = 0; $i < strlen($bytes); $i++) {
+            $byte = $bytes[$i];
+            if (ctype_cntrl($byte)) {
+                $output[] = Utils::escapeAsciiControl($byte);
+            } elseif ($byte === '$' && $quoteChar === '"') {
+                $output[] = '\\$';
+            } elseif ($byte === $quoteChar) {
+                $output[] = '\\'.$byte;
+            } else {
+                $output[] = $byte;
+            }
+        }
+
+        return sprintf('%1$s%2$s%1$s', $quoteChar, implode('', $output));
     }
 }
