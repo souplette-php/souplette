@@ -7,7 +7,8 @@ if ($cc === '-') {
     // Switch to the comment end state
     {{ h.advance_to('COMMENT_END') }}
 } elseif ($cc === null) {
-    // TODO: This is an eof-in-comment parse error.
+    // This is an eof-in-comment parse error.
+    {{ h.parse_error('EOF_IN_COMMENT') }}
     // Emit the comment token. Emit an end-of-file token.
     {{ h.emit_current_token() }}
     {{ h.emit_eof() }}

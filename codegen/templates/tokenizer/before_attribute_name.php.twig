@@ -9,7 +9,8 @@ if ({{ h.is_whitespace() }}) {
     // Reconsume in the after attribute name state.
     {{ h.reconsume_in('AFTER_ATTRIBUTE_NAME') }}
 } elseif ($cc === '=') {
-    // TODO: This is an unexpected-equals-sign-before-attribute-name parse error.
+    // This is an unexpected-equals-sign-before-attribute-name parse error.
+    {{ h.parse_error('UNEXPECTED_EQUALS_SIGN_BEFORE_ATTRIBUTE_NAME') }}
     // Start a new attribute in the current tag token. Set that attribute's name to the current input character, and its value to the empty string.
     {{ h.start_attribute('$cc') }}
     // Switch to the attribute name state.

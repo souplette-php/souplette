@@ -7,7 +7,8 @@ if ($cc === '-') {
     // Switch to the comment start dash state.
     {{ h.advance_to('COMMENT_START_DASH') }}
 } elseif ($cc === '>') {
-    // TODO: This is an abrupt-closing-of-empty-comment parse error.
+    // This is an abrupt-closing-of-empty-comment parse error.
+    {{ h.parse_error('ABRUPT_CLOSING_OF_EMPTY_COMMENT') }}
     // Switch to the data state. Emit the comment token.
     {{ h.emit_and_resume_in('DATA') }}
 } else {

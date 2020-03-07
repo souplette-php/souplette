@@ -9,7 +9,8 @@ if ({{ h.is_alpha() }}) {
     // Reconsume in the tag name state.
     {{ h.reconsume_in('TAG_NAME') }}
 } elseif ($cc === '>') {
-    // TODO: This is a missing-end-tag-name parse error.
+    // This is a missing-end-tag-name parse error.
+    {{ h.parse_error('MISSING_END_TAG_NAME') }}
     // Switch to the data state.
     {{ h.advance_to('DATA') }}
 } elseif ({{ h.is_eof() }}) {
@@ -18,7 +19,8 @@ if ({{ h.is_alpha() }}) {
     $this->tokenQueue->enqueue(new Character('</'));
     {{ h.emit_eof() }}
 } else {
-    // TODO: This is an invalid-first-character-of-tag-name parse error.
+    // This is an invalid-first-character-of-tag-name parse error.
+    {{ h.parse_error('INVALID_FIRST_CHARACTER_OF_TAG_NAME') }}
     // Create a comment token whose data is the empty string.
     $this->currentToken = new Comment('');
     // Reconsume in the bogus comment state.

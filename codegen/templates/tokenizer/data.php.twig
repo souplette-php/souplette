@@ -12,7 +12,8 @@ if ($cc === '&') {
     // Switch to the tag open state.
     {{ h.advance_to('TAG_OPEN') }}
 } elseif ($cc === "\0") {
-    // TODO: This is an unexpected-null-character parse error.
+    // This is an unexpected-null-character parse error.
+    {{ h.parse_error('UNEXPECTED_NULL_CHARACTER') }}
     // Emit the current input character as a character token.
     $this->tokenQueue->enqueue(new Character($cc));
     {{ h.advance_to(current_state) }}

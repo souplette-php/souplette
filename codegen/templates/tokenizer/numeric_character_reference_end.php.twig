@@ -4,16 +4,19 @@
 {% import 'tokenizer/_macros.php.twig' as h -%}
 $refCode = $this->characterReferenceCode;
 if ($refCode === 0x00) {
-    // TODO: this is a null-character-reference parse error.
+    // This is a null-character-reference parse error.
+    {{ h.parse_error('NULL_CHARACTER_REFERENCE') }}
     // Set the character reference code to 0xFFFD.
     $this->characterReferenceCode = 0xFFFD;
 } elseif ($refCode > 0x10FFFF) {
-    // TODO: this is a character-reference-outside-unicode-range parse error.
+    // This is a character-reference-outside-unicode-range parse error.
+    {{ h.parse_error('CHARACTER_REFERENCE_OUTSIDE_UNICODE_RANGE') }}
     // Set the character reference code to 0xFFFD.
     $this->characterReferenceCode = 0xFFFD;
 } elseif ($refCode >= 0xD800 && $refCode <= 0xDFFF) {
     // A surrogate is a code point that is in the range U+D800 to U+DFFF, inclusive.
-    // TODO: this is a surrogate-character-reference parse error.
+    // This is a surrogate-character-reference parse error.
+    {{ h.parse_error('SURROGATE_CHARACTER_REFERENCE') }}
     // Set the character reference code to 0xFFFD.
     $this->characterReferenceCode = 0xFFFD;
 } elseif (
@@ -37,7 +40,8 @@ if ($refCode === 0x00) {
     || $refCode === 0xFFFFE || $refCode === 0xFFFFF
     || $refCode === 0x10FFFE || $refCode === 0x10FFFF
 ) {
-    // TODO: this is a noncharacter-character-reference parse error.
+    // This is a noncharacter-character-reference parse error.
+    {{ h.parse_error('NONCHARACTER_CHARACTER_REFERENCE') }}
 } elseif (
     // the number is 0x0D
     $refCode === 0x0D
@@ -49,7 +53,8 @@ if ($refCode === 0x00) {
         && ($refCode < 128 && !ctype_space($refCode))
     )
 ) {
-    // TODO: then this is a control-character-reference parse error
+    // This is a control-character-reference parse error
+    {{ h.parse_error('CONTROL_CHARACTER_REFERENCE') }}
     if (isset(EntityLookup::NUMERIC_CTRL_REPLACEMENTS[$refCode])) {
         $this->characterReferenceCode = EntityLookup::NUMERIC_CTRL_REPLACEMENTS[$refCode];
     }

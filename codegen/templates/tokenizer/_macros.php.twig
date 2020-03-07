@@ -123,9 +123,6 @@ return true;
 return false;
 {%- endmacro %}
 
-{% macro flush_and_advance_to(state_name) -%}
-do {
-    $this->state = TokenizerStates::{{ state_name }};
-    goto {{ state_name }};
-} while (false);
-{%- endmacro flush_and_advance_to %}
+{% macro parse_error(type) -%}
+$this->parseErrors[] = [ParseErrors::{{ type }}, $this->position];
+{%- endmacro %}

@@ -17,20 +17,23 @@ if ({{ h.is_whitespace() }}) {
     // switch to the DOCTYPE public identifier (single-quoted) state.
     {{ h.advance_to('DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED') }}
 } elseif ($cc === '>') {
-    // TODO: This is a missing-doctype-public-identifier parse error.
+    // This is a missing-doctype-public-identifier parse error.
+    {{ h.parse_error('MISSING_DOCTYPE_PUBLIC_IDENTIFIER') }}
     // Set the DOCTYPE token's force-quirks flag to on.
     $this->currentToken->forceQuirks = true;
     // Switch to the data state. Emit that DOCTYPE token.
     {{ h.emit_and_resume_in('DATA') }}
 } elseif ($cc === null) {
-    // TODO: This is an eof-in-doctype parse error.
+    // This is an eof-in-doctype parse error.
+    {{ h.parse_error('EOF_IN_DOCTYPE') }}
     // Set the DOCTYPE token's force-quirks flag to on.
     $this->currentToken->forceQuirks = true;
     // Emit that DOCTYPE token. Emit an end-of-file token.
     {{ h.emit_current_token() }}
     {{ h.emit_eof() }}
 } else {
-    // TODO: This is a missing-quote-before-doctype-public-identifier parse error.
+    // This is a missing-quote-before-doctype-public-identifier parse error.
+    {{ h.parse_error('MISSING_QUOTE_BEFORE_DOCTYPE_PUBLIC_IDENTIFIER') }}
     // Set the DOCTYPE token's force-quirks flag to on.
     $this->currentToken->forceQuirks = true;
     // Reconsume in the bogus DOCTYPE state.

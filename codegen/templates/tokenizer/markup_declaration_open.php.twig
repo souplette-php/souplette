@@ -25,14 +25,16 @@ if (0 === substr_compare($this->input, '--', $this->position, 2)) {
         // then switch to the CDATA section state.
         {{ h.reconsume_in('CDATA_SECTION') }}
     } else {
-        // TODO: this is a cdata-in-html-content parse error.
+        // this is a cdata-in-html-content parse error.
+        {{ h.parse_error('CDATA_IN_HTML_CONTENT') }}
         // Create a comment token whose data is the "[CDATA[" string.
         $this->currentToken = new Comment('[CDATA[');
         // Switch to the bogus comment state.
         {{ h.reconsume_in('BOGUS_COMMENT') }}
     }
 } else {
-    // TODO: This is an incorrectly-opened-comment parse error.
+    // This is an incorrectly-opened-comment parse error.
+    {{ h.parse_error('INCORRECTLY_OPENED_COMMENT') }}
     // Create a comment token whose data is the empty string.
     $this->currentToken = new Comment('');
     // Switch to the bogus comment state (don't consume anything in the current state).

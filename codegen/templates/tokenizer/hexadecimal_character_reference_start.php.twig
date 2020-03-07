@@ -7,7 +7,8 @@ if (ctype_xdigit($cc)) {
     // Reconsume in the hexadecimal character reference state.
     {{ h.reconsume_in('HEXADECIMAL_CHARACTER_REFERENCE') }}
 } else {
-    // TODO: This is an absence-of-digits-in-numeric-character-reference parse error.
+    // This is an absence-of-digits-in-numeric-character-reference parse error.
+    {{ h.parse_error('ABSENCE_OF_DIGITS_IN_NUMERIC_CHARACTER_REFERENCE') }}
     // Flush code points consumed as a character reference.
     $this->flushCodePointsConsumedAsACharacterReference();
     // Reconsume in the return state.

@@ -4,7 +4,6 @@ namespace ju1ius\HtmlParser\Tokenizer;
 
 use ju1ius\HtmlParser\Tokenizer\Token\Character;
 use SplQueue;
-use SplStack;
 
 abstract class AbstractTokenizer
 {
@@ -33,9 +32,9 @@ abstract class AbstractTokenizer
      */
     protected $currentToken;
     /**
-     * @var SplStack
+     * @var array
      */
-    protected $openElements;
+    protected $parseErrors;
     /**
      * @var string
      */
@@ -77,7 +76,7 @@ abstract class AbstractTokenizer
         $this->position = 0;
         $this->temporaryBuffer = '';
         $this->tokenQueue = new SplQueue();
-        $this->openElements = new SplStack();
+        $this->parseErrors = [];
         $this->state = TokenizerStates::DATA;
     }
 
@@ -138,11 +137,13 @@ abstract class AbstractTokenizer
             $this->appropriateEndTag = $token->name;
         } elseif ($token->type === TokenTypes::END_TAG) {
             if ($token->attributes) {
-                // TODO: that is an end-tag-with-attributes parse error.
+                // This is an end-tag-with-attributes parse error.
+                $this->parseErrors[] = [ParseErrors::END_TAG_WITH_ATTRIBUTES, $this->position];
                 $token->attributes = null;
             }
             if ($token->selfClosing) {
-                // TODO: that is an end-tag-with-trailing-solidus parse error.
+                // This is an end-tag-with-trailing-solidus parse error.
+                $this->parseErrors[] = [ParseErrors::END_TAG_WITH_TRAILING_SOLIDUS, $this->position];
                 $token->selfClosing = false;
             }
         }

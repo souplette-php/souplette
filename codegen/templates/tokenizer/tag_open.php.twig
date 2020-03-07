@@ -15,18 +15,21 @@ if ($cc === '!') {
     // Reconsume in the tag name state.
     {{ h.reconsume_in('TAG_NAME') }}
 } elseif ($cc === '?') {
-    // TODO: This is an unexpected-question-mark-instead-of-tag-name parse error.
+    // This is an unexpected-question-mark-instead-of-tag-name parse error.
+    {{ h.parse_error('UNEXPECTED_QUESTION_MARK_INSTEAD_OF_TAG_NAME') }}
     // Create a comment token whose data is the empty string.
     $this->currentToken = new Comment('');
     // Reconsume in the bogus comment state.
     {{ h.reconsume_in('BOGUS_COMMENT') }}
 } elseif ({{ h.is_eof() }}) {
-    // TODO: This is an eof-before-tag-name parse error.
+    // This is an eof-before-tag-name parse error.
+    {{ h.parse_error('EOF_BEFORE_TAG_NAME') }}
     // Emit a U+003C LESS-THAN SIGN character token and an end-of-file token.
     $this->tokenQueue->enqueue(new Character('<'));
     {{ h.emit_eof() }}
 } else {
-    // TODO: This is an invalid-first-character-of-tag-name parse error.
+    // This is an invalid-first-character-of-tag-name parse error.
+    {{ h.parse_error('INVALID_FIRST_CHARACTER_OF_TAG_NAME') }}
     // Emit a U+003C LESS-THAN SIGN character token.
     $this->tokenQueue->enqueue(new Character('<'));
     // Reconsume in the data state.

@@ -45,7 +45,8 @@ if ($lastTerminalIndex !== null) {
         // Otherwise:
         // 1. If the last character matched is not a U+003B SEMICOLON character (;),
         if ($this->temporaryBuffer[-1] !== ';') {
-            // TODO: this is a missing-semicolon-after-character-reference parse error.
+            // This is a missing-semicolon-after-character-reference parse error.
+            {{ h.parse_error('MISSING_SEMICOLON_AFTER_CHARACTER_REFERENCE') }}
         }
         // 2. Set the temporary buffer to the empty string. Append the decoded character reference to the temporary buffer.
         $entity = substr($this->temporaryBuffer, 1, $lastTerminalIndex);

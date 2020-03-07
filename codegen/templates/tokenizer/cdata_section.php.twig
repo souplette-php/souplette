@@ -9,7 +9,8 @@ if ($cc === ']') {
     // Switch to the CDATA section bracket state.
     {{ h.advance_to('CDATA_SECTION_BRACKET') }}
 } elseif ($cc === null) {
-    // TODO: This is an eof-in-cdata parse error.
+    // This is an eof-in-cdata parse error.
+    {{ h.parse_error('EOF_IN_CDATA') }}
     // Emit an end-of-file token.
     {{ h.emit_eof() }}
 } else {

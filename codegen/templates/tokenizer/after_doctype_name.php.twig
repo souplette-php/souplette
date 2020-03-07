@@ -10,7 +10,8 @@ if ({{ h.is_whitespace() }}) {
     // Switch to the data state. Emit the current DOCTYPE token.
     {{ h.emit_and_resume_in('DATA') }}
 } elseif ({{ h.is_eof() }}) {
-    // TODO: This is an eof-in-doctype parse error.
+    // This is an eof-in-doctype parse error.
+    {{ h.parse_error('EOF_IN_DOCTYPE') }}
     // Set the DOCTYPE token's force-quirks flag to on.
     $this->currentToken->forceQuirks = true;
     // Emit the token. Emit an end-of-file token.
@@ -26,7 +27,8 @@ if ({{ h.is_whitespace() }}) {
         $this->position += 6;
         {{ h.update_and_reconsume_in('AFTER_DOCTYPE_SYSTEM_KEYWORD') }}
     } else {
-        // TODO: this is an invalid-character-sequence-after-doctype-name parse error.
+        // This is an invalid-character-sequence-after-doctype-name parse error.
+        {{ h.parse_error('INVALID_CHARACTER_SEQUENCE_AFTER_DOCTYPE_NAME') }}
         // Set the DOCTYPE token's force-quirks flag to on.
         $this->currentToken->forceQuirks = true;
         // Reconsume in the bogus DOCTYPE state.

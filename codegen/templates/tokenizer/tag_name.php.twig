@@ -13,11 +13,13 @@ if ({{ h.is_whitespace() }}) {
     {{ h.emit_and_resume_in('DATA') }}
 } elseif ($cc === "\0") {
     // This is an unexpected-null-character parse error.
+    {{ h.parse_error('UNEXPECTED_NULL_CHARACTER') }}
     // Append a U+FFFD REPLACEMENT CHARACTER character to the current tag token's tag name.
     $this->currentToken->name .= "\u{FFFD}";
     {{ h.advance_to('TAG_NAME') }}
 } elseif ({{ h.is_eof() }}) {
-    // TODO: This is an eof-in-tag parse error.
+    // This is an eof-in-tag parse error.
+    {{ h.parse_error('EOF_IN_TAG') }}
     // Emit an end-of-file token.
     {{ h.emit_eof() }}
 } else {

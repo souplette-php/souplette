@@ -10,12 +10,14 @@ if ({{ h.is_whitespace() }} || $cc === '/' || $cc === '>' || {{ h.is_eof() }}) {
     // Switch to the before attribute value state.
     {{ h.advance_to('BEFORE_ATTRIBUTE_VALUE') }}
 } elseif ($cc === "\0") {
-    // TODO: This is an unexpected-null-character parse error.
+    // This is an unexpected-null-character parse error.
+    {{ h.parse_error('UNEXPECTED_NULL_CHARACTER') }}
     // Append a U+FFFD REPLACEMENT CHARACTER character to the current attribute's name.
     {{ h.append_to_attr_name('"\\u{FFFD}"') }}
     {{ h.consume('ATTRIBUTE_NAME') }}
 } elseif ({{ cc_in('"', "'", '<') }}) {
-    // TODO: This is an unexpected-character-in-attribute-name parse error.
+    // This is an unexpected-character-in-attribute-name parse error.
+    {{ h.parse_error('UNEXPECTED_CHARACTER_IN_ATTRIBUTE_NAME') }}
     // Treat it as per the "anything else" entry below.
     {{ h.append_to_attr_name('$cc') }}
     {{ h.consume('ATTRIBUTE_NAME') }}
