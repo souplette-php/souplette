@@ -1,3 +1,27 @@
+- [ ] Implement TreeBuilder States:
+  - [x] INITIAL
+  - [x] BEFORE_HTML
+  - [x] BEFORE_HEAD
+  - [x] IN_HEAD
+  - [x] IN_HEAD_NOSCRIPT
+  - [x] AFTER_HEAD
+  - [ ] IN_BODY
+  - [ ] TEXT
+  - [ ] IN_TABLE
+  - [ ] IN_TABLE_TEXT
+  - [ ] IN_CAPTION
+  - [ ] IN_COLUMN_GROUP
+  - [ ] IN_TABLE_BODY
+  - [ ] IN_ROW
+  - [ ] IN_CELL
+  - [ ] IN_SELECT
+  - [ ] IN_SELECT_IN_TABLE
+  - [ ] IN_TEMPLATE
+  - [ ] AFTER_BODY
+  - [ ] IN_FRAMESET
+  - [ ] AFTER_FRAMESET
+  - [ ] AFTER_AFTER_BODY
+  - [ ] AFTER_AFTER_FRAMESET
 - [ ] Implement Tokenizer States:
   - [x] DATA
   - [ ] CHARACTER_REFERENCE_IN_DATA

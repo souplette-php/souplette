@@ -2,25 +2,17 @@
 
 namespace ju1ius\HtmlParser\Tokenizer\Token;
 
-use ju1ius\HtmlParser\Tokenizer\Token;
 use ju1ius\HtmlParser\Tokenizer\TokenTypes;
 
-final class StartTag extends Token
+final class StartTag extends Tag
 {
     /**
      * @var int
      */
     public $type = TokenTypes::START_TAG;
     /**
-     * @var string
-     */
-    public $name = '';
-    /**
      * @var bool
+     * @see @see https://html.spec.whatwg.org/multipage/parsing.html#acknowledge-self-closing-flag
      */
-    public $selfClosing = false;
-    /**
-     * @var array|null
-     */
-    public $attributes;
+    public $selfClosingAcknowledged = false;
 }

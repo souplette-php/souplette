@@ -4,21 +4,12 @@ namespace ju1ius\HtmlParser\TreeBuilder\RuleSet;
 
 use ju1ius\HtmlParser\Tokenizer\Token;
 use ju1ius\HtmlParser\TreeBuilder\RuleSet;
+use ju1ius\HtmlParser\TreeBuilder\TreeBuilder;
 
 final class InCaption extends RuleSet
 {
-    public function processDoctype(Token $token)
+    public function process(Token $token, TreeBuilder $tree)
     {
-        // TODO: Implement processDoctype() method.
-    }
-
-    public function processStartTag(Token $token)
-    {
-        // TODO: Implement processStartTag() method.
-    }
-
-    public function processEndTag(Token $token)
-    {
-        // TODO: Implement processEndTag() method.
+        // TODO: Implement process() method.
     }
 }
