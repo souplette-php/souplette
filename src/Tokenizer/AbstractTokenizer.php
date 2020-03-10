@@ -65,9 +65,10 @@ abstract class AbstractTokenizer
 
     abstract public function nextToken();
 
-    final public function tokenize()
+    final public function tokenize(int $startState = TokenizerStates::DATA)
     {
         $this->reset();
+        $this->state = $startState;
         do {
             $carryOn = $this->nextToken();
             while (!$this->tokenQueue->isEmpty()) {
@@ -82,7 +83,6 @@ abstract class AbstractTokenizer
         $this->temporaryBuffer = '';
         $this->tokenQueue = new SplQueue();
         $this->parseErrors = [];
-        $this->state = TokenizerStates::DATA;
     }
 
     protected function charsUntil(string $bytes, ?int $max = null): ?string
