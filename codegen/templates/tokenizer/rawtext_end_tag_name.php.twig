@@ -4,17 +4,33 @@
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
 if ({{ h.is_whitespace() }}) {
-    // TODO: If the current end tag token is an appropriate end tag token,
-    // then switch to the before attribute name state.
-    // Otherwise, treat it as per the "anything else" entry below.
+    // If the current end tag token is an appropriate end tag token,
+    if ($this->currentToken->name === $this->appropriateEndTag) {
+        // then switch to the before attribute name state.
+        {{ h.advance_to('BEFORE_ATTRIBUTE_NAME') }}
+    } else {
+        // Otherwise, treat it as per the "anything else" entry below.
+        goto {{ current_state }}_ANYTHING_ELSE;
+    }
 } elseif ($cc === '/') {
-    // TODO: If the current end tag token is an appropriate end tag token,
-    // then switch to the self-closing start tag state.
-    // Otherwise, treat it as per the "anything else" entry below.
+    // If the current end tag token is an appropriate end tag token,
+    if ($this->currentToken->name === $this->appropriateEndTag) {
+        // then switch to the self-closing start tag state.
+        {{ h.advance_to('SELF_CLOSING_START_TAG') }}
+    } else {
+        // Otherwise, treat it as per the "anything else" entry below.
+        goto {{ current_state }}_ANYTHING_ELSE;
+    }
 } elseif ($cc === '>') {
-    // TODO: If the current end tag token is an appropriate end tag token,
-    // then switch to the data state and emit the current tag token.
-    // Otherwise, treat it as per the "anything else" entry below.
+    // If the current end tag token is an appropriate end tag token,
+    if ($this->currentToken->name === $this->appropriateEndTag) {
+        // then switch to the data state and emit the current tag token.
+        $this->emitCurrentToken();
+        {{ h.advance_to('DATA') }}
+    } else {
+        // Otherwise, treat it as per the "anything else" entry below.
+        goto {{ current_state }}_ANYTHING_ELSE;
+    }
 } elseif (ctype_alpha($cc)) {
     {{ h.chars_while_alpha() }}
     // Append the lowercase version of the current input character to the current tag token's tag name.
@@ -23,6 +39,7 @@ if ({{ h.is_whitespace() }}) {
     $this->temporaryBuffer .= $chars;
     {{ h.update_and_reconsume_in(current_state) }}
 } else {
+    {{ current_state }}_ANYTHING_ELSE:
     // Emit a U+003C LESS-THAN SIGN character token, a U+002F SOLIDUS character token,
     // and a character token for each of the characters in the temporary buffer (in the order they were added to the buffer).
     $this->tokenQueue->enqueue(new Character('</' . $this->temporaryBuffer));

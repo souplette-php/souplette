@@ -37,6 +37,7 @@ abstract class AbstractTokenizer
     protected $parseErrors;
     /**
      * @var string
+     * @see https://html.spec.whatwg.org/multipage/parsing.html#appropriate-end-tag-token
      */
     protected $appropriateEndTag;
     /**

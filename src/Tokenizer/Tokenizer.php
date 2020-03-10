@@ -342,17 +342,39 @@ final class Tokenizer extends AbstractTokenizer
             case TokenizerStates::RCDATA_END_TAG_NAME:
             RCDATA_END_TAG_NAME: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
-                    // TODO: If the current end tag token is an appropriate end tag token,
-                    // then switch to the before attribute name state.
-                    // Otherwise, treat it as per the "anything else" entry below.
+                    // If the current end tag token is an appropriate end tag token,
+                    if ($this->currentToken->name === $this->appropriateEndTag) {
+                        // then switch to the before attribute name state.
+                        $this->state = TokenizerStates::BEFORE_ATTRIBUTE_NAME;
+                        $cc = $this->input[++$this->position] ?? null;
+                        goto BEFORE_ATTRIBUTE_NAME;
+                    } else {
+                        // Otherwise, treat it as per the "anything else" entry below.
+                        goto RCDATA_END_TAG_NAME_ANYTHING_ELSE;
+                    }
                 } elseif ($cc === '/') {
-                    // TODO: If the current end tag token is an appropriate end tag token,
-                    // then switch to the self-closing start tag state.
-                    // Otherwise, treat it as per the "anything else" entry below.
+                    // If the current end tag token is an appropriate end tag token,
+                    if ($this->currentToken->name === $this->appropriateEndTag) {
+                        // then switch to the self-closing start tag state.
+                        $this->state = TokenizerStates::SELF_CLOSING_START_TAG;
+                        $cc = $this->input[++$this->position] ?? null;
+                        goto SELF_CLOSING_START_TAG;
+                    } else {
+                        // Otherwise, treat it as per the "anything else" entry below.
+                        goto RCDATA_END_TAG_NAME_ANYTHING_ELSE;
+                    }
                 } elseif ($cc === '>') {
-                    // TODO: If the current end tag token is an appropriate end tag token,
-                    // then switch to the data state and emit the current tag token.
-                    // Otherwise, treat it as per the "anything else" entry below.
+                    // If the current end tag token is an appropriate end tag token,
+                    if ($this->currentToken->name === $this->appropriateEndTag) {
+                        // then switch to the data state and emit the current tag token.
+                        $this->emitCurrentToken();
+                        $this->state = TokenizerStates::DATA;
+                        $cc = $this->input[++$this->position] ?? null;
+                        goto DATA;
+                    } else {
+                        // Otherwise, treat it as per the "anything else" entry below.
+                        goto RCDATA_END_TAG_NAME_ANYTHING_ELSE;
+                    }
                 } elseif (ctype_alpha($cc)) {
                     $l = strspn($this->input, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', $this->position);
                     $chars = substr($this->input, $this->position, $l);
@@ -365,6 +387,7 @@ final class Tokenizer extends AbstractTokenizer
                     $this->state = TokenizerStates::RCDATA_END_TAG_NAME;
                     goto RCDATA_END_TAG_NAME;
                 } else {
+                    RCDATA_END_TAG_NAME_ANYTHING_ELSE:
                     // Emit a U+003C LESS-THAN SIGN character token, a U+002F SOLIDUS character token,
                     // and a character token for each of the characters in the temporary buffer (in the order they were added to the buffer).
                     $this->tokenQueue->enqueue(new Character('</' . $this->temporaryBuffer));
@@ -412,17 +435,39 @@ final class Tokenizer extends AbstractTokenizer
             case TokenizerStates::RAWTEXT_END_TAG_NAME:
             RAWTEXT_END_TAG_NAME: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
-                    // TODO: If the current end tag token is an appropriate end tag token,
-                    // then switch to the before attribute name state.
-                    // Otherwise, treat it as per the "anything else" entry below.
+                    // If the current end tag token is an appropriate end tag token,
+                    if ($this->currentToken->name === $this->appropriateEndTag) {
+                        // then switch to the before attribute name state.
+                        $this->state = TokenizerStates::BEFORE_ATTRIBUTE_NAME;
+                        $cc = $this->input[++$this->position] ?? null;
+                        goto BEFORE_ATTRIBUTE_NAME;
+                    } else {
+                        // Otherwise, treat it as per the "anything else" entry below.
+                        goto RAWTEXT_END_TAG_NAME_ANYTHING_ELSE;
+                    }
                 } elseif ($cc === '/') {
-                    // TODO: If the current end tag token is an appropriate end tag token,
-                    // then switch to the self-closing start tag state.
-                    // Otherwise, treat it as per the "anything else" entry below.
+                    // If the current end tag token is an appropriate end tag token,
+                    if ($this->currentToken->name === $this->appropriateEndTag) {
+                        // then switch to the self-closing start tag state.
+                        $this->state = TokenizerStates::SELF_CLOSING_START_TAG;
+                        $cc = $this->input[++$this->position] ?? null;
+                        goto SELF_CLOSING_START_TAG;
+                    } else {
+                        // Otherwise, treat it as per the "anything else" entry below.
+                        goto RAWTEXT_END_TAG_NAME_ANYTHING_ELSE;
+                    }
                 } elseif ($cc === '>') {
-                    // TODO: If the current end tag token is an appropriate end tag token,
-                    // then switch to the data state and emit the current tag token.
-                    // Otherwise, treat it as per the "anything else" entry below.
+                    // If the current end tag token is an appropriate end tag token,
+                    if ($this->currentToken->name === $this->appropriateEndTag) {
+                        // then switch to the data state and emit the current tag token.
+                        $this->emitCurrentToken();
+                        $this->state = TokenizerStates::DATA;
+                        $cc = $this->input[++$this->position] ?? null;
+                        goto DATA;
+                    } else {
+                        // Otherwise, treat it as per the "anything else" entry below.
+                        goto RAWTEXT_END_TAG_NAME_ANYTHING_ELSE;
+                    }
                 } elseif (ctype_alpha($cc)) {
                     $l = strspn($this->input, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', $this->position);
                     $chars = substr($this->input, $this->position, $l);
@@ -435,6 +480,7 @@ final class Tokenizer extends AbstractTokenizer
                     $this->state = TokenizerStates::RAWTEXT_END_TAG_NAME;
                     goto RAWTEXT_END_TAG_NAME;
                 } else {
+                    RAWTEXT_END_TAG_NAME_ANYTHING_ELSE:
                     // Emit a U+003C LESS-THAN SIGN character token, a U+002F SOLIDUS character token,
                     // and a character token for each of the characters in the temporary buffer (in the order they were added to the buffer).
                     $this->tokenQueue->enqueue(new Character('</' . $this->temporaryBuffer));
