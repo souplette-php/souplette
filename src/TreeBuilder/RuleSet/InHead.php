@@ -57,11 +57,11 @@ final class InHead extends RuleSet
                 return;
             } elseif ($name === 'title') {
                 // Follow the generic RCDATA element parsing algorithm.
-                $tree->followTheGenericTextElementParsingAlgoithm($token);
+                $tree->followTheGenericTextElementParsingAlgorithm($token);
                 return;
             } elseif ($name === 'noframes' || $name === 'style') {
                 // Follow the generic RAWTEXT element parsing algorithm.
-                $tree->followTheGenericTextElementParsingAlgoithm($token, true);
+                $tree->followTheGenericTextElementParsingAlgorithm($token, true);
                 return;
             } elseif ($name === 'noscript') {
                 $tree->insertElement($token);

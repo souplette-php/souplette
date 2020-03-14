@@ -500,7 +500,7 @@ final class TreeBuilder
         }
     }
 
-    public function followTheGenericTextElementParsingAlgoithm(Token\StartTag $token, bool $rawtext = false)
+    public function followTheGenericTextElementParsingAlgorithm(Token\StartTag $token, bool $rawtext = false)
     {
         // @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-elements-that-contain-only-text
         $this->insertElement($token);
