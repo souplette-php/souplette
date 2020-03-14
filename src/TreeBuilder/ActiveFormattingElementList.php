@@ -2,6 +2,8 @@
 
 namespace ju1ius\HtmlParser\TreeBuilder;
 
+use ju1ius\HtmlParser\Namespaces;
+
 /**
  * @see https://html.spec.whatwg.org/multipage/parsing.html#the-list-of-active-formatting-elements
  */
@@ -34,6 +36,13 @@ final class ActiveFormattingElementList extends \SplStack
         return true;
     }
 
+    public function clear()
+    {
+        while (!$this->isEmpty()) {
+            $this->pop();
+        }
+    }
+
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#push-onto-the-list-of-active-formatting-elements
      * @param \DOMElement|null $value
@@ -57,6 +66,27 @@ final class ActiveFormattingElementList extends \SplStack
         parent::push($value);
     }
 
+    public function indexOf(\DOMElement $element): int
+    {
+        foreach ($this as $i => $entry) {
+            if ($entry === $element) {
+                return $i;
+            }
+        }
+
+        return -1;
+    }
+
+    public function insert(int $offset, \DOMElement $element)
+    {
+        $stack = iterator_to_array($this);
+        array_splice($stack, $offset, 0, $element);
+        $this->clear();
+        foreach ($stack as $entry) {
+            $this->push($entry);
+        }
+    }
+
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#clear-the-list-of-active-formatting-elements-up-to-the-last-marker
      */
@@ -74,17 +104,60 @@ final class ActiveFormattingElementList extends \SplStack
      * Check if an element exists between the end of the active formatting elements and the last marker.
      * If it does, return it, else return false
      *
-     * @param string $tagName
-     * @return \DOMElement|false
+     * @param \DOMElement $element
+     * @return bool
      */
-    public function contains(string $tagName)
+    public function contains(\DOMElement $element): bool
     {
         foreach ($this as $i => $entry) {
             if ($entry === null) {
                 break;
             }
-            if ($entry->tagName === $tagName) {
+            if ($entry === $element) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Check if an element exists between the end of the active formatting elements and the last marker.
+     * If it does, return it, else return false
+     *
+     * @param string $tagName
+     * @param string $namespace
+     * @return \DOMElement|false
+     */
+    public function containsTag(string $tagName, string $namespace = Namespaces::HTML)
+    {
+        foreach ($this as $i => $entry) {
+            if ($entry === null) {
+                break;
+            }
+            if ($entry->tagName === $tagName && $entry->namespaceURI === $namespace) {
                 return $entry;
+            }
+        }
+        return false;
+    }
+
+    public function remove(\DOMElement $element): bool
+    {
+        foreach ($this as $i => $node) {
+            if ($node === $element) {
+                $this->offsetUnset($i);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function replace(\DOMElement $old, \DOMElement $new): bool
+    {
+        foreach ($this as $i => $node) {
+            if ($node === $old) {
+                $this->offsetSet($i, $new);
+                return true;
             }
         }
         return false;
