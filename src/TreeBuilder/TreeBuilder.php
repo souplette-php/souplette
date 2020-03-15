@@ -174,6 +174,8 @@ final class TreeBuilder
 
     public function processToken(Token $token, ?int $insertionMode = null)
     {
+        // TODO: tree construction dispatcher
+        // @see https://html.spec.whatwg.org/multipage/parsing.html#tree-construction-dispatcher
         $this->currentToken = $token;
         if ($insertionMode !== null) {
             return $this->ruleSets[$insertionMode]->process($token, $this);
@@ -517,6 +519,7 @@ final class TreeBuilder
 
     public function adjustSvgAttributes(Token\StartTag $token)
     {
+        if (!$token->attributes) return;
         foreach ($token->attributes as $i => [$name, $value]) {
             if (isset(Attributes::ADJUSTED_SVG_ATTRIBUTES[$name])) {
                 $name = Attributes::ADJUSTED_SVG_ATTRIBUTES[$name];
@@ -527,6 +530,7 @@ final class TreeBuilder
 
     public function adjustMathMlAttributes(Token\StartTag $token)
     {
+        if (!$token->attributes) return;
         foreach ($token->attributes as $i => [$name, $value]) {
             if (isset(Attributes::ADJUSTED_MATHML_ATTRIBUTES[$name])) {
                 $name = Attributes::ADJUSTED_MATHML_ATTRIBUTES[$name];
@@ -537,6 +541,7 @@ final class TreeBuilder
 
     public function adjustForeignAttributes(Token\StartTag $token)
     {
+        if (!$token->attributes) return;
         foreach ($token->attributes as $i => [$name, $value]) {
             if (isset(Attributes::ADJUSTED_FOREIGN_ATTRIBUTES[$name])) {
                 [$qname, $prefix, $localName, $ns] = Attributes::ADJUSTED_FOREIGN_ATTRIBUTES[$name];

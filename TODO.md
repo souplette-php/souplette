@@ -9,11 +9,11 @@
   - [x] TEXT
   - [x] IN_TABLE
   - [x] IN_TABLE_TEXT
-  - [ ] IN_CAPTION
-  - [ ] IN_COLUMN_GROUP
-  - [ ] IN_TABLE_BODY
-  - [ ] IN_ROW
-  - [ ] IN_CELL
+  - [x] IN_CAPTION
+  - [x] IN_COLUMN_GROUP
+  - [x] IN_TABLE_BODY
+  - [x] IN_ROW
+  - [x] IN_CELL
   - [ ] IN_SELECT
   - [ ] IN_SELECT_IN_TABLE
   - [ ] IN_TEMPLATE

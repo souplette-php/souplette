@@ -214,6 +214,16 @@ final class OpenElementsStack extends \SplStack
         return $this->hasTagInSpecificScope(Elements::SCOPE_TABLE, $tagName, $namespace);
     }
 
+    public function hasTagsInTableScope(array $tagNames, string $namespace = Namespaces::HTML): bool
+    {
+        foreach ($tagNames as $tagName) {
+            if ($this->hasTagInTableScope($tagName, $namespace)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function hasTagInSelectScope(string $tagName, string $namespace = Namespaces::HTML): bool
     {
         return !$this->hasTagInSpecificScope(Elements::SCOPE_SELECT, $tagName, $namespace);

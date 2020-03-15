@@ -194,7 +194,7 @@ final class InTable extends RuleSet
         $tree->fosterParenting = false;
     }
 
-    private function clearTheStackBackToATableContext(TreeBuilder $tree)
+    private function clearTheStackBackToATableContext(TreeBuilder $tree): void
     {
         // @see https://html.spec.whatwg.org/multipage/parsing.html#clear-the-stack-back-to-a-table-context
         // while the current node is not a table, template, or html element, pop elements from the stack of open elements.
