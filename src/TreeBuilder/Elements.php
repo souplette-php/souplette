@@ -259,7 +259,7 @@ final class Elements
 
     public static function isMathMlIntegrationPoint(\DOMElement $element)
     {
-        return isset(self::MATHML_TEXT_INTEGRATION_POINTS[$element->tagName])
+        return isset(self::MATHML_TEXT_INTEGRATION_POINTS[$element->localName])
             && $element->namespaceURI === Namespaces::MATHML;
     }
 }

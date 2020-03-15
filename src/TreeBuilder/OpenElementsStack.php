@@ -92,7 +92,7 @@ final class OpenElementsStack extends \SplStack
     public function containsTag(string $name): bool
     {
         foreach ($this as $node) {
-            if ($node->tagName === $name) {
+            if ($node->localName === $name) {
                 return true;
             }
         }
@@ -116,7 +116,7 @@ final class OpenElementsStack extends \SplStack
     {
         while (!$this->isEmpty()) {
             $node = $this->pop();
-            if ($node->tagName === $tagName && $node->namespaceURI === $namespace) {
+            if ($node->localName === $tagName && $node->namespaceURI === $namespace) {
                 return $node;
             }
         }
@@ -128,7 +128,7 @@ final class OpenElementsStack extends \SplStack
     {
         while (!$this->isEmpty()) {
             $node = $this->pop();
-            if (in_array($node->tagName, $tagNames, true) && $node->namespaceURI === $namespace) {
+            if (in_array($node->localName, $tagNames, true) && $node->namespaceURI === $namespace) {
                 return $node;
             }
         }
@@ -176,7 +176,7 @@ final class OpenElementsStack extends \SplStack
                 return true;
             }
             // Otherwise, if node is one of the element types in list, terminate in a failure state.
-            if (isset($scope[$node->tagName])) {
+            if (isset($scope[$node->namespaceURI][$node->localName])) {
                 return false;
             }
         }
@@ -223,11 +223,11 @@ final class OpenElementsStack extends \SplStack
     {
         foreach ($this as $i => $node) {
             // If node is the target node, terminate in a match state.
-            if ($node->tagName === $tagName && $node->namespaceURI === $namespace) {
+            if ($node->localName === $tagName && $node->namespaceURI === $namespace) {
                 return true;
             }
             // Otherwise, if node is one of the element types in list, terminate in a failure state.
-            if (isset($scope[$node->namespaceURI][$node->tagName])) {
+            if (isset($scope[$node->namespaceURI][$node->localName])) {
                 return false;
             }
         }

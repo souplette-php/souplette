@@ -85,7 +85,7 @@ final class InBody extends RuleSet
                     // if the stack of open elements has only one node on it,
                     $tree->openElements->count() < 2
                     // if the second element on the stack of open elements is not a body element,
-                    || $tree->openElements[1]->tagName !== 'body'
+                    || $tree->openElements[1]->localName !== 'body'
                     // or if there is a template element on the stack of open elements,
                     || $tree->openElements->containsTag('template')
                 ) {
@@ -110,7 +110,7 @@ final class InBody extends RuleSet
                     // if the stack of open elements has only one node on it,
                     $tree->openElements->count() < 2
                     // if the second element on the stack of open elements is not a body element,
-                    || $tree->openElements[1]->tagName !== 'body'
+                    || $tree->openElements[1]->localName !== 'body'
                 ) {
                     // then ignore the token. (fragment case)
                     return;
@@ -183,12 +183,12 @@ final class InBody extends RuleSet
                 // If the current node is an HTML element whose tag name is one of "h1", "h2", "h3", "h4", "h5", or "h6",
                 $currentNode = $tree->openElements->top();
                 if (
-                    $currentNode->tagName === 'h1'
-                    || $currentNode->tagName === 'h2'
-                    || $currentNode->tagName === 'h3'
-                    || $currentNode->tagName === 'h4'
-                    || $currentNode->tagName === 'h5'
-                    || $currentNode->tagName === 'h6'
+                    $currentNode->localName === 'h1'
+                    || $currentNode->localName === 'h2'
+                    || $currentNode->localName === 'h3'
+                    || $currentNode->localName === 'h4'
+                    || $currentNode->localName === 'h5'
+                    || $currentNode->localName === 'h6'
                 ) {
                     // TODO: then this is a parse error;
                     // pop the current node off the stack of open elements.
@@ -238,11 +238,11 @@ final class InBody extends RuleSet
                 $tree->framesetOK = false;
                 // Initialize node to be the current node (the bottommost node of the stack).
                 foreach ($tree->openElements as $node) {
-                    if ($node->tagName === 'li') {
+                    if ($node->localName === 'li') {
                         // Generate implied end tags, except for li elements.
                         $tree->generateImpliedEndTags('li');
                         // If the current node is not an li element, then this is a parse error.
-                        if ($tree->openElements->top()->tagName !== 'li') {
+                        if ($tree->openElements->top()->localName !== 'li') {
                             // TODO: Parse error.
                         }
                         // Pop elements from the stack of open elements until an li element has been popped from the stack.
@@ -250,10 +250,10 @@ final class InBody extends RuleSet
                         break;
                     }
                     if (
-                        isset(Elements::SPECIAL[$node->namespaceURI][$node->tagName])
-                        && $node->tagName !== 'address'
-                        && $node->tagName !== 'div'
-                        && $node->tagName !== 'p'
+                        isset(Elements::SPECIAL[$node->namespaceURI][$node->localName])
+                        && $node->localName !== 'address'
+                        && $node->localName !== 'div'
+                        && $node->localName !== 'p'
                     ) {
                         break;
                     }
@@ -269,27 +269,27 @@ final class InBody extends RuleSet
                 // Set the frameset-ok flag to "not ok".
                 $tree->framesetOK = false;
                 foreach ($tree->openElements as $node) {
-                    if ($node->tagName === 'dd') {
+                    if ($node->localName === 'dd') {
                         $tree->generateImpliedEndTags('dd');
-                        if ($tree->openElements->top()->tagName !== 'dd') {
+                        if ($tree->openElements->top()->localName !== 'dd') {
                             // TODO: Parse error.
                         }
                         $tree->openElements->popUntilTag('dd');
                         break;
                     }
-                    if ($node->tagName === 'dt') {
+                    if ($node->localName === 'dt') {
                         $tree->generateImpliedEndTags('dt');
-                        if ($tree->openElements->top()->tagName !== 'dt') {
+                        if ($tree->openElements->top()->localName !== 'dt') {
                             // TODO: Parse error.
                         }
                         $tree->openElements->popUntilTag('dt');
                         break;
                     }
                     if (
-                        isset(Elements::SPECIAL[$node->namespaceURI][$node->tagName])
-                        && $node->tagName !== 'address'
-                        && $node->tagName !== 'div'
-                        && $node->tagName !== 'p'
+                        isset(Elements::SPECIAL[$node->namespaceURI][$node->localName])
+                        && $node->localName !== 'address'
+                        && $node->localName !== 'div'
+                        && $node->localName !== 'p'
                     ) {
                         break;
                     }
@@ -553,7 +553,7 @@ final class InBody extends RuleSet
                 || $tagName === 'option'
             ) {
                 // If the current node is an option element,
-                if ($tree->openElements->top()->tagName === 'option') {
+                if ($tree->openElements->top()->localName === 'option') {
                     // then pop the current node off the stack of open elements.
                     $tree->openElements->pop();
                 }
@@ -570,7 +570,7 @@ final class InBody extends RuleSet
                 if ($tree->openElements->hasTagInScope('ruby')) {
                     $tree->generateImpliedEndTags();
                     // If the current node is not now a ruby element, this is a parse error.
-                    if ($tree->openElements->top()->tagName !== 'ruby') {
+                    if ($tree->openElements->top()->localName !== 'ruby') {
                         // TODO: Parse error.
                     }
                 }
@@ -587,7 +587,7 @@ final class InBody extends RuleSet
                     $tree->generateImpliedEndTags('rtc');
                     //  If the current node is not now a rtc element or a ruby element, this is a parse error.
                     $currentNode = $tree->openElements->top();
-                    if ($currentNode->tagName !== 'rtc' || $currentNode->tagName !== 'ruby') {
+                    if ($currentNode->localName !== 'rtc' || $currentNode->localName !== 'ruby') {
                         // TODO: Parse error.
                     }
                 }
@@ -730,7 +730,7 @@ final class InBody extends RuleSet
                 // Generate implied end tags.
                 $tree->generateImpliedEndTags();
                 // If the current node is not an HTML element with the same tag name as that of the token,
-                if ($tree->openElements->top()->tagName !== $tagName) {
+                if ($tree->openElements->top()->localName !== $tagName) {
                     // TODO: then this is a parse error.
                 }
                 // Pop elements from the stack of open elements
@@ -768,7 +768,7 @@ final class InBody extends RuleSet
                     // 2. Generate implied end tags.
                     $tree->generateImpliedEndTags();
                     // 3. If the current node is not a form element, then this is a parse error.
-                    if ($tree->openElements->top()->tagName !== 'form') {
+                    if ($tree->openElements->top()->localName !== 'form') {
                         // TODO: Parse error.
                     }
                     // 4. Pop elements from the stack of open elements until a form element has been popped from the stack.
@@ -795,7 +795,7 @@ final class InBody extends RuleSet
                 // 1. Generate implied end tags, except for li elements.
                 $tree->generateImpliedEndTags('li');
                 // 2. If the current node is not an li element, then this is a parse error.
-                if ($tree->openElements->top()->tagName !== 'li') {
+                if ($tree->openElements->top()->localName !== 'li') {
                     // TODO: Parse error.
                 }
                 // 3. Pop elements from the stack of open elements until an li element has been popped from the stack.
@@ -815,7 +815,7 @@ final class InBody extends RuleSet
                 // 1. Generate implied end tags, except for HTML elements with the same tag name as the token.
                 $tree->generateImpliedEndTags($tagName);
                 // 2. If the current node is not an HTML element with the same tag name as that of the token, then this is a parse error.
-                if ($tree->openElements->top()->tagName !== $tagName) {
+                if ($tree->openElements->top()->localName !== $tagName) {
                     // TODO: Parse error.
                 }
                 // 3. Pop elements from the stack of open elements until an HTML element with the same tag name as the token has been popped from the stack.
@@ -839,7 +839,7 @@ final class InBody extends RuleSet
                 // 1. Generate implied end tags
                 $tree->generateImpliedEndTags();
                 // 2. If the current node is not an HTML element with the same tag name as that of the token, then this is a parse error.
-                if ($tree->openElements->top()->tagName !== $tagName) {
+                if ($tree->openElements->top()->localName !== $tagName) {
                     // TODO: Parse error.
                 }
                 // 3. Pop elements from the stack of open elements until an HTML element
@@ -885,7 +885,7 @@ final class InBody extends RuleSet
                 // 1. Generate implied end tags.
                 $tree->generateImpliedEndTags();
                 // 2. If the current node is not an HTML element with the same tag name as that of the token, then this is a parse error.
-                if ($tree->openElements->top()->tagName !== $tagName) {
+                if ($tree->openElements->top()->localName !== $tagName) {
                     // TODO: Parse error.
                 }
                 // 3. Pop elements from the stack of open elements until an HTML element with the same tag name as the token has been popped from the stack.
@@ -914,7 +914,7 @@ final class InBody extends RuleSet
         // Generate implied end tags, except for p elements.
         $tree->generateImpliedEndTags('p');
         // If the current node is not a p element, then this is a parse error.
-        if ($tree->openElements->top()->tagName !== 'p') {
+        if ($tree->openElements->top()->localName !== 'p') {
             // TODO: Parse error.
         }
         // Pop elements from the stack of open elements until a p element has been popped from the stack.
@@ -935,7 +935,7 @@ final class InBody extends RuleSet
         // and the current node is not in the list of active formatting elements,
         $currentNode = $tree->openElements->top();
         if (
-            $currentNode->tagName === $subject
+            $currentNode->localName === $subject
             && $currentNode->namespaceURI === Namespaces::HTML
             && !$tree->activeFormattingElements->contains($currentNode)
         ) {
@@ -978,7 +978,7 @@ final class InBody extends RuleSet
             $afeIndex = $tree->openElements->indexOf($formattingElement);
             if ($afeIndex !== -1) {
                 foreach ($tree->openElements->slice($afeIndex + 1) as $el) {
-                    if (isset(Elements::SPECIAL[$el->namespaceURI][$el->tagName])) {
+                    if (isset(Elements::SPECIAL[$el->namespaceURI][$el->localName])) {
                         $furthestBlock = $el;
                     }
                 }
@@ -1077,9 +1077,9 @@ final class InBody extends RuleSet
     private function anyOtherEndTag(TreeBuilder $tree, Token\EndTag $token)
     {
         foreach ($tree->openElements as $node) {
-            if ($node->tagName === $token->name && $node->namespaceURI === Namespaces::HTML) {
+            if ($node->localName === $token->name && $node->namespaceURI === Namespaces::HTML) {
                 // Generate implied end tags, except for HTML elements with the same tag name as the token.
-                $tree->generateImpliedEndTags($node->tagName);
+                $tree->generateImpliedEndTags($node->localName);
                 // If node is not the current node, then this is a parse error.
                 if ($node !== $tree->openElements->top()) {
                     // TODO: Parse error.
@@ -1089,7 +1089,7 @@ final class InBody extends RuleSet
                 return;
             }
             // Otherwise, if node is in the special category, then this is a parse error; ignore the token, and return.
-            if (isset(Elements::SPECIAL[$node->namespaceURI][$node->tagName])) {
+            if (isset(Elements::SPECIAL[$node->namespaceURI][$node->localName])) {
                 // TODO: Parse error.
                 return;
             }

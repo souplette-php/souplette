@@ -11,7 +11,7 @@ final class ActiveFormattingElementList extends \SplStack
 {
     public static function areNodesEqual(\DOMElement $node, \DOMElement $other): bool
     {
-        if ($node->tagName !== $other->tagName) {
+        if ($node->localName !== $other->localName) {
             return false;
         }
         if ($node->namespaceURI !== $other->namespaceURI) {
@@ -134,7 +134,7 @@ final class ActiveFormattingElementList extends \SplStack
             if ($entry === null) {
                 break;
             }
-            if ($entry->tagName === $tagName && $entry->namespaceURI === $namespace) {
+            if ($entry->localName === $tagName && $entry->namespaceURI === $namespace) {
                 return $entry;
             }
         }

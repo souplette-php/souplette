@@ -22,11 +22,11 @@ final class InTable extends RuleSet
             $tree->processToken($token, InsertionModes::IN_BODY);
             return;
         } elseif ($type === TokenTypes::CHARACTER && (
-            $currentNode->tagName === 'table'
-            || $currentNode->tagName === 'tbody'
-            || $currentNode->tagName === 'tfoot'
-            || $currentNode->tagName === 'thead'
-            || $currentNode->tagName === 'tr'
+            $currentNode->localName === 'table'
+            || $currentNode->localName === 'tbody'
+            || $currentNode->localName === 'tfoot'
+            || $currentNode->localName === 'thead'
+            || $currentNode->localName === 'tr'
         )) {
             // Let the pending table character tokens be an empty list of tokens.
             $tree->pendingTableCharacterTokens = [];
@@ -200,7 +200,7 @@ final class InTable extends RuleSet
         // while the current node is not a table, template, or html element, pop elements from the stack of open elements.
         $openElements = $tree->openElements;
         while (!$openElements->isEmpty()) {
-            $currentTag = $openElements->top()->tagName;
+            $currentTag = $openElements->top()->localName;
             if ($currentTag === 'table' || $currentTag === 'template' || $currentTag === 'html') {
                 return;
             }

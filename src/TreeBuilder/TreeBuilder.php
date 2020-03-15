@@ -133,7 +133,7 @@ final class TreeBuilder
         $this->isBuildingFragment = true;
         $this->contextElement = $contextElement;
 
-        $tagName = $this->contextElement->tagName;
+        $tagName = $this->contextElement->localName;
         if (isset(Elements::CDATA_ELEMENTS[$tagName])) {
             $this->tokenizer->state = TokenizerStates::RCDATA;
         } elseif (isset(Elements::RCDATA_ELEMENTS[$tagName])) {
@@ -232,7 +232,7 @@ final class TreeBuilder
                     $node = $this->contextElement;
                 }
             }
-            $nodeName = $node->tagName;
+            $nodeName = $node->localName;
             // 4. If node is a select element, run these substeps:
             if ($nodeName === 'select') {
                 // 4.1 If last is true, jump to the step below labeled done.
@@ -246,9 +246,9 @@ final class TreeBuilder
                         $ancestor = $openElements->current();
                         if (!$ancestor) break;
                         // 4.5 If ancestor is a template node, jump to the step below labeled done.
-                        if ($ancestor->tagName === 'template') break;
+                        if ($ancestor->localName === 'template') break;
                         // 4.6 If ancestor is a table node, switch the insertion mode to "in select in table" and return.
-                        if ($ancestor->tagName === 'table') {
+                        if ($ancestor->localName === 'table') {
                             $this->insertionMode = InsertionModes::IN_SELECT_IN_TABLE;
                             break 2;
                         }
@@ -312,10 +312,10 @@ final class TreeBuilder
         $impliedTags = $thoroughly ? Elements::END_TAG_IMPLIED_THOROUGH : Elements::END_TAG_IMPLIED;
         while (true) {
             $node = $this->openElements->top();
-            if (!$node || $node->tagName === $excluded) {
+            if (!$node || $node->localName === $excluded) {
                 return;
             }
-            if (isset($impliedTags[$node->tagName])) {
+            if (isset($impliedTags[$node->localName])) {
                 $this->openElements->pop();
                 continue;
             }
@@ -336,7 +336,7 @@ final class TreeBuilder
         // @see https://html.spec.whatwg.org/multipage/parsing.html#creating-and-inserting-nodes
         /** @var \DOMElement $target */
         $target = $overrideTarget ?: $this->openElements->top();
-        if ($this->fosterParenting && isset(Elements::TABLE_INSERT_MODE_ELEMENTS[$target->tagName])) {
+        if ($this->fosterParenting && isset(Elements::TABLE_INSERT_MODE_ELEMENTS[$target->localName])) {
             // TODO: Run these substeps:
             // 1. Let last template be the last template element in the stack of open elements, if any.
             // 2. Let last table be the last table element in the stack of open elements, if any.
@@ -345,12 +345,12 @@ final class TreeBuilder
             $lastTable = null;
             $lastTablePosition = null;
             foreach ($this->openElements as $pos => $element) {
-                if ($element->tagName === 'template') {
+                if ($element->localName === 'template') {
                     $lastTemplate = $element;
                     $lastTemplatePosition = $pos;
                     break;
                 }
-                if ($element->tagName === 'table') {
+                if ($element->localName === 'table') {
                     $lastTable = $element;
                     $lastTablePosition = $pos;
                     break;
@@ -580,7 +580,7 @@ final class TreeBuilder
             $i++;
             $entry = $this->activeFormattingElements[$i];
             // 8. Create: Insert an HTML element for the token for which the element entry was created, to obtain new element.
-            $token = new Token\StartTag($entry->tagName);
+            $token = new Token\StartTag($entry->localName);
             foreach ($entry->attributes as $attr) {
                 $token->attributes[] = [$attr->nodeName, $attr->nodeValue];
             }
