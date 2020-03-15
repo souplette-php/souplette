@@ -74,7 +74,7 @@ final class TreeBuilder
     /**
      * @var bool
      */
-    private $isBuildingFragment = false;
+    public $isBuildingFragment = false;
     /**
      * @var \DOMElement
      */

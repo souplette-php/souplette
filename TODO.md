@@ -17,10 +17,10 @@
   - [ ] IN_SELECT
   - [ ] IN_SELECT_IN_TABLE
   - [ ] IN_TEMPLATE
-  - [ ] AFTER_BODY
+  - [x] AFTER_BODY
   - [ ] IN_FRAMESET
   - [ ] AFTER_FRAMESET
-  - [ ] AFTER_AFTER_BODY
+  - [x] AFTER_AFTER_BODY
   - [ ] AFTER_AFTER_FRAMESET
 - [ ] Implement Tokenizer States:
   - [x] DATA
