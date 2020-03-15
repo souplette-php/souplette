@@ -409,6 +409,8 @@ final class TreeBuilder
         // If will execute script is true, set the synchronous custom elements flag; otherwise, leave it unset.
         $qname = sprintf('%s:%s', Namespaces::PREFIXES[$namespace], $localName);
         $element = $doc->createElementNS($namespace, $qname);
+        // TODO: omit default namespaces
+        // $element = $doc->createElementNS($namespace, $localName);
         // 8. Append each attribute in the given token to element.
         if ($token->attributes) {
             foreach ($token->attributes as [$name, $value]) {
