@@ -14,8 +14,8 @@
   - [x] IN_TABLE_BODY
   - [x] IN_ROW
   - [x] IN_CELL
-  - [ ] IN_SELECT
-  - [ ] IN_SELECT_IN_TABLE
+  - [x] IN_SELECT
+  - [x] IN_SELECT_IN_TABLE
   - [x] IN_TEMPLATE
   - [x] AFTER_BODY
   - [ ] IN_FRAMESET
