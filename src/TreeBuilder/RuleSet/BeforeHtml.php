@@ -26,7 +26,13 @@ final class BeforeHtml extends RuleSet
             // Ignore the token.
             return;
         } elseif ($token instanceof Token\StartTag && $token->name === 'html') {
-            $tree->createElement($token, Namespaces::HTML, $tree->document);
+            // Create an element for the token in the HTML namespace, with the Document as the intended parent.
+            $element = $tree->createElement($token, Namespaces::HTML, $tree->document);
+            // Append it to the Document object.
+            $tree->document->appendChild($element);
+            // Put this element in the stack of open elements.
+            $tree->openElements->push($element);
+            // Switch the insertion mode to "before head".
             $tree->setInsertionMode(InsertionModes::BEFORE_HEAD);
             return;
         } elseif ($token instanceof Token\EndTag) {
@@ -37,9 +43,14 @@ final class BeforeHtml extends RuleSet
                 return;
             }
         }
-        $html = $tree->createElement($token, Namespaces::HTML, $tree->document);
+        // Create an html element whose node document is the Document object.
+        $html = $tree->createElement(new Token\StartTag('html'), Namespaces::HTML, $tree->document);
+        // Append it to the Document object.
         $tree->document->appendChild($html);
+        // Put this element in the stack of open elements.
         $tree->openElements->push($html);
+        // Switch the insertion mode to "before head", then reprocess the token.
         $tree->setInsertionMode(InsertionModes::BEFORE_HEAD);
+        $tree->processToken($token);
     }
 }

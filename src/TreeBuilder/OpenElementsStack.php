@@ -181,7 +181,7 @@ final class OpenElementsStack extends \SplStack
             }
         }
 
-        throw new \LogicException();
+        return false;
     }
 
     public function hasTagsInScope(array $tagNames, string $namespace = Namespaces::HTML): bool
@@ -232,6 +232,6 @@ final class OpenElementsStack extends \SplStack
             }
         }
 
-        throw new \LogicException();
+        return false;
     }
 }
