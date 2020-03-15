@@ -68,6 +68,10 @@ final class TreeBuilder
      */
     public $activeFormattingElements;
     /**
+     * @var Token\Character[]
+     */
+    public $pendingTableCharacterTokens;
+    /**
      * @var bool
      */
     private $isBuildingFragment = false;
@@ -86,7 +90,7 @@ final class TreeBuilder
     public $headElement;
     public $formElement;
     private $insertFromTable = false;
-    private $fosterParenting = false;
+    public $fosterParenting = false;
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#frameset-ok-flag
      * @var bool
@@ -198,7 +202,7 @@ final class TreeBuilder
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#reset-the-insertion-mode-appropriately
      */
-    private function resetInsertionModeAppropriately()
+    public function resetInsertionModeAppropriately()
     {
         // Shortcut for steps 6, 7, 8, 9, 10 & 13
         $nextModes = [
