@@ -76,6 +76,7 @@ abstract class AbstractTokenizer
                 yield $this->tokenQueue->dequeue();
             }
         } while ($carryOn);
+        // TODO: yield new EOF()
     }
 
     private function reset(): void

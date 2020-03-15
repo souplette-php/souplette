@@ -5,10 +5,10 @@
   - [x] IN_HEAD
   - [x] IN_HEAD_NOSCRIPT
   - [x] AFTER_HEAD
-  - [ ] IN_BODY
-  - [ ] TEXT
-  - [ ] IN_TABLE
-  - [ ] IN_TABLE_TEXT
+  - [x] IN_BODY
+  - [x] TEXT
+  - [x] IN_TABLE
+  - [x] IN_TABLE_TEXT
   - [ ] IN_CAPTION
   - [ ] IN_COLUMN_GROUP
   - [ ] IN_TABLE_BODY
