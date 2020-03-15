@@ -21,7 +21,18 @@ final class InBody extends RuleSet
     {
         $type = $token->type;
         if ($type === TokenTypes::EOF) {
-            // TODO: EOF
+            // If the stack of template insertion modes is not empty,
+            // then process the token using the rules for the "in template" insertion mode.
+            if (!$tree->templateInsertionModes->isEmpty()) {
+                $tree->processToken($token, InsertionModes::IN_TEMPLATE);
+                return;
+            }
+            // Otherwise, follow these steps:
+            // 1. TODO: If there is a node in the stack of open elements that is not either
+            // a dd, dt, li, optgroup, option, p, rb, rp, rt, rtc, tbody, td, tfoot, th, thead, tr, body or html element,
+            // then this is a parse error.
+            // 2. Stop parsing
+            return;
         } elseif ($type === TokenTypes::CHARACTER) {
             $data = $token->data;
             if ($data === "\0") {
@@ -666,9 +677,7 @@ final class InBody extends RuleSet
                     return;
                 }
                 // TODO: Otherwise, if there is a node in the stack of open elements that is not either
-                // a dd element, a dt element, an li element, an optgroup element, an option element, a p element,
-                // an rb element, an rp element, an rt element, an rtc element, a tbody element, a td element,
-                // a tfoot element, a th element, a thead element, a tr element, the body element, or the html element,
+                // a dd, dt, li, optgroup, option, p, rb, rp, rt, rtc, tbody, td, tfoot, th, thead, tr, body or html element,
                 // then this is a parse error.
 
                 // Switch the insertion mode to "after body".
@@ -682,9 +691,7 @@ final class InBody extends RuleSet
                     return;
                 }
                 // TODO: Otherwise, if there is a node in the stack of open elements that is not either
-                // a dd element, a dt element, an li element, an optgroup element, an option element, a p element,
-                // an rb element, an rp element, an rt element, an rtc element, a tbody element, a td element,
-                // a tfoot element, a th element, a thead element, a tr element, the body element, or the html element,
+                // a dd, dt, li, optgroup, option, p, rb, rp, rt, rtc, tbody, td, tfoot, th, thead, tr, body or html element,
                 // then this is a parse error.
 
                 // Switch the insertion mode to "after body".

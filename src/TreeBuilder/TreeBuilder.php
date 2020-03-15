@@ -68,6 +68,10 @@ final class TreeBuilder
      */
     public $activeFormattingElements;
     /**
+     * @var SplStack
+     */
+    public $templateInsertionModes;
+    /**
      * @var Token\Character[]
      */
     public $pendingTableCharacterTokens;
@@ -157,6 +161,7 @@ final class TreeBuilder
         $this->isBuildingFragment = false;
         $this->openElements = new OpenElementsStack();
         $this->activeFormattingElements = new ActiveFormattingElementList();
+        $this->templateInsertionModes = new SplStack();
         $this->contextElement = null;
         $this->fosterParenting = false;
         $this->framesetOK = true;
@@ -273,8 +278,7 @@ final class TreeBuilder
             }
             // 11. If node is a template element, then switch the insertion mode to the current template insertion mode and return.
             if ($nodeName === 'template') {
-                // FIXME: this is not good
-                $this->insertionMode = InsertionModes::IN_TEMPLATE;
+                $this->insertionMode = $this->templateInsertionModes->top();
                 break;
             }
             // 12. If node is a head element and last is false, then switch the insertion mode to "in head" and return.

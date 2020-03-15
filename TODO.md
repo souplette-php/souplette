@@ -16,7 +16,7 @@
   - [x] IN_CELL
   - [ ] IN_SELECT
   - [ ] IN_SELECT_IN_TABLE
-  - [ ] IN_TEMPLATE
+  - [x] IN_TEMPLATE
   - [x] AFTER_BODY
   - [ ] IN_FRAMESET
   - [ ] AFTER_FRAMESET

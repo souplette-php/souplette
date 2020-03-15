@@ -77,7 +77,16 @@ final class InHead extends RuleSet
                 $tree->setInsertionMode(InsertionModes::TEXT);
                 return;
             } elseif ($name === 'template') {
-                // TODO
+                // Insert an HTML element for the token.
+                $tree->insertElement($token);
+                // Insert a marker at the end of the list of active formatting elements.
+                $tree->activeFormattingElements->push(null);
+                // Set the frameset-ok flag to "not ok".
+                $tree->framesetOK = false;
+                // Switch the insertion mode to "in template".
+                $tree->setInsertionMode(InsertionModes::IN_TEMPLATE);
+                // Push "in template" onto the stack of template insertion modes so that it is the new current template insertion mode.
+                $tree->templateInsertionModes->push(InsertionModes::IN_TEMPLATE);
                 return;
             } elseif ($name === 'head') {
                 // TODO: Parse error. Ignore the token.
@@ -96,7 +105,26 @@ final class InHead extends RuleSet
             ) {
                 // Act as described in the "anything else" entry below.
             } elseif ($name === 'template') {
-                // TODO
+                // If there is no template element on the stack of open elements, then this is a parse error; ignore the token.
+                if (!$tree->openElements->containsTag('template')) {
+                    // TODO: Parse error
+                    return;
+                }
+                // Otherwise, run these steps:
+                // Generate all implied end tags thoroughly.
+                $tree->generateImpliedEndTags(null, true);
+                // If the current node is not a template element, then this is a parse error.
+                if ($tree->openElements->top()->localName !== 'template') {
+                    // TODO: Parse error.
+                }
+                // Pop elements from the stack of open elements until a template element has been popped from the stack.
+                $tree->openElements->popUntilTag('template');
+                // Clear the list of active formatting elements up to the last marker.
+                $tree->activeFormattingElements->clearUpToLastMarker();
+                // Pop the current template insertion mode off the stack of template insertion modes.
+                $tree->templateInsertionModes->pop();
+                // Reset the insertion mode appropriately.
+                $tree->resetInsertionModeAppropriately();
                 return;
             } else {
                 // TODO: Parse error. Ignore the token.
