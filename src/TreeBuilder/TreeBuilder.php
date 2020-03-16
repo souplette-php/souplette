@@ -521,6 +521,13 @@ final class TreeBuilder
         $this->setInsertionMode(InsertionModes::TEXT);
     }
 
+    public function adjustSvgTagName(Token\StartTag $token)
+    {
+        if (isset(Elements::NORMALIZED_SVG_TAGS[$token->name])) {
+            $token->name = Elements::NORMALIZED_SVG_TAGS[$token->name];
+        }
+    }
+
     public function adjustSvgAttributes(Token\StartTag $token)
     {
         if (!$token->attributes) return;

@@ -249,15 +249,56 @@ final class Elements
         ],
     ];
 
-    public static function isHtmlIntegrationPoint(string $tagName, string $namespace): bool
+    const NORMALIZED_SVG_TAGS = [
+        'altglyph' => 'altGlyph',
+        'altglyphdef' => 'altGlyphDef',
+        'altglyphitem' => 'altGlyphItem',
+        'animatecolor' => 'animateColor',
+        'animatemotion' => 'animateMotion',
+        'animatetransform' => 'animateTransform',
+        'clippath' => 'clipPath',
+        'feblend' => 'feBlend',
+        'fecolormatrix' => 'feColorMatrix',
+        'fecomponenttransfer' => 'feComponentTransfer',
+        'fecomposite' => 'feComposite',
+        'feconvolvematrix' => 'feConvolveMatrix',
+        'fediffuselighting' => 'feDiffuseLighting',
+        'fedisplacementmap' => 'feDisplacementMap',
+        'fedistantlight' => 'feDistantLight',
+        'fedropshadow' => 'feDropShadow',
+        'feflood' => 'feFlood',
+        'fefunca' => 'feFuncA',
+        'fefuncb' => 'feFuncB',
+        'fefuncg' => 'feFuncG',
+        'fefuncr' => 'feFuncR',
+        'fegaussianblur' => 'feGaussianBlur',
+        'feimage' => 'feImage',
+        'femerge' => 'feMerge',
+        'femergenode' => 'feMergeNode',
+        'femorphology' => 'feMorphology',
+        'feoffset' => 'feOffset',
+        'fepointlight' => 'fePointLight',
+        'fespecularlighting' => 'feSpecularLighting',
+        'fespotlight' => 'feSpotLight',
+        'fetile' => 'feTile',
+        'feturbulence' => 'feTurbulence',
+        'foreignobject' => 'foreignObject',
+        'glyphref' => 'glyphRef',
+        'lineargradient' => 'linearGradient',
+        'radialgradient' => 'radialGradient',
+        'textpath' => 'textPath',
+    ];
+
+    public static function isHtmlIntegrationPoint(\DOMElement $element): bool
     {
-        if ($tagName === 'annotation-xml' && $namespace === Namespaces::MATHML) {
-            // TODO
+        if ($element->localName === 'annotation-xml' && $element->namespaceURI === Namespaces::MATHML) {
+            $encoding = strtolower($element->getAttribute('encoding'));
+            return $encoding === 'text/html' || $encoding === 'application/xhtml+xml';
         }
-        return isset(self::HTHML_INTEGRATION_POINTS[$namespace][$tagName]);
+        return isset(self::HTHML_INTEGRATION_POINTS[$element->namespaceURI][$element->localName]);
     }
 
-    public static function isMathMlIntegrationPoint(\DOMElement $element)
+    public static function isMathMlTextIntegrationPoint(\DOMElement $element)
     {
         return isset(self::MATHML_TEXT_INTEGRATION_POINTS[$element->localName])
             && $element->namespaceURI === Namespaces::MATHML;
