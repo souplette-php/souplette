@@ -18,10 +18,10 @@
   - [x] IN_SELECT_IN_TABLE
   - [x] IN_TEMPLATE
   - [x] AFTER_BODY
-  - [ ] IN_FRAMESET
-  - [ ] AFTER_FRAMESET
+  - [x] IN_FRAMESET
+  - [x] AFTER_FRAMESET
   - [x] AFTER_AFTER_BODY
-  - [ ] AFTER_AFTER_FRAMESET
+  - [x] AFTER_AFTER_FRAMESET
 - [ ] Implement Tokenizer States:
   - [x] DATA
   - [ ] CHARACTER_REFERENCE_IN_DATA
