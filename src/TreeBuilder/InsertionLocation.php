@@ -27,4 +27,16 @@ final class InsertionLocation
             $this->parent->insertBefore($node, $this->target->nextSibling);
         }
     }
+
+    public function closestAncestor(string $tagName): ?\DOMElement
+    {
+        $node = $this->target ?: $this->parent;
+        while ($node) {
+            if ($node->localName === $tagName) {
+                return $node;
+            }
+            $node = $node->parentNode;
+        }
+        return null;
+    }
 }

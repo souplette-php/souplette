@@ -392,6 +392,9 @@ final class TreeBuilder
         }
         // 3. TODO: If the adjusted insertion location is inside a template element,
         // let it instead be inside the template element's template contents, after its last child (if any).
+        //if ($template = $adjustedInsertionLocation->closestAncestor('template')) {
+        //    $adjustedInsertionLocation = new InsertionLocation($template->content);
+        //}
         // 4. Return the adjusted insertion location.
         return $adjustedInsertionLocation;
     }
