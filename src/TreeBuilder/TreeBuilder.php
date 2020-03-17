@@ -354,12 +354,9 @@ final class TreeBuilder
                 if ($element->localName === 'template') {
                     $lastTemplate = $element;
                     $lastTemplatePosition = $pos;
-                    break;
-                }
-                if ($element->localName === 'table') {
+                } elseif ($element->localName === 'table') {
                     $lastTable = $element;
                     $lastTablePosition = $pos;
-                    break;
                 }
             }
             if ($lastTemplate && (!$lastTable || $lastTemplatePosition < $lastTablePosition)) {
@@ -369,7 +366,7 @@ final class TreeBuilder
                 // and abort these steps.
                 // FIXME: nogood !
                 $adjustedInsertionLocation = new InsertionLocation($lastTemplate, $lastTemplate->lastChild);
-            } elseif ($this->isBuildingFragment && !$lastTable) {
+            } elseif (!$lastTable) {
                 // 4. If there is no last table,
                 // then let adjusted insertion location be inside the first element in the stack of open elements (the html element),
                 // after its last child (if any),
