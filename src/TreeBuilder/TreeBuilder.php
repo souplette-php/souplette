@@ -374,7 +374,7 @@ final class TreeBuilder
                 // then let adjusted insertion location be inside the first element in the stack of open elements (the html element),
                 // after its last child (if any),
                 // and abort these steps. (fragment case)
-                $parent = $this->openElements->top();
+                $parent = $this->openElements->bottom();
                 $adjustedInsertionLocation = new InsertionLocation($parent, $parent->lastChild);
             } elseif ($lastTable && $lastTable->parentNode) {
                 // 5. If last table has a parent node,
