@@ -142,6 +142,17 @@ abstract class AbstractTokenizer
         $token = $this->currentToken;
         if ($token->type === TokenTypes::START_TAG) {
             $this->appropriateEndTag = $token->name;
+            if ($token->attributes) {
+                $attrs = [];
+                foreach ($token->attributes as [$name, $value]) {
+                    if (isset($attrs[$name])) {
+                        $this->parseErrors[] = [ParseErrors::DUPLICATE_ATTRIBUTE, $this->position];
+                        continue;
+                    }
+                    $attrs[$name] = $value;
+                }
+                $token->attributes = $attrs;
+            }
         } elseif ($token->type === TokenTypes::END_TAG) {
             if ($token->attributes) {
                 // This is an end-tag-with-attributes parse error.

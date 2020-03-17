@@ -69,7 +69,7 @@ final class InBody extends RuleSet
                 // check to see if the attribute is already present on the top element of the stack of open elements.
                 // If it is not, add the attribute and its corresponding value to that element.
                 $top = $tree->openElements->top();
-                foreach ($token->attributes as [$name, $value]) {
+                foreach ($token->attributes as $name => $value) {
                     if (!$top->hasAttribute($name)) {
                         $top->setAttribute($name, $value);
                     }
@@ -109,7 +109,7 @@ final class InBody extends RuleSet
                 // check to see if the attribute is already present on the body element (the second element) on the stack of open elements,
                 // and if it is not, add the attribute and its corresponding value to that element.
                 $body = $tree->openElements[1];
-                foreach ($token->attributes as [$name, $value]) {
+                foreach ($token->attributes as $name => $value) {
                     if (!$body->hasAttribute($name)) {
                         $body->setAttribute($name, $value);
                     }

@@ -40,14 +40,15 @@ class StartTagTest extends TestCase
 
     public function attributesProvider()
     {
-        yield ['<a b c>', [Token::startTag('a', false, [['b', ''], ['c', '']])]];
-        yield ['<a b=c>', [Token::startTag('a', false, [['b', 'c']])]];
-        yield ['<a b="c">', [Token::startTag('a', false, [['b', 'c']])]];
-        yield ["<a b='c'>", [Token::startTag('a', false, [['b', 'c']])]];
+        yield ['<a b c>', [Token::startTag('a', false, ['b' => '', 'c' => ''])]];
+        yield ['<a b=c>', [Token::startTag('a', false, ['b' => 'c'])]];
+        yield ['<a b="c">', [Token::startTag('a', false, ['b' => 'c'])]];
+        yield ["<a b='c'>", [Token::startTag('a', false, ['b' => 'c'])]];
         yield ['<a b><c d=e>', [
-            Token::startTag('a', false, [['b', '']]),
-            Token::startTag('c', false, [['d', 'e']])
+            Token::startTag('a', false, ['b' => '']),
+            Token::startTag('c', false, ['d' => 'e'])
         ]];
+        yield ['<a b="b" b="c">', [Token::startTag('a', false, ['b' => 'b'])]];
     }
 
 }

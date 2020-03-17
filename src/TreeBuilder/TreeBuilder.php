@@ -419,8 +419,10 @@ final class TreeBuilder
         // $element = $doc->createElementNS($namespace, $localName);
         // 8. Append each attribute in the given token to element.
         if ($token->attributes) {
-            foreach ($token->attributes as [$name, $value]) {
-                if (!$element->hasAttribute($name)) {
+            foreach ($token->attributes as $name => $value) {
+                if ($value instanceof \DOMAttr) {
+                    $element->appendChild($value);
+                } else {
                     $element->setAttribute($name, $value);
                 }
             }
@@ -531,10 +533,10 @@ final class TreeBuilder
     public function adjustSvgAttributes(Token\StartTag $token)
     {
         if (!$token->attributes) return;
-        foreach ($token->attributes as $i => [$name, $value]) {
+        foreach ($token->attributes as $name => $value) {
             if (isset(Attributes::ADJUSTED_SVG_ATTRIBUTES[$name])) {
                 $name = Attributes::ADJUSTED_SVG_ATTRIBUTES[$name];
-                $token->attributes[$i] = [$name, $value];
+                $token->attributes[$name] = $value;
             }
         }
     }
@@ -542,10 +544,10 @@ final class TreeBuilder
     public function adjustMathMlAttributes(Token\StartTag $token)
     {
         if (!$token->attributes) return;
-        foreach ($token->attributes as $i => [$name, $value]) {
+        foreach ($token->attributes as $name => $value) {
             if (isset(Attributes::ADJUSTED_MATHML_ATTRIBUTES[$name])) {
                 $name = Attributes::ADJUSTED_MATHML_ATTRIBUTES[$name];
-                $token->attributes[$i] = [$name, $value];
+                $token->attributes[$name] = $value;
             }
         }
     }
@@ -553,12 +555,12 @@ final class TreeBuilder
     public function adjustForeignAttributes(Token\StartTag $token)
     {
         if (!$token->attributes) return;
-        foreach ($token->attributes as $i => [$name, $value]) {
+        foreach ($token->attributes as $name => $value) {
             if (isset(Attributes::ADJUSTED_FOREIGN_ATTRIBUTES[$name])) {
                 [$qname, $prefix, $localName, $ns] = Attributes::ADJUSTED_FOREIGN_ATTRIBUTES[$name];
                 $attr = $this->document->createAttributeNS($ns, $qname);
                 $attr->value = $value;
-                $token->attributes[$i] = $attr;
+                $token->attributes[$name] = $attr;
             }
         }
     }
@@ -600,7 +602,7 @@ final class TreeBuilder
             // 8. Create: Insert an HTML element for the token for which the element entry was created, to obtain new element.
             $token = new Token\StartTag($entry->localName);
             foreach ($entry->attributes as $attr) {
-                $token->attributes[] = [$attr->nodeName, $attr->nodeValue];
+                $token->attributes[$attr->nodeName] = $attr->nodeValue;
             }
             $element = $this->insertElement($token, $entry->namespaceURI);
             // 9. Replace the entry for entry in the list with an entry for new element.

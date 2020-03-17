@@ -45,15 +45,21 @@ final class InHead extends RuleSet
                 $tree->insertElement($token);
                 $tree->openElements->pop();
                 $token->selfClosingAcknowledged = true;
-                // TODO: If the element has a charset attribute,
-                // and getting an encoding from its value results in an encoding, and the confidence is currently tentative,
-                // then change the encoding to the resulting encoding.
-                // Otherwise, if the element has an http-equiv attribute
-                // whose value is an ASCII case-insensitive match for the string "Content-Type",
-                // and the element has a content attribute,
-                // and applying the algorithm for extracting a character encoding from a meta element
-                // to that attribute's value returns an encoding, and the confidence is currently tentative,
-                // then change the encoding to the extracted encoding.
+                if (isset($token->attributes['charset'])) {
+                    // TODO: If the element has a charset attribute,
+                    // and getting an encoding from its value results in an encoding, and the confidence is currently tentative,
+                    // then change the encoding to the resulting encoding.
+                } elseif (
+                    isset($token->attributes['http-equiv'], $token->attributes['content'])
+                    && strcasecmp($token->attributes['http-equiv'], 'content-type') === 0
+                ) {
+                    // TODO: Otherwise, if the element has an http-equiv attribute
+                    // whose value is an ASCII case-insensitive match for the string "Content-Type",
+                    // and the element has a content attribute,
+                    // and applying the algorithm for extracting a character encoding from a meta element
+                    // to that attribute's value returns an encoding, and the confidence is currently tentative,
+                    // then change the encoding to the extracted encoding.
+                }
                 return;
             } elseif ($name === 'title') {
                 // Follow the generic RCDATA element parsing algorithm.

@@ -84,7 +84,11 @@ final class InForeignContent extends RuleSet
                 || $token->name === 'ul'
                 || $token->name === 'var'
             )
-            || ($token->name === 'font') // TODO: if the token has any attributes named "color", "face", or "size"
+            || ($token->name === 'font' && (
+                isset($token->attributes['color'])
+                || isset($token->attributes['face'])
+                || isset($token->attributes['size'])
+            ))
         )) {
             // TODO: Parse error.
             // If the parser was created as part of the HTML fragment parsing algorithm, then act as described in the "any other start tag" entry below. (fragment case)

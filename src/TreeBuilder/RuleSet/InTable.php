@@ -119,10 +119,15 @@ final class InTable extends RuleSet
                 $tree->processToken($token, InsertionModes::IN_HEAD);
                 return;
             } elseif ($tagName === 'input') {
-                // TODO: If the token does not have an attribute with the name "type",
+                // If the token does not have an attribute with the name "type",
                 // or if it does, but that attribute's value is not an ASCII case-insensitive match for the string "hidden",
                 // then: act as described in the "anything else" entry below.
-
+                if (
+                    !isset($token->attributes['type'])
+                    || strcasecmp($token->attributes['type'], 'hidden') !== 0
+                ) {
+                    goto ANYTHING_ELSE;
+                }
                 // Otherwise:
                 // TODO: Parse error.
                 // Insert an HTML element for the token.
