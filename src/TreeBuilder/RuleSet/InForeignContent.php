@@ -157,7 +157,7 @@ final class InForeignContent extends RuleSet
             // Initialize node to be the current node (the bottommost node of the stack).
             $node = $currentNode;
             // If node's tag name, converted to ASCII lowercase, is not the same as the tag name of the token, then this is a parse error.
-            if (strtolower($node->localName) !== $token->name) {
+            if (strcasecmp($node->localName, $token->name) !== 0) {
                 // TODO: Parse error.
             }
             while ($node->namespaceURI !== Namespaces::HTML) {
@@ -167,7 +167,7 @@ final class InForeignContent extends RuleSet
                 }
                 // If node's tag name, converted to ASCII lowercase, is the same as the tag name of the token,
                 // pop elements from the stack of open elements until node has been popped from the stack, and then return.
-                if (strtolower($node->localName) === $token->name) {
+                if (strcasecmp($node->localName, $token->name) === 0) {
                     $tree->openElements->popUntil($node);
                     return;
                 }

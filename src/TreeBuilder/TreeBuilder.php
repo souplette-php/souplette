@@ -6,6 +6,7 @@ use ju1ius\HtmlParser\Namespaces;
 use ju1ius\HtmlParser\Tokenizer\Token;
 use ju1ius\HtmlParser\Tokenizer\Tokenizer;
 use ju1ius\HtmlParser\Tokenizer\TokenizerStates;
+use ju1ius\HtmlParser\Tokenizer\TokenTypes;
 use SplStack;
 
 final class TreeBuilder
@@ -34,6 +35,7 @@ final class TreeBuilder
         InsertionModes::AFTER_FRAMESET => RuleSet\AfterFrameset::class,
         InsertionModes::AFTER_AFTER_BODY => RuleSet\AfterAfterBody::class,
         InsertionModes::AFTER_AFTER_FRAMESET => RuleSet\AfterAfterFrameset::class,
+        InsertionModes::IN_FOREIGN_CONTENT => RuleSet\InForeignContent::class,
     ];
     /**
      * @var Tokenizer
@@ -173,14 +175,49 @@ final class TreeBuilder
     private function run()
     {
         foreach ($this->tokenizer->tokenize() as $token) {
-            $this->processToken($token);
+            // Tree construction dispatcher
+            // @see https://html.spec.whatwg.org/multipage/parsing.html#tree-construction-dispatcher
+            if ($this->openElements->isEmpty()) {
+                $this->processToken($token);
+                continue;
+            }
+            $adjustedCurrentNode = $this->getAdjustedCurrentNode();
+            if (
+                $adjustedCurrentNode->namespaceURI === Namespaces::HTML
+                || (
+                    Elements::isMathMlTextIntegrationPoint($adjustedCurrentNode)
+                    && (
+                        $token->type === TokenTypes::START_TAG
+                        && $token->name !== 'mglyph'
+                        && $token->name !== 'malignmark'
+                    ) || (
+                        $token->type === TokenTypes::CHARACTER
+                    )
+                )
+                || (
+                    $adjustedCurrentNode->localName === 'annotation-xml'
+                    && $adjustedCurrentNode->namespaceURI === Namespaces::MATHML
+                    && $token->type === TokenTypes::START_TAG
+                    && $token->name === 'svg'
+                )
+                || (
+                    Elements::isHtmlIntegrationPoint($adjustedCurrentNode)
+                    && (
+                        $token->type === TokenTypes::START_TAG
+                        || $token->type === TokenTypes::CHARACTER
+                    )
+                )
+                || $token->type === TokenTypes::EOF
+            ) {
+                $this->processToken($token);
+            } else {
+                $this->processToken($token, InsertionModes::IN_FOREIGN_CONTENT);
+            }
         }
     }
 
     public function processToken(Token $token, ?int $insertionMode = null)
     {
-        // TODO: tree construction dispatcher
-        // @see https://html.spec.whatwg.org/multipage/parsing.html#tree-construction-dispatcher
         $this->currentToken = $token;
         if ($insertionMode !== null) {
             return $this->ruleSets[$insertionMode]->process($token, $this);
