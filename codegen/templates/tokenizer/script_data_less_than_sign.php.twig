@@ -3,4 +3,19 @@
 #}
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
-throw new \Exception('Not Implemented: {{current_state}}');
+if ($cc === '/') {
+    // Set the temporary buffer to the empty string.
+    $this->temporaryBuffer = '';
+    // Switch to the script data end tag open state.
+    {{ h.advance_to('SCRIPT_DATA_END_TAG_OPEN') }}
+} elseif ($cc === '!') {
+    // Emit a U+003C LESS-THAN SIGN character token and a U+0021 EXCLAMATION MARK character token.
+    $this->tokenQueue->enqueue(new Character('<!'));
+    // Switch to the script data escape start state.
+    {{ h.advance_to('SCRIPT_DATA_ESCAPE_START') }}
+} else {
+    // Emit a U+003C LESS-THAN SIGN character token.
+    $this->tokenQueue->enqueue(new Character('<'));
+    // Reconsume in the script data state.
+    {{ h.reconsume_in('SCRIPT_DATA') }}
+}

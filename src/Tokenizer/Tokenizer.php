@@ -492,87 +492,568 @@ final class Tokenizer extends AbstractTokenizer
             break;
             case TokenizerStates::SCRIPT_DATA_LESS_THAN_SIGN:
             SCRIPT_DATA_LESS_THAN_SIGN: {
-                throw new \Exception('Not Implemented: SCRIPT_DATA_LESS_THAN_SIGN');
+                if ($cc === '/') {
+                    // Set the temporary buffer to the empty string.
+                    $this->temporaryBuffer = '';
+                    // Switch to the script data end tag open state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_END_TAG_OPEN;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_END_TAG_OPEN;
+                } elseif ($cc === '!') {
+                    // Emit a U+003C LESS-THAN SIGN character token and a U+0021 EXCLAMATION MARK character token.
+                    $this->tokenQueue->enqueue(new Character('<!'));
+                    // Switch to the script data escape start state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPE_START;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_ESCAPE_START;
+                } else {
+                    // Emit a U+003C LESS-THAN SIGN character token.
+                    $this->tokenQueue->enqueue(new Character('<'));
+                    // Reconsume in the script data state.
+                    $this->state = TokenizerStates::SCRIPT_DATA;
+                    goto SCRIPT_DATA;
+                }
             }
             break;
             case TokenizerStates::SCRIPT_DATA_END_TAG_OPEN:
             SCRIPT_DATA_END_TAG_OPEN: {
-                throw new \Exception('Not Implemented: SCRIPT_DATA_END_TAG_OPEN');
+                if (ctype_alpha($cc)) {
+                    // Create a new end tag token, set its tag name to the empty string.
+                    $this->currentToken = new EndTag();
+                    // Reconsume in the script data end tag name state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_END_TAG_NAME;
+                    goto SCRIPT_DATA_END_TAG_NAME;
+                } else {
+                    // Emit a U+003C LESS-THAN SIGN character token and a U+002F SOLIDUS character token.
+                    $this->tokenQueue->enqueue(new Character('</'));
+                    // Reconsume in the script data state.
+                    $this->state = TokenizerStates::SCRIPT_DATA;
+                    goto SCRIPT_DATA;
+                }
             }
             break;
             case TokenizerStates::SCRIPT_DATA_END_TAG_NAME:
             SCRIPT_DATA_END_TAG_NAME: {
-                throw new \Exception('Not Implemented: SCRIPT_DATA_END_TAG_NAME');
+                if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
+                    // If the current end tag token is an appropriate end tag token, then switch to the before attribute name state.
+                    // Otherwise, treat it as per the "anything else" entry below.
+                    if ($this->currentToken->name === $this->appropriateEndTag) {
+                        $this->state = TokenizerStates::BEFORE_ATTRIBUTE_NAME;
+                        $cc = $this->input[++$this->position] ?? null;
+                        goto BEFORE_ATTRIBUTE_NAME;
+                    } else {
+                        goto SCRIPT_DATA_END_TAG_NAME_ANYTHING_ELSE;
+                    }
+                } elseif ($cc === '/') {
+                    // If the current end tag token is an appropriate end tag token, then switch to the self-closing start tag state.
+                    // Otherwise, treat it as per the "anything else" entry below.
+                    if ($this->currentToken->name === $this->appropriateEndTag) {
+                        $this->state = TokenizerStates::SELF_CLOSING_START_TAG;
+                        $cc = $this->input[++$this->position] ?? null;
+                        goto SELF_CLOSING_START_TAG;
+                    } else {
+                        goto SCRIPT_DATA_END_TAG_NAME_ANYTHING_ELSE;
+                    }
+                } elseif ($cc === '>') {
+                    // If the current end tag token is an appropriate end tag token,
+                    // then switch to the data state and emit the current tag token.
+                    // Otherwise, treat it as per the "anything else" entry below.
+                    if ($this->currentToken->name === $this->appropriateEndTag) {
+                        $this->emitCurrentToken();
+                        $this->state = TokenizerStates::DATA;
+                        ++$this->position;
+                        return true;
+                    } else {
+                        goto SCRIPT_DATA_END_TAG_NAME_ANYTHING_ELSE;
+                    }
+                } elseif (ctype_alpha($cc)) {
+                    // Append the lowercase version of the current input character to the current tag token's tag name.
+                    // Append the current input character to the temporary buffer.
+                    $l = strspn($this->input, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
+                    $this->currentToken->name .= strtolower($chars);
+                    $this->temporaryBuffer .= $chars;
+                    $cc = $this->input[$this->position] ?? null;
+                    $this->state = TokenizerStates::SCRIPT_DATA_END_TAG_NAME;
+                    goto SCRIPT_DATA_END_TAG_NAME;
+                } else {
+                    SCRIPT_DATA_END_TAG_NAME_ANYTHING_ELSE:
+                    // Emit a U+003C LESS-THAN SIGN character token, a U+002F SOLIDUS character token,
+                    // and a character token for each of the characters in the temporary buffer (in the order they were added to the buffer).
+                    $this->tokenQueue->enqueue(new Character('</' . $this->temporaryBuffer));
+                    // Reconsume in the script data state.
+                    $this->state = TokenizerStates::SCRIPT_DATA;
+                    goto SCRIPT_DATA;
+                }
             }
             break;
             case TokenizerStates::SCRIPT_DATA_ESCAPE_START:
             SCRIPT_DATA_ESCAPE_START: {
-                throw new \Exception('Not Implemented: SCRIPT_DATA_ESCAPE_START');
+                if ($cc === '-') {
+                    // Emit a U+002D HYPHEN-MINUS character token.
+                    $this->tokenQueue->enqueue(new Character('-'));
+                    // Switch to the script data escape start dash state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPE_START_DASH;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_ESCAPE_START_DASH;
+                } else {
+                    // Reconsume in the script data state.
+                    $this->state = TokenizerStates::SCRIPT_DATA;
+                    goto SCRIPT_DATA;
+                }
             }
             break;
             case TokenizerStates::SCRIPT_DATA_ESCAPE_START_DASH:
             SCRIPT_DATA_ESCAPE_START_DASH: {
-                throw new \Exception('Not Implemented: SCRIPT_DATA_ESCAPE_START_DASH');
+                if ($cc === '-') {
+                    // Emit a U+002D HYPHEN-MINUS character token.
+                    $this->tokenQueue->enqueue(new Character('-'));
+                    // Switch to the script data escaped dash dash state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED_DASH_DASH;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_ESCAPED_DASH_DASH;
+                } else {
+                    // Reconsume in the script data state.
+                    $this->state = TokenizerStates::SCRIPT_DATA;
+                    goto SCRIPT_DATA;
+                }
             }
             break;
             case TokenizerStates::SCRIPT_DATA_ESCAPED:
             SCRIPT_DATA_ESCAPED: {
-                throw new \Exception('Not Implemented: SCRIPT_DATA_ESCAPED');
+                if ($cc === '-') {
+                    // Emit a U+002D HYPHEN-MINUS character token.
+                    $this->tokenQueue->enqueue(new Character('-'));
+                    // Switch to the script data escaped dash state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED_DASH;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_ESCAPED_DASH;
+                } elseif ($cc === '<') {
+                    // Switch to the script data escaped less-than sign state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN;
+                } elseif ($cc === "\0") {
+                    // This is an unexpected-null-character parse error.
+                    $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
+                    // Emit a U+FFFD REPLACEMENT CHARACTER character token.
+                    $this->tokenQueue->enqueue(new Character("\u{FFFD}"));
+                } elseif ($cc === null) {
+                    // This is an eof-in-script-html-comment-like-text parse error.
+                    $this->parseErrors[] = [ParseErrors::EOF_IN_SCRIPT_HTML_COMMENT_LIKE_TEXT, $this->position];
+                    // Emit an end-of-file token.
+                    return false;
+                } else {
+                    // Emit the current input character as a character token.
+                    $l = strcspn($this->input, "-<\0", $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
+                    $this->tokenQueue->enqueue(new Character($chars));
+                    $cc = $this->input[$this->position] ?? null;
+                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED;
+                    goto SCRIPT_DATA_ESCAPED;
+                }
             }
             break;
             case TokenizerStates::SCRIPT_DATA_ESCAPED_DASH:
             SCRIPT_DATA_ESCAPED_DASH: {
-                throw new \Exception('Not Implemented: SCRIPT_DATA_ESCAPED_DASH');
+                if ($cc === '-') {
+                    // Emit a U+002D HYPHEN-MINUS character token.
+                    $this->tokenQueue->enqueue(new Character('-'));
+                    // Switch to the script data escaped dash dash state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED_DASH_DASH;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_ESCAPED_DASH_DASH;
+                } elseif ($cc === '<') {
+                    // Switch to the script data escaped less-than sign state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN;
+                } elseif ($cc === "\0") {
+                    // This is an unexpected-null-character parse error.
+                    $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
+                    // Emit a U+FFFD REPLACEMENT CHARACTER character token.
+                    $this->tokenQueue->enqueue(new Character("\u{FFFD}"));
+                    // Switch to the script data escaped state
+                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_ESCAPED;
+                } elseif ($cc === null) {
+                    // This is an eof-in-script-html-comment-like-text parse error.
+                    $this->parseErrors[] = [ParseErrors::EOF_IN_SCRIPT_HTML_COMMENT_LIKE_TEXT, $this->position];
+                    // Emit an end-of-file token.
+                    return false;
+                } else {
+                    // Emit the current input character as a character token.
+                    $l = strcspn($this->input, "-<\0", $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
+                    $this->tokenQueue->enqueue(new Character($chars));
+                    $cc = $this->input[$this->position] ?? null;
+                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED;
+                    goto SCRIPT_DATA_ESCAPED;
+                }
             }
             break;
             case TokenizerStates::SCRIPT_DATA_ESCAPED_DASH_DASH:
             SCRIPT_DATA_ESCAPED_DASH_DASH: {
-                throw new \Exception('Not Implemented: SCRIPT_DATA_ESCAPED_DASH_DASH');
+                if ($cc === '-') {
+                    // Emit a U+002D HYPHEN-MINUS character token.
+                    $this->tokenQueue->enqueue(new Character('-'));
+                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED_DASH_DASH;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_ESCAPED_DASH_DASH;
+                } elseif ($cc === '<') {
+                    // Switch to the script data escaped less-than sign state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN;
+                } elseif ($cc === '>') {
+                    // Emit a U+003E GREATER-THAN SIGN character token.
+                    $this->tokenQueue->enqueue(new Character('>'));
+                    // Switch to the script data state.
+                    $this->state = TokenizerStates::SCRIPT_DATA;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA;
+                } elseif ($cc === "\0") {
+                    // This is an unexpected-null-character parse error.
+                    $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
+                    // Emit a U+FFFD REPLACEMENT CHARACTER character token.
+                    $this->tokenQueue->enqueue(new Character("\u{FFFD}"));
+                    // Switch to the script data escaped state
+                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_ESCAPED;
+                } elseif ($cc === null) {
+                    // This is an eof-in-script-html-comment-like-text parse error.
+                    $this->parseErrors[] = [ParseErrors::EOF_IN_SCRIPT_HTML_COMMENT_LIKE_TEXT, $this->position];
+                    // Emit an end-of-file token.
+                    return false;
+                } else {
+                    // Emit the current input character as a character token.
+                    $l = strcspn($this->input, "-<>\0", $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
+                    $this->tokenQueue->enqueue(new Character($chars));
+                    $cc = $this->input[$this->position] ?? null;
+                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED;
+                    goto SCRIPT_DATA_ESCAPED;
+                }
             }
             break;
             case TokenizerStates::SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN:
             SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN: {
-                throw new \Exception('Not Implemented: SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN');
+                if ($cc === '/') {
+                    // Set the temporary buffer to the empty string.
+                    $this->temporaryBuffer = '';
+                    //  Switch to the script data escaped end tag open state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED_END_TAG_OPEN;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_ESCAPED_END_TAG_OPEN;
+                } elseif (ctype_alpha($cc)) {
+                    // Set the temporary buffer to the empty string.
+                    $this->temporaryBuffer = '';
+                    // Emit a U+003C LESS-THAN SIGN character token.
+                    $this->tokenQueue->enqueue(new Character('<'));
+                    // Reconsume in the script data double escape start state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPE_START;
+                    goto SCRIPT_DATA_DOUBLE_ESCAPE_START;
+                } else {
+                    // Emit a U+003C LESS-THAN SIGN character token.
+                    $this->tokenQueue->enqueue(new Character('<'));
+                    // Reconsume in the script data escaped state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED;
+                    goto SCRIPT_DATA_ESCAPED;
+                }
             }
             break;
             case TokenizerStates::SCRIPT_DATA_ESCAPED_END_TAG_OPEN:
             SCRIPT_DATA_ESCAPED_END_TAG_OPEN: {
-                throw new \Exception('Not Implemented: SCRIPT_DATA_ESCAPED_END_TAG_OPEN');
+                if (ctype_alpha($cc)) {
+                    // Create a new end tag token, set its tag name to the empty string.
+                    $this->currentToken = new EndTag();
+                    // Reconsume in the script data escaped end tag name state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED_END_TAG_NAME;
+                    goto SCRIPT_DATA_ESCAPED_END_TAG_NAME;
+                } else {
+                    // Emit a U+003C LESS-THAN SIGN character token and a U+002F SOLIDUS character token.
+                    $this->tokenQueue->enqueue(new Character('</'));
+                    // Reconsume in the script data escaped state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED;
+                    goto SCRIPT_DATA_ESCAPED;
+                }
             }
             break;
             case TokenizerStates::SCRIPT_DATA_ESCAPED_END_TAG_NAME:
             SCRIPT_DATA_ESCAPED_END_TAG_NAME: {
-                throw new \Exception('Not Implemented: SCRIPT_DATA_ESCAPED_END_TAG_NAME');
+                if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
+                    // If the current end tag token is an appropriate end tag token, then switch to the before attribute name state.
+                    // Otherwise, treat it as per the "anything else" entry below.
+                    if ($this->currentToken->name === $this->appropriateEndTag) {
+                        $this->state = TokenizerStates::BEFORE_ATTRIBUTE_NAME;
+                        $cc = $this->input[++$this->position] ?? null;
+                        goto BEFORE_ATTRIBUTE_NAME;
+                    } else {
+                        goto SCRIPT_DATA_ESCAPED_END_TAG_NAME_ANYTHING_ELSE;
+                    }
+                } elseif ($cc === '/') {
+                    // If the current end tag token is an appropriate end tag token, then switch to the self-closing start tag state.
+                    // Otherwise, treat it as per the "anything else" entry below.
+                    if ($this->currentToken->name === $this->appropriateEndTag) {
+                        $this->state = TokenizerStates::SELF_CLOSING_START_TAG;
+                        $cc = $this->input[++$this->position] ?? null;
+                        goto SELF_CLOSING_START_TAG;
+                    } else {
+                        goto SCRIPT_DATA_ESCAPED_END_TAG_NAME_ANYTHING_ELSE;
+                    }
+                } elseif ($cc === '>') {
+                    // If the current end tag token is an appropriate end tag token,
+                    // then switch to the data state and emit the current tag token.
+                    // Otherwise, treat it as per the "anything else" entry below.
+                    if ($this->currentToken->name === $this->appropriateEndTag) {
+                        $this->emitCurrentToken();
+                        $this->state = TokenizerStates::DATA;
+                        ++$this->position;
+                        return true;
+                    } else {
+                        goto SCRIPT_DATA_ESCAPED_END_TAG_NAME_ANYTHING_ELSE;
+                    }
+                } elseif (ctype_alpha($cc)) {
+                    // Append the lowercase version of the current input character to the current tag token's tag name.
+                    // Append the current input character to the temporary buffer.
+                    $l = strspn($this->input, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
+                    $this->currentToken->name .= strtolower($chars);
+                    $this->temporaryBuffer .= $chars;
+                    $cc = $this->input[$this->position] ?? null;
+                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED_END_TAG_NAME;
+                    goto SCRIPT_DATA_ESCAPED_END_TAG_NAME;
+                } else {
+                    SCRIPT_DATA_ESCAPED_END_TAG_NAME_ANYTHING_ELSE:
+                    // Emit a U+003C LESS-THAN SIGN character token, a U+002F SOLIDUS character token,
+                    // and a character token for each of the characters in the temporary buffer (in the order they were added to the buffer).
+                    $this->tokenQueue->enqueue(new Character('</' . $this->temporaryBuffer));
+                    // Reconsume in the script data escaped state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED;
+                    goto SCRIPT_DATA_ESCAPED;
+                }
             }
             break;
             case TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPE_START:
             SCRIPT_DATA_DOUBLE_ESCAPE_START: {
-                throw new \Exception('Not Implemented: SCRIPT_DATA_DOUBLE_ESCAPE_START');
+                if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C" || $cc === '/' || $cc === '>') {
+                    // Emit the current input character as a character token.
+                    $this->tokenQueue->enqueue(new Character($cc));
+                    // If the temporary buffer is the string "script", then switch to the script data double escaped state.
+                    if ($this->temporaryBuffer === 'script') {
+                        $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED;
+                        $cc = $this->input[++$this->position] ?? null;
+                        goto SCRIPT_DATA_DOUBLE_ESCAPED;
+                    } else {
+                        // Otherwise, switch to the script data escaped state.
+                        $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED;
+                        $cc = $this->input[++$this->position] ?? null;
+                        goto SCRIPT_DATA_ESCAPED;
+                    }
+                } elseif (ctype_alpha($cc)) {
+                    // Append the lowercase version of the current input character to the temporary buffer.
+                    $l = strspn($this->input, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
+                    $this->temporaryBuffer .= strtolower($chars);
+                    // Emit the current input character as a character token.
+                    $this->tokenQueue->enqueue(new Character($chars));
+                    $cc = $this->input[$this->position] ?? null;
+                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPE_START;
+                    goto SCRIPT_DATA_DOUBLE_ESCAPE_START;
+                } else {
+                    // Reconsume in the script data escaped state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED;
+                    goto SCRIPT_DATA_ESCAPED;
+                }
             }
             break;
             case TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED:
             SCRIPT_DATA_DOUBLE_ESCAPED: {
-                throw new \Exception('Not Implemented: SCRIPT_DATA_DOUBLE_ESCAPED');
+                if ($cc === '-') {
+                    // Emit a U+002D HYPHEN-MINUS character token.
+                    $this->tokenQueue->enqueue(new Character('-'));
+                    // Switch to the script data double escaped dash state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED_DASH;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_DOUBLE_ESCAPED_DASH;
+                } elseif ($cc === '<') {
+                    // Emit a U+003C LESS-THAN SIGN character token.
+                    $this->tokenQueue->enqueue(new Character('<'));
+                    // Switch to the script data double escaped less-than sign state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN;
+                } elseif ($cc === "\0") {
+                    // This is an unexpected-null-character parse error.
+                    $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
+                    // Emit a U+FFFD REPLACEMENT CHARACTER character token.
+                    $this->tokenQueue->enqueue(new Character("\u{FFFD}"));
+                } elseif ($cc === null) {
+                    // This is an eof-in-script-html-comment-like-text parse error.
+                    $this->parseErrors[] = [ParseErrors::EOF_IN_SCRIPT_HTML_COMMENT_LIKE_TEXT, $this->position];
+                    // Emit an end-of-file token.
+                    return false;
+                } else {
+                    // Emit the current input character as a character token.
+                    $l = strcspn($this->input, "-<\0", $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
+                    $this->tokenQueue->enqueue(new Character($chars));
+                    $cc = $this->input[$this->position] ?? null;
+                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED;
+                    goto SCRIPT_DATA_DOUBLE_ESCAPED;
+                }
             }
             break;
             case TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED_DASH:
             SCRIPT_DATA_DOUBLE_ESCAPED_DASH: {
-                throw new \Exception('Not Implemented: SCRIPT_DATA_DOUBLE_ESCAPED_DASH');
+                if ($cc === '-') {
+                    // Emit a U+002D HYPHEN-MINUS character token.
+                    $this->tokenQueue->enqueue(new Character('-'));
+                    // Switch to the script data double escaped dash dash state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED_DASH_DASH;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_DOUBLE_ESCAPED_DASH_DASH;
+                } elseif ($cc === '<') {
+                    // Emit a U+003C LESS-THAN SIGN character token.
+                    $this->tokenQueue->enqueue(new Character('<'));
+                    // Switch to the script data double escaped less-than sign state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN;
+                } elseif ($cc === "\0") {
+                    // This is an unexpected-null-character parse error.
+                    $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
+                    // Emit a U+FFFD REPLACEMENT CHARACTER character token.
+                    $this->tokenQueue->enqueue(new Character("\u{FFFD}"));
+                    // Switch to the script data double escaped state
+                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_DOUBLE_ESCAPED;
+                } elseif ($cc === null) {
+                    // This is an eof-in-script-html-comment-like-text parse error.
+                    $this->parseErrors[] = [ParseErrors::EOF_IN_SCRIPT_HTML_COMMENT_LIKE_TEXT, $this->position];
+                    // Emit an end-of-file token.
+                    return false;
+                } else {
+                    // Emit the current input character as a character token.
+                    $l = strcspn($this->input, "-<\0", $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
+                    $this->tokenQueue->enqueue(new Character($chars));
+                    $cc = $this->input[$this->position] ?? null;
+                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED;
+                    goto SCRIPT_DATA_DOUBLE_ESCAPED;
+                }
             }
             break;
             case TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED_DASH_DASH:
             SCRIPT_DATA_DOUBLE_ESCAPED_DASH_DASH: {
-                throw new \Exception('Not Implemented: SCRIPT_DATA_DOUBLE_ESCAPED_DASH_DASH');
+                if ($cc === '-') {
+                    // Emit a U+002D HYPHEN-MINUS character token.
+                    $this->tokenQueue->enqueue(new Character('-'));
+                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED_DASH_DASH;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_DOUBLE_ESCAPED_DASH_DASH;
+                } elseif ($cc === '<') {
+                    // Emit a U+003C LESS-THAN SIGN character token.
+                    $this->tokenQueue->enqueue(new Character('<'));
+                    // Switch to the script data double escaped less-than sign state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN;
+                } elseif ($cc === '>') {
+                    // Emit a U+003E GREATER-THAN SIGN character token.
+                    $this->tokenQueue->enqueue(new Character('>'));
+                    // Switch to the script data state.
+                    $this->state = TokenizerStates::SCRIPT_DATA;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA;
+                } elseif ($cc === "\0") {
+                    // This is an unexpected-null-character parse error.
+                    $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
+                    // Emit a U+FFFD REPLACEMENT CHARACTER character token.
+                    $this->tokenQueue->enqueue(new Character("\u{FFFD}"));
+                    // Switch to the script data double escaped state
+                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_DOUBLE_ESCAPED;
+                } elseif ($cc === null) {
+                    // This is an eof-in-script-html-comment-like-text parse error.
+                    $this->parseErrors[] = [ParseErrors::EOF_IN_SCRIPT_HTML_COMMENT_LIKE_TEXT, $this->position];
+                    // Emit an end-of-file token.
+                    return false;
+                } else {
+                    // Emit the current input character as a character token.
+                    $l = strcspn($this->input, "-<>\0", $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
+                    $this->tokenQueue->enqueue(new Character($chars));
+                    // Switch to the script data double escaped state.
+                    $cc = $this->input[$this->position] ?? null;
+                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED;
+                    goto SCRIPT_DATA_DOUBLE_ESCAPED;
+                }
             }
             break;
             case TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN:
             SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN: {
-                throw new \Exception('Not Implemented: SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN');
+                if ($cc === '/') {
+                    // Set the temporary buffer to the empty string.
+                    $this->temporaryBuffer = '';
+                    // Emit a U+002F SOLIDUS character token.
+                    $this->tokenQueue->enqueue(new Character('/'));
+                    // Switch to the script data double escape end state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPE_END;
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_DOUBLE_ESCAPE_END;
+                } else {
+                    // Reconsume in the script data double escaped state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED;
+                    goto SCRIPT_DATA_DOUBLE_ESCAPED;
+                }
             }
             break;
             case TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPE_END:
             SCRIPT_DATA_DOUBLE_ESCAPE_END: {
-                throw new \Exception('Not Implemented: SCRIPT_DATA_DOUBLE_ESCAPE_END');
+                if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C" || $cc === '/' || $cc === '>') {
+                    // Emit the current input character as a character token.
+                    $this->tokenQueue->enqueue(new Character($cc));
+                    // If the temporary buffer is the string "script", then switch to the script data escaped state.
+                    if ($this->temporaryBuffer === 'script') {
+                        $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED;
+                        $cc = $this->input[++$this->position] ?? null;
+                        goto SCRIPT_DATA_ESCAPED;
+                    } else {
+                        // Otherwise, switch to the script data double escaped state.
+                        $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED;
+                        $cc = $this->input[++$this->position] ?? null;
+                        goto SCRIPT_DATA_DOUBLE_ESCAPED;
+                    }
+                } elseif (ctype_alpha($cc)) {
+                    // Append the lowercase version of the current input character to the temporary buffer.
+                    $l = strspn($this->input, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', $this->position);
+                    $chars = substr($this->input, $this->position, $l);
+                    $this->position += $l;
+                    $this->temporaryBuffer .= strtolower($chars);
+                    // Emit the current input character as a character token.
+                    $this->tokenQueue->enqueue(new Character($chars));
+                    $cc = $this->input[$this->position] ?? null;
+                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPE_END;
+                    goto SCRIPT_DATA_DOUBLE_ESCAPE_END;
+                } else {
+                    // Reconsume in the script data double escaped state.
+                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED;
+                    goto SCRIPT_DATA_DOUBLE_ESCAPED;
+                }
             }
             break;
             case TokenizerStates::BEFORE_ATTRIBUTE_NAME:

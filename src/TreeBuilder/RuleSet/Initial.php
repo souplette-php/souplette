@@ -22,10 +22,12 @@ final class Initial extends RuleSet
     public function __construct()
     {
         $patterns = array_map(function($p) {
-            return preg_quote($p) . '$';
+            return preg_quote($p, '#') . '$';
         }, self::PUBLIC_ID_QUIRKS_PATTERNS);
-        $patterns += array_map('preg_quote', self::PUBLIC_ID_QUIRKS_START_PATTERNS);
-        $this->publicIdQuirksPattern = sprintf('/^(?:%s)/i', implode('|', $patterns));
+        $patterns += array_map(function($p) {
+            return preg_quote($p, '#');
+        }, self::PUBLIC_ID_QUIRKS_START_PATTERNS);
+        $this->publicIdQuirksPattern = sprintf('#^(?:%s)#i', implode('|', $patterns));
     }
 
     public function process(Token $token, TreeBuilder $tree)

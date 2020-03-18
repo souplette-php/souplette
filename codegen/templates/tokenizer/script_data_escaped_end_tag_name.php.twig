@@ -3,4 +3,43 @@
 #}
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
-throw new \Exception('Not Implemented: {{current_state}}');
+if ({{ h.is_whitespace() }}) {
+    // If the current end tag token is an appropriate end tag token, then switch to the before attribute name state.
+    // Otherwise, treat it as per the "anything else" entry below.
+    if ({{ h.is_appropriate_end_tag() }}) {
+        {{ h.advance_to('BEFORE_ATTRIBUTE_NAME') }}
+    } else {
+        goto {{ current_state }}_ANYTHING_ELSE;
+    }
+} elseif ($cc === '/') {
+    // If the current end tag token is an appropriate end tag token, then switch to the self-closing start tag state.
+    // Otherwise, treat it as per the "anything else" entry below.
+    if ({{ h.is_appropriate_end_tag() }}) {
+        {{ h.advance_to('SELF_CLOSING_START_TAG') }}
+    } else {
+        goto {{ current_state }}_ANYTHING_ELSE;
+    }
+} elseif ($cc === '>') {
+    // If the current end tag token is an appropriate end tag token,
+    // then switch to the data state and emit the current tag token.
+    // Otherwise, treat it as per the "anything else" entry below.
+    if ({{ h.is_appropriate_end_tag() }}) {
+        {{ h.emit_and_resume_in('DATA') }}
+    } else {
+        goto {{ current_state }}_ANYTHING_ELSE;
+    }
+} elseif ({{ h.is_alpha() }}) {
+    // Append the lowercase version of the current input character to the current tag token's tag name.
+    // Append the current input character to the temporary buffer.
+    {{ h.chars_while_alpha() }}
+    $this->currentToken->name .= strtolower($chars);
+    $this->temporaryBuffer .= $chars;
+    {{ h.update_and_reconsume_in(current_state) }}
+} else {
+    {{ current_state }}_ANYTHING_ELSE:
+    // Emit a U+003C LESS-THAN SIGN character token, a U+002F SOLIDUS character token,
+    // and a character token for each of the characters in the temporary buffer (in the order they were added to the buffer).
+    $this->tokenQueue->enqueue(new Character('</' . $this->temporaryBuffer));
+    // Reconsume in the script data escaped state.
+    {{ h.reconsume_in('SCRIPT_DATA_ESCAPED') }}
+}

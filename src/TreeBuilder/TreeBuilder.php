@@ -441,11 +441,7 @@ final class TreeBuilder
     public function createElement(Token\Tag $token, string $namespace, \DOMNode $intendedParent): \DOMElement
     {
         // 1. Let document be intended parent's node document.
-        if ($intendedParent instanceof \DOMDocument) {
-            $doc = $intendedParent;
-        } else {
-            $doc = $intendedParent->ownerDocument;
-        }
+        $doc = $intendedParent->nodeType === XML_DOCUMENT_NODE ? $intendedParent : $intendedParent->ownerDocument;
         // 2. Let local name be the tag name of the token.
         $localName = $token->name;
         // 7. Let element be the result of creating an element given document, localName, given namespace, null, and is.
@@ -486,8 +482,7 @@ final class TreeBuilder
         } else {
             // Otherwise, create a new Text node whose data is data
             // and whose node document is the same as that of the element in which the adjusted insertion location finds itself,
-            $doc = $location->parent->ownerDocument;
-            $node = $doc->createTextNode($data);
+            $node = $location->document->createTextNode($data);
             // and insert the newly created node at the adjusted insertion location.
             $location->insert($node);
         }
@@ -502,7 +497,7 @@ final class TreeBuilder
         $location = $position ?: $this->appropriatePlaceForInsertingANode();
         // 3. Create a Comment node whose data attribute is set to data
         // and whose node document is the same as that of the node in which the adjusted insertion location finds itself.
-        $node = $location->parent->ownerDocument->createComment($data);
+        $node = $location->document->createComment($data);
         // 4. Insert the newly created node at the adjusted insertion location.
         $location->insert($node);
     }
@@ -591,8 +586,8 @@ final class TreeBuilder
         if (!$token->attributes) return;
         foreach ($token->attributes as $name => $value) {
             if (isset(Attributes::ADJUSTED_FOREIGN_ATTRIBUTES[$name])) {
-                [$qname, $prefix, $localName, $ns] = Attributes::ADJUSTED_FOREIGN_ATTRIBUTES[$name];
-                $attr = $this->document->createAttributeNS($ns, $qname);
+                [$prefix, $localName, $ns] = Attributes::ADJUSTED_FOREIGN_ATTRIBUTES[$name];
+                $attr = $this->document->createAttributeNS($ns, $name);
                 $attr->value = $value;
                 $token->attributes[$name] = $attr;
             }
@@ -643,7 +638,7 @@ final class TreeBuilder
             $this->activeFormattingElements[$i] = $element;
             // 10. If the entry for new element in the list of active formatting elements is not the last entry in the list,
             // return to the step labeled advance.
-            if ($element === $this->activeFormattingElements[$i - 1]) {
+            if ($element === $this->activeFormattingElements->top()) {
                 break;
             }
         }

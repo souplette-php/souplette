@@ -3,4 +3,24 @@
 #}
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
-throw new \Exception('Not Implemented: {{current_state}}');
+if ({{ h.is_whitespace() }} || {{ cc_in('/', '>') }}) {
+    // Emit the current input character as a character token.
+    $this->tokenQueue->enqueue(new Character($cc));
+    // If the temporary buffer is the string "script", then switch to the script data escaped state.
+    if ($this->temporaryBuffer === 'script') {
+        {{ h.advance_to('SCRIPT_DATA_ESCAPED') }}
+    } else {
+        // Otherwise, switch to the script data double escaped state.
+        {{ h.advance_to('SCRIPT_DATA_DOUBLE_ESCAPED') }}
+    }
+} elseif ({{ h.is_alpha() }}) {
+    // Append the lowercase version of the current input character to the temporary buffer.
+    {{ h.chars_while_alpha() }}
+    $this->temporaryBuffer .= strtolower($chars);
+    // Emit the current input character as a character token.
+    $this->tokenQueue->enqueue(new Character($chars));
+    {{ h.update_and_reconsume_in(current_state) }}
+} else {
+    // Reconsume in the script data double escaped state.
+    {{ h.reconsume_in('SCRIPT_DATA_DOUBLE_ESCAPED') }}
+}

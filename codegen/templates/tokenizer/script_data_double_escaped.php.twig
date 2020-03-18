@@ -3,4 +3,29 @@
 #}
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
-throw new \Exception('Not Implemented: {{current_state}}');
+if ($cc === '-') {
+    // Emit a U+002D HYPHEN-MINUS character token.
+    $this->tokenQueue->enqueue(new Character('-'));
+    // Switch to the script data double escaped dash state.
+    {{ h.advance_to('SCRIPT_DATA_DOUBLE_ESCAPED_DASH') }}
+} elseif ($cc === '<') {
+    // Emit a U+003C LESS-THAN SIGN character token.
+    $this->tokenQueue->enqueue(new Character('<'));
+    // Switch to the script data double escaped less-than sign state.
+    {{ h.advance_to('SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN') }}
+} elseif ($cc === "\0") {
+    // This is an unexpected-null-character parse error.
+    {{ h.parse_error('UNEXPECTED_NULL_CHARACTER') }}
+    // Emit a U+FFFD REPLACEMENT CHARACTER character token.
+    $this->tokenQueue->enqueue(new Character("\u{FFFD}"));
+} elseif ({{ h.is_eof() }}) {
+    // This is an eof-in-script-html-comment-like-text parse error.
+    {{ h.parse_error('EOF_IN_SCRIPT_HTML_COMMENT_LIKE_TEXT') }}
+    // Emit an end-of-file token.
+    {{ h.emit_eof() }}
+} else {
+    // Emit the current input character as a character token.
+    {{ h.chars_until("-<\0") }}
+    $this->tokenQueue->enqueue(new Character($chars));
+    {{ h.update_and_reconsume_in(current_state) }}
+}

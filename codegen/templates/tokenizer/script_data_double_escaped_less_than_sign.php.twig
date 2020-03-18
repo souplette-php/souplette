@@ -3,4 +3,14 @@
 #}
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
-throw new \Exception('Not Implemented: {{current_state}}');
+if ($cc === '/') {
+    // Set the temporary buffer to the empty string.
+    $this->temporaryBuffer = '';
+    // Emit a U+002F SOLIDUS character token.
+    $this->tokenQueue->enqueue(new Character('/'));
+    // Switch to the script data double escape end state.
+    {{ h.advance_to('SCRIPT_DATA_DOUBLE_ESCAPE_END') }}
+} else {
+    // Reconsume in the script data double escaped state.
+    {{ h.reconsume_in('SCRIPT_DATA_DOUBLE_ESCAPED') }}
+}

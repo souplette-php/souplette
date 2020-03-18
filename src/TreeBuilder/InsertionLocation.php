@@ -12,11 +12,16 @@ final class InsertionLocation
      * @var \DOMNode
      */
     public $target;
+    /**
+     * @var \DOMDocument
+     */
+    public $document;
 
     public function __construct(\DOMNode $parent, ?\DOMNode $target = null)
     {
         $this->parent = $parent;
         $this->target = $target ?: $parent->lastChild;
+        $this->document = $parent->nodeType === XML_DOCUMENT_NODE ? $parent : $parent->ownerDocument;
     }
 
     public function insert(\DOMNode $node)

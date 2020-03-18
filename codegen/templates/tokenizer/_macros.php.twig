@@ -50,6 +50,10 @@ $this->returnState = TokenizerStates::{{ state_name }};
 $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_DOUBLE_QUOTED || $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_SINGLE_QUOTED || $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED
 {%- endmacro %}
 
+{% macro is_appropriate_end_tag() -%}
+$this->currentToken->name === $this->appropriateEndTag
+{%- endmacro %}
+
 {% macro start_attribute(name = "''", value = "''") -%}
 $this->currentToken->attributes[] = [{{ name }}, {{ value }}];
 {%- endmacro %}
