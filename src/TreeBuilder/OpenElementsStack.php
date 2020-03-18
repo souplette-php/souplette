@@ -59,23 +59,22 @@ final class OpenElementsStack extends \SplStack
         return -1;
     }
 
-    /**
-     * @param int $offset
-     * @return \DOMElement[]
-     */
-    public function slice(int $offset): array
+    public function insert(int $offset, \DOMElement $element): void
     {
-        return array_slice(iterator_to_array($this), $offset);
-    }
-
-    public function insert(int $offset, \DOMElement $element)
-    {
-        $stack = iterator_to_array($this);
-        array_splice($stack, $offset, 0, $element);
-        $this->clear();
-        foreach ($stack as $entry) {
-            $this->push($entry);
+        $lastIndex = $this->count() - 1;
+        if ($offset === 0 || $offset < -$lastIndex - 2) {
+            $this->unshift($element);
+            return;
         }
+        if ($offset === -1 || $offset > $lastIndex) {
+            $this->push($element);
+            return;
+        }
+        if ($offset < 0) {
+            $this->add(-$offset - 2, $element);
+            return;
+        }
+        $this->add($lastIndex - $offset, $element);
     }
 
     public function contains(\DOMElement $element): bool

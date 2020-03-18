@@ -984,7 +984,8 @@ final class InBody extends RuleSet
             $furthestBlock = null;
             $afeIndex = $tree->openElements->indexOf($formattingElement);
             if ($afeIndex !== -1) {
-                foreach ($tree->openElements->slice($afeIndex + 1) as $el) {
+                for ($i = $afeIndex + 1; $i < $tree->openElements->count(); $i++) {
+                    $el = $tree->openElements[$i];
                     if (isset(Elements::SPECIAL[$el->namespaceURI][$el->localName])) {
                         $furthestBlock = $el;
                     }
