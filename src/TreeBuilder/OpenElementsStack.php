@@ -4,13 +4,17 @@ namespace ju1ius\HtmlParser\TreeBuilder;
 
 use ju1ius\HtmlParser\Namespaces;
 
-final class OpenElementsStack extends \SplStack
+final class OpenElementsStack extends \SplDoublyLinkedList
 {
+    const IT_MODE_LIST = \SplDoublyLinkedList::IT_MODE_FIFO | \SplDoublyLinkedList::IT_MODE_KEEP;
+    const IT_MODE_STACK = \SplDoublyLinkedList::IT_MODE_LIFO | \SplDoublyLinkedList::IT_MODE_KEEP;
+
     private static $SCOPE_BUTTON;
     private static $SCOPE_LIST_ITEM;
 
     public function __construct()
     {
+        $this->setIteratorMode(self::IT_MODE_STACK);
         if (!self::$SCOPE_BUTTON) {
             self::$SCOPE_BUTTON = array_merge_recursive(Elements::SCOPE_BASE, Elements::SCOPE_BUTTON);
         }
