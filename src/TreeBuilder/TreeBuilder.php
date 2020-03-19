@@ -605,7 +605,7 @@ final class TreeBuilder
             return;
         }
         // 3. Let entry be the last (most recently added) element in the list of active formatting elements.
-        $i = $this->activeFormattingElements->count() - 1;
+        $i = 0;
         $entry = $this->activeFormattingElements->top();
         // 2. If the last (most recently added) entry in the list of active formatting elements is a marker,
         // or if it is an element that is in the stack of open elements, then there is nothing to reconstruct; stop this algorithm.
@@ -615,18 +615,14 @@ final class TreeBuilder
         // 6. If entry is neither a marker nor an element that is also in the stack of open elements,
         // go to the step labeled rewind.
         while ($entry !== null && !$this->openElements->contains($entry)) {
-            if ($i === 0) {
-                $i = -1;
-                break;
-            }
-            $i--;
+            $i++;
             // 5. Let entry be the entry one earlier than entry in the list of active formatting elements.
             $entry = $this->activeFormattingElements[$i];
         }
 
         while (true) {
             // 7. Advance: Let entry be the element one later than entry in the list of active formatting elements.
-            $i++;
+            $i--;
             $entry = $this->activeFormattingElements[$i];
             // 8. Create: Insert an HTML element for the token for which the element entry was created, to obtain new element.
             $token = new Token\StartTag($entry->localName);

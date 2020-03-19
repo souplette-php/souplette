@@ -983,11 +983,12 @@ final class InBody extends RuleSet
             // There might not be one.
             $furthestBlock = null;
             $afeIndex = $tree->openElements->indexOf($formattingElement);
-            if ($afeIndex !== -1) {
-                for ($i = $afeIndex + 1; $i < $tree->openElements->count(); $i++) {
+            if ($afeIndex !== null) {
+                for ($i = $afeIndex - 1; $i >= 0; $i--) {
                     $el = $tree->openElements[$i];
                     if (isset(Elements::SPECIAL[$el->namespaceURI][$el->localName])) {
                         $furthestBlock = $el;
+                        break;
                     }
                 }
             }
@@ -1002,7 +1003,7 @@ final class InBody extends RuleSet
                 return false;
             }
             // 12. Let common ancestor be the element immediately above formatting element in the stack of open elements.
-            $commonAncestor = $tree->openElements[$afeIndex - 1];
+            $commonAncestor = $tree->openElements[$afeIndex + 1];
             // 13. Let a bookmark note the position of formatting element in the list of active formatting elements
             // relative to the elements on either side of it in the list.
             $bookmark = $tree->activeFormattingElements->indexOf($formattingElement);
@@ -1017,7 +1018,7 @@ final class InBody extends RuleSet
                 // 14.3. Let node be the element immediately above node in the stack of open elements,
                 // or if node is no longer in the stack of open elements (e.g. because it got removed by this algorithm),
                 // the element that was immediately above node in the stack of open elements before node was removed.
-                $index--;
+                $index++;
                 $node = $tree->openElements[$index];
                 // 14.4. If node is formatting element, then go to the next step in the overall algorithm.
                 if ($node === $formattingElement) {
@@ -1076,7 +1077,7 @@ final class InBody extends RuleSet
             // 20. Remove formatting element from the stack of open elements,
             // and insert the new element into the stack of open elements immediately below the position of furthest block in that stack.
             $tree->openElements->remove($formattingElement);
-            $tree->openElements->insert($tree->openElements->indexOf($furthestBlock) + 1, $element);
+            $tree->openElements->insert($tree->openElements->indexOf($furthestBlock) - 1, $element);
             // 21. Jump back to the step labeled outer loop.
         }
         return false;
