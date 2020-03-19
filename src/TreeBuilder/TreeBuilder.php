@@ -377,17 +377,22 @@ final class TreeBuilder
     public function appropriatePlaceForInsertingANode(?\DOMElement $overrideTarget = null): InsertionLocation
     {
         // @see https://html.spec.whatwg.org/multipage/parsing.html#creating-and-inserting-nodes
+        // 1. If there was an override target specified, then let target be the override target.
+        // Otherwise, let target be the current node.
         /** @var \DOMElement $target */
         $target = $overrideTarget ?: $this->openElements->top();
+        // 2. Determine the adjusted insertion location using the first matching steps from the following list:
         if ($this->fosterParenting && isset(Elements::TABLE_INSERT_MODE_ELEMENTS[$target->localName])) {
-            // TODO: Run these substeps:
+            // If foster parenting is enabled and target is a table, tbody, tfoot, thead, or tr element
+            // Run these substeps:
             // 1. Let last template be the last template element in the stack of open elements, if any.
             // 2. Let last table be the last table element in the stack of open elements, if any.
             $lastTemplate = null;
             $lastTemplatePosition = null;
             $lastTable = null;
             $lastTablePosition = null;
-            foreach ($this->openElements as $pos => $element) {
+            $pos = 0;
+            foreach ($this->openElements as $element) {
                 if ($element->localName === 'template') {
                     $lastTemplate = $element;
                     $lastTemplatePosition = $pos;
@@ -395,6 +400,7 @@ final class TreeBuilder
                     $lastTable = $element;
                     $lastTablePosition = $pos;
                 }
+                $pos++;
             }
             if ($lastTemplate && (!$lastTable || $lastTemplatePosition < $lastTablePosition)) {
                 // 3. If there is a last template and either there is no last table,
@@ -414,14 +420,16 @@ final class TreeBuilder
                 // 5. If last table has a parent node,
                 // then let adjusted insertion location be inside last table's parent node,
                 // immediately before last table, and abort these steps.
-                $adjustedInsertionLocation = new InsertionLocation($lastTable->parentNode, $lastTable->previousSibling);
+                $adjustedInsertionLocation = new InsertionLocation($lastTable->parentNode, $lastTable, true);
             } else {
                 // 6. Let previous element be the element immediately above last table in the stack of open elements.
-                $previousElement = $this->openElements[$lastTablePosition - 1];
+                $previousElement = $this->openElements[$lastTablePosition + 1];
                 // 7. Let adjusted insertion location be inside previous element, after its last child (if any).
                 $adjustedInsertionLocation = new InsertionLocation($previousElement, $previousElement->lastChild);
             }
         } else {
+            // Otherwise
+            // Let adjusted insertion location be inside target, after its last child (if any).
             $adjustedInsertionLocation = new InsertionLocation($target, $target->lastChild);
         }
         // 3. TODO: If the adjusted insertion location is inside a template element,

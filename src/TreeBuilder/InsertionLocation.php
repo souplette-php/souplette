@@ -13,14 +13,19 @@ final class InsertionLocation
      */
     public $target;
     /**
+     * @var bool
+     */
+    public $beforeTarget = false;
+    /**
      * @var \DOMDocument
      */
     public $document;
 
-    public function __construct(\DOMNode $parent, ?\DOMNode $target = null)
+    public function __construct(\DOMNode $parent, ?\DOMNode $target = null, bool $beforeTarget = false)
     {
         $this->parent = $parent;
         $this->target = $target ?: $parent->lastChild;
+        $this->beforeTarget = $beforeTarget;
         $this->document = $parent->nodeType === XML_DOCUMENT_NODE ? $parent : $parent->ownerDocument;
     }
 
@@ -29,7 +34,7 @@ final class InsertionLocation
         if (!$this->target) {
             $this->parent->appendChild($node);
         } else {
-            $this->parent->insertBefore($node, $this->target->nextSibling);
+            $this->parent->insertBefore($node, $this->beforeTarget ? $this->target : $this->target->nextSibling);
         }
     }
 
