@@ -95,7 +95,6 @@ final class TreeBuilder
     private $ruleSets = [];
     public $headElement;
     public $formElement;
-    private $insertFromTable = false;
     public $fosterParenting = false;
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#frameset-ok-flag
@@ -612,6 +611,28 @@ final class TreeBuilder
         if ($this->activeFormattingElements->isEmpty()) {
             return;
         }
+        //$i = 0;
+        //foreach ($this->activeFormattingElements as $entry) {
+        //    $entry = $this->activeFormattingElements[$i];
+        //    if ($entry === null || $this->openElements->contains($entry)) {
+        //        if ($i === 0) return;
+        //        break;
+        //    }
+        //    $i++;
+        //}
+        //if ($i >= $this->activeFormattingElements->count()) {
+        //    return;
+        //}
+        //for (; $i >= 0; $i--) {
+        //    $entry = $this->activeFormattingElements[$i];
+        //    $token = new Token\StartTag($entry->localName);
+        //    foreach ($entry->attributes as $attr) {
+        //        $token->attributes[$attr->nodeName] = $attr->nodeValue;
+        //    }
+        //    $element = $this->insertElement($token, $entry->namespaceURI);
+        //    $this->activeFormattingElements[$i] = $element;
+        //}
+        //return;
         // 3. Let entry be the last (most recently added) element in the list of active formatting elements.
         $i = 0;
         $entry = $this->activeFormattingElements->top();
@@ -620,31 +641,35 @@ final class TreeBuilder
         if ($entry === null || $this->openElements->contains($entry)) {
             return;
         }
+        // 4. Rewind: If there are no entries before entry in the list of active formatting elements,
+        // then jump to the step labeled create.
+        REWIND:
+        if ($i === $this->activeFormattingElements->count() - 1) {
+            goto CREATE;
+        }
+        // 5. Let entry be the entry one earlier than entry in the list of active formatting elements.
+        $entry = $this->activeFormattingElements[++$i];
         // 6. If entry is neither a marker nor an element that is also in the stack of open elements,
         // go to the step labeled rewind.
-        while ($entry !== null && !$this->openElements->contains($entry)) {
-            $i++;
-            // 5. Let entry be the entry one earlier than entry in the list of active formatting elements.
-            $entry = $this->activeFormattingElements[$i];
+        if ($entry !== null && !$this->openElements->contains($entry)) {
+            goto REWIND;
         }
-
-        while (true) {
-            // 7. Advance: Let entry be the element one later than entry in the list of active formatting elements.
-            $i--;
-            $entry = $this->activeFormattingElements[$i];
-            // 8. Create: Insert an HTML element for the token for which the element entry was created, to obtain new element.
-            $token = new Token\StartTag($entry->localName);
-            foreach ($entry->attributes as $attr) {
-                $token->attributes[$attr->nodeName] = $attr->nodeValue;
-            }
-            $element = $this->insertElement($token, $entry->namespaceURI);
-            // 9. Replace the entry for entry in the list with an entry for new element.
-            $this->activeFormattingElements[$i] = $element;
-            // 10. If the entry for new element in the list of active formatting elements is not the last entry in the list,
-            // return to the step labeled advance.
-            if ($element === $this->activeFormattingElements->top()) {
-                break;
-            }
+        // 7. Advance: Let entry be the element one later than entry in the list of active formatting elements.
+        ADVANCE:
+        $entry = $this->activeFormattingElements[--$i];
+        // 8. Create: Insert an HTML element for the token for which the element entry was created, to obtain new element.
+        CREATE:
+        $token = new Token\StartTag($entry->localName);
+        foreach ($entry->attributes as $attr) {
+            $token->attributes[$attr->nodeName] = $attr->nodeValue;
+        }
+        $element = $this->insertElement($token, $entry->namespaceURI);
+        // 9. Replace the entry for entry in the list with an entry for new element.
+        $this->activeFormattingElements[$i] = $element;
+        // 10. If the entry for new element in the list of active formatting elements is not the last entry in the list,
+        // return to the step labeled advance.
+        if ($element !== $this->activeFormattingElements->top()) {
+            goto ADVANCE;
         }
     }
 }
