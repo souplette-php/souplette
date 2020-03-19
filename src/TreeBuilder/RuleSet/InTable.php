@@ -36,10 +36,10 @@ final class InTable extends RuleSet
             $tree->setInsertionMode(InsertionModes::IN_TABLE_TEXT);
             $tree->processToken($token);
             return;
-        } elseif ($type = TokenTypes::COMMENT) {
+        } elseif ($type === TokenTypes::COMMENT) {
             $tree->insertComment($token);
             return;
-        } elseif ($type = TokenTypes::DOCTYPE) {
+        } elseif ($type === TokenTypes::DOCTYPE) {
             // TODO: Parse error.
             // Ignore the token
             return;

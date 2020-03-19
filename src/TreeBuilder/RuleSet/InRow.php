@@ -22,6 +22,8 @@ final class InRow extends RuleSet
             // Insert an HTML element for the token, then switch the insertion mode to "in cell".
             $tree->insertElement($token);
             $tree->setInsertionMode(InsertionModes::IN_CELL);
+            // Insert a marker at the end of the list of active formatting elements.
+            $tree->activeFormattingElements->push(null);
         } elseif ($type === TokenTypes::END_TAG && $token->name === 'tr') {
             // If the stack of open elements does not have a tr element in table scope,
             // this is a parse error; ignore the token.
