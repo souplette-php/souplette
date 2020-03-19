@@ -14,7 +14,7 @@ use ju1ius\HtmlParser\TreeBuilder\TreeBuilder;
  */
 final class InForeignContent extends RuleSet
 {
-    public function process(Token $token, TreeBuilder $tree)
+    public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token->type;
         $currentNode = $tree->openElements->top();

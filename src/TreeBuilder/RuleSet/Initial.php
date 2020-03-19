@@ -14,23 +14,9 @@ use ju1ius\HtmlParser\TreeBuilder\TreeBuilder;
  */
 final class Initial extends RuleSet
 {
-    /**
-     * @var string
-     */
-    private $publicIdQuirksPattern;
+    private static $PUBLIC_ID_QUIRKS_PATTERN;
 
-    public function __construct()
-    {
-        $patterns = array_map(function($p) {
-            return preg_quote($p, '#') . '$';
-        }, self::PUBLIC_ID_QUIRKS_PATTERNS);
-        $patterns += array_map(function($p) {
-            return preg_quote($p, '#');
-        }, self::PUBLIC_ID_QUIRKS_START_PATTERNS);
-        $this->publicIdQuirksPattern = sprintf('#^(?:%s)#i', implode('|', $patterns));
-    }
-
-    public function process(Token $token, TreeBuilder $tree)
+    public static function process(Token $token, TreeBuilder $tree)
     {
         if ($token instanceof Token\Character && ctype_space($token->data)) {
             // Ignore the token.
@@ -38,6 +24,9 @@ final class Initial extends RuleSet
         } elseif ($token instanceof Token\Comment) {
             $tree->insertComment($token, new InsertionLocation($tree->document));
         } elseif ($token instanceof Token\Doctype) {
+            if (self::$PUBLIC_ID_QUIRKS_PATTERN === null) {
+                self::buildDoctypeQuirksPattern();
+            }
             // TODO: If the DOCTYPE token's name is not a case-sensitive match for the string "html",
             // or the token's public identifier is not missing,
             // or the token's system identifier is neither missing nor a case-sensitive match for the string "about:legacy-compat",
@@ -53,7 +42,7 @@ final class Initial extends RuleSet
             if (
                 $token->forceQuirks
                 || $token->name !== 'html'
-                || $pub && preg_match($this->publicIdQuirksPattern, $pub)
+                || $pub && preg_match(self::$PUBLIC_ID_QUIRKS_PATTERN, $pub)
                 || $sys && strcasecmp($sys, 'http://www.ibm.com/data/dtd/v11/ibmxhtml1-transitional.dtd')
                 || !$sys && $pub && stripos($pub, '-//W3C//DTD HTML 4.01 Frameset//') === 0
                 || !$sys && $pub && stripos($pub, '-//W3C//DTD HTML 4.01 Transitional//') === 0
@@ -80,11 +69,24 @@ final class Initial extends RuleSet
         }
     }
 
+    private static function buildDoctypeQuirksPattern()
+    {
+        $patterns = array_map(function($p) {
+            return preg_quote($p, '#') . '$';
+        }, self::PUBLIC_ID_QUIRKS_PATTERNS);
+        $patterns += array_map(function($p) {
+            return preg_quote($p, '#');
+        }, self::PUBLIC_ID_QUIRKS_START_PATTERNS);
+
+        self::$PUBLIC_ID_QUIRKS_PATTERN = sprintf('#^(?:%s)#i', implode('|', $patterns));
+    }
+
     private const PUBLIC_ID_QUIRKS_PATTERNS = [
         '-//W3O//DTD W3 HTML Strict 3.0//EN//',
         '-/W3C/DTD HTML 4.0 Transitional/EN',
         'HTML',
     ];
+
     private const PUBLIC_ID_QUIRKS_START_PATTERNS = [
         '+//Silmaril//dtd html Pro v0r11 19970101//',
         '-//AS//DTD HTML 3.0 asWedit + extensions//',
@@ -142,5 +144,4 @@ final class Initial extends RuleSet
         '-//WebTechs//DTD Mozilla HTML 2.0//',
         '-//WebTechs//DTD Mozilla HTML//',
     ];
-
 }

@@ -17,7 +17,7 @@ use ju1ius\HtmlParser\TreeBuilder\TreeBuilder;
  */
 final class InBody extends RuleSet
 {
-    public function process(Token $token, TreeBuilder $tree)
+    public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token->type;
         if ($type === TokenTypes::EOF) {
@@ -186,7 +186,7 @@ final class InBody extends RuleSet
             ) {
                 // If the stack of open elements has a p element in button scope, then close a p element.
                 if ($tree->openElements->hasTagInButtonScope('p')) {
-                    $this->closeAPElement($tree);
+                    self::closeAPElement($tree);
                 }
                 // Insert an HTML element for the token.
                 $tree->insertElement($token);
@@ -201,7 +201,7 @@ final class InBody extends RuleSet
             ) {
                 // If the stack of open elements has a p element in button scope, then close a p element.
                 if ($tree->openElements->hasTagInButtonScope('p')) {
-                    $this->closeAPElement($tree);
+                    self::closeAPElement($tree);
                 }
                 // If the current node is an HTML element whose tag name is one of "h1", "h2", "h3", "h4", "h5", or "h6",
                 $currentNode = $tree->openElements->top();
@@ -223,7 +223,7 @@ final class InBody extends RuleSet
             } elseif ($tagName === 'pre' || $tagName === 'listing') {
                 // If the stack of open elements has a p element in button scope, then close a p element.
                 if ($tree->openElements->hasTagInButtonScope('p')) {
-                    $this->closeAPElement($tree);
+                    self::closeAPElement($tree);
                 }
                 // Insert an HTML element for the token.
                 $tree->insertElement($token);
@@ -246,7 +246,7 @@ final class InBody extends RuleSet
                 // Otherwise:
                 // If the stack of open elements has a p element in button scope, then close a p element.
                 if ($tree->openElements->hasTagInButtonScope('p')) {
-                    $this->closeAPElement($tree);
+                    self::closeAPElement($tree);
                 }
                 // Insert an HTML element for the token,
                 $form = $tree->insertElement($token);
@@ -283,7 +283,7 @@ final class InBody extends RuleSet
                 }
                 // If the stack of open elements has a p element in button scope, then close a p element.
                 if ($tree->openElements->hasTagInButtonScope('p')) {
-                    $this->closeAPElement($tree);
+                    self::closeAPElement($tree);
                 }
                 // Finally, insert an HTML element for the token.
                 $tree->insertElement($token);
@@ -318,14 +318,14 @@ final class InBody extends RuleSet
                     }
                 }
                 if ($tree->openElements->hasTagInButtonScope('p')) {
-                    $this->closeAPElement($tree);
+                    self::closeAPElement($tree);
                 }
                 $tree->insertElement($token);
                 return;
             } elseif ($tagName === 'plaintext') {
                 // If the stack of open elements has a p element in button scope, then close a p element.
                 if ($tree->openElements->hasTagInButtonScope('p')) {
-                    $this->closeAPElement($tree);
+                    self::closeAPElement($tree);
                 }
                 // Insert an HTML element for the token.
                 $tree->insertElement($token);
@@ -355,7 +355,7 @@ final class InBody extends RuleSet
                 if ($a = $tree->activeFormattingElements->containsTag('a')) {
                     // TODO: Parse error.
                     // run the adoption agency algorithm for the token
-                    $this->runTheAdoptionAgencyAlgorithm($tree, $token);
+                    self::runTheAdoptionAgencyAlgorithm($tree, $token);
                     // then remove that element from the list of active formatting elements and the stack of open elements
                     // if the adoption agency algorithm didn't already remove it (it might not have if the element is not in table scope).
                     $tree->activeFormattingElements->remove($a);
@@ -396,7 +396,7 @@ final class InBody extends RuleSet
                 if ($tree->openElements->hasTagInScope('nobr')) {
                     // TODO: Parse error.
                     // run the adoption agency algorithm for the token,
-                    $this->runTheAdoptionAgencyAlgorithm($tree, $token);
+                    self::runTheAdoptionAgencyAlgorithm($tree, $token);
                     // then once again reconstruct the active formatting elements, if any.
                     $tree->reconstructTheListOfActiveElements();
                 }
@@ -426,7 +426,7 @@ final class InBody extends RuleSet
                     && $tree->openElements->hasTagInButtonScope('p')
                 ) {
                     // then close a p element.
-                    $this->closeAPElement($tree);
+                    self::closeAPElement($tree);
                 }
                 // Insert an HTML element for the token.
                 $tree->insertElement($token);
@@ -488,7 +488,7 @@ final class InBody extends RuleSet
             } elseif ($tagName === 'hr') {
                 // If the stack of open elements has a p element in button scope, then close a p element.
                 if ($tree->openElements->hasTagInButtonScope('p')) {
-                    $this->closeAPElement($tree);
+                    self::closeAPElement($tree);
                 }
                 // Insert an HTML element for the token.
                 $tree->insertElement($token);
@@ -523,7 +523,7 @@ final class InBody extends RuleSet
             } elseif ($tagName === 'xmp') {
                 // If the stack of open elements has a p element in button scope, then close a p element.
                 if ($tree->openElements->hasTagInButtonScope('p')) {
-                    $this->closeAPElement($tree);
+                    self::closeAPElement($tree);
                 }
                 // Reconstruct the active formatting elements, if any.
                 $tree->reconstructTheListOfActiveElements();
@@ -797,7 +797,7 @@ final class InBody extends RuleSet
                     // insert an HTML element for a "p" start tag token with no attributes.
                     $tree->insertElement(new Token\StartTag('p'));
                 }
-                $this->closeAPElement($tree);
+                self::closeAPElement($tree);
                 return;
             } elseif ($tagName === 'li') {
                 // If the stack of open elements does not have an li element in list item scope,
@@ -862,7 +862,7 @@ final class InBody extends RuleSet
                 $tree->openElements->popUntilOneOf(['h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
             } elseif ($tagName === 'sarcasm') {
                 // Take a deep breath, then act as described in the "any other end tag" entry below.
-                $this->anyOtherEndTag($tree, $token);
+                self::anyOtherEndTag($tree, $token);
                 return;
             } elseif (
                 $tagName === 'a'
@@ -881,7 +881,7 @@ final class InBody extends RuleSet
                 || $tagName === 'u'
             ) {
                 // Run the adoption agency algorithm for the token.
-                $this->runTheAdoptionAgencyAlgorithm($tree, $token);
+                self::runTheAdoptionAgencyAlgorithm($tree, $token);
                 return;
             } elseif (
                 $tagName === 'applet'
@@ -914,7 +914,7 @@ final class InBody extends RuleSet
                 $tree->processToken(new Token\StartTag('br'));
                 return;
             } else {
-                $this->anyOtherEndTag($tree, $token);
+                self::anyOtherEndTag($tree, $token);
             }
         }
     }
@@ -923,7 +923,7 @@ final class InBody extends RuleSet
      * @see https://html.spec.whatwg.org/multipage/parsing.html#close-a-p-element
      * @param TreeBuilder $tree
      */
-    private function closeAPElement(TreeBuilder $tree): void
+    private static function closeAPElement(TreeBuilder $tree): void
     {
         // Generate implied end tags, except for p elements.
         $tree->generateImpliedEndTags('p');
@@ -941,7 +941,7 @@ final class InBody extends RuleSet
      * @param Token $token
      * @return bool
      */
-    private function runTheAdoptionAgencyAlgorithm(TreeBuilder $tree, Token $token): bool
+    private static function runTheAdoptionAgencyAlgorithm(TreeBuilder $tree, Token $token): bool
     {
         // 1. Let subject be token's tag name.
         $subject = $token->name;
@@ -965,7 +965,7 @@ final class InBody extends RuleSet
             $formattingElement = $tree->activeFormattingElements->containsTag($subject);
             // If there is no such element, then return and instead act as described in the "any other end tag" entry above.
             if (!$formattingElement) {
-                $this->anyOtherEndTag($tree, $token);
+                self::anyOtherEndTag($tree, $token);
                 return true;
             }
             // 7. If formatting element is not in the stack of open elements
@@ -1088,7 +1088,7 @@ final class InBody extends RuleSet
         return false;
     }
 
-    private function anyOtherEndTag(TreeBuilder $tree, Token\EndTag $token)
+    private static function anyOtherEndTag(TreeBuilder $tree, Token\EndTag $token)
     {
         foreach ($tree->openElements as $node) {
             if ($node->localName === $token->name && $node->namespaceURI === Namespaces::HTML) {

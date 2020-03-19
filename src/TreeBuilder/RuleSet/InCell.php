@@ -13,7 +13,7 @@ use ju1ius\HtmlParser\TreeBuilder\TreeBuilder;
  */
 final class InCell extends RuleSet
 {
-    public function process(Token $token, TreeBuilder $tree)
+    public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token->type;
         if ($type === TokenTypes::END_TAG && ($token->name === 'td' || $token->name === 'th')) {
@@ -55,7 +55,7 @@ final class InCell extends RuleSet
                 return;
             }
             // Otherwise, close the cell (see below) and reprocess the token.
-            $this->closeTheCell($tree);
+            self::closeTheCell($tree);
             $tree->processToken($token);
         } elseif ($type === TokenTypes::END_TAG && (
             $token->name === 'body'
@@ -83,7 +83,7 @@ final class InCell extends RuleSet
                 return;
             }
             // Otherwise, close the cell and reprocess the token.
-            $this->closeTheCell($tree);
+            self::closeTheCell($tree);
             $tree->processToken($token);
         } else {
             // Process the token using the rules for the "in body" insertion mode.
@@ -95,7 +95,7 @@ final class InCell extends RuleSet
      * @see https://html.spec.whatwg.org/multipage/parsing.html#close-the-cell
      * @param TreeBuilder $tree
      */
-    private function closeTheCell(TreeBuilder $tree): void
+    private static function closeTheCell(TreeBuilder $tree): void
     {
         // Generate implied end tags.
         $tree->generateImpliedEndTags();

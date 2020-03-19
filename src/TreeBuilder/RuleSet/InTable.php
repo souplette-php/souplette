@@ -13,7 +13,7 @@ use ju1ius\HtmlParser\TreeBuilder\TreeBuilder;
  */
 final class InTable extends RuleSet
 {
-    public function process(Token $token, TreeBuilder $tree)
+    public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token->type;
         $currentNode = $tree->openElements->top();
@@ -47,7 +47,7 @@ final class InTable extends RuleSet
             $tagName = $token->name;
             if ($tagName === 'caption') {
                 // Clear the stack back to a table context. (See below.)
-                $this->clearTheStackBackToATableContext($tree);
+                self::clearTheStackBackToATableContext($tree);
                 // Insert a marker at the end of the list of active formatting elements.
                 $tree->activeFormattingElements->push(null);
                 // Insert an HTML element for the token, then switch the insertion mode to "in caption".
@@ -56,14 +56,14 @@ final class InTable extends RuleSet
                 return;
             } elseif ($tagName === 'colgroup') {
                 // Clear the stack back to a table context. (See below.)
-                $this->clearTheStackBackToATableContext($tree);
+                self::clearTheStackBackToATableContext($tree);
                 // Insert an HTML element for the token, then switch the insertion mode to "in column group".
                 $tree->insertElement($token);
                 $tree->setInsertionMode(InsertionModes::IN_COLUMN_GROUP);
                 return;
             } elseif ($tagName === 'col') {
                 // Clear the stack back to a table context. (See below.)
-                $this->clearTheStackBackToATableContext($tree);
+                self::clearTheStackBackToATableContext($tree);
                 // Insert an HTML element for a "colgroup" start tag token with no attributes,
                 $tree->insertElement(new Token\StartTag('colgroup'));
                 // then switch the insertion mode to "in column group".
@@ -77,7 +77,7 @@ final class InTable extends RuleSet
                 || $tagName === 'thead'
             ) {
                 // Clear the stack back to a table context. (See below.)
-                $this->clearTheStackBackToATableContext($tree);
+                self::clearTheStackBackToATableContext($tree);
                 // Insert an HTML element for the token, then switch the insertion mode to "in table body".
                 $tree->insertElement($token);
                 $tree->setInsertionMode(InsertionModes::IN_TABLE_BODY);
@@ -88,7 +88,7 @@ final class InTable extends RuleSet
                 || $tagName === 'tr'
             ) {
                 // Clear the stack back to a table context. (See below.)
-                $this->clearTheStackBackToATableContext($tree);
+                self::clearTheStackBackToATableContext($tree);
                 // Insert an HTML element for a "tbody" start tag token with no attributes,
                 $tree->insertElement(new Token\StartTag('tbody'));
                 // then switch the insertion mode to "in table body".
@@ -199,7 +199,18 @@ final class InTable extends RuleSet
         $tree->fosterParenting = false;
     }
 
-    private function clearTheStackBackToATableContext(TreeBuilder $tree): void
+    public static function processWithFosterParenting(Token $token, TreeBuilder $tree)
+    {
+        // TODO: Parse error.
+        // Enable foster parenting,
+        $tree->fosterParenting = true;
+        // process the token using the rules for the "in body" insertion mode,
+        $tree->processToken($token, InsertionModes::IN_BODY);
+        // and then disable foster parenting.
+        $tree->fosterParenting = false;
+    }
+
+    private static function clearTheStackBackToATableContext(TreeBuilder $tree): void
     {
         // @see https://html.spec.whatwg.org/multipage/parsing.html#clear-the-stack-back-to-a-table-context
         // while the current node is not a table, template, or html element, pop elements from the stack of open elements.

@@ -6,5 +6,7 @@ use ju1ius\HtmlParser\Tokenizer\Token;
 
 abstract class RuleSet
 {
-    abstract public function process(Token $token, TreeBuilder $tree);
+    final private function __construct() {}
+
+    abstract public static function process(Token $token, TreeBuilder $tree);
 }

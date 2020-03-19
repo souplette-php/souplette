@@ -11,7 +11,7 @@ use SplStack;
 
 final class TreeBuilder
 {
-    private const RULE_SETS = [
+    private const RULES = [
         InsertionModes::INITIAL => RuleSet\Initial::class,
         InsertionModes::BEFORE_HTML => RuleSet\BeforeHtml::class,
         InsertionModes::BEFORE_HEAD => RuleSet\BeforeHead::class,
@@ -85,14 +85,6 @@ final class TreeBuilder
      * @var \DOMElement
      */
     private $contextElement;
-    /**
-     * @var RuleSet
-     */
-    private $rules;
-    /**
-     * @var RuleSet[]
-     */
-    private $ruleSets = [];
     public $headElement;
     public $formElement;
     public $fosterParenting = false;
@@ -109,7 +101,6 @@ final class TreeBuilder
     public function __construct(\DOMImplementation $dom)
     {
         $this->dom = $dom;
-        $this->ruleSets = $this->createRuleSets();
     }
 
     /**
@@ -147,8 +138,7 @@ final class TreeBuilder
             $this->tokenizer->state = TokenizerStates::PLAINTEXT;
         }
         $this->insertionMode = InsertionModes::BEFORE_HTML;
-        $this->rules = $this->ruleSets[$this->insertionMode];
-        $this->rules->insertHtmlElement();
+        //$this->rules->insertHtmlElement();
         $this->resetInsertionModeAppropriately();
 
         $this->run();
@@ -167,7 +157,6 @@ final class TreeBuilder
         $this->fosterParenting = false;
         $this->framesetOK = true;
         $this->insertionMode = InsertionModes::INITIAL;
-        $this->rules = $this->ruleSets[$this->insertionMode];
         $this->document = $this->dom->createDocument();
     }
 
@@ -218,28 +207,13 @@ final class TreeBuilder
     public function processToken(Token $token, ?int $insertionMode = null)
     {
         $this->currentToken = $token;
-        if ($insertionMode !== null) {
-            return $this->ruleSets[$insertionMode]->process($token, $this);
-        }
-        return $this->rules->process($token, $this);
+        $mode = $insertionMode === null ? $this->insertionMode : $insertionMode;
+        return (self::RULES[$mode])::process($token, $this);
     }
 
     public function setInsertionMode(int $mode): void
     {
         $this->insertionMode = $mode;
-        $this->rules = $this->ruleSets[$mode];
-    }
-
-    /**
-     * @return RuleSet[]
-     */
-    private function createRuleSets(): array
-    {
-        $rules = [];
-        foreach (self::RULE_SETS as $insertionMode => $ruleSet) {
-            $rules[$insertionMode] = new $ruleSet();
-        }
-        return $rules;
     }
 
     /**
@@ -341,7 +315,6 @@ final class TreeBuilder
             $openElements->next();
             $node = $openElements->current();
         }
-        $this->rules = $this->ruleSets[$this->insertionMode];
     }
 
     /**
@@ -478,6 +451,7 @@ final class TreeBuilder
         // 2. Let the adjusted insertion location be the appropriate place for inserting a node.
         $location = $this->appropriatePlaceForInsertingANode();
         // 3. If the adjusted insertion location is in a Document node, then return.
+        // TODO: check this
         if ($location->parent->nodeType === XML_HTML_DOCUMENT_NODE) {
             return;
         }

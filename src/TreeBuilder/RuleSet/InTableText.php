@@ -13,7 +13,7 @@ use ju1ius\HtmlParser\TreeBuilder\TreeBuilder;
  */
 final class InTableText extends RuleSet
 {
-    public function process(Token $token, TreeBuilder $tree)
+    public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token->type;
         if ($type === TokenTypes::CHARACTER) {
@@ -26,6 +26,7 @@ final class InTableText extends RuleSet
             $tree->pendingTableCharacterTokens[] = $token;
             return;
         }
+
         if ($tree->pendingTableCharacterTokens) {
             $pendingCharacterData = '';
             foreach ($tree->pendingTableCharacterTokens as $pendingTableCharacterToken) {
@@ -37,11 +38,11 @@ final class InTableText extends RuleSet
                 // then this is a parse error:
                 // reprocess the character tokens in the pending table character tokens list
                 // using the rules given in the "anything else" entry in the "in table" insertion mode.
-                $tree->processToken(new Token\Character($pendingCharacterData), InsertionModes::IN_TABLE);
-                return;
+                InTable::processWithFosterParenting(new Token\Character($pendingCharacterData), $tree);
+            } else {
+                // Otherwise, insert the characters given by the pending table character tokens list.
+                $tree->insertCharacter(new Token\Character($pendingCharacterData));
             }
-            // Otherwise, insert the characters given by the pending table character tokens list.
-            $tree->insertCharacter(new Token\Character($pendingCharacterData));
         }
         // Switch the insertion mode to the original insertion mode and reprocess the token.
         $tree->setInsertionMode($tree->originalInsertionMode);

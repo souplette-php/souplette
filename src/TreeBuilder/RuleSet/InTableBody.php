@@ -13,19 +13,19 @@ use ju1ius\HtmlParser\TreeBuilder\TreeBuilder;
  */
 final class InTableBody extends RuleSet
 {
-    public function process(Token $token, TreeBuilder $tree)
+    public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token->type;
         if ($type === TokenTypes::START_TAG && $token->name === 'tr') {
             // Clear the stack back to a table body context.
-            $this->clearTheStackBackToATableBodyContext($tree);
+            self::clearTheStackBackToATableBodyContext($tree);
             // Insert an HTML element for the token, then switch the insertion mode to "in row".
             $tree->insertElement($token);
             $tree->setInsertionMode(InsertionModes::IN_ROW);
         } elseif ($type === TokenTypes::START_TAG && ($token->name === 'th' || $token->name === 'td')) {
             // TODO: Parse error.
             // Clear the stack back to a table body context.
-            $this->clearTheStackBackToATableBodyContext($tree);
+            self::clearTheStackBackToATableBodyContext($tree);
             // Insert an HTML element for a "tr" start tag token with no attributes,
             $tree->insertElement(new Token\StartTag('tr'));
             // then switch the insertion mode to "in row".
@@ -45,7 +45,7 @@ final class InTableBody extends RuleSet
             }
             // Otherwise:
             // Clear the stack back to a table body context.
-            $this->clearTheStackBackToATableBodyContext($tree);
+            self::clearTheStackBackToATableBodyContext($tree);
             // Pop the current node from the stack of open elements. Switch the insertion mode to "in table".
             $tree->openElements->pop();
             $tree->setInsertionMode(InsertionModes::IN_TABLE);
@@ -69,7 +69,7 @@ final class InTableBody extends RuleSet
             }
             // Otherwise:
             // Clear the stack back to a table body context.
-            $this->clearTheStackBackToATableBodyContext($tree);
+            self::clearTheStackBackToATableBodyContext($tree);
             // Pop the current node from the stack of open elements. Switch the insertion mode to "in table".
             $tree->openElements->pop();
             $tree->setInsertionMode(InsertionModes::IN_TABLE);
@@ -94,7 +94,7 @@ final class InTableBody extends RuleSet
         }
     }
 
-    private function clearTheStackBackToATableBodyContext(TreeBuilder $tree): void
+    private static function clearTheStackBackToATableBodyContext(TreeBuilder $tree): void
     {
         // while the current node is not a tbody, tfoot, thead, template, or html element,
         // pop elements from the stack of open elements.

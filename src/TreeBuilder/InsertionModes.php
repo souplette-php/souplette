@@ -27,5 +27,5 @@ final class InsertionModes
     const AFTER_FRAMESET = 20;
     const AFTER_AFTER_BODY = 21;
     const AFTER_AFTER_FRAMESET = 22;
-    const IN_FOREIGN_CONTENT = 100;
+    const IN_FOREIGN_CONTENT = 23;
 }

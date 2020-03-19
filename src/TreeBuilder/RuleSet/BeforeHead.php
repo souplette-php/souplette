@@ -10,7 +10,7 @@ use ju1ius\HtmlParser\TreeBuilder\TreeBuilder;
 
 final class BeforeHead extends RuleSet
 {
-    public function process(Token $token, TreeBuilder $tree)
+    public static function process(Token $token, TreeBuilder $tree)
     {
         if ($token instanceof Token\Character && ctype_space($token->data)) {
             // Ignore the token.

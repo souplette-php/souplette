@@ -13,7 +13,7 @@ use ju1ius\HtmlParser\TreeBuilder\TreeBuilder;
  */
 final class InCaption extends RuleSet
 {
-    public function process(Token $token, TreeBuilder $tree)
+    public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token->type;
         if ($type === TokenTypes::END_TAG && $token->name === 'caption') {
