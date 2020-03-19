@@ -40,6 +40,24 @@ class Stack extends \SplStack
     public function insert(int $offset, $value): void
     {
         $lastIndex = $this->count() - 1;
+        if ($offset === 0 || $offset < -$lastIndex - 1) {
+            $this->push($value);
+            return;
+        }
+        if ($offset === -1 || $offset > $lastIndex) {
+            $this->unshift($value);
+            return;
+        }
+        if ($offset < -1) {
+            $this->add($lastIndex + $offset + 1, $value);
+            return;
+        }
+        $this->add($offset - 1, $value);
+    }
+
+    public function insertBack(int $offset, $value): void
+    {
+        $lastIndex = $this->count() - 1;
         if ($offset === 0 || $offset < -$lastIndex - 2) {
             $this->unshift($value);
             return;
@@ -48,7 +66,7 @@ class Stack extends \SplStack
             $this->push($value);
             return;
         }
-        if ($offset < 0) {
+        if ($offset < -1) {
             $this->add(-$offset - 2, $value);
             return;
         }

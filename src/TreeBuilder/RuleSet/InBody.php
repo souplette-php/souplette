@@ -343,9 +343,7 @@ final class InBody extends RuleSet
                 if ($a = $tree->activeFormattingElements->containsTag('a')) {
                     // TODO: Parse error.
                     // run the adoption agency algorithm for the token
-                    if ($this->runTheAdoptionAgencyAlgorithm($tree, $token)) {
-                        return;
-                    }
+                    $this->runTheAdoptionAgencyAlgorithm($tree, $token);
                     // then remove that element from the list of active formatting elements and the stack of open elements
                     // if the adoption agency algorithm didn't already remove it (it might not have if the element is not in table scope).
                     $tree->activeFormattingElements->remove($a);
@@ -386,9 +384,7 @@ final class InBody extends RuleSet
                 if ($tree->openElements->hasTagInScope('nobr')) {
                     // TODO: Parse error.
                     // run the adoption agency algorithm for the token,
-                    if ($this->runTheAdoptionAgencyAlgorithm($tree, $token)) {
-                        return;
-                    }
+                    $this->runTheAdoptionAgencyAlgorithm($tree, $token);
                     // then once again reconstruct the active formatting elements, if any.
                     $tree->reconstructTheListOfActiveElements();
                 }
@@ -856,7 +852,6 @@ final class InBody extends RuleSet
                 // Take a deep breath, then act as described in the "any other end tag" entry below.
                 $this->anyOtherEndTag($tree, $token);
                 return;
-
             } elseif (
                 $tagName === 'a'
                 || $tagName === 'b'
@@ -951,11 +946,9 @@ final class InBody extends RuleSet
             return false;
         }
         // 3. Let outer loop counter be zero.
-        $outerLoopCounter = 0;
         // 4. Outer loop: If outer loop counter is greater than or equal to eight, then return.
-        while ($outerLoopCounter < 8) {
-            // 5. Increment outer loop counter by one.
-            $outerLoopCounter++;
+        // 5. Increment outer loop counter by one.
+        for ($outerLoopCounter = 0; $outerLoopCounter < 8; $outerLoopCounter++) {
             // Step 6.
             $formattingElement = $tree->activeFormattingElements->containsTag($subject);
             // If there is no such element, then return and instead act as described in the "any other end tag" entry above.
@@ -1049,7 +1042,7 @@ final class InBody extends RuleSet
                 if ($lastNode === $furthestBlock) {
                     // then move the aforementioned bookmark to be immediately after the new node
                     // in the list of active formatting elements.
-                    $bookmark = $tree->activeFormattingElements->indexOf($node) + 1;
+                    $bookmark = $tree->activeFormattingElements->indexOf($node);
                 }
                 // 14.9. Insert last node into node, first removing it from its previous parent node if any.
                 $node->appendChild($lastNode);
@@ -1077,7 +1070,7 @@ final class InBody extends RuleSet
             // 20. Remove formatting element from the stack of open elements,
             // and insert the new element into the stack of open elements immediately below the position of furthest block in that stack.
             $tree->openElements->remove($formattingElement);
-            $tree->openElements->insert($tree->openElements->indexOf($furthestBlock) - 1, $element);
+            $tree->openElements->insert($tree->openElements->indexOf($furthestBlock), $element);
             // 21. Jump back to the step labeled outer loop.
         }
         return false;

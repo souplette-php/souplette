@@ -82,19 +82,19 @@ class StackTest extends TestCase
     }
 
     /**
-     * @dataProvider insertProvider
+     * @dataProvider insertBackProvider
      * @param array $init
      * @param array $insert
      * @param array $expected
      */
-    public function testInsert(array $init, array $insert, array $expected)
+    public function testInsertBack(array $init, array $insert, array $expected)
     {
         $stack = new Stack($init);
-        $stack->insert(...$insert);
+        $stack->insertBack(...$insert);
         Assert::assertSame($expected, iterator_to_array($stack));
     }
 
-    public function insertProvider()
+    public function insertBackProvider()
     {
         $init = ['a', 'b', 'c', 'd'];
         $ins = 'ins';
@@ -112,5 +112,38 @@ class StackTest extends TestCase
         yield [$init, [-4, $ins], [4 => 'd', 3 => 'c', 2 => 'b', 1 => 'ins', 0 => 'a']];
         yield [$init, [-5, $ins], [4 => 'd', 3 => 'c', 2 => 'b', 1 => 'a', 0 => 'ins']];
         yield [$init, [-6, $ins], [4 => 'd', 3 => 'c', 2 => 'b', 1 => 'a', 0 => 'ins']];
+    }
+
+    /**
+     * @dataProvider insertProvider
+     * @param array $init
+     * @param array $insert
+     * @param array $expected
+     */
+    public function testInsert(array $init, array $insert, array $expected)
+    {
+        $stack = new Stack($init);
+        $stack->insert(...$insert);
+        Assert::assertSame($expected, iterator_to_array($stack));
+    }
+
+    public function insertProvider()
+    {
+        $init = ['a', 'b', 'c', 'd'];
+        $ins = 'ins';
+
+        yield [$init, [0, $ins], [4 => 'ins', 3 => 'd', 2 => 'c', 1 => 'b', 0 => 'a']];
+        yield [$init, [1, $ins], [4 => 'd', 3 => 'ins', 2 => 'c', 1 => 'b', 0 => 'a']];
+        yield [$init, [2, $ins], [4 => 'd', 3 => 'c', 2 => 'ins', 1 => 'b', 0 => 'a']];
+        yield [$init, [3, $ins], [4 => 'd', 3 => 'c', 2 => 'b', 1 => 'ins', 0 => 'a']];
+        yield [$init, [4, $ins], [4 => 'd', 3 => 'c', 2 => 'b', 1 => 'a', 0 => 'ins']];
+        yield [$init, [5, $ins], [4 => 'd', 3 => 'c', 2 => 'b', 1 => 'a', 0 => 'ins']];
+        //
+        yield [$init, [-1, $ins], [4 => 'd', 3 => 'c', 2 => 'b', 1 => 'a', 0 => 'ins']];
+        yield [$init, [-2, $ins], [4 => 'd', 3 => 'c', 2 => 'b', 1 => 'ins', 0 => 'a']];
+        yield [$init, [-3, $ins], [4 => 'd', 3 => 'c', 2 => 'ins', 1 => 'b', 0 => 'a']];
+        yield [$init, [-4, $ins], [4 => 'd', 3 => 'ins', 2 => 'c', 1 => 'b', 0 => 'a']];
+        yield [$init, [-5, $ins], [4 => 'ins', 3 => 'd', 2 => 'c', 1 => 'b', 0 => 'a']];
+        yield [$init, [-6, $ins], [4 => 'ins', 3 => 'd', 2 => 'c', 1 => 'b', 0 => 'a']];
     }
 }
