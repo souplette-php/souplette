@@ -4,92 +4,20 @@ namespace ju1ius\HtmlParser\TreeBuilder;
 
 use ju1ius\HtmlParser\Namespaces;
 
-final class OpenElementsStack extends \SplDoublyLinkedList
+final class OpenElementsStack extends Stack
 {
-    const IT_MODE_LIST = \SplDoublyLinkedList::IT_MODE_FIFO | \SplDoublyLinkedList::IT_MODE_KEEP;
-    const IT_MODE_STACK = \SplDoublyLinkedList::IT_MODE_LIFO | \SplDoublyLinkedList::IT_MODE_KEEP;
-
     private static $SCOPE_BUTTON;
     private static $SCOPE_LIST_ITEM;
 
     public function __construct()
     {
-        $this->setIteratorMode(self::IT_MODE_STACK);
         if (!self::$SCOPE_BUTTON) {
             self::$SCOPE_BUTTON = array_merge_recursive(Elements::SCOPE_BASE, Elements::SCOPE_BUTTON);
         }
         if (!self::$SCOPE_LIST_ITEM) {
             self::$SCOPE_LIST_ITEM = array_merge_recursive(Elements::SCOPE_BASE, Elements::SCOPE_LIST_ITEM);
         }
-    }
-
-    public function clear()
-    {
-        while (!$this->isEmpty()) {
-            $this->pop();
-        }
-    }
-
-    public function remove(\DOMElement $element): bool
-    {
-        foreach ($this as $i => $node) {
-            if ($node === $element) {
-                $this->offsetUnset($i);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public function replace(\DOMElement $old, \DOMElement $new): bool
-    {
-        foreach ($this as $i => $node) {
-            if ($node === $old) {
-                $this->offsetSet($i, $new);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public function indexOf(\DOMElement $element): int
-    {
-        foreach ($this as $i => $node) {
-            if ($node === $element) {
-                return $i;
-            }
-        }
-
-        return -1;
-    }
-
-    public function insert(int $offset, \DOMElement $element): void
-    {
-        $lastIndex = $this->count() - 1;
-        if ($offset === 0 || $offset < -$lastIndex - 2) {
-            $this->unshift($element);
-            return;
-        }
-        if ($offset === -1 || $offset > $lastIndex) {
-            $this->push($element);
-            return;
-        }
-        if ($offset < 0) {
-            $this->add(-$offset - 2, $element);
-            return;
-        }
-        $this->add($lastIndex - $offset, $element);
-    }
-
-    public function contains(\DOMElement $element): bool
-    {
-        foreach ($this as $node) {
-            if ($node === $element) {
-                return true;
-            }
-        }
-
-        return false;
+        parent::__construct();
     }
 
     public function containsTag(string $name): bool
@@ -101,18 +29,6 @@ final class OpenElementsStack extends \SplDoublyLinkedList
         }
 
         return false;
-    }
-
-    public function popUntil(\DOMElement $element)
-    {
-        while (!$this->isEmpty()) {
-            $node = $this->pop();
-            if ($node === $element) {
-                return $node;
-            }
-        }
-
-        return null;
     }
 
     public function popUntilTag(string $tagName, string $namespace = Namespaces::HTML)
@@ -173,7 +89,7 @@ final class OpenElementsStack extends \SplDoublyLinkedList
      */
     private function hasElementInSpecificScope(\DOMElement $targetNode, array $scope): bool
     {
-        foreach ($this as $i => $node) {
+        foreach ($this as $node) {
             // If node is the target node, terminate in a match state.
             if ($node === $targetNode) {
                 return true;
@@ -234,7 +150,7 @@ final class OpenElementsStack extends \SplDoublyLinkedList
 
     private function hasTagInSpecificScope(array $scope, string $tagName, string $namespace = Namespaces::HTML): bool
     {
-        foreach ($this as $i => $node) {
+        foreach ($this as $node) {
             // If node is the target node, terminate in a match state.
             if ($node->localName === $tagName && $node->namespaceURI === $namespace) {
                 return true;
