@@ -31,7 +31,19 @@ final class InBody extends RuleSet
             // 1. TODO: If there is a node in the stack of open elements that is not either
             // a dd, dt, li, optgroup, option, p, rb, rp, rt, rtc, tbody, td, tfoot, th, thead, tr, body or html element,
             // then this is a parse error.
-            // 2. Stop parsing
+            foreach ($tree->openElements as $node) {
+                if ($node->namespaceURI !== Namespaces::HTML && !in_array($node->localName, [
+                    'dd', 'dt', 'li',
+                    'optgroup', 'option',
+                    'p',
+                    'rb', 'rp', 'rt', 'rtc',
+                    'tbody', 'td', 'tfoot', 'th', 'thead', 'tr',
+                    'body', 'html',
+                ], true)) {
+                    // TODO: Parse error.
+                }
+            }
+            // 2. TODO: Stop parsing
             return;
         } elseif ($type === TokenTypes::CHARACTER) {
             $data = $token->data;

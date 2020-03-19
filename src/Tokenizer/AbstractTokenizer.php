@@ -3,6 +3,7 @@
 namespace ju1ius\HtmlParser\Tokenizer;
 
 use ju1ius\HtmlParser\Tokenizer\Token\Character;
+use ju1ius\HtmlParser\Tokenizer\Token\EOF;
 use SplQueue;
 
 abstract class AbstractTokenizer
@@ -76,6 +77,7 @@ abstract class AbstractTokenizer
                 yield $this->tokenQueue->dequeue();
             }
         } while ($carryOn);
+        yield new EOF();
         // TODO: yield new EOF()
     }
 

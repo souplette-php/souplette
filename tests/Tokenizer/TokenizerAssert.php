@@ -14,15 +14,20 @@ final class TokenizerAssert
      * @param Token[] $expectedTokens
      * @param array|null $expectedErrors
      * @param int $startState
+     * @param bool $omitEOF
      */
     public static function tokensEquals(
         string $input,
         array $expectedTokens,
         ?array $expectedErrors = null,
-        int $startState = TokenizerStates::DATA
+        int $startState = TokenizerStates::DATA,
+        bool $omitEOF = true
     ) {
         $tokenizer = new Tokenizer($input);
         $tokens = iterator_to_array($tokenizer->tokenize($startState));
+        if ($omitEOF) {
+            $eof = array_pop($tokens);
+        }
         Assert::assertEquals($expectedTokens, $tokens);
         if ($expectedErrors) {
             Assert::assertEquals($expectedErrors, $tokenizer->getErrors());

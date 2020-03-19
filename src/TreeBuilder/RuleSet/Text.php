@@ -17,6 +17,14 @@ final class Text extends RuleSet
         $type = $token->type;
         if ($type === TokenTypes::CHARACTER) {
             $tree->insertCharacter($token);
+        } elseif ($type === TokenTypes::EOF) {
+            // TODO: Parse error.
+            // If the current node is a script element, mark the script element as "already started".
+            // Pop the current node off the stack of open elements.
+            $tree->openElements->pop();
+            // Switch the insertion mode to the original insertion mode and reprocess the token.
+            $tree->setInsertionMode($tree->originalInsertionMode);
+            $tree->processToken($token);
         } elseif ($type === TokenTypes::END_TAG && $token->name === 'script') {
             // Pop the current node off the stack of open elements.
             $script = $tree->openElements->pop();
