@@ -35,7 +35,7 @@ final class InCaption extends RuleSet
             // Clear the list of active formatting elements up to the last marker.
             $tree->activeFormattingElements->clearUpToLastMarker();
             // Switch the insertion mode to "in table".
-            $tree->setInsertionMode(InsertionModes::IN_TABLE);
+            $tree->insertionMode = InsertionModes::IN_TABLE;
         } elseif (
             ($type === TokenTypes::END_TAG && $token->name === 'table')
             || ($type === TokenTypes::START_TAG && (
@@ -68,7 +68,7 @@ final class InCaption extends RuleSet
             // Clear the list of active formatting elements up to the last marker.
             $tree->activeFormattingElements->clearUpToLastMarker();
             // Switch the insertion mode to "in table".
-            $tree->setInsertionMode(InsertionModes::IN_TABLE);
+            $tree->insertionMode = InsertionModes::IN_TABLE;
         } elseif ($type === TokenTypes::END_TAG && (
                 $token->name === 'body'
                 || $token->name === 'col'

@@ -52,7 +52,7 @@ final class InTemplate extends RuleSet
             // Push "in table" onto the stack of template insertion modes so that it is the new current template insertion mode.
             $tree->templateInsertionModes->push(InsertionModes::IN_TABLE);
             // Switch the insertion mode to "in table", and reprocess the token.
-            $tree->setInsertionMode(InsertionModes::IN_TABLE);
+            $tree->insertionMode = InsertionModes::IN_TABLE;
             $tree->processToken($token);
         } elseif ($type === TokenTypes::START_TAG && $token->name === 'col') {
             // Pop the current template insertion mode off the stack of template insertion modes.
@@ -60,7 +60,7 @@ final class InTemplate extends RuleSet
             // Push "in column group" onto the stack of template insertion modes so that it is the new current template insertion mode.
             $tree->templateInsertionModes->push(InsertionModes::IN_COLUMN_GROUP);
             // Switch the insertion mode to "in column group", and reprocess the token.
-            $tree->setInsertionMode(InsertionModes::IN_COLUMN_GROUP);
+            $tree->insertionMode = InsertionModes::IN_COLUMN_GROUP;
             $tree->processToken($token);
         } elseif ($type === TokenTypes::START_TAG && $token->name === 'tr') {
             // Pop the current template insertion mode off the stack of template insertion modes.
@@ -68,7 +68,7 @@ final class InTemplate extends RuleSet
             // Push "in table body" onto the stack of template insertion modes so that it is the new current template insertion mode.
             $tree->templateInsertionModes->push(InsertionModes::IN_TABLE_BODY);
             // Switch the insertion mode to "in table body", and reprocess the token.
-            $tree->setInsertionMode(InsertionModes::IN_TABLE_BODY);
+            $tree->insertionMode = InsertionModes::IN_TABLE_BODY;
             $tree->processToken($token);
         } elseif ($type === TokenTypes::START_TAG && ($token->name === 'td' || $token->name === 'th')) {
             // Pop the current template insertion mode off the stack of template insertion modes.
@@ -76,7 +76,7 @@ final class InTemplate extends RuleSet
             // Push "in row" onto the stack of template insertion modes so that it is the new current template insertion mode.
             $tree->templateInsertionModes->push(InsertionModes::IN_ROW);
             // Switch the insertion mode to "in row", and reprocess the token.
-            $tree->setInsertionMode(InsertionModes::IN_ROW);
+            $tree->insertionMode = InsertionModes::IN_ROW;
             $tree->processToken($token);
         } elseif ($type === TokenTypes::START_TAG) {
             // Pop the current template insertion mode off the stack of template insertion modes.
@@ -84,7 +84,7 @@ final class InTemplate extends RuleSet
             // Push "in body" onto the stack of template insertion modes so that it is the new current template insertion mode.
             $tree->templateInsertionModes->push(InsertionModes::IN_BODY);
             // Switch the insertion mode to "in body", and reprocess the token.
-            $tree->setInsertionMode(InsertionModes::IN_BODY);
+            $tree->insertionMode = InsertionModes::IN_BODY;
             $tree->processToken($token);
         } elseif ($type === TokenTypes::END_TAG) {
             // TODO: Parse error.

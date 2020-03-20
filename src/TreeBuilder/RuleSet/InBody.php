@@ -156,7 +156,7 @@ final class InBody extends RuleSet
                 // Insert an HTML element for the token.
                 $tree->insertElement($token);
                 // Switch the insertion mode to "in frameset".
-                $tree->setInsertionMode(InsertionModes::IN_FRAMESET);
+                $tree->insertionMode = InsertionModes::IN_FRAMESET;
                 return;
             } elseif (
                 $tagName === 'address'
@@ -433,7 +433,7 @@ final class InBody extends RuleSet
                 // Set the frameset-ok flag to "not ok".
                 $tree->framesetOK = false;
                 // Switch the insertion mode to "in table".
-                $tree->setInsertionMode(InsertionModes::IN_TABLE);
+                $tree->insertionMode = InsertionModes::IN_TABLE;
                 return;
             } elseif (
                 $tagName === 'area'
@@ -518,7 +518,7 @@ final class InBody extends RuleSet
                 // 5. Set the frameset-ok flag to "not ok".
                 $tree->framesetOK = false;
                 // 6. Switch the insertion mode to "text".
-                $tree->setInsertionMode(InsertionModes::TEXT);
+                $tree->insertionMode = InsertionModes::TEXT;
                 return;
             } elseif ($tagName === 'xmp') {
                 // If the stack of open elements has a p element in button scope, then close a p element.
@@ -561,10 +561,10 @@ final class InBody extends RuleSet
                     || $tree->insertionMode === InsertionModes::IN_CELL
                 ) {
                     // then switch the insertion mode to "in select in table".
-                    $tree->setInsertionMode(InsertionModes::IN_SELECT_IN_TABLE);
+                    $tree->insertionMode = InsertionModes::IN_SELECT_IN_TABLE;
                 } else {
                     // Otherwise, switch the insertion mode to "in select".
-                    $tree->setInsertionMode(InsertionModes::IN_SELECT);
+                    $tree->insertionMode = InsertionModes::IN_SELECT;
                 }
                 return;
             } elseif (
@@ -689,7 +689,7 @@ final class InBody extends RuleSet
                 // then this is a parse error.
 
                 // Switch the insertion mode to "after body".
-                $tree->setInsertionMode(InsertionModes::AFTER_BODY);
+                $tree->insertionMode = InsertionModes::AFTER_BODY;
                 return;
             } elseif ($tagName === 'html') {
                 // If the stack of open elements does not have a body element in scope,
@@ -703,7 +703,7 @@ final class InBody extends RuleSet
                 // then this is a parse error.
 
                 // Switch the insertion mode to "after body".
-                $tree->setInsertionMode(InsertionModes::AFTER_BODY);
+                $tree->insertionMode = InsertionModes::AFTER_BODY;
                 // Reprocess the token.
                 $tree->processToken($token);
                 return;

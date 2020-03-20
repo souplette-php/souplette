@@ -33,7 +33,7 @@ final class InTable extends RuleSet
             // Let the original insertion mode be the current insertion mode.
             $tree->originalInsertionMode = $tree->insertionMode;
             // Switch the insertion mode to "in table text" and reprocess the token.
-            $tree->setInsertionMode(InsertionModes::IN_TABLE_TEXT);
+            $tree->insertionMode = InsertionModes::IN_TABLE_TEXT;
             $tree->processToken($token);
             return;
         } elseif ($type === TokenTypes::COMMENT) {
@@ -52,14 +52,14 @@ final class InTable extends RuleSet
                 $tree->activeFormattingElements->push(null);
                 // Insert an HTML element for the token, then switch the insertion mode to "in caption".
                 $tree->insertElement($token);
-                $tree->setInsertionMode(InsertionModes::IN_CAPTION);
+                $tree->insertionMode = InsertionModes::IN_CAPTION;
                 return;
             } elseif ($tagName === 'colgroup') {
                 // Clear the stack back to a table context. (See below.)
                 self::clearTheStackBackToATableContext($tree);
                 // Insert an HTML element for the token, then switch the insertion mode to "in column group".
                 $tree->insertElement($token);
-                $tree->setInsertionMode(InsertionModes::IN_COLUMN_GROUP);
+                $tree->insertionMode = InsertionModes::IN_COLUMN_GROUP;
                 return;
             } elseif ($tagName === 'col') {
                 // Clear the stack back to a table context. (See below.)
@@ -67,7 +67,7 @@ final class InTable extends RuleSet
                 // Insert an HTML element for a "colgroup" start tag token with no attributes,
                 $tree->insertElement(new Token\StartTag('colgroup'));
                 // then switch the insertion mode to "in column group".
-                $tree->setInsertionMode(InsertionModes::IN_COLUMN_GROUP);
+                $tree->insertionMode = InsertionModes::IN_COLUMN_GROUP;
                 // Reprocess the current token.
                 $tree->processToken($token);
                 return;
@@ -80,7 +80,7 @@ final class InTable extends RuleSet
                 self::clearTheStackBackToATableContext($tree);
                 // Insert an HTML element for the token, then switch the insertion mode to "in table body".
                 $tree->insertElement($token);
-                $tree->setInsertionMode(InsertionModes::IN_TABLE_BODY);
+                $tree->insertionMode = InsertionModes::IN_TABLE_BODY;
                 return;
             } elseif (
                 $tagName === 'td'
@@ -92,7 +92,7 @@ final class InTable extends RuleSet
                 // Insert an HTML element for a "tbody" start tag token with no attributes,
                 $tree->insertElement(new Token\StartTag('tbody'));
                 // then switch the insertion mode to "in table body".
-                $tree->setInsertionMode(InsertionModes::IN_TABLE_BODY);
+                $tree->insertionMode = InsertionModes::IN_TABLE_BODY;
                 // Reprocess the current token.
                 $tree->processToken($token);
                 return;

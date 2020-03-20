@@ -43,7 +43,7 @@ final class InFrameset extends RuleSet
             // and the current node is no longer a frameset element,
             // then switch the insertion mode to "after frameset".
             if (!$tree->isBuildingFragment && $tree->openElements->top()->localName !== 'frameset') {
-                $tree->setInsertionMode(InsertionModes::AFTER_FRAMESET);
+                $tree->insertionMode = InsertionModes::AFTER_FRAMESET;
             }
         } elseif ($type === TokenTypes::START_TAG && $token->name === 'frame') {
             // Insert an HTML element for the token. Immediately pop the current node off the stack of open elements.

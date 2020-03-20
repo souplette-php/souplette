@@ -21,7 +21,7 @@ final class InTableBody extends RuleSet
             self::clearTheStackBackToATableBodyContext($tree);
             // Insert an HTML element for the token, then switch the insertion mode to "in row".
             $tree->insertElement($token);
-            $tree->setInsertionMode(InsertionModes::IN_ROW);
+            $tree->insertionMode = InsertionModes::IN_ROW;
         } elseif ($type === TokenTypes::START_TAG && ($token->name === 'th' || $token->name === 'td')) {
             // TODO: Parse error.
             // Clear the stack back to a table body context.
@@ -29,7 +29,7 @@ final class InTableBody extends RuleSet
             // Insert an HTML element for a "tr" start tag token with no attributes,
             $tree->insertElement(new Token\StartTag('tr'));
             // then switch the insertion mode to "in row".
-            $tree->setInsertionMode(InsertionModes::IN_ROW);
+            $tree->insertionMode = InsertionModes::IN_ROW;
             // Reprocess the current token.
             $tree->processToken($token);
         } elseif ($type === TokenTypes::END_TAG && (
@@ -48,7 +48,7 @@ final class InTableBody extends RuleSet
             self::clearTheStackBackToATableBodyContext($tree);
             // Pop the current node from the stack of open elements. Switch the insertion mode to "in table".
             $tree->openElements->pop();
-            $tree->setInsertionMode(InsertionModes::IN_TABLE);
+            $tree->insertionMode = InsertionModes::IN_TABLE;
         } elseif (
             ($type === TokenTypes::START_TAG && (
                 $token->name === 'caption'
@@ -72,7 +72,7 @@ final class InTableBody extends RuleSet
             self::clearTheStackBackToATableBodyContext($tree);
             // Pop the current node from the stack of open elements. Switch the insertion mode to "in table".
             $tree->openElements->pop();
-            $tree->setInsertionMode(InsertionModes::IN_TABLE);
+            $tree->insertionMode = InsertionModes::IN_TABLE;
             // Reprocess the token.
             $tree->processToken($token);
         } elseif ($type === TokenTypes::END_TAG && (

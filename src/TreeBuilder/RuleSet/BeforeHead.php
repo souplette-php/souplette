@@ -27,7 +27,7 @@ final class BeforeHead extends RuleSet
         } elseif ($token instanceof Token\StartTag && $token->name === 'head') {
             $head = $tree->insertElement($token);
             $tree->headElement = $head;
-            $tree->setInsertionMode(InsertionModes::IN_HEAD);
+            $tree->insertionMode = InsertionModes::IN_HEAD;
             return;
         } elseif ($token instanceof Token\EndTag) {
             if ($token->name === 'head' || $token->name === 'body' || $token->name === 'html' || $token->name === 'br') {
@@ -42,7 +42,7 @@ final class BeforeHead extends RuleSet
         // Set the head element pointer to the newly created head element.
         $tree->headElement = $head;
         // Switch the insertion mode to "in head".
-        $tree->setInsertionMode(InsertionModes::IN_HEAD);
+        $tree->insertionMode = InsertionModes::IN_HEAD;
         // Reprocess the current token.
         $tree->processToken($token);
     }

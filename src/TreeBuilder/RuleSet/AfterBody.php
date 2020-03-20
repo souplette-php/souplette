@@ -38,14 +38,14 @@ final class AfterBody extends RuleSet
                 return;
             }
             // Otherwise, switch the insertion mode to "after after body".
-            $tree->setInsertionMode(InsertionModes::AFTER_AFTER_BODY);
+            $tree->insertionMode = InsertionModes::AFTER_AFTER_BODY;
         } elseif ($type === TokenTypes::EOF) {
             // TODO: stop parsing.
             return;
         } else {
             // TODO: Parse error.
             // Switch the insertion mode to "in body" and reprocess the token.
-            $tree->setInsertionMode(InsertionModes::IN_BODY);
+            $tree->insertionMode = InsertionModes::IN_BODY;
             $tree->processToken($token);
         }
     }

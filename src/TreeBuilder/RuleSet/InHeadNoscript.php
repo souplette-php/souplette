@@ -28,7 +28,7 @@ final class InHeadNoscript extends RuleSet
             // the new current node will be a head element.
             $tree->openElements->pop();
             // Switch the insertion mode to "in head".
-            $tree->setInsertionMode(InsertionModes::IN_HEAD);
+            $tree->insertionMode = InsertionModes::IN_HEAD;
             return;
         } elseif (
             $type === TokenTypes::CHARACTER && ctype_space($token->data)
@@ -59,7 +59,7 @@ final class InHeadNoscript extends RuleSet
         // the new current node will be a head element.
         $tree->openElements->pop();
         // Switch the insertion mode to "in head".
-        $tree->setInsertionMode(InsertionModes::IN_HEAD);
+        $tree->insertionMode = InsertionModes::IN_HEAD;
         // Reprocess the token.
         $tree->processToken($token);
     }

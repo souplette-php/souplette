@@ -36,7 +36,7 @@ final class InCell extends RuleSet
             // Clear the list of active formatting elements up to the last marker.
             $tree->activeFormattingElements->clearUpToLastMarker();
             // Switch the insertion mode to "in row".
-            $tree->setInsertionMode(InsertionModes::IN_ROW);
+            $tree->insertionMode = InsertionModes::IN_ROW;
         } elseif ($type === TokenTypes::START_TAG && (
             $token->name === 'caption'
             || $token->name === 'col'
@@ -109,6 +109,6 @@ final class InCell extends RuleSet
         // Clear the list of active formatting elements up to the last marker.
         $tree->activeFormattingElements->clearUpToLastMarker();
         // Switch the insertion mode to "in row".
-        $tree->setInsertionMode(InsertionModes::IN_ROW);
+        $tree->insertionMode = InsertionModes::IN_ROW;
     }
 }

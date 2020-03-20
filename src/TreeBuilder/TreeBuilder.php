@@ -211,11 +211,6 @@ final class TreeBuilder
         return (self::RULES[$mode])::process($token, $this);
     }
 
-    public function setInsertionMode(int $mode): void
-    {
-        $this->insertionMode = $mode;
-    }
-
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#reset-the-insertion-mode-appropriately
      */
@@ -530,7 +525,7 @@ final class TreeBuilder
         $this->insertElement($token);
         $this->tokenizer->state = $rawtext ? TokenizerStates::RAWTEXT : TokenizerStates::RCDATA;
         $this->originalInsertionMode = $this->insertionMode;
-        $this->setInsertionMode(InsertionModes::TEXT);
+        $this->insertionMode = InsertionModes::TEXT;
     }
 
     public function adjustSvgTagName(Token\StartTag $token)

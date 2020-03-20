@@ -58,13 +58,13 @@ final class Initial extends RuleSet
                 // and the DOCTYPE token matches one of the conditions in the following list, then set the Document to limited-quirks mode:
                 $tree->compatMode = CompatModes::LIMITED_QUIRKS;
             }
-            $tree->setInsertionMode(InsertionModes::BEFORE_HTML);
+            $tree->insertionMode = InsertionModes::BEFORE_HTML;
         } else {
             // TODO: If the document is not an iframe srcdoc document, then this is a parse error;
             // set the Document to quirks mode.
             $tree->compatMode = CompatModes::QUIRKS;
             // In any case, switch the insertion mode to "before html", then reprocess the token.
-            $tree->setInsertionMode(InsertionModes::BEFORE_HTML);
+            $tree->insertionMode = InsertionModes::BEFORE_HTML;
             $tree->processToken($token);
         }
     }

@@ -45,7 +45,7 @@ final class InTableText extends RuleSet
             }
         }
         // Switch the insertion mode to the original insertion mode and reprocess the token.
-        $tree->setInsertionMode($tree->originalInsertionMode);
+        $tree->insertionMode = $tree->originalInsertionMode;
         $tree->processToken($token);
     }
 }

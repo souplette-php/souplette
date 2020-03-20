@@ -30,7 +30,7 @@ final class AfterFrameset extends RuleSet
             $tree->processToken($token, InsertionModes::IN_BODY);
         } elseif ($type === TokenTypes::END_TAG && $token->name === 'html') {
             // Switch the insertion mode to "after after frameset".
-            $tree->setInsertionMode(InsertionModes::AFTER_AFTER_FRAMESET);
+            $tree->insertionMode = InsertionModes::AFTER_AFTER_FRAMESET;
         } elseif ($type === TokenTypes::START_TAG && $token->name === 'noframes') {
             // Process the token using the rules for the "in head" insertion mode.
             $tree->processToken($token, InsertionModes::IN_HEAD);

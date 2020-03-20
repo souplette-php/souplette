@@ -30,13 +30,13 @@ final class AfterHead extends RuleSet
             // Set the frameset-ok flag to "not ok".
             $tree->framesetOK = false;
             // Switch the insertion mode to "in body".
-            $tree->setInsertionMode(InsertionModes::IN_BODY);
+            $tree->insertionMode = InsertionModes::IN_BODY;
             return;
         } elseif ($type === TokenTypes::START_TAG && $token->name === 'frameset') {
             // Insert an HTML element for the token.
             $tree->insertElement($token);
             // Switch the insertion mode to "in frameset".
-            $tree->setInsertionMode(InsertionModes::IN_FRAMESET);
+            $tree->insertionMode = InsertionModes::IN_FRAMESET;
             return;
         } elseif ($type === TokenTypes::START_TAG && (
                 $token->name === 'base'
@@ -86,7 +86,7 @@ final class AfterHead extends RuleSet
         // Insert an HTML element for a "body" start tag token with no attributes.
         $tree->insertElement(new Token\StartTag('body'));
         // Switch the insertion mode to "in body".
-        $tree->setInsertionMode(InsertionModes::IN_BODY);
+        $tree->insertionMode = InsertionModes::IN_BODY;
         // Reprocess the current token.
         $tree->processToken($token);
     }

@@ -35,7 +35,7 @@ final class BeforeHtml extends RuleSet
             // Put this element in the stack of open elements.
             $tree->openElements->push($element);
             // Switch the insertion mode to "before head".
-            $tree->setInsertionMode(InsertionModes::BEFORE_HEAD);
+            $tree->insertionMode = InsertionModes::BEFORE_HEAD;
             return;
         } elseif ($type === TokenTypes::END_TAG) {
             if ($token->name === 'head' || $token->name === 'body' || $token->name === 'html' || $token->name === 'br') {
@@ -54,7 +54,7 @@ final class BeforeHtml extends RuleSet
         // Put this element in the stack of open elements.
         $tree->openElements->push($html);
         // Switch the insertion mode to "before head", then reprocess the token.
-        $tree->setInsertionMode(InsertionModes::BEFORE_HEAD);
+        $tree->insertionMode = InsertionModes::BEFORE_HEAD;
         $tree->processToken($token);
     }
 }

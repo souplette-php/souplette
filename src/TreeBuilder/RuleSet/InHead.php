@@ -71,7 +71,7 @@ final class InHead extends RuleSet
                 return;
             } elseif ($name === 'noscript') {
                 $tree->insertElement($token);
-                $tree->setInsertionMode(InsertionModes::IN_HEAD_NOSCRIPT);
+                $tree->insertionMode = InsertionModes::IN_HEAD_NOSCRIPT;
                 return;
             } elseif ($name === 'script') {
                 $location = $tree->appropriatePlaceForInsertingANode();
@@ -80,7 +80,7 @@ final class InHead extends RuleSet
                 $tree->openElements->push($node);
                 $tree->tokenizer->state = TokenizerStates::SCRIPT_DATA;
                 $tree->originalInsertionMode = $tree->insertionMode;
-                $tree->setInsertionMode(InsertionModes::TEXT);
+                $tree->insertionMode = InsertionModes::TEXT;
                 return;
             } elseif ($name === 'template') {
                 // Insert an HTML element for the token.
@@ -90,7 +90,7 @@ final class InHead extends RuleSet
                 // Set the frameset-ok flag to "not ok".
                 $tree->framesetOK = false;
                 // Switch the insertion mode to "in template".
-                $tree->setInsertionMode(InsertionModes::IN_TEMPLATE);
+                $tree->insertionMode = InsertionModes::IN_TEMPLATE;
                 // Push "in template" onto the stack of template insertion modes so that it is the new current template insertion mode.
                 $tree->templateInsertionModes->push(InsertionModes::IN_TEMPLATE);
                 return;
@@ -102,7 +102,7 @@ final class InHead extends RuleSet
             $name = $token->name;
             if ($name === 'head') {
                 $tree->openElements->pop();
-                $tree->setInsertionMode(InsertionModes::AFTER_HEAD);
+                $tree->insertionMode = InsertionModes::AFTER_HEAD;
                 return;
             } elseif (
                 $name === 'body'
@@ -139,7 +139,7 @@ final class InHead extends RuleSet
         }
 
         $tree->openElements->pop();
-        $tree->setInsertionMode(InsertionModes::AFTER_HEAD);
+        $tree->insertionMode = InsertionModes::AFTER_HEAD;
         $tree->processToken($token);
     }
 }

@@ -33,7 +33,7 @@ final class AfterAfterBody extends RuleSet
         } else {
             // TODO: Parse error.
             // Switch the insertion mode to "in body" and reprocess the token.
-            $tree->setInsertionMode(InsertionModes::IN_BODY);
+            $tree->insertionMode = InsertionModes::IN_BODY;
             $tree->processToken($token);
         }
     }
