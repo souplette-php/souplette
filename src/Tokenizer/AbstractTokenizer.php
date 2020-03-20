@@ -78,7 +78,6 @@ abstract class AbstractTokenizer
             }
         } while ($carryOn);
         yield new EOF();
-        // TODO: yield new EOF()
     }
 
     private function reset(): void

@@ -8,6 +8,11 @@ use ju1ius\HtmlParser\Tokenizer\Token\Doctype;
 use ju1ius\HtmlParser\Tokenizer\Token\EndTag;
 use ju1ius\HtmlParser\Tokenizer\Token\StartTag;
 
+/**
+ * Static constructor methods are to be used for tests only.
+ *
+ * @codeCoverageIgnore
+ */
 abstract class Token
 {
     /**

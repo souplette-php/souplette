@@ -21,6 +21,9 @@ final class TokenTypes
     ];
 
     /**
+     * Convenience method for printing a token type.
+     *
+     * @codeCoverageIgnore
      * @param int|Token $tokenOrType
      * @return string
      */
