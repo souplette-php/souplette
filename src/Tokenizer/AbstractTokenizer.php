@@ -60,7 +60,7 @@ abstract class AbstractTokenizer
         $this->entitySearch = EntitySearch::create();
     }
 
-    public function getErrors(): array
+    final public function getErrors(): array
     {
         return $this->parseErrors;
     }
@@ -92,7 +92,7 @@ abstract class AbstractTokenizer
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#tokenization
      */
-    protected function emitCurrentToken(): void
+    final protected function emitCurrentToken(): void
     {
         $token = $this->currentToken;
         if ($token->type === TokenTypes::START_TAG) {
@@ -126,7 +126,7 @@ abstract class AbstractTokenizer
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#flush-code-points-consumed-as-a-character-reference
      */
-    protected function flushCodePointsConsumedAsACharacterReference(): void
+    final protected function flushCodePointsConsumedAsACharacterReference(): void
     {
         // https://html.spec.whatwg.org/multipage/parsing.html#charref-in-attribute
         $rs = $this->returnState;
