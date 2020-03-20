@@ -89,53 +89,6 @@ abstract class AbstractTokenizer
         $this->parseErrors = [];
     }
 
-    protected function charsUntil(string $bytes, ?int $max = null): ?string
-    {
-        if ($this->position >= strlen($this->input)) {
-            return null;
-        }
-        if ($max === 0 || $max) {
-            $length = strcspn($this->input, $bytes, $this->position, $max);
-        } else {
-            $length = strcspn($this->input, $bytes, $this->position);
-        }
-
-        $chars = substr($this->input, $this->position, $length);
-        $this->position += $length;
-
-        return $chars;
-    }
-
-    protected function charsWhile(string $bytes, ?int $max = null): ?string
-    {
-        if ($this->position >= strlen($this->input)) {
-            return null;
-        }
-
-        if ($max === 0 || $max) {
-            $length = strspn($this->input, $bytes, $this->position, $max);
-        } else {
-            $length = strspn($this->input, $bytes, $this->position);
-        }
-
-        $chars = substr($this->input, $this->position, $length);
-        $this->position += $length;
-
-        return $chars;
-    }
-
-    protected function consumeWhitespace(): ?int
-    {
-        if ($this->position >= strlen($this->input)) {
-            return null;
-        }
-
-        $length = strspn($this->input, Characters::WHITESPACE, $this->position);
-        $this->position += $length;
-
-        return $length;
-    }
-
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#tokenization
      */
@@ -185,5 +138,41 @@ abstract class AbstractTokenizer
             return;
         }
         $this->tokenQueue->enqueue(new Character($this->temporaryBuffer));
+    }
+
+    /**
+     * Consumes characters until a character in `$bytes` is seen.
+     *
+     * Usages of this method have been inlined into the generated tokenizer via a twig macro.
+     *
+     * @param string $bytes
+     * @return string
+     * @codeCoverageIgnore
+     */
+    final protected function charsUntil(string $bytes): string
+    {
+        $length = strcspn($this->input, $bytes, $this->position);
+        $chars = substr($this->input, $this->position, $length);
+        $this->position += $length;
+
+        return $chars;
+    }
+
+    /**
+     * Consumes characters while the input matches a character in `$bytes`.
+     *
+     * Usages of this method have been inlined into the generated tokenizer via a twig macro.
+     *
+     * @param string $bytes
+     * @return string
+     * @codeCoverageIgnore
+     */
+    final protected function charsWhile(string $bytes): string
+    {
+        $length = strspn($this->input, $bytes, $this->position);
+        $chars = substr($this->input, $this->position, $length);
+        $this->position += $length;
+
+        return $chars;
     }
 }
