@@ -7,6 +7,7 @@ use ju1ius\HtmlParser\Tokenizer\Token;
 use ju1ius\HtmlParser\Tokenizer\Tokenizer;
 use ju1ius\HtmlParser\Tokenizer\TokenizerStates;
 use ju1ius\HtmlParser\Tokenizer\TokenTypes;
+use ju1ius\HtmlParser\TreeBuilder\RuleSet\InForeignContent;
 use SplStack;
 
 final class TreeBuilder
@@ -87,16 +88,16 @@ final class TreeBuilder
     private $contextElement;
     public $headElement;
     public $formElement;
+    /**
+     * @see https://html.spec.whatwg.org/multipage/parsing.html#foster-parent
+     * @var bool
+     */
     public $fosterParenting = false;
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#frameset-ok-flag
      * @var bool
      */
     public $framesetOK = true;
-    /**
-     * @var Token
-     */
-    private $currentToken;
 
     public function __construct(\DOMImplementation $dom)
     {
@@ -199,16 +200,14 @@ final class TreeBuilder
             ) {
                 $this->processToken($token);
             } else {
-                $this->processToken($token, InsertionModes::IN_FOREIGN_CONTENT);
+                InForeignContent::process($token, $this);
             }
         }
     }
 
-    public function processToken(Token $token, ?int $insertionMode = null)
+    public function processToken(Token $token)
     {
-        $this->currentToken = $token;
-        $mode = $insertionMode === null ? $this->insertionMode : $insertionMode;
-        return (self::RULES[$mode])::process($token, $this);
+        return (self::RULES[$this->insertionMode])::process($token, $this);
     }
 
     /**

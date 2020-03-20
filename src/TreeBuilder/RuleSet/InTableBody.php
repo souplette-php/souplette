@@ -90,7 +90,7 @@ final class InTableBody extends RuleSet
             return;
         } else {
             // Process the token using the rules for the "in table" insertion mode.
-            $tree->processToken($token, InsertionModes::IN_TABLE);
+            InTable::process($token, $tree);
         }
     }
 

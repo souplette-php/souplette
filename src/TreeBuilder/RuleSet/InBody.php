@@ -24,7 +24,7 @@ final class InBody extends RuleSet
             // If the stack of template insertion modes is not empty,
             // then process the token using the rules for the "in template" insertion mode.
             if (!$tree->templateInsertionModes->isEmpty()) {
-                $tree->processToken($token, InsertionModes::IN_TEMPLATE);
+                InTemplate::process($token, $tree);
                 return;
             }
             // Otherwise, follow these steps:
@@ -100,7 +100,7 @@ final class InBody extends RuleSet
                 || $tagName === 'title'
             ) {
                 // Process the token using the rules for the "in head" insertion mode.
-                $tree->processToken($token, InsertionModes::IN_HEAD);
+                InHead::process($token, $tree);
                 return;
             } elseif ($tagName === 'body') {
                 // TODO: Parse error.
@@ -675,7 +675,7 @@ final class InBody extends RuleSet
             $tagName = $token->name;
             if ($tagName === 'template') {
                 // Process the token using the rules for the "in head" insertion mode.
-                $tree->processToken($token, InsertionModes::IN_HEAD);
+                InHead::process($token, $tree);
                 return;
             } elseif ($tagName === 'body') {
                 // If the stack of open elements does not have a body element in scope,

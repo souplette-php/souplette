@@ -27,13 +27,13 @@ final class AfterFrameset extends RuleSet
             return;
         } elseif ($type === TokenTypes::START_TAG && $token->name === 'html') {
             // Process the token using the rules for the "in body" insertion mode.
-            $tree->processToken($token, InsertionModes::IN_BODY);
+            InBody::process($token, $tree);
         } elseif ($type === TokenTypes::END_TAG && $token->name === 'html') {
             // Switch the insertion mode to "after after frameset".
             $tree->insertionMode = InsertionModes::AFTER_AFTER_FRAMESET;
         } elseif ($type === TokenTypes::START_TAG && $token->name === 'noframes') {
             // Process the token using the rules for the "in head" insertion mode.
-            $tree->processToken($token, InsertionModes::IN_HEAD);
+            InHead::process($token, $tree);
         } elseif ($type === TokenTypes::EOF) {
             // TODO: Stop parsing.
             return;

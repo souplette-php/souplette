@@ -33,7 +33,7 @@ final class InSelect extends RuleSet
             return;
         } elseif ($type === TokenTypes::START_TAG && $token->name === 'html') {
             // Process the token using the rules for the "in body" insertion mode.
-            $tree->processToken($token, InsertionModes::IN_BODY);
+            InBody::process($token, $tree);
         } elseif ($type === TokenTypes::START_TAG && $token->name === 'option') {
             // If the current node is an option element, pop that node from the stack of open elements.
             if ($tree->openElements->top()->localName === 'option') {
@@ -125,10 +125,10 @@ final class InSelect extends RuleSet
             || ($type === TokenTypes::END_TAG && $token->name === 'template')
         ) {
             // Process the token using the rules for the "in head" insertion mode.
-            $tree->processToken($token, InsertionModes::IN_HEAD);
+            InHead::process($token, $tree);
         } elseif ($type === TokenTypes::EOF) {
             // Process the token using the rules for the "in body" insertion mode.
-            $tree->processToken($token, InsertionModes::IN_BODY);
+            InBody::process($token, $tree);
         } else {
             // TODO: Parse error.
             // Ignore the token.

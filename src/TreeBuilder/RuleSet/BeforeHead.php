@@ -22,7 +22,7 @@ final class BeforeHead extends RuleSet
             // TODO: Parse error. Ignore the token.
             return;
         } elseif ($token instanceof Token\StartTag && $token->name === 'html') {
-            $tree->processToken($token, InsertionModes::IN_BODY);
+            InBody::process($token, $tree);
             return;
         } elseif ($token instanceof Token\StartTag && $token->name === 'head') {
             $head = $tree->insertElement($token);

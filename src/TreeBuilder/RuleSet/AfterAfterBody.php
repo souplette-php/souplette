@@ -26,7 +26,7 @@ final class AfterAfterBody extends RuleSet
             || ($type === TokenTypes::START_TAG && $token->name === 'html')
         ) {
             // Process the token using the rules for the "in body" insertion mode.
-            $tree->processToken($token, InsertionModes::IN_BODY);
+            InBody::process($token, $tree);
         } elseif ($type === TokenTypes::EOF) {
             // TODO: Stop parsing.
             return;

@@ -28,7 +28,7 @@ final class InColumnGroup extends RuleSet
             return;
         } elseif ($type === TokenTypes::START_TAG && $token->name === 'html') {
             // Process the token using the rules for the "in body" insertion mode.
-            $tree->processToken($token, InsertionModes::IN_BODY);
+            InBody::process($token, $tree);
         } elseif ($type === TokenTypes::START_TAG && $token->name === 'col') {
             // Insert an HTML element for the token. Immediately pop the current node off the stack of open elements.
             $tree->insertElement($token);
@@ -51,10 +51,10 @@ final class InColumnGroup extends RuleSet
             return;
         } elseif (($type === TokenTypes::START_TAG || $type === TokenTypes::END_TAG) && $token->name === 'template') {
             // Process the token using the rules for the "in head" insertion mode.
-            $tree->processToken($token, InsertionModes::IN_HEAD);
+            InHead::process($token, $tree);
         } elseif ($type === TokenTypes::EOF) {
             // Process the token using the rules for the "in body" insertion mode.
-            $tree->processToken($token, InsertionModes::IN_BODY);
+            InBody::process($token, $tree);
         } else {
             // If the current node is not a colgroup element, then this is a parse error; ignore the token.
             if ($tree->openElements->top()->localName !== 'colgroup') {

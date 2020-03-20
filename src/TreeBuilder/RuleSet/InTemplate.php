@@ -22,7 +22,7 @@ final class InTemplate extends RuleSet
             || $type === TokenTypes::DOCTYPE
         ) {
             // Process the token using the rules for the "in body" insertion mode.
-            $tree->processToken($token, InsertionModes::IN_BODY);
+            InBody::process($token, $tree);
         } elseif (
             ($type === TokenTypes::START_TAG && (
                 $token->name === 'base'
@@ -39,7 +39,7 @@ final class InTemplate extends RuleSet
             || ($type === TokenTypes::END_TAG && $token->name === 'template')
         ) {
             // Process the token using the rules for the "in head" insertion mode.
-            $tree->processToken($token, InsertionModes::IN_HEAD);
+            InHead::process($token, $tree);
         } elseif ($type === TokenTypes::START_TAG && (
             $token->name === 'caption'
             || $token->name === 'colgroup'

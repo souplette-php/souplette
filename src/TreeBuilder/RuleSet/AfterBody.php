@@ -19,7 +19,7 @@ final class AfterBody extends RuleSet
         $type = $token->type;
         if ($type === TokenTypes::CHARACTER && ctype_space($token->data)) {
             // Process the token using the rules for the "in body" insertion mode.
-            $tree->processToken($token, InsertionModes::IN_BODY);
+            InBody::process($token, $tree);
         } elseif ($type === TokenTypes::COMMENT) {
             // Insert a comment as the last child of the first element in the stack of open elements (the html element).
             $tree->insertComment($token, new InsertionLocation($tree->openElements->bottom()));
@@ -29,7 +29,7 @@ final class AfterBody extends RuleSet
             return;
         } elseif ($type === TokenTypes::START_TAG && $token->name === 'html') {
             // Process the token using the rules for the "in body" insertion mode.
-            $tree->processToken($token, InsertionModes::IN_BODY);
+            InBody::process($token, $tree);
         } elseif ($type === TokenTypes::END_TAG && $token->name === 'html') {
             // If the parser was created as part of the HTML fragment parsing algorithm,
             // this is a parse error; ignore the token. (fragment case)

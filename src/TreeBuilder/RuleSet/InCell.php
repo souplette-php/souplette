@@ -87,7 +87,7 @@ final class InCell extends RuleSet
             $tree->processToken($token);
         } else {
             // Process the token using the rules for the "in body" insertion mode.
-            $tree->processToken($token, InsertionModes::IN_BODY);
+            InBody::process($token, $tree);
         }
     }
 

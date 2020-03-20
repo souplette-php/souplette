@@ -21,7 +21,7 @@ final class InHeadNoscript extends RuleSet
             return;
         } elseif ($type === TokenTypes::START_TAG && $token->name === 'html') {
             // Process the token using the rules for the "in body" insertion mode.
-            $tree->processToken($token, InsertionModes::IN_BODY);
+            InBody::process($token, $tree);
             return;
         } elseif ($type === TokenTypes::END_TAG && $token->name === 'noscript') {
             // Pop the current node (which will be a noscript element) from the stack of open elements;
@@ -43,7 +43,7 @@ final class InHeadNoscript extends RuleSet
             )
         ) {
             // Process the token using the rules for the "in head" insertion mode.
-            $tree->processToken($token, InsertionModes::IN_HEAD);
+            InHead::process($token, $tree);
             return;
         } elseif ($type === TokenTypes::END_TAG && $token->name === 'br') {
             // Act as described in the "anything else" entry below.

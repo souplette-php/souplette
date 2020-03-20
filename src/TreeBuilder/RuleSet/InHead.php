@@ -29,7 +29,7 @@ final class InHead extends RuleSet
         } elseif ($token instanceof Token\StartTag) {
             $name = $token->name;
             if ($name === 'html') {
-                $tree->processToken($token, InsertionModes::IN_BODY);
+                InBody::process($token, $tree);
                 return;
             } elseif (
                 $name === 'base'

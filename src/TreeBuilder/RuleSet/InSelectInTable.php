@@ -58,7 +58,7 @@ final class InSelectInTable extends RuleSet
             $tree->processToken($token);
         } else {
             // Process the token using the rules for the "in select" insertion mode.
-            $tree->processToken($token, InsertionModes::IN_SELECT);
+            InSelect::process($token, $tree);
         }
     }
 }

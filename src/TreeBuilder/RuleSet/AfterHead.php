@@ -54,7 +54,7 @@ final class AfterHead extends RuleSet
             // Push the node pointed to by the head element pointer onto the stack of open elements.
             $tree->openElements->push($tree->headElement);
             // Process the token using the rules for the "in head" insertion mode.
-            $tree->processToken($token, InsertionModes::IN_HEAD);
+            InHead::process($token, $tree);
             // Remove the node pointed to by the head element pointer from the stack of open elements.
             // (It might not be the current node at this point.)
             foreach ($tree->openElements as $i => $element) {
@@ -67,7 +67,7 @@ final class AfterHead extends RuleSet
             return;
         } elseif ($type === TokenTypes::END_TAG && $token->name === 'template') {
             // Process the token using the rules for the "in head" insertion mode.
-            $tree->processToken($token, InsertionModes::IN_HEAD);
+            InHead::process($token, $tree);
         } elseif (
             $type === TokenTypes::END_TAG && (
                 $token->name === 'body'

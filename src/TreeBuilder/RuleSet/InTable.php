@@ -19,7 +19,7 @@ final class InTable extends RuleSet
         $currentNode = $tree->openElements->top();
         if ($type === TokenTypes::EOF) {
             // Process the token using the rules for the "in body" insertion mode.
-            $tree->processToken($token, InsertionModes::IN_BODY);
+            InBody::process($token, $tree);
             return;
         } elseif ($type === TokenTypes::CHARACTER && (
             $currentNode->localName === 'table'
@@ -116,7 +116,7 @@ final class InTable extends RuleSet
                 || $tagName === 'template'
             ) {
                 // Process the token using the rules for the "in head" insertion mode.
-                $tree->processToken($token, InsertionModes::IN_HEAD);
+                InHead::process($token, $tree);
                 return;
             } elseif ($tagName === 'input') {
                 // If the token does not have an attribute with the name "type",
@@ -185,7 +185,7 @@ final class InTable extends RuleSet
                 return;
             } elseif ($tagName === 'template') {
                 // Process the token using the rules for the "in head" insertion mode.
-                $tree->processToken($token, InsertionModes::IN_HEAD);
+                InHead::process($token, $tree);
                 return;
             }
         }
@@ -194,7 +194,7 @@ final class InTable extends RuleSet
         // Enable foster parenting,
         $tree->fosterParenting = true;
         // process the token using the rules for the "in body" insertion mode,
-        $tree->processToken($token, InsertionModes::IN_BODY);
+        InBody::process($token, $tree);
         // and then disable foster parenting.
         $tree->fosterParenting = false;
     }
@@ -205,7 +205,7 @@ final class InTable extends RuleSet
         // Enable foster parenting,
         $tree->fosterParenting = true;
         // process the token using the rules for the "in body" insertion mode,
-        $tree->processToken($token, InsertionModes::IN_BODY);
+        InBody::process($token, $tree);
         // and then disable foster parenting.
         $tree->fosterParenting = false;
     }
