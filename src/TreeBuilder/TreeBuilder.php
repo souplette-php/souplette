@@ -446,7 +446,7 @@ final class TreeBuilder
         $location = $this->appropriatePlaceForInsertingANode();
         // 3. If the adjusted insertion location is in a Document node, then return.
         // TODO: check this
-        if ($location->parent->nodeType === XML_HTML_DOCUMENT_NODE) {
+        if ($location->parent->nodeType === XML_DOCUMENT_NODE) {
             return;
         }
         $target = $location->target;
