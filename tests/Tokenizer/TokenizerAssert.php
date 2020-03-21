@@ -28,9 +28,21 @@ final class TokenizerAssert
         if ($omitEOF) {
             $eof = array_pop($tokens);
         }
+        $expectedTokens = self::convertExpectedTokens($tokens);
         Assert::assertEquals($expectedTokens, $tokens);
         if ($expectedErrors) {
             Assert::assertEquals($expectedErrors, $tokenizer->getErrors());
         }
+    }
+
+    /**
+     * @param array<Token|string> $tokens
+     * @return Token[]
+     */
+    private static function convertExpectedTokens(array $tokens): array
+    {
+        return array_map(function($t) {
+            return $t instanceof Token ? $t : Token::character($t);
+        }, $tokens);
     }
 }

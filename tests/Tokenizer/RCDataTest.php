@@ -22,9 +22,9 @@ class RCDataTest extends TestCase
     {
         yield [
             'Foo & Bar', [
-                Token::character('Foo '),
-                Token::character('&'),
-                Token::character(' Bar'),
+                'Foo ',
+                '&',
+                ' Bar',
             ]
         ];
     }

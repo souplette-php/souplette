@@ -21,7 +21,7 @@ class CharacterTest extends TestCase
     {
         yield [
             'foo',
-            [Token::character('foo')],
+            ['foo'],
         ];
     }
 }

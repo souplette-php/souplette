@@ -21,25 +21,16 @@ class EntitiesTest extends TestCase
 
     public function entitiesInDataProvider()
     {
-        yield ['&amp;', [Token::character(EntityLookup::NAMED_ENTITIES['amp;'])]];
+        yield ['&amp;', ['&']];
         // See examples at https://html.spec.whatwg.org/multipage/parsing.html#named-character-reference-state
-        yield ["I'm &notit; I tell you", [
-            Token::character("I'm "),
-            Token::character(EntityLookup::NAMED_ENTITIES['not']),
-            Token::character("it; I tell you"),
-        ]];
-        yield ["I'm &notin; I tell you", [
-            Token::character("I'm "),
-            Token::character(EntityLookup::NAMED_ENTITIES['notin;']),
-            Token::character(" I tell you"),
-        ]];
-        yield ['&#38;', [Token::character('&')]];
-        yield ['&#x26;', [Token::character('&')]];
-        yield ['&acirc;&#128;&#156;', [
-            Token::character('â'),
-            Token::character("\u{0080}"),
-            Token::character("\u{009C}"),
-        ]];
+        $not = EntityLookup::NAMED_ENTITIES['not'];
+        yield ["I'm &notit; I tell you", ["I'm ", $not, "it; I tell you"]];
+        $notin = EntityLookup::NAMED_ENTITIES['notin;'];
+        yield ["I'm &notin; I tell you", ["I'm ", $notin, " I tell you"]];
+        yield ['&noti;', [$not, 'i;']];
+        yield ['&#38;', ['&']];
+        yield ['&#x26;', ['&']];
+        yield ['&acirc;&#128;&#156;', ['â', "\u{20AC}", "\u{0153}"]];
     }
 
     /**
@@ -55,17 +46,55 @@ class EntitiesTest extends TestCase
 
     public function invalidEntitiesInDataProvider()
     {
-        yield ['&test=', [
-            Token::character('&'),
-            Token::character('test'),
-            Token::character('='),
-        ]];
-        yield ['&foobar;', [
-            Token::character('&'),
-            Token::character('foobar'),
-            Token::character(';'),
-        ], [
+        yield ['&test=', ['&', 'test', '=']];
+        yield ['&foobar;', ['&', 'foobar', ';'], [
             [ParseErrors::UNKNOWN_NAMED_CHARACTER_REFERENCE, 7],
+        ]];
+        // Control character reference replacements
+        foreach (EntityLookup::NUMERIC_CTRL_REPLACEMENTS as $char => $replacement) {
+            $input = sprintf('&#%d;', $char);
+            $output = \IntlChar::chr($replacement);
+            $key = sprintf('Control char replacement: %s => \u{%X}', $input, $replacement);
+            yield $key => [$input, [Token::character($output)], [
+                [ParseErrors::CONTROL_CHARACTER_REFERENCE, strlen($input)],
+            ]];
+        }
+        // Outside unicode range
+        $cp = 0x10FFFF + 1;
+        $input = sprintf('&#%d;', $cp);
+        yield [$input, ["\u{FFFD}"], [
+            [ParseErrors::CHARACTER_REFERENCE_OUTSIDE_UNICODE_RANGE, strlen($input)],
+        ]];
+        $input = sprintf('&#x%X;', $cp);
+        yield [$input, ["\u{FFFD}"], [
+            [ParseErrors::CHARACTER_REFERENCE_OUTSIDE_UNICODE_RANGE, strlen($input)],
+        ]];
+    }
+
+    /**
+     * @dataProvider entitiesInAttributeProvider
+     * @param string $input
+     * @param array $expectedTokens
+     */
+    public function testEntitiesInAttribute(string $input, array $expectedTokens)
+    {
+        TokenizerAssert::tokensEquals($input, $expectedTokens);
+    }
+
+    public function entitiesInAttributeProvider()
+    {
+        yield ['<a b="I\'m &notit; I tell you">', [
+            Token::startTag('a', false, [
+                'b' => "I'm &notit; I tell you"
+            ])
+        ]];
+        yield ['<a b="I\'m &notin; I tell you">', [
+            Token::startTag('a', false, [
+                'b' => sprintf("I'm %s I tell you", EntityLookup::NAMED_ENTITIES['notin;'])
+            ])
+        ]];
+        yield ["<h a='&noti;'>", [
+            Token::startTag('h', false, ['a' => '&noti;'])
         ]];
     }
 }

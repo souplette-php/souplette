@@ -20,3 +20,5 @@ $test = $testFile[$testno];
 
 $tokenizer = new Tokenizer($test['input']);
 $tokens = iterator_to_array($tokenizer->tokenize());
+
+var_dump($tokens);

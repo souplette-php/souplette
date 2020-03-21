@@ -23,9 +23,9 @@ class TokenizerTest extends TestCase
             '<title>The New York Times - Breaking News, World News &amp; Multimedia</title>',
             [
                 Token::startTag('title'),
-                Token::character('The New York Times - Breaking News, World News '),
-                Token::character('&'),
-                Token::character(' Multimedia'),
+                'The New York Times - Breaking News, World News ',
+                '&',
+                ' Multimedia',
                 Token::endTag('title'),
             ]
         ];
