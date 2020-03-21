@@ -2,6 +2,8 @@
 
 namespace ju1ius\HtmlParser\TreeBuilder\RuleSet;
 
+use ju1ius\HtmlParser\Encoding\EncodingLookup;
+use ju1ius\HtmlParser\Encoding\EncodingSniffer;
 use ju1ius\HtmlParser\Namespaces;
 use ju1ius\HtmlParser\Tokenizer\Token;
 use ju1ius\HtmlParser\Tokenizer\TokenizerStates;
@@ -45,20 +47,32 @@ final class InHead extends RuleSet
                 $tree->insertElement($token);
                 $tree->openElements->pop();
                 $token->selfClosingAcknowledged = true;
-                if (isset($token->attributes['charset'])) {
-                    // TODO: If the element has a charset attribute,
-                    // and getting an encoding from its value results in an encoding, and the confidence is currently tentative,
-                    // then change the encoding to the resulting encoding.
-                } elseif (
-                    isset($token->attributes['http-equiv'], $token->attributes['content'])
-                    && strcasecmp($token->attributes['http-equiv'], 'content-type') === 0
-                ) {
-                    // TODO: Otherwise, if the element has an http-equiv attribute
-                    // whose value is an ASCII case-insensitive match for the string "Content-Type",
-                    // and the element has a content attribute,
-                    // and applying the algorithm for extracting a character encoding from a meta element
-                    // to that attribute's value returns an encoding, and the confidence is currently tentative,
-                    // then change the encoding to the extracted encoding.
+                if ($tree->encoding->isTentative()) {
+                    if (isset($token->attributes['charset'])) {
+                        // If the element has a charset attribute,
+                        // and getting an encoding from its value results in an encoding,
+                        // and the confidence is currently tentative,
+                        // then change the encoding to the resulting encoding.
+                        $label = strtolower(trim($token->attributes['charset']));
+                        if (isset(EncodingLookup::LABELS[$label])) {
+                            $tree->changeTheEncoding(EncodingLookup::LABELS[$label]);
+                        }
+                    } elseif (
+                        isset($token->attributes['http-equiv'], $token->attributes['content'])
+                        && strcasecmp($token->attributes['http-equiv'], 'content-type') === 0
+                    ) {
+                        // Otherwise, if the element has an http-equiv attribute
+                        // whose value is an ASCII case-insensitive match for the string "Content-Type",
+                        // and the element has a content attribute,
+                        // and applying the algorithm for extracting a character encoding from a meta element
+                        // to that attribute's value returns an encoding,
+                        // and the confidence is currently tentative,
+                        // then change the encoding to the extracted encoding.
+                        $label = EncodingSniffer::extractFromMetaContentAttribute($token->attributes['content']);
+                        if (isset(EncodingLookup::LABELS[$label])) {
+                            $tree->changeTheEncoding(EncodingLookup::LABELS[$label]);
+                        }
+                    }
                 }
                 return;
             } elseif ($name === 'title') {

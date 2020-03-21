@@ -2,6 +2,9 @@
 
 namespace ju1ius\HtmlParser\TreeBuilder;
 
+use ju1ius\HtmlParser\Encoding\Encoding;
+use ju1ius\HtmlParser\Encoding\EncodingLookup;
+use ju1ius\HtmlParser\Encoding\Exception\EncodingChanged;
 use ju1ius\HtmlParser\Namespaces;
 use ju1ius\HtmlParser\Tokenizer\Token;
 use ju1ius\HtmlParser\Tokenizer\Tokenizer;
@@ -42,6 +45,10 @@ final class TreeBuilder
      * @var Tokenizer
      */
     public $tokenizer;
+    /**
+     * @var Encoding
+     */
+    public $encoding;
     /**
      * @var \DOMImplementation
      */
@@ -107,11 +114,13 @@ final class TreeBuilder
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing
      * @param Tokenizer $tokenizer
+     * @param Encoding $encoding
      * @return \DOMDocument
      */
-    public function buildDocument(Tokenizer $tokenizer): \DOMDocument
+    public function buildDocument(Tokenizer $tokenizer, Encoding $encoding): \DOMDocument
     {
         $this->tokenizer = $tokenizer;
+        $this->encoding = $encoding;
         $this->reset();
         $this->run();
         return $this->document;
@@ -120,12 +129,14 @@ final class TreeBuilder
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-html-fragments
      * @param Tokenizer $tokenizer
+     * @param Encoding $encoding
      * @param \DOMElement $contextElement
      * @return \DOMNode[]
      */
-    public function buildFragment(Tokenizer $tokenizer, \DOMElement $contextElement): array
+    public function buildFragment(Tokenizer $tokenizer, Encoding $encoding, \DOMElement $contextElement): array
     {
         $this->tokenizer = $tokenizer;
+        $this->encoding = $encoding;
         $this->reset();
         $this->isBuildingFragment = true;
         $this->contextElement = $contextElement;
@@ -639,5 +650,53 @@ final class TreeBuilder
         if ($element !== $this->activeFormattingElements->top()) {
             goto ADVANCE;
         }
+    }
+
+    public function changeTheEncoding(string $label)
+    {
+        $currentEncoding = $this->encoding->getName();
+        // 1. If the encoding that is already being used to interpret the input stream is a UTF-16 encoding,
+        // then set the confidence to certain and return.
+        // The new encoding is ignored; if it was anything but the same encoding, then it would be clearly incorrect.
+        if ($currentEncoding === EncodingLookup::UTF_16LE || $currentEncoding === EncodingLookup::UTF_16BE) {
+            $this->encoding->makeCertain();
+            return;
+        }
+        // 2. If the new encoding is a UTF-16 encoding, then change it to UTF-8.
+        if ($label === EncodingLookup::UTF_16LE || $label === EncodingLookup::UTF_16BE) {
+            $label = EncodingLookup::UTF_8;
+        }
+        // 3. If the new encoding is x-user-defined, then change it to windows-1252.
+        if ($label === EncodingLookup::X_USER_DEFINED) {
+            $label = EncodingLookup::WINDOWS_1252;
+        }
+        // 4. If the new encoding is identical or equivalent to the encoding
+        // that is already being used to interpret the input stream,
+        // then set the confidence to certain and return.
+        // This happens when the encoding information found in the file
+        // matches what the encoding sniffing algorithm determined to be the encoding,
+        // and in the second pass through the parser if the first pass found that the encoding sniffing algorithm
+        // described in the earlier section failed to find the right encoding.
+        if ($label === $currentEncoding) {
+            $this->encoding->makeCertain();
+            return;
+        }
+        // 5. If all the bytes up to the last byte converted by the current decoder have the same Unicode interpretations
+        // in both the current encoding and the new encoding,
+        // and if the user agent supports changing the converter on the fly,
+        // then the user agent may change to the new converter for the encoding on the fly.
+        // Set the document's character encoding and the encoding used to convert the input stream to the new encoding,
+        // set the confidence to certain, and return.
+
+        // 6. Otherwise, navigate to the document again, with replacement enabled, and using the same source browsing context,
+        // but this time skip the encoding sniffing algorithm and instead just set the encoding
+        // to the new encoding and the confidence to certain.
+        // Whenever possible, this should be done without actually contacting the network layer
+        // (the bytes should be re-parsed from memory), even if, e.g., the document is marked as not being cacheable.
+        // If this is not possible and contacting the network layer would involve repeating a request
+        // that uses a method other than `GET`, then instead set the confidence to certain and ignore the new encoding.
+        // The resource will be misinterpreted.
+        // User agents may notify the user of the situation, to aid in application development.
+        throw new EncodingChanged(Encoding::certain($label));
     }
 }
