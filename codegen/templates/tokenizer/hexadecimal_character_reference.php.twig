@@ -5,7 +5,7 @@
 
 {{ h.chars_while_hex() }}
 $this->characterReferenceCode = hexdec($chars);
-$cc = $this->input[$this->position];
+{{ h.update_cc() }}
 if ($cc === ';') {
     // Switch to the numeric character reference end state.
     {{ h.advance_to('NUMERIC_CHARACTER_REFERENCE_END') }}
