@@ -147,7 +147,7 @@ final class InForeignContent extends RuleSet
                     // -> Otherwise
                     //    Pop the current node off the stack of open elements and acknowledge the token's self-closing flag.
                     $tree->openElements->pop();
-                    $token->selfClosingAcknowledged = true;
+                    $tree->acknowledgeSelfClosingFlag($token);
                 }
             }
         } elseif ($type === TokenTypes::END_TAG && $token->name === 'script' && $currentNode->namespaceURI === Namespaces::SVG) {

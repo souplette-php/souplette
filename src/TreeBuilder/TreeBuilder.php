@@ -519,9 +519,12 @@ final class TreeBuilder
         return $element;
     }
 
+    /**
+     * @see https://html.spec.whatwg.org/multipage/parsing.html#acknowledge-self-closing-flag
+     * @param Token\StartTag $token
+     */
     public function acknowledgeSelfClosingFlag(Token\StartTag $token)
     {
-        // @see https://html.spec.whatwg.org/multipage/parsing.html#acknowledge-self-closing-flag
         if ($token->selfClosing && !isset(Elements::VOID_ELEMENTS[$token->name])) {
             // When a start tag token is emitted with its self-closing flag set,
             // if the flag is not acknowledged when it is processed by the tree construction stage,

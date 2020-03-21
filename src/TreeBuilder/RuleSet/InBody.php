@@ -627,7 +627,7 @@ final class InBody extends RuleSet
                     // pop the current node off the stack of open elements
                     $tree->openElements->pop();
                     // and acknowledge the token's self-closing flag.
-                    $token->selfClosingAcknowledged = true;
+                    $tree->acknowledgeSelfClosingFlag($token);
                 }
                 return;
             } elseif ($tagName === 'svg') {
@@ -644,7 +644,7 @@ final class InBody extends RuleSet
                     // pop the current node off the stack of open elements
                     $tree->openElements->pop();
                     // and acknowledge the token's self-closing flag.
-                    $token->selfClosingAcknowledged = true;
+                    $tree->acknowledgeSelfClosingFlag($token);
                 }
                 return;
             } elseif (
