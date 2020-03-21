@@ -1,4 +1,4 @@
-#/usr/bin/env php
+#!/usr/bin/env php
 <?php
 
 use ju1ius\HtmlParser\Tests\Html5Lib\JsonFile;
