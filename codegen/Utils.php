@@ -21,4 +21,22 @@ final class Utils
         }
         return sprintf('\x%02x', ord($byte));
     }
+
+    public static function downloadFile(string $url, string $destination)
+    {
+        $stream = fopen($url, 'r');
+        if ($stream === false) {
+            throw new \RuntimeException(sprintf(
+                'Could not open url: %s',
+                $url
+            ));
+        }
+        $size = file_put_contents($destination, $stream);
+        if ($size === false) {
+            throw new \RuntimeException(sprintf(
+                'Could not write to destination: %s',
+                $destination
+            ));
+        }
+    }
 }

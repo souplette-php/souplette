@@ -2,34 +2,21 @@
 
 namespace ju1ius\HtmlParser\Codegen;
 
-use Twig\Environment;
-use Twig\Loader\FilesystemLoader;
-
-final class EntityLookupGenerator
+final class EntityLookupGenerator extends AbstractCodeGenerator
 {
     const DATA_URL = 'https://html.spec.whatwg.org/entities.json';
-    const CACHE_DIR = __DIR__ . '/../tmp';
 
-    public function generate()
+    protected function getTemplateFile(): string
     {
-        $twig = $this->createEnvironment();
-        $context = $this->createContext();
-        $code = $twig->render('entity_lookup.php.twig', $context);
-        file_put_contents(__DIR__.'/../src/Tokenizer/EntityLookup.php', $code);
+        return 'entity_lookup.php.twig';
     }
 
-    private function createEnvironment(): Environment
+    protected function getOutputFile(): string
     {
-        $loader = new FilesystemLoader(__DIR__ . '/templates');
-        $twig = new Environment($loader, [
-            'strict_variables' => true,
-            'autoescape' => false,
-        ]);
-
-        return $twig;
+        return __DIR__.'/../src/Tokenizer/EntityLookup.php';
     }
 
-    private function createContext(): array
+    protected function createContext(): array
     {
         return [
             'entity_lookup' => $this->generateLookupTable(),
@@ -50,13 +37,10 @@ final class EntityLookupGenerator
 
     private function fetchSpecData()
     {
-        $cacheDir = realpath(self::CACHE_DIR);
-        if (!$cacheDir && !mkdir($cacheDir, 0755, true)) {
-            printf("Could not create directory: %s\n", self::CACHE_DIR);
-        }
+        $cacheDir = $this->getCacheDirectory();
         $dataFile = sprintf('%s/entities.json', $cacheDir);
         if (!file_exists($dataFile)) {
-            file_put_contents($dataFile, fopen(self::DATA_URL, 'r'));
+            Utils::downloadFile(self::DATA_URL, $dataFile);
         }
 
         return json_decode(file_get_contents($dataFile));

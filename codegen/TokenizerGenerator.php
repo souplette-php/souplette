@@ -5,31 +5,28 @@ namespace ju1ius\HtmlParser\Codegen;
 use ju1ius\HtmlParser\Codegen\Twig\TokenizerExtension;
 use ju1ius\HtmlParser\Tokenizer\TokenizerStates;
 use Twig\Environment;
-use Twig\Loader\FilesystemLoader;
 
-final class TokenizerGenerator
+final class TokenizerGenerator extends AbstractCodeGenerator
 {
-    public function generate()
+    protected function getTemplateFile(): string
     {
-        $twig = $this->createEnvironment();
-        $context = $this->createContext();
-        $code = $twig->render('tokenizer.php.twig', $context);
-        file_put_contents(__DIR__.'/../src/Tokenizer/Tokenizer.php', $code);
+        return 'tokenizer.php.twig';
     }
 
-    private function createEnvironment(): Environment
+    protected function getOutputFile(): string
     {
-        $loader = new FilesystemLoader(__DIR__ . '/templates');
-        $twig = new Environment($loader, [
-            'strict_variables' => true,
-            'autoescape' => false,
-        ]);
+        return __DIR__.'/../src/Tokenizer/Tokenizer.php';
+    }
+
+    protected function createEnvironment(): Environment
+    {
+        $twig = parent::createEnvironment();
         $twig->addExtension(new TokenizerExtension());
 
         return $twig;
     }
 
-    private function createContext(): array
+    protected function createContext(): array
     {
         $context = [
             'state_names' => [],
