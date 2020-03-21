@@ -302,7 +302,7 @@ final class TreeBuilder
                 break;
             }
             // 14. If node is a frameset element, then switch the insertion mode to "in frameset" and return. (fragment case)
-            if ($this->isBuildingFragment && $nodeName === 'frameset') {
+            if (/*$this->isBuildingFragment && */$nodeName === 'frameset') {
                 $this->insertionMode = InsertionModes::IN_FRAMESET;
                 break;
             }
@@ -313,7 +313,7 @@ final class TreeBuilder
                 break;
             }
             // 16. If last is true, then switch the insertion mode to "in body" and return. (fragment case)
-            if ($last && $this->isBuildingFragment) {
+            if ($last/* && $this->isBuildingFragment*/) {
                 $this->insertionMode = InsertionModes::IN_BODY;
             }
             // 17. Let node now be the node before node in the stack of open elements.
@@ -590,28 +590,6 @@ final class TreeBuilder
         if ($this->activeFormattingElements->isEmpty()) {
             return;
         }
-        //$i = 0;
-        //foreach ($this->activeFormattingElements as $entry) {
-        //    $entry = $this->activeFormattingElements[$i];
-        //    if ($entry === null || $this->openElements->contains($entry)) {
-        //        if ($i === 0) return;
-        //        break;
-        //    }
-        //    $i++;
-        //}
-        //if ($i >= $this->activeFormattingElements->count()) {
-        //    return;
-        //}
-        //for (; $i >= 0; $i--) {
-        //    $entry = $this->activeFormattingElements[$i];
-        //    $token = new Token\StartTag($entry->localName);
-        //    foreach ($entry->attributes as $attr) {
-        //        $token->attributes[$attr->nodeName] = $attr->nodeValue;
-        //    }
-        //    $element = $this->insertElement($token, $entry->namespaceURI);
-        //    $this->activeFormattingElements[$i] = $element;
-        //}
-        //return;
         // 3. Let entry be the last (most recently added) element in the list of active formatting elements.
         $i = 0;
         $entry = $this->activeFormattingElements->top();

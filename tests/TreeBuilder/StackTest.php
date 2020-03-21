@@ -77,8 +77,15 @@ class StackTest extends TestCase
     public function testPopUntil()
     {
         $stack = new Stack(['a', 'b', 'c', 'd']);
-        $stack->popUntil('c');
+        $result = $stack->popUntil('c');
+        Assert::assertSame('c', $result);
         Assert::assertSame([1 => 'b', 0 => 'a'], iterator_to_array($stack));
+    }
+
+    public function testPopUntilWithEmptyStack()
+    {
+        $stack = new Stack();
+        Assert::assertNull($stack->popUntil('foo'));
     }
 
     /**

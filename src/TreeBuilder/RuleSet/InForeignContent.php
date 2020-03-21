@@ -91,10 +91,10 @@ final class InForeignContent extends RuleSet
             ))
         )) {
             // TODO: Parse error.
-            // If the parser was created as part of the HTML fragment parsing algorithm, then act as described in the "any other start tag" entry below. (fragment case)
+            // If the parser was created as part of the HTML fragment parsing algorithm,
+            // then act as described in the "any other start tag" entry below. (fragment case)
             if ($tree->isBuildingFragment) {
-                // TODO
-                return;
+                goto ANY_OTHER_START_TAG;
             }
             // Otherwise:
             // Pop an element from the stack of open elements, and then keep popping more elements from the stack of open elements
@@ -112,6 +112,7 @@ final class InForeignContent extends RuleSet
             // Then, reprocess the token.
             $tree->processToken($token);
         } elseif ($type === TokenTypes::START_TAG) {
+            ANY_OTHER_START_TAG:
             $adjustedCurrentNode = $tree->getAdjustedCurrentNode();
             // If the adjusted current node is an element in the MathML namespace, adjust MathML attributes for the token.
             // (This fixes the case of MathML attributes that are not all lowercase.)
@@ -152,7 +153,7 @@ final class InForeignContent extends RuleSet
         } elseif ($type === TokenTypes::END_TAG && $token->name === 'script' && $currentNode->namespaceURI === Namespaces::SVG) {
             // Pop the current node off the stack of open elements.
             $tree->openElements->pop();
-            // Note: The rest of the spec is skipped since we don't execute scripts
+            // NOTE: The rest of the spec is skipped since we don't execute scripts
         } elseif ($type === TokenTypes::END_TAG) {
             // Initialize node to be the current node (the bottommost node of the stack).
             $node = $currentNode;
