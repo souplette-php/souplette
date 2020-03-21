@@ -38,7 +38,7 @@ class TokenizationTest extends TestCase
             $args = array_slice($item, 1);
             switch ($type) {
                 case 'DOCTYPE':
-                    $tokens[] = Token::doctype(...$args);
+                    $tokens[] = Token::doctype($args[0] ?? '', $args[1] ?? null, $args[2] ?? null, $args[3] ?? false);
                     break;
                 case 'Comment':
                     $tokens[] = Token::comment($args[0] ?? '');
