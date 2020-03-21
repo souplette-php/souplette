@@ -2706,7 +2706,7 @@ final class Tokenizer extends AbstractTokenizer
                         (
                             ($refCode >= 0x00 && $refCode <= 0x1F) || ($refCode >= 0x7F && $refCode <= 0x9F)
                         )
-                        && ($refCode < 128 && !ctype_space($refCode))
+                        && !($refCode < 128 && ctype_space($refCode))
                     )
                 ) {
                     // This is a control-character-reference parse error
