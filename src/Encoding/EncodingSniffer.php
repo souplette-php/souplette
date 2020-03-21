@@ -153,5 +153,7 @@ REGEXP;
                 // that comes after the 0x3C byte that was found.
             }
         }
+
+        return null;
     }
 }
