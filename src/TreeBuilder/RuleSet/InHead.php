@@ -23,7 +23,7 @@ final class InHead extends RuleSet
             $tree->insertCharacter($token);
             return;
         } elseif ($token instanceof Token\Comment) {
-            $tree->insertComment($token, new InsertionLocation($tree->document));
+            $tree->insertComment($token);
             return;
         } elseif ($token instanceof Token\Doctype) {
             // TODO: Parse error. Ignore the token.
