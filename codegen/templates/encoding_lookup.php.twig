@@ -1,0 +1,30 @@
+<?php declare(strict_types=1);
+/**
+ * This file was automatically generated.
+ * All modifications will be lost.
+ */
+namespace ju1ius\HtmlParser\Encoding;
+
+/**
+ * @see https://encoding.spec.whatwg.org/encodings.json
+ */
+final class EncodingLookup
+{
+    {% for section in encodings %}
+        // {{ section.heading }}
+        {% for encoding in section.encodings %}
+            const {{ encoding.name|upper|replace({'-': '_'}) }} = '{{ encoding.name }}';
+        {% endfor %}
+    {% endfor %}
+
+    const LABELS = [
+        {% for section in encodings %}
+            // {{ section.heading }}
+            {% for encoding in section.encodings %}
+                {% for label in encoding.labels %}
+                    '{{ label }}' => self::{{ encoding.name|upper|replace({'-': '_'}) }},
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+    ];
+}

@@ -1,0 +1,289 @@
+<?php declare(strict_types=1);
+/**
+ * This file was automatically generated.
+ * All modifications will be lost.
+ */
+namespace ju1ius\HtmlParser\Encoding;
+
+/**
+ * @see https://encoding.spec.whatwg.org/encodings.json
+ */
+final class EncodingLookup
+{
+    // The Encoding
+    const UTF_8 = 'UTF-8';
+    // Legacy single-byte encodings
+    const IBM866 = 'IBM866';
+    const ISO_8859_2 = 'ISO-8859-2';
+    const ISO_8859_3 = 'ISO-8859-3';
+    const ISO_8859_4 = 'ISO-8859-4';
+    const ISO_8859_5 = 'ISO-8859-5';
+    const ISO_8859_6 = 'ISO-8859-6';
+    const ISO_8859_7 = 'ISO-8859-7';
+    const ISO_8859_8 = 'ISO-8859-8';
+    const ISO_8859_8_I = 'ISO-8859-8-I';
+    const ISO_8859_10 = 'ISO-8859-10';
+    const ISO_8859_13 = 'ISO-8859-13';
+    const ISO_8859_14 = 'ISO-8859-14';
+    const ISO_8859_15 = 'ISO-8859-15';
+    const ISO_8859_16 = 'ISO-8859-16';
+    const KOI8_R = 'KOI8-R';
+    const KOI8_U = 'KOI8-U';
+    const MACINTOSH = 'macintosh';
+    const WINDOWS_874 = 'windows-874';
+    const WINDOWS_1250 = 'windows-1250';
+    const WINDOWS_1251 = 'windows-1251';
+    const WINDOWS_1252 = 'windows-1252';
+    const WINDOWS_1253 = 'windows-1253';
+    const WINDOWS_1254 = 'windows-1254';
+    const WINDOWS_1255 = 'windows-1255';
+    const WINDOWS_1256 = 'windows-1256';
+    const WINDOWS_1257 = 'windows-1257';
+    const WINDOWS_1258 = 'windows-1258';
+    const X_MAC_CYRILLIC = 'x-mac-cyrillic';
+    // Legacy multi-byte Chinese (simplified) encodings
+    const GBK = 'GBK';
+    const GB18030 = 'gb18030';
+    // Legacy multi-byte Chinese (traditional) encodings
+    const BIG5 = 'Big5';
+    // Legacy multi-byte Japanese encodings
+    const EUC_JP = 'EUC-JP';
+    const ISO_2022_JP = 'ISO-2022-JP';
+    const SHIFT_JIS = 'Shift_JIS';
+    // Legacy multi-byte Korean encodings
+    const EUC_KR = 'EUC-KR';
+    // Legacy miscellaneous encodings
+    const REPLACEMENT = 'replacement';
+    const UTF_16BE = 'UTF-16BE';
+    const UTF_16LE = 'UTF-16LE';
+    const X_USER_DEFINED = 'x-user-defined';
+            
+    const LABELS = [
+        // The Encoding
+        'unicode-1-1-utf-8' => self::UTF_8,
+        'utf-8' => self::UTF_8,
+        'utf8' => self::UTF_8,
+        // Legacy single-byte encodings
+        '866' => self::IBM866,
+        'cp866' => self::IBM866,
+        'csibm866' => self::IBM866,
+        'ibm866' => self::IBM866,
+        'csisolatin2' => self::ISO_8859_2,
+        'iso-8859-2' => self::ISO_8859_2,
+        'iso-ir-101' => self::ISO_8859_2,
+        'iso8859-2' => self::ISO_8859_2,
+        'iso88592' => self::ISO_8859_2,
+        'iso_8859-2' => self::ISO_8859_2,
+        'iso_8859-2:1987' => self::ISO_8859_2,
+        'l2' => self::ISO_8859_2,
+        'latin2' => self::ISO_8859_2,
+        'csisolatin3' => self::ISO_8859_3,
+        'iso-8859-3' => self::ISO_8859_3,
+        'iso-ir-109' => self::ISO_8859_3,
+        'iso8859-3' => self::ISO_8859_3,
+        'iso88593' => self::ISO_8859_3,
+        'iso_8859-3' => self::ISO_8859_3,
+        'iso_8859-3:1988' => self::ISO_8859_3,
+        'l3' => self::ISO_8859_3,
+        'latin3' => self::ISO_8859_3,
+        'csisolatin4' => self::ISO_8859_4,
+        'iso-8859-4' => self::ISO_8859_4,
+        'iso-ir-110' => self::ISO_8859_4,
+        'iso8859-4' => self::ISO_8859_4,
+        'iso88594' => self::ISO_8859_4,
+        'iso_8859-4' => self::ISO_8859_4,
+        'iso_8859-4:1988' => self::ISO_8859_4,
+        'l4' => self::ISO_8859_4,
+        'latin4' => self::ISO_8859_4,
+        'csisolatincyrillic' => self::ISO_8859_5,
+        'cyrillic' => self::ISO_8859_5,
+        'iso-8859-5' => self::ISO_8859_5,
+        'iso-ir-144' => self::ISO_8859_5,
+        'iso8859-5' => self::ISO_8859_5,
+        'iso88595' => self::ISO_8859_5,
+        'iso_8859-5' => self::ISO_8859_5,
+        'iso_8859-5:1988' => self::ISO_8859_5,
+        'arabic' => self::ISO_8859_6,
+        'asmo-708' => self::ISO_8859_6,
+        'csiso88596e' => self::ISO_8859_6,
+        'csiso88596i' => self::ISO_8859_6,
+        'csisolatinarabic' => self::ISO_8859_6,
+        'ecma-114' => self::ISO_8859_6,
+        'iso-8859-6' => self::ISO_8859_6,
+        'iso-8859-6-e' => self::ISO_8859_6,
+        'iso-8859-6-i' => self::ISO_8859_6,
+        'iso-ir-127' => self::ISO_8859_6,
+        'iso8859-6' => self::ISO_8859_6,
+        'iso88596' => self::ISO_8859_6,
+        'iso_8859-6' => self::ISO_8859_6,
+        'iso_8859-6:1987' => self::ISO_8859_6,
+        'csisolatingreek' => self::ISO_8859_7,
+        'ecma-118' => self::ISO_8859_7,
+        'elot_928' => self::ISO_8859_7,
+        'greek' => self::ISO_8859_7,
+        'greek8' => self::ISO_8859_7,
+        'iso-8859-7' => self::ISO_8859_7,
+        'iso-ir-126' => self::ISO_8859_7,
+        'iso8859-7' => self::ISO_8859_7,
+        'iso88597' => self::ISO_8859_7,
+        'iso_8859-7' => self::ISO_8859_7,
+        'iso_8859-7:1987' => self::ISO_8859_7,
+        'sun_eu_greek' => self::ISO_8859_7,
+        'csiso88598e' => self::ISO_8859_8,
+        'csisolatinhebrew' => self::ISO_8859_8,
+        'hebrew' => self::ISO_8859_8,
+        'iso-8859-8' => self::ISO_8859_8,
+        'iso-8859-8-e' => self::ISO_8859_8,
+        'iso-ir-138' => self::ISO_8859_8,
+        'iso8859-8' => self::ISO_8859_8,
+        'iso88598' => self::ISO_8859_8,
+        'iso_8859-8' => self::ISO_8859_8,
+        'iso_8859-8:1988' => self::ISO_8859_8,
+        'visual' => self::ISO_8859_8,
+        'csiso88598i' => self::ISO_8859_8_I,
+        'iso-8859-8-i' => self::ISO_8859_8_I,
+        'logical' => self::ISO_8859_8_I,
+        'csisolatin6' => self::ISO_8859_10,
+        'iso-8859-10' => self::ISO_8859_10,
+        'iso-ir-157' => self::ISO_8859_10,
+        'iso8859-10' => self::ISO_8859_10,
+        'iso885910' => self::ISO_8859_10,
+        'l6' => self::ISO_8859_10,
+        'latin6' => self::ISO_8859_10,
+        'iso-8859-13' => self::ISO_8859_13,
+        'iso8859-13' => self::ISO_8859_13,
+        'iso885913' => self::ISO_8859_13,
+        'iso-8859-14' => self::ISO_8859_14,
+        'iso8859-14' => self::ISO_8859_14,
+        'iso885914' => self::ISO_8859_14,
+        'csisolatin9' => self::ISO_8859_15,
+        'iso-8859-15' => self::ISO_8859_15,
+        'iso8859-15' => self::ISO_8859_15,
+        'iso885915' => self::ISO_8859_15,
+        'iso_8859-15' => self::ISO_8859_15,
+        'l9' => self::ISO_8859_15,
+        'iso-8859-16' => self::ISO_8859_16,
+        'cskoi8r' => self::KOI8_R,
+        'koi' => self::KOI8_R,
+        'koi8' => self::KOI8_R,
+        'koi8-r' => self::KOI8_R,
+        'koi8_r' => self::KOI8_R,
+        'koi8-ru' => self::KOI8_U,
+        'koi8-u' => self::KOI8_U,
+        'csmacintosh' => self::MACINTOSH,
+        'mac' => self::MACINTOSH,
+        'macintosh' => self::MACINTOSH,
+        'x-mac-roman' => self::MACINTOSH,
+        'dos-874' => self::WINDOWS_874,
+        'iso-8859-11' => self::WINDOWS_874,
+        'iso8859-11' => self::WINDOWS_874,
+        'iso885911' => self::WINDOWS_874,
+        'tis-620' => self::WINDOWS_874,
+        'windows-874' => self::WINDOWS_874,
+        'cp1250' => self::WINDOWS_1250,
+        'windows-1250' => self::WINDOWS_1250,
+        'x-cp1250' => self::WINDOWS_1250,
+        'cp1251' => self::WINDOWS_1251,
+        'windows-1251' => self::WINDOWS_1251,
+        'x-cp1251' => self::WINDOWS_1251,
+        'ansi_x3.4-1968' => self::WINDOWS_1252,
+        'ascii' => self::WINDOWS_1252,
+        'cp1252' => self::WINDOWS_1252,
+        'cp819' => self::WINDOWS_1252,
+        'csisolatin1' => self::WINDOWS_1252,
+        'ibm819' => self::WINDOWS_1252,
+        'iso-8859-1' => self::WINDOWS_1252,
+        'iso-ir-100' => self::WINDOWS_1252,
+        'iso8859-1' => self::WINDOWS_1252,
+        'iso88591' => self::WINDOWS_1252,
+        'iso_8859-1' => self::WINDOWS_1252,
+        'iso_8859-1:1987' => self::WINDOWS_1252,
+        'l1' => self::WINDOWS_1252,
+        'latin1' => self::WINDOWS_1252,
+        'us-ascii' => self::WINDOWS_1252,
+        'windows-1252' => self::WINDOWS_1252,
+        'x-cp1252' => self::WINDOWS_1252,
+        'cp1253' => self::WINDOWS_1253,
+        'windows-1253' => self::WINDOWS_1253,
+        'x-cp1253' => self::WINDOWS_1253,
+        'cp1254' => self::WINDOWS_1254,
+        'csisolatin5' => self::WINDOWS_1254,
+        'iso-8859-9' => self::WINDOWS_1254,
+        'iso-ir-148' => self::WINDOWS_1254,
+        'iso8859-9' => self::WINDOWS_1254,
+        'iso88599' => self::WINDOWS_1254,
+        'iso_8859-9' => self::WINDOWS_1254,
+        'iso_8859-9:1989' => self::WINDOWS_1254,
+        'l5' => self::WINDOWS_1254,
+        'latin5' => self::WINDOWS_1254,
+        'windows-1254' => self::WINDOWS_1254,
+        'x-cp1254' => self::WINDOWS_1254,
+        'cp1255' => self::WINDOWS_1255,
+        'windows-1255' => self::WINDOWS_1255,
+        'x-cp1255' => self::WINDOWS_1255,
+        'cp1256' => self::WINDOWS_1256,
+        'windows-1256' => self::WINDOWS_1256,
+        'x-cp1256' => self::WINDOWS_1256,
+        'cp1257' => self::WINDOWS_1257,
+        'windows-1257' => self::WINDOWS_1257,
+        'x-cp1257' => self::WINDOWS_1257,
+        'cp1258' => self::WINDOWS_1258,
+        'windows-1258' => self::WINDOWS_1258,
+        'x-cp1258' => self::WINDOWS_1258,
+        'x-mac-cyrillic' => self::X_MAC_CYRILLIC,
+        'x-mac-ukrainian' => self::X_MAC_CYRILLIC,
+        // Legacy multi-byte Chinese (simplified) encodings
+        'chinese' => self::GBK,
+        'csgb2312' => self::GBK,
+        'csiso58gb231280' => self::GBK,
+        'gb2312' => self::GBK,
+        'gb_2312' => self::GBK,
+        'gb_2312-80' => self::GBK,
+        'gbk' => self::GBK,
+        'iso-ir-58' => self::GBK,
+        'x-gbk' => self::GBK,
+        'gb18030' => self::GB18030,
+        // Legacy multi-byte Chinese (traditional) encodings
+        'big5' => self::BIG5,
+        'big5-hkscs' => self::BIG5,
+        'cn-big5' => self::BIG5,
+        'csbig5' => self::BIG5,
+        'x-x-big5' => self::BIG5,
+        // Legacy multi-byte Japanese encodings
+        'cseucpkdfmtjapanese' => self::EUC_JP,
+        'euc-jp' => self::EUC_JP,
+        'x-euc-jp' => self::EUC_JP,
+        'csiso2022jp' => self::ISO_2022_JP,
+        'iso-2022-jp' => self::ISO_2022_JP,
+        'csshiftjis' => self::SHIFT_JIS,
+        'ms932' => self::SHIFT_JIS,
+        'ms_kanji' => self::SHIFT_JIS,
+        'shift-jis' => self::SHIFT_JIS,
+        'shift_jis' => self::SHIFT_JIS,
+        'sjis' => self::SHIFT_JIS,
+        'windows-31j' => self::SHIFT_JIS,
+        'x-sjis' => self::SHIFT_JIS,
+        // Legacy multi-byte Korean encodings
+        'cseuckr' => self::EUC_KR,
+        'csksc56011987' => self::EUC_KR,
+        'euc-kr' => self::EUC_KR,
+        'iso-ir-149' => self::EUC_KR,
+        'korean' => self::EUC_KR,
+        'ks_c_5601-1987' => self::EUC_KR,
+        'ks_c_5601-1989' => self::EUC_KR,
+        'ksc5601' => self::EUC_KR,
+        'ksc_5601' => self::EUC_KR,
+        'windows-949' => self::EUC_KR,
+        // Legacy miscellaneous encodings
+        'csiso2022kr' => self::REPLACEMENT,
+        'hz-gb-2312' => self::REPLACEMENT,
+        'iso-2022-cn' => self::REPLACEMENT,
+        'iso-2022-cn-ext' => self::REPLACEMENT,
+        'iso-2022-kr' => self::REPLACEMENT,
+        'replacement' => self::REPLACEMENT,
+        'utf-16be' => self::UTF_16BE,
+        'utf-16' => self::UTF_16LE,
+        'utf-16le' => self::UTF_16LE,
+        'x-user-defined' => self::X_USER_DEFINED,
+    ];
+}
