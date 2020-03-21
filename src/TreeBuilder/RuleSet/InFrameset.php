@@ -50,7 +50,7 @@ final class InFrameset extends RuleSet
             $tree->insertElement($token);
             $tree->openElements->pop();
             // Acknowledge the token's self-closing flag, if it is set.
-            $token->selfClosingAcknowledged = true;
+            $tree->acknowledgeSelfClosingFlag($token);
         } elseif ($type === TokenTypes::START_TAG && $token->name === 'noframes') {
             // Process the token using the rules for the "in head" insertion mode.
             InHead::process($token, $tree);

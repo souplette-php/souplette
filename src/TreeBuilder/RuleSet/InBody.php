@@ -450,7 +450,7 @@ final class InBody extends RuleSet
                 // Immediately pop the current node off the stack of open elements.
                 $tree->openElements->pop();
                 // Acknowledge the token's self-closing flag, if it is set.
-                $token->selfClosingAcknowledged = true;
+                $tree->acknowledgeSelfClosingFlag($token);
                 // Set the frameset-ok flag to "not ok".
                 $tree->framesetOK = false;
                 return;
@@ -462,7 +462,7 @@ final class InBody extends RuleSet
                 // Immediately pop the current node off the stack of open elements.
                 $tree->openElements->pop();
                 // Acknowledge the token's self-closing flag, if it is set.
-                $token->selfClosingAcknowledged = true;
+                $tree->acknowledgeSelfClosingFlag($token);
                 if (
                     // If the token does not have an attribute with the name "type",
                     !$element->hasAttribute('type')
@@ -483,7 +483,7 @@ final class InBody extends RuleSet
                 // Immediately pop the current node off the stack of open elements.
                 $tree->openElements->pop();
                 // Acknowledge the token's self-closing flag, if it is set.
-                $token->selfClosingAcknowledged = true;
+                $tree->acknowledgeSelfClosingFlag($token);
                 return;
             } elseif ($tagName === 'hr') {
                 // If the stack of open elements has a p element in button scope, then close a p element.
@@ -495,7 +495,7 @@ final class InBody extends RuleSet
                 // Immediately pop the current node off the stack of open elements.
                 $tree->openElements->pop();
                 // Acknowledge the token's self-closing flag, if it is set.
-                $token->selfClosingAcknowledged = true;
+                $tree->acknowledgeSelfClosingFlag($token);
                 // Set the frameset-ok flag to "not ok".
                 $tree->framesetOK = false;
                 return;

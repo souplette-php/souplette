@@ -34,7 +34,7 @@ final class InColumnGroup extends RuleSet
             $tree->insertElement($token);
             $tree->openElements->pop();
             // Acknowledge the token's self-closing flag, if it is set.
-            $token->selfClosingAcknowledged = true;
+            $tree->acknowledgeSelfClosingFlag($token);
         } elseif ($type === TokenTypes::END_TAG && $token->name === 'colgroup') {
             // If the current node is not a colgroup element, then this is a parse error; ignore the token.
             if ($tree->openElements->top()->localName !== 'colgroup') {

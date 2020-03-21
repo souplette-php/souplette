@@ -135,7 +135,7 @@ final class InTable extends RuleSet
                 // Pop that input element off the stack of open elements.
                 $tree->openElements->pop();
                 // Acknowledge the token's self-closing flag, if it is set.
-                $token->selfClosingAcknowledged = true;
+                $tree->acknowledgeSelfClosingFlag($token);
                 return;
             } elseif ($tagName === 'form') {
                 // TODO: Parse error.

@@ -141,7 +141,7 @@ final class InForeignContent extends RuleSet
                 // -> If the token's tag name is "script", and the new current node is in the SVG namespace
                 //    Acknowledge the token's self-closing flag, and then act as described in the steps for a "script" end tag below.
                 if ($token->name === 'script' && $tree->openElements->top()->namespaceURI === Namespaces::SVG) {
-                    $token->selfClosingAcknowledged = true;
+                    $tree->acknowledgeSelfClosingFlag($token);
                     $tree->openElements->pop();
                 } else {
                     // -> Otherwise

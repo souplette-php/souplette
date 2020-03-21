@@ -41,12 +41,12 @@ final class InHead extends RuleSet
             ) {
                 $tree->insertElement($token);
                 $tree->openElements->pop();
-                $token->selfClosingAcknowledged = true;
+                $tree->acknowledgeSelfClosingFlag($token);
                 return;
             } elseif ($name === 'meta') {
                 $tree->insertElement($token);
                 $tree->openElements->pop();
-                $token->selfClosingAcknowledged = true;
+                $tree->acknowledgeSelfClosingFlag($token);
                 if ($tree->encoding->isTentative()) {
                     if (isset($token->attributes['charset'])) {
                         // If the element has a charset attribute,
