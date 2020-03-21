@@ -576,7 +576,11 @@ final class TreeBuilder
         foreach ($token->attributes as $name => $value) {
             if (isset(Attributes::ADJUSTED_FOREIGN_ATTRIBUTES[$name])) {
                 [$prefix, $localName, $ns] = Attributes::ADJUSTED_FOREIGN_ATTRIBUTES[$name];
-                $attr = $this->document->createAttributeNS($ns, $name);
+                if (!$prefix) {
+                    $attr = $this->document->createAttribute($name);
+                } else {
+                    $attr = $this->document->createAttributeNS($ns, $name);
+                }
                 $attr->value = $value;
                 $token->attributes[$name] = $attr;
             }
