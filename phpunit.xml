@@ -13,7 +13,8 @@
             <exclude>tests/Html5Lib</exclude>
         </testsuite>
         <testsuite name="html5lib">
-            <directory>tests/Html5Lib</directory>
+            <!--<directory>tests/Html5Lib</directory>-->
+            <file>tests/Html5Lib/TokenizationTest.php</file>
         </testsuite>
     </testsuites>
     <filter>
