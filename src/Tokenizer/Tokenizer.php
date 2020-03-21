@@ -2620,7 +2620,7 @@ final class Tokenizer extends AbstractTokenizer
                 $chars = substr($this->input, $this->position, $l);
                 $this->position += $l;
                 $this->characterReferenceCode = hexdec($chars);
-                $cc = $this->input[$this->position];
+                $cc = $this->input[$this->position] ?? null;
                 if ($cc === ';') {
                     // Switch to the numeric character reference end state.
                     $this->state = TokenizerStates::NUMERIC_CHARACTER_REFERENCE_END;
@@ -2641,7 +2641,7 @@ final class Tokenizer extends AbstractTokenizer
                 $chars = substr($this->input, $this->position, $l);
                 $this->position += $l;
                 $this->characterReferenceCode = (int)$chars;
-                $cc = $this->input[$this->position];
+                $cc = $this->input[$this->position] ?? null;
                 if ($cc === ';') {
                     // Switch to the numeric character reference end state.
                     $this->state = TokenizerStates::NUMERIC_CHARACTER_REFERENCE_END;
