@@ -1,3 +1,4 @@
+#/usr/bin/env php
 <?php
 
 use ju1ius\HtmlParser\Codegen\EntityLookupGenerator;
