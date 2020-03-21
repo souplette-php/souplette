@@ -209,7 +209,8 @@ final class TreeBuilder
                 )
                 || $token->type === TokenTypes::EOF
             ) {
-                $this->processToken($token);
+                //$this->processToken($token);
+                (self::RULES[$this->insertionMode])::process($token, $this);
             } else {
                 InForeignContent::process($token, $this);
             }
@@ -496,7 +497,8 @@ final class TreeBuilder
         // with the intended parent being the element in which the adjusted insertion location finds itself.
         $element = $this->createElement($token, $namespace, $location->parent);
         // 3. TODO: If it is possible to insert element at the adjusted insertion location, then:
-        if (true) {
+        $canInsert = !($location->parent === $this->document && $this->document->documentElement !== null);
+        if ($canInsert) {
             // 3.1 If the parser was not created as part of the HTML fragment parsing algorithm,
             if (!$this->isBuildingFragment) {
                 // then push a new element queue onto element's relevant agent's custom element reactions stack.
