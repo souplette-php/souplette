@@ -55,11 +55,6 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::CHARACTER_REFERENCE_IN_DATA:
-            CHARACTER_REFERENCE_IN_DATA: {
-                throw new \Exception('Not Implemented: CHARACTER_REFERENCE_IN_DATA');
-            }
-            break;
             case TokenizerStates::RCDATA:
             RCDATA: {
                 if ($cc === '&') {
@@ -95,11 +90,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->state = TokenizerStates::RCDATA;
                     goto RCDATA;
                 }
-            }
-            break;
-            case TokenizerStates::CHARACTER_REFERENCE_IN_RCDATA:
-            CHARACTER_REFERENCE_IN_RCDATA: {
-                throw new \Exception('Not Implemented: CHARACTER_REFERENCE_IN_RCDATA');
             }
             break;
             case TokenizerStates::RAWTEXT:
@@ -1320,11 +1310,6 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::CHARACTER_REFERENCE_IN_ATTRIBUTE_VALUE:
-            CHARACTER_REFERENCE_IN_ATTRIBUTE_VALUE: {
-                throw new \Exception('Not Implemented: CHARACTER_REFERENCE_IN_ATTRIBUTE_VALUE');
-            }
-            break;
             case TokenizerStates::AFTER_ATTRIBUTE_VALUE_QUOTED:
             AFTER_ATTRIBUTE_VALUE_QUOTED: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
@@ -1411,11 +1396,6 @@ final class Tokenizer extends AbstractTokenizer
                     $cc = $this->input[++$this->position] ?? null;
                     goto BOGUS_COMMENT;
                 }
-            }
-            break;
-            case TokenizerStates::CONTINUE_BOGUS_COMMENT:
-            CONTINUE_BOGUS_COMMENT: {
-                throw new \LogicException("Unknown state CONTINUE_BOGUS_COMMENT");
             }
             break;
             case TokenizerStates::MARKUP_DECLARATION_OPEN:
