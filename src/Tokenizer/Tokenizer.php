@@ -37,7 +37,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                     // Emit the current input character as a character token.
                     $this->tokenQueue->enqueue(new Character($cc));
-                    $this->state = TokenizerStates::DATA;
                     $cc = $this->input[++$this->position] ?? null;
                     goto DATA;
                 } elseif ($cc === null) {
@@ -74,7 +73,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                     // Emit a U+FFFD REPLACEMENT CHARACTER character token.
                     $this->tokenQueue->enqueue(new Character("\u{FFFD}"));
-                    $this->state = TokenizerStates::RCDATA;
                     $cc = $this->input[++$this->position] ?? null;
                     goto RCDATA;
                 } elseif ($cc === null) {
@@ -104,7 +102,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                     // Emit a U+FFFD REPLACEMENT CHARACTER character token.
                     $this->tokenQueue->enqueue(new Character("\u{FFFD}"));
-                    $this->state = TokenizerStates::RAWTEXT;
                     $cc = $this->input[++$this->position] ?? null;
                     goto RAWTEXT;
                 } elseif ($cc === null) {
@@ -134,7 +131,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                     // Emit a U+FFFD REPLACEMENT CHARACTER character token.
                     $this->tokenQueue->enqueue(new Character("\u{FFFD}"));
-                    $this->state = TokenizerStates::SCRIPT_DATA;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA;
                 } elseif ($cc === null) {
@@ -159,7 +155,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                     // Emit a U+FFFD REPLACEMENT CHARACTER character token.
                     $this->tokenQueue->enqueue(new Character("\u{FFFD}"));
-                    $this->state = TokenizerStates::PLAINTEXT;
                     $cc = $this->input[++$this->position] ?? null;
                     goto PLAINTEXT;
                 } elseif ($cc === null) {
@@ -274,7 +269,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                     // Append a U+FFFD REPLACEMENT CHARACTER character to the current tag token's tag name.
                     $this->currentToken->name .= "\u{FFFD}";
-                    $this->state = TokenizerStates::TAG_NAME;
                     $cc = $this->input[++$this->position] ?? null;
                     goto TAG_NAME;
                 } elseif ($cc === null) {
@@ -629,6 +623,8 @@ final class Tokenizer extends AbstractTokenizer
                     $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                     // Emit a U+FFFD REPLACEMENT CHARACTER character token.
                     $this->tokenQueue->enqueue(new Character("\u{FFFD}"));
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_ESCAPED;
                 } elseif ($cc === null) {
                     // This is an eof-in-script-html-comment-like-text parse error.
                     $this->parseErrors[] = [ParseErrors::EOF_IN_SCRIPT_HTML_COMMENT_LIKE_TEXT, $this->position];
@@ -886,6 +882,8 @@ final class Tokenizer extends AbstractTokenizer
                     $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                     // Emit a U+FFFD REPLACEMENT CHARACTER character token.
                     $this->tokenQueue->enqueue(new Character("\u{FFFD}"));
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto SCRIPT_DATA_DOUBLE_ESCAPED;
                 } elseif ($cc === null) {
                     // This is an eof-in-script-html-comment-like-text parse error.
                     $this->parseErrors[] = [ParseErrors::EOF_IN_SCRIPT_HTML_COMMENT_LIKE_TEXT, $this->position];
@@ -1198,7 +1196,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                     // Append a U+FFFD REPLACEMENT CHARACTER character to the current attribute's value.
                     $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= "\u{FFFD}";
-                    $this->state = TokenizerStates::ATTRIBUTE_VALUE_DOUBLE_QUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto ATTRIBUTE_VALUE_DOUBLE_QUOTED;
                 } elseif ($cc === null) {
@@ -1237,7 +1234,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                     // Append a U+FFFD REPLACEMENT CHARACTER character to the current attribute's value.
                     $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= "\u{FFFD}";
-                    $this->state = TokenizerStates::ATTRIBUTE_VALUE_SINGLE_QUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto ATTRIBUTE_VALUE_SINGLE_QUOTED;
                 } elseif ($cc === null) {
@@ -1282,7 +1278,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                     // Append a U+FFFD REPLACEMENT CHARACTER character to the current attribute's value.
                     $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= "\u{FFFD}";
-                    $this->state = TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto ATTRIBUTE_VALUE_UNQUOTED;
                 } elseif ($cc === '"' || $cc === "'" || $cc === '<' || $cc === '=' || $cc === '`') {
@@ -1383,7 +1378,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                     // Append a U+FFFD REPLACEMENT CHARACTER character to the comment token's data.
                     $this->currentToken->data .= "\u{FFFD}";
-                    $this->state = TokenizerStates::BOGUS_COMMENT;
                     $cc = $this->input[++$this->position] ?? null;
                     goto BOGUS_COMMENT;
                 } else {
@@ -1518,7 +1512,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                     // Append a U+FFFD REPLACEMENT CHARACTER character to the comment token's data.
                     $this->currentToken->data .= "\u{FFFD}";
-                    $this->state = TokenizerStates::COMMENT;
                     $cc = $this->input[++$this->position] ?? null;
                     goto COMMENT;
                 } elseif ($cc === null) {
@@ -1791,7 +1784,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                     // Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's name.
                     $this->currentToken->name .= "u\{FFFD}";
-                    $this->state = TokenizerStates::DOCTYPE_NAME;
                     $cc = $this->input[++$this->position] ?? null;
                     goto DOCTYPE_NAME;
                 } elseif ($cc === null) {
@@ -1986,7 +1978,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                     // Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's public identifier.
                     $this->currentToken->publicIdentifier .= "\u{FFFD}";
-                    $this->state = TokenizerStates::DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED;
                 } elseif ($cc === null) {
@@ -2031,7 +2022,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                     // Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's public identifier.
                     $this->currentToken->publicIdentifier .= "\u{FFFD}";
-                    $this->state = TokenizerStates::DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED;
                 } elseif ($cc === null) {
@@ -2275,7 +2265,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                     // Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's system identifier.
                     $this->currentToken->systemIdentifier .= "\u{FFFD}";
-                    $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
                 } elseif ($cc === null) {
@@ -2320,7 +2309,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                     // Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's system identifier.
                     $this->currentToken->systemIdentifier .= "\u{FFFD}";
-                    $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
                 } elseif ($cc === null) {
@@ -2385,7 +2373,6 @@ final class Tokenizer extends AbstractTokenizer
                     // This is an unexpected-null-character parse error.
                     $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                     // Ignore the character.
-                    $this->state = TokenizerStates::BOGUS_DOCTYPE;
                     $cc = $this->input[++$this->position] ?? null;
                     goto BOGUS_DOCTYPE;
                 } elseif ($cc === null) {

@@ -16,7 +16,7 @@ if ($cc === '"') {
     {{ h.parse_error('UNEXPECTED_NULL_CHARACTER') }}
     // Append a U+FFFD REPLACEMENT CHARACTER character to the current attribute's value.
     {{ h.append_to_attr_value('"\\u{FFFD}"') }}
-    {{ h.advance_to(current_state) }}
+    {{ h.consume(current_state) }}
 } elseif ({{ h.is_eof() }}) {
     // This is an eof-in-tag parse error.
     {{ h.parse_error('EOF_IN_TAG') }}

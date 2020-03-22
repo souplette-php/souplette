@@ -10,7 +10,7 @@ if ($cc === '>') {
     // This is an unexpected-null-character parse error.
     {{ h.parse_error('UNEXPECTED_NULL_CHARACTER') }}
     // Ignore the character.
-    {{ h.advance_to(current_state) }}
+    {{ h.consume(current_state) }}
 } elseif ({{ h.is_eof() }}) {
     // Emit the DOCTYPE token. Emit an end-of-file token.
     {{ h.emit_current_token() }}

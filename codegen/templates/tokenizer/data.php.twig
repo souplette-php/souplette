@@ -16,7 +16,7 @@ if ($cc === '&') {
     {{ h.parse_error('UNEXPECTED_NULL_CHARACTER') }}
     // Emit the current input character as a character token.
     $this->tokenQueue->enqueue(new Character($cc));
-    {{ h.advance_to(current_state) }}
+    {{ h.consume(current_state) }}
 } elseif ({{ h.is_eof() }}) {
     // Emit an end-of-file token.
     {{ h.emit_eof() }}

@@ -16,7 +16,7 @@ if ({{ h.is_whitespace() }}) {
     {{ h.parse_error('UNEXPECTED_NULL_CHARACTER') }}
     // Append a U+FFFD REPLACEMENT CHARACTER character to the current tag token's tag name.
     $this->currentToken->name .= "\u{FFFD}";
-    {{ h.advance_to('TAG_NAME') }}
+    {{ h.consume(current_state) }}
 } elseif ({{ h.is_eof() }}) {
     // This is an eof-in-tag parse error.
     {{ h.parse_error('EOF_IN_TAG') }}
@@ -26,5 +26,5 @@ if ({{ h.is_whitespace() }}) {
     // Append the current input character to the current tag token's tag name.
     {{ h.chars_until("/> \t\f\n\0") }}
     $this->currentToken->name .= strtolower($chars);
-    {{ h.update_and_reconsume_in('TAG_NAME') }}
+    {{ h.update_and_reconsume_in(current_state) }}
 }

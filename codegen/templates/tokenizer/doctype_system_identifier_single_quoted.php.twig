@@ -18,7 +18,7 @@ if ($cc === "'") {
     {{ h.parse_error('UNEXPECTED_NULL_CHARACTER') }}
     // Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's system identifier.
     $this->currentToken->systemIdentifier .= "\u{FFFD}";
-    {{ h.advance_to(current_state) }}
+    {{ h.consume(current_state) }}
 } elseif ($cc === null) {
     // This is an eof-in-doctype parse error.
     {{ h.parse_error('EOF_IN_DOCTYPE') }}

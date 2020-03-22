@@ -15,7 +15,7 @@ if ($cc === '>') {
     {{ h.parse_error('UNEXPECTED_NULL_CHARACTER') }}
     // Append a U+FFFD REPLACEMENT CHARACTER character to the comment token's data.
     $this->currentToken->data .= "\u{FFFD}";
-    {{ h.advance_to(current_state) }}
+    {{ h.consume(current_state) }}
 } else {
     // Append the current input character to the comment token's data.
     {{ h.chars_until(">\0") }}

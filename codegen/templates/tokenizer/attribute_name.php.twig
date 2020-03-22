@@ -14,13 +14,13 @@ if ({{ h.is_whitespace() }} || $cc === '/' || $cc === '>' || {{ h.is_eof() }}) {
     {{ h.parse_error('UNEXPECTED_NULL_CHARACTER') }}
     // Append a U+FFFD REPLACEMENT CHARACTER character to the current attribute's name.
     {{ h.append_to_attr_name('"\\u{FFFD}"') }}
-    {{ h.consume('ATTRIBUTE_NAME') }}
+    {{ h.consume(current_state) }}
 } elseif ({{ cc_in('"', "'", '<') }}) {
     // This is an unexpected-character-in-attribute-name parse error.
     {{ h.parse_error('UNEXPECTED_CHARACTER_IN_ATTRIBUTE_NAME') }}
     // Treat it as per the "anything else" entry below.
     {{ h.append_to_attr_name('$cc') }}
-    {{ h.consume('ATTRIBUTE_NAME') }}
+    {{ h.consume(current_state) }}
 } else {
     // Append the current input character to the current attribute's name.
     {{ h.chars_until("=<>/'\"\0 \n\t\f") }}

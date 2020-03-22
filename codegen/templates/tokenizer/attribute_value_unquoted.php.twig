@@ -19,7 +19,7 @@ if ({{ h.is_whitespace() }}) {
     {{ h.parse_error('UNEXPECTED_NULL_CHARACTER') }}
     // Append a U+FFFD REPLACEMENT CHARACTER character to the current attribute's value.
     {{ h.append_to_attr_value('"\\u{FFFD}"') }}
-    {{ h.advance_to(current_state) }}
+    {{ h.consume(current_state) }}
 } elseif ($cc === '"' || $cc === "'" || $cc === '<' || $cc === '=' || $cc === '`') {
     // This is an unexpected-character-in-unquoted-attribute-value parse error.
     {{ h.parse_error('UNEXPECTED_CHARACTER_IN_UNQUOTED_ATTRIBUTE_VALUE') }}
