@@ -1,4 +1,5 @@
 - [x] Tokenizer States
+- [ ] Tokenizer Whitespace tokens
 - [x] TreeBuilder States
 - [ ] TreeBuilder fragment case
 - [ ] TreeBuilder namespace handling

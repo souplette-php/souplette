@@ -31,6 +31,9 @@ class EntitiesTest extends TestCase
         yield ['&#38;', ['&']];
         yield ['&#x26;', ['&']];
         yield ['&acirc;&#128;&#156;', ['â', "\u{20AC}", "\u{0153}"]];
+        foreach (EntityLookup::NAMED_ENTITIES as $entity => $value) {
+            yield ["&{$entity}", [$value]];
+        }
     }
 
     /**
@@ -96,5 +99,11 @@ class EntitiesTest extends TestCase
         yield ["<h a='&noti;'>", [
             Token::startTag('h', false, ['a' => '&noti;'])
         ]];
+        foreach (EntityLookup::NAMED_ENTITIES as $entity => $value) {
+            yield ["<a b='&{$entity}'>", [Token::startTag('a', false, ['b' => $value])]];
+            if ($entity[-1] !== ';') {
+                yield ["<a b='&{$entity}='>", [Token::startTag('a', false, ['b' => "&{$entity}="])]];
+            }
+        }
     }
 }
