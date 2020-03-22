@@ -1511,6 +1511,7 @@ final class Tokenizer extends AbstractTokenizer
                 } elseif ($cc === '-') {
                     // Switch to the comment end dash state.
                     $this->state = TokenizerStates::COMMENT_END_DASH;
+                    $cc = $this->input[++$this->position] ?? null;
                     goto COMMENT_END_DASH;
                 } elseif ($cc === "\0") {
                     // This is an unexpected-null-character parse error.
@@ -1532,8 +1533,8 @@ final class Tokenizer extends AbstractTokenizer
                     $chars = substr($this->input, $this->position, $l);
                     $this->position += $l;
                     $this->currentToken->data .= $chars;
+                    $cc = $this->input[$this->position] ?? null;
                     $this->state = TokenizerStates::COMMENT;
-                    $cc = $this->input[++$this->position] ?? null;
                     goto COMMENT;
                 }
             }
@@ -2496,7 +2497,6 @@ final class Tokenizer extends AbstractTokenizer
                 $node = $this->entitySearch;
                 $lastTerminalIndex = null;
                 $buffer = '';
-                // Consume characters and compare these to a substring of the entity names until the substring no longer matches.
                 while (true) {
                     $c = $this->input[$pos] ?? null;
                     if ($c === null || !isset($node->children[$c])) {

@@ -10,7 +10,7 @@ if ($cc === '<') {
     {{ h.advance_to('COMMENT_LESS_THAN_SIGN') }}
 } elseif ($cc === '-') {
     // Switch to the comment end dash state.
-    {{ h.reconsume_in('COMMENT_END_DASH') }}
+    {{ h.advance_to('COMMENT_END_DASH') }}
 } elseif ($cc === "\0") {
     // This is an unexpected-null-character parse error.
     {{ h.parse_error('UNEXPECTED_NULL_CHARACTER') }}
@@ -27,6 +27,6 @@ if ($cc === '<') {
     // Append the current input character to the comment token's data.
     {{ h.chars_until("<-\0") }}
     $this->currentToken->data .= $chars;
-    {{ h.advance_to('COMMENT') }}
+    {{ h.update_and_reconsume_in('COMMENT') }}
 }
 
