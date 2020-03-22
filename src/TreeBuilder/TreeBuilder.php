@@ -462,9 +462,11 @@ final class TreeBuilder
             return;
         }
         $target = $location->target;
-        if ($target && $target->previousSibling && $target->previousSibling->nodeType === XML_TEXT_NODE) {
-            // 4. If there is a Text node immediately before the adjusted insertion location,
-            // then append data to that Text node's data.
+        // 4. If there is a Text node immediately before the adjusted insertion location,
+        // then append data to that Text node's data.
+        if ($target && $target->nodeType === XML_TEXT_NODE) {
+            $target->nodeValue .= $data;
+        } elseif ($target && $location->beforeTarget && $target->previousSibling && $target->previousSibling->nodeType === XML_TEXT_NODE) {
             $target->previousSibling->nodeValue .= $data;
         } else {
             // Otherwise, create a new Text node whose data is data
