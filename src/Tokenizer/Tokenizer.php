@@ -2494,33 +2494,20 @@ final class Tokenizer extends AbstractTokenizer
                 // Append each character to the temporary buffer when it's consumed.
                 $pos = $this->position;
                 $node = $this->entitySearch;
+                $lastTerminalIndex = null;
                 $buffer = '';
                 // Consume characters and compare these to a substring of the entity names until the substring no longer matches.
                 while (true) {
                     $c = $this->input[$pos] ?? null;
-                    if ($c === null) {
-                        break;
-                    }
-                    if (!isset($node->children[$c])) {
-                        break;
-                    }
-                    $node = $node->children[$c];
-                    $buffer .= $c;
-                    $pos++;
-                }
-                // At this point we have a string that starts with some characters that may match an entity
-                // Try to find the longest entity the string will match to take care of &noti for instance.
-                $node = $this->entitySearch;
-                $lastTerminalIndex = null;
-                for ($i = 0, $l = strlen($buffer); $i < $l; $i++) {
-                    $c = $buffer[$i];
-                    if (!isset($node->children[$c])) {
+                    if ($c === null || !isset($node->children[$c])) {
                         break;
                     }
                     $node = $node->children[$c];
                     if ($node->value) {
-                        $lastTerminalIndex = $i;
+                        $lastTerminalIndex = $pos - $this->position;
                     }
+                    $buffer .= $c;
+                    $pos++;
                 }
                 if ($lastTerminalIndex !== null) {
                     $buffer = substr($buffer, 0, $lastTerminalIndex + 1);

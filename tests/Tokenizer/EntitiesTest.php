@@ -22,6 +22,7 @@ class EntitiesTest extends TestCase
     public function entitiesInDataProvider()
     {
         yield ['&amp;', ['&']];
+        yield ['&Abreve', ['&', 'Abreve']];
         // See examples at https://html.spec.whatwg.org/multipage/parsing.html#named-character-reference-state
         $not = EntityLookup::NAMED_ENTITIES['not'];
         yield ["I'm &notit; I tell you", ["I'm ", $not, "it; I tell you"]];
