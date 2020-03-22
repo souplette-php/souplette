@@ -52,11 +52,11 @@ final class Serializer
             /** @var \DOMAttr $attr */
             foreach ($node->attributes as $name => $attr) {
                 if ($attr->namespaceURI) {
-                    $name = sprintf('%s %s', Namespaces::PREFIXES[$node->namespaceURI], $node->nodeName);
+                    $name = sprintf('%s %s', Namespaces::PREFIXES[$attr->namespaceURI], $attr->nodeName);
                 } else {
-                    $name = $node->nodeName;
+                    $name = $attr->nodeName;
                 }
-                $attributes[$name] = $node->nodeValue;
+                $attributes[$name] = $attr->nodeValue;
             }
             ksort($attributes);
             foreach ($attributes as $name => $value) {

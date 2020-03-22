@@ -19,9 +19,12 @@ EOF;
 
 $testFile = new DataFile($file);
 $test = $testFile[$testno];
+printf("#DATA: %s\n", $test['data']);
+printf("#EXPECTED:\n%s\n", $test['document']);
 
 $parser = new Parser();
 $doc = $parser->parse($test['data']);
 
 $serializer = new Serializer();
-var_dump($serializer->serialize($doc));
+//var_dump($doc->saveHTML());
+printf("\n#ACTUAL:\n%s\n", $serializer->serialize($doc));
