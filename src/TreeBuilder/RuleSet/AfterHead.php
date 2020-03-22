@@ -57,12 +57,7 @@ final class AfterHead extends RuleSet
             InHead::process($token, $tree);
             // Remove the node pointed to by the head element pointer from the stack of open elements.
             // (It might not be the current node at this point.)
-            foreach ($tree->openElements as $i => $element) {
-                if ($element === $tree->headElement) {
-                    unset($tree->openElements[$i]);
-                    break;
-                }
-            }
+            $tree->openElements->remove($tree->headElement);
             // The head element pointer cannot be null at this point.
             return;
         } elseif ($type === TokenTypes::END_TAG && $token->name === 'template') {

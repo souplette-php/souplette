@@ -24,6 +24,33 @@ class StackTest extends TestCase
         Assert::assertNull($stack->indexOf('foo'));
     }
 
+    /**
+     * @dataProvider getProvider
+     * @param array $init
+     * @param int $offset
+     * @param string $expected
+     */
+    public function testGet(array $init, int $offset, string $expected)
+    {
+        $stack = new Stack($init);
+        Assert::assertSame($expected, $stack->get($offset));
+    }
+
+    public function getProvider()
+    {
+        $init = ['a', 'b', 'c', 'd'];
+        // negative index yields in reverse order
+        yield [$init, -1, 'a'];
+        yield [$init, -2, 'b'];
+        yield [$init, -3, 'c'];
+        yield [$init, -4, 'd'];
+        // positive index yields same as offsetGet
+        yield [$init, 0, 'd'];
+        yield [$init, 1, 'c'];
+        yield [$init, 2, 'b'];
+        yield [$init, 3, 'a'];
+    }
+
     public function testClear()
     {
         $stack = new Stack(['a', 'b', 'c']);

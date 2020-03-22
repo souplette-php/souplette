@@ -104,11 +104,13 @@ final class InBody extends RuleSet
                 return;
             } elseif ($tagName === 'body') {
                 // TODO: Parse error.
+                $count = $tree->openElements->count();
                 if (
                     // if the stack of open elements has only one node on it,
-                    $tree->openElements->count() < 2
+                    // FIXME: is this safe ?
+                    $count < 2
                     // if the second element on the stack of open elements is not a body element,
-                    || $tree->openElements[1]->localName !== 'body'
+                    || $tree->openElements[$count - 2]->localName !== 'body'
                     // or if there is a template element on the stack of open elements,
                     || $tree->openElements->containsTag('template')
                 ) {
@@ -120,7 +122,7 @@ final class InBody extends RuleSet
                 // then, for each attribute on the token,
                 // check to see if the attribute is already present on the body element (the second element) on the stack of open elements,
                 // and if it is not, add the attribute and its corresponding value to that element.
-                $body = $tree->openElements[1];
+                $body = $tree->openElements[$count - 2];
                 foreach ($token->attributes as $name => $value) {
                     if (!$body->hasAttribute($name)) {
                         $body->setAttribute($name, $value);
@@ -129,11 +131,13 @@ final class InBody extends RuleSet
                 return;
             } elseif ($tagName === 'frameset') {
                 // TODO: Parse error.
+                $count = $tree->openElements->count();
                 if (
                     // if the stack of open elements has only one node on it,
-                    $tree->openElements->count() < 2
+                    // FIXME: is this safe ?
+                    $count < 2
                     // if the second element on the stack of open elements is not a body element,
-                    || $tree->openElements[1]->localName !== 'body'
+                    || $tree->openElements[$count - 2]->localName !== 'body'
                 ) {
                     // then ignore the token. (fragment case)
                     return;
@@ -144,7 +148,7 @@ final class InBody extends RuleSet
                 }
                 // Otherwise, run the following steps:
                 // Remove the second element on the stack of open elements from its parent node, if it has one.
-                $body = $tree->openElements[1];
+                $body = $tree->openElements[$count - 2];
                 if ($body->parentNode) {
                     $body->parentNode->removeChild($body);
                 }

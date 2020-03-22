@@ -37,6 +37,14 @@ class Stack extends \SplStack
         return null;
     }
 
+    public function get(int $offset)
+    {
+        if ($offset >= 0) {
+            return $this->offsetGet($offset);
+        }
+        return $this->offsetGet($this->count() + $offset);
+    }
+
     public function insert(int $offset, $value): void
     {
         $lastIndex = $this->count() - 1;

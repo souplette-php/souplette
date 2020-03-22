@@ -56,8 +56,7 @@ final class InSelect extends RuleSet
             // and the node immediately before it in the stack of open elements is an optgroup element,
             // then pop the current node from the stack of open elements.
             if ($tree->openElements->top()->localName === 'option') {
-                $length = $tree->openElements->count();
-                $previousNode = $tree->openElements[$length - 2] ?? null;
+                $previousNode = $tree->openElements[1] ?? null;
                 if ($previousNode && $previousNode->localName === 'optgroup') {
                     $tree->openElements->pop();
                 }
