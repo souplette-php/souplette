@@ -22,6 +22,15 @@ final class Utils
         return sprintf('\x%02x', ord($byte));
     }
 
+    public static function iterateCodepoints(string $input)
+    {
+        $it = \IntlBreakIterator::createCodePointInstance();
+        $it->setText($input);
+        foreach ($it as $i => $char) {
+            yield $i => $char;
+        }
+    }
+
     public static function downloadFile(string $url, string $destination)
     {
         $stream = fopen($url, 'r');

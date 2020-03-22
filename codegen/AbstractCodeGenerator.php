@@ -2,6 +2,7 @@
 
 namespace ju1ius\HtmlParser\Codegen;
 
+use ju1ius\HtmlParser\Codegen\Twig\CodeGeneratorExtension;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
@@ -28,6 +29,7 @@ abstract class AbstractCodeGenerator
             'strict_variables' => true,
             'autoescape' => false,
         ]);
+        $twig->addExtension(new CodeGeneratorExtension());
 
         return $twig;
     }
