@@ -1042,6 +1042,7 @@ final class InBody extends RuleSet
                 if (!$isInActiveElements) {
                     // then remove node from the stack of open elements and then go back to the step labeled inner loop.
                     $tree->openElements->remove($node);
+                    $index--;
                     continue;
                 }
                 // 14.7. Create an element for the token for which the element node was created, in the HTML namespace,
