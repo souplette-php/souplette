@@ -1073,8 +1073,9 @@ final class InBody extends RuleSet
             // with furthest block as the intended parent.
             $element = $formattingElement->cloneNode();
             // 17. Take all of the child nodes of furthest block and append them to the element created in the last step.
-            foreach ($furthestBlock->childNodes as $childNode) {
-                $element->appendChild($childNode);
+            for ($i = $furthestBlock->childNodes->length - 1; $i >= 0; $i--) {
+                $childNode = $furthestBlock->childNodes->item($i);
+                $element->insertBefore($childNode, $element->lastChild);
             }
             // 18. Append that new element to furthest block.
             $furthestBlock->appendChild($element);
