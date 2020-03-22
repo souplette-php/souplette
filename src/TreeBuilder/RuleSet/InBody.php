@@ -1017,7 +1017,10 @@ final class InBody extends RuleSet
             // 14.1. Let inner loop counter be zero.
             $innerLoopCounter = 0;
             $index = $tree->openElements->indexOf($node);
-            while (true) {
+            // FIXME: this loop condition is not is the spec (see stp 14.5),
+            // but it is what browsers actually do...
+            //while (true) {
+            while ($innerLoopCounter < 3) {
                 // 14.2. Inner loop: Increment inner loop counter by one.
                 $innerLoopCounter++;
                 // 14.3. Let node be the element immediately above node in the stack of open elements,
