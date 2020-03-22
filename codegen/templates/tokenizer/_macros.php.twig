@@ -66,10 +66,27 @@ $this->currentToken->attributes[count($this->currentToken->attributes) - 1][0] .
 $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= {{ value }};
 {%- endmacro %}
 
+{#
+    We use this macro when we have consumed several characters (e.g. with chars_while or chars_until),
+    and we want to update the current input character.
+#}
 {% macro update_cc() -%}
 $cc = $this->input[$this->position] ?? null;
 {%- endmacro %}
 
+{#
+    We use this macro when we have consumed several characters (e.g. with chars_while or chars_until),
+    and we want to continue in the current state.
+#}
+{% macro update_and_continue(state_name) -%}
+{{ _self.update_cc() }}
+goto {{ state_name }};
+{%- endmacro %}
+
+{#
+    We use this macro when we have consumed several characters (e.g. with chars_while or chars_until),
+    and we want to switch to another state.
+#}
 {% macro update_and_reconsume_in(state_name) -%}
 {{ _self.update_cc() }}
 {{ _self.reconsume_in(state_name) }}
@@ -99,6 +116,7 @@ goto {{ state_name }};
 
 {#
     We use this macro when the spec says "consume the next input character" and it doesn't say "switch to ... state".
+    It should always be invoked with the current state as a parameter.
 #}
 {% macro consume(state_name) -%}
 $cc = $this->input[++$this->position] ?? null;
@@ -120,6 +138,10 @@ goto {{ state_name }};
 $this->tokenQueue->enqueue($this->currentToken);
 {%- endmacro %}
 
+{#
+    Emits the current token, switch to given state, and gives the control back to the parser.
+    Given state should almost always be 'DATA'.
+#}
 {% macro emit_and_resume_in(state_name) -%}
 $this->emitCurrentToken();
 $this->state = TokenizerStates::{{ state_name }};

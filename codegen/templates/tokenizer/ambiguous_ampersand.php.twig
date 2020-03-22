@@ -13,7 +13,7 @@ if (ctype_alnum($cc)) {
         // Otherwise, emit the current input character as a character token.
         $this->tokenQueue->enqueue(new Character($chars));
     }
-    {{ h.update_and_reconsume_in(current_state) }}
+    {{ h.update_and_continue(current_state) }}
 } elseif ($cc === ';') {
     // This is an unknown-named-character-reference parse error.
     {{ h.parse_error('UNKNOWN_NAMED_CHARACTER_REFERENCE') }}

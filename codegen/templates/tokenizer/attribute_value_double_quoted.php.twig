@@ -26,5 +26,5 @@ if ($cc === '"') {
     // Append the current input character to the current attribute's value.
     {{ h.chars_until("\"&\0") }}
     {{ h.append_to_attr_value('$chars') }}
-    {{ h.update_and_reconsume_in(current_state) }}
+    {{ h.update_and_continue(current_state) }}
 }

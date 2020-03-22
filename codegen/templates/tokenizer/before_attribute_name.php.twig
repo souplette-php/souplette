@@ -5,7 +5,7 @@
 if ({{ h.is_whitespace() }}) {
     // Ignore the character.
     {{ h.consume('BEFORE_ATTRIBUTE_NAME') }}
-} elseif ($cc === '/' || $cc === '>' || {{ h.is_eof() }}) {
+} elseif ({{ cc_in('/', '>') }} || {{ h.is_eof() }}) {
     // Reconsume in the after attribute name state.
     {{ h.reconsume_in('AFTER_ATTRIBUTE_NAME') }}
 } elseif ($cc === '=') {

@@ -5,7 +5,7 @@
 
 // Set the character reference code to zero (0).
 $this->characterReferenceCode = 0;
-if ($cc === 'x' || $cc === 'X') {
+if ({{ cc_in('x', 'X') }}) {
     // Append the current input character to the temporary buffer.
     $this->temporaryBuffer .= $cc;
     // Switch to the hexadecimal character reference start state.

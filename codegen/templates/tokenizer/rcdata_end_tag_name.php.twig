@@ -37,7 +37,7 @@ if ({{ h.is_whitespace() }}) {
     $this->currentToken->name .= strtolower($chars);
     // Append the current input character to the temporary buffer.
     $this->temporaryBuffer .= $chars;
-    {{ h.update_and_reconsume_in(current_state) }}
+    {{ h.update_and_continue(current_state) }}
 } else {
     {{ current_state }}_ANYTHING_ELSE:
     // Emit a U+003C LESS-THAN SIGN character token, a U+002F SOLIDUS character token,

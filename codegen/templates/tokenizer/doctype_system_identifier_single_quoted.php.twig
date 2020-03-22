@@ -31,5 +31,5 @@ if ($cc === "'") {
     // Append the current input character to the current DOCTYPE token's system identifier.
     {{ h.chars_until("'>\0") }}
     $this->currentToken->systemIdentifier .= $chars;
-    {{ h.update_and_reconsume_in(current_state) }}
+    {{ h.update_and_continue(current_state) }}
 }

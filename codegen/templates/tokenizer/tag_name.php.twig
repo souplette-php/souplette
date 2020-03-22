@@ -26,5 +26,5 @@ if ({{ h.is_whitespace() }}) {
     // Append the current input character to the current tag token's tag name.
     {{ h.chars_until("/> \t\f\n\0") }}
     $this->currentToken->name .= strtolower($chars);
-    {{ h.update_and_reconsume_in(current_state) }}
+    {{ h.update_and_continue(current_state) }}
 }

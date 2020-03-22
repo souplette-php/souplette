@@ -49,7 +49,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->position += $l;
                     $this->tokenQueue->enqueue(new Character($chars));
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::DATA;
                     goto DATA;
                 }
             }
@@ -85,7 +84,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->position += $l;
                     $this->tokenQueue->enqueue(new Character($chars));
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::RCDATA;
                     goto RCDATA;
                 }
             }
@@ -114,7 +112,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->position += $l;
                     $this->tokenQueue->enqueue(new Character($chars));
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::RAWTEXT;
                     goto RAWTEXT;
                 }
             }
@@ -143,7 +140,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->position += $l;
                     $this->tokenQueue->enqueue(new Character($chars));
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::SCRIPT_DATA;
                     goto SCRIPT_DATA;
                 }
             }
@@ -167,7 +163,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->position += $l;
                     $this->tokenQueue->enqueue(new Character($chars));
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::PLAINTEXT;
                     goto PLAINTEXT;
                 }
             }
@@ -283,7 +278,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->position += $l;
                     $this->currentToken->name .= strtolower($chars);
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::TAG_NAME;
                     goto TAG_NAME;
                 }
             }
@@ -368,7 +362,6 @@ final class Tokenizer extends AbstractTokenizer
                     // Append the current input character to the temporary buffer.
                     $this->temporaryBuffer .= $chars;
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::RCDATA_END_TAG_NAME;
                     goto RCDATA_END_TAG_NAME;
                 } else {
                     RCDATA_END_TAG_NAME_ANYTHING_ELSE:
@@ -461,7 +454,6 @@ final class Tokenizer extends AbstractTokenizer
                     // Append the current input character to the temporary buffer.
                     $this->temporaryBuffer .= $chars;
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::RAWTEXT_END_TAG_NAME;
                     goto RAWTEXT_END_TAG_NAME;
                 } else {
                     RAWTEXT_END_TAG_NAME_ANYTHING_ELSE:
@@ -559,7 +551,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->currentToken->name .= strtolower($chars);
                     $this->temporaryBuffer .= $chars;
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::SCRIPT_DATA_END_TAG_NAME;
                     goto SCRIPT_DATA_END_TAG_NAME;
                 } else {
                     SCRIPT_DATA_END_TAG_NAME_ANYTHING_ELSE:
@@ -637,7 +628,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->position += $l;
                     $this->tokenQueue->enqueue(new Character($chars));
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED;
                     goto SCRIPT_DATA_ESCAPED;
                 }
             }
@@ -814,7 +804,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->currentToken->name .= strtolower($chars);
                     $this->temporaryBuffer .= $chars;
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED_END_TAG_NAME;
                     goto SCRIPT_DATA_ESCAPED_END_TAG_NAME;
                 } else {
                     SCRIPT_DATA_ESCAPED_END_TAG_NAME_ANYTHING_ELSE:
@@ -852,7 +841,6 @@ final class Tokenizer extends AbstractTokenizer
                     // Emit the current input character as a character token.
                     $this->tokenQueue->enqueue(new Character($chars));
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPE_START;
                     goto SCRIPT_DATA_DOUBLE_ESCAPE_START;
                 } else {
                     // Reconsume in the script data escaped state.
@@ -896,7 +884,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->position += $l;
                     $this->tokenQueue->enqueue(new Character($chars));
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED;
                     goto SCRIPT_DATA_DOUBLE_ESCAPED;
                 }
             }
@@ -1035,7 +1022,6 @@ final class Tokenizer extends AbstractTokenizer
                     // Emit the current input character as a character token.
                     $this->tokenQueue->enqueue(new Character($chars));
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPE_END;
                     goto SCRIPT_DATA_DOUBLE_ESCAPE_END;
                 } else {
                     // Reconsume in the script data double escaped state.
@@ -1104,7 +1090,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->position += $l;
                     $this->currentToken->attributes[count($this->currentToken->attributes) - 1][0] .= strtolower($chars);
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::ATTRIBUTE_NAME;
                     goto ATTRIBUTE_NAME;
                 }
             }
@@ -1210,7 +1195,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->position += $l;
                     $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= $chars;
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::ATTRIBUTE_VALUE_DOUBLE_QUOTED;
                     goto ATTRIBUTE_VALUE_DOUBLE_QUOTED;
                 }
             }
@@ -1248,7 +1232,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->position += $l;
                     $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= $chars;
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::ATTRIBUTE_VALUE_SINGLE_QUOTED;
                     goto ATTRIBUTE_VALUE_SINGLE_QUOTED;
                 }
             }
@@ -1280,7 +1263,7 @@ final class Tokenizer extends AbstractTokenizer
                     $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= "\u{FFFD}";
                     $cc = $this->input[++$this->position] ?? null;
                     goto ATTRIBUTE_VALUE_UNQUOTED;
-                } elseif ($cc === '"' || $cc === "'" || $cc === '<' || $cc === '=' || $cc === '`') {
+                } elseif ($cc === '"' || $cc === '\'' || $cc === '<' || $cc === '=' || $cc === '`') {
                     // This is an unexpected-character-in-unquoted-attribute-value parse error.
                     $this->parseErrors[] = [ParseErrors::UNEXPECTED_CHARACTER_IN_UNQUOTED_ATTRIBUTE_VALUE, $this->position];
                     // Treat it as per the "anything else" entry below.
@@ -1300,7 +1283,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->position += $l;
                     $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= $chars;
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED;
                     goto ATTRIBUTE_VALUE_UNQUOTED;
                 }
             }
@@ -1527,7 +1509,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->position += $l;
                     $this->currentToken->data .= $chars;
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::COMMENT;
                     goto COMMENT;
                 }
             }
@@ -1801,7 +1782,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->position += $l;
                     $this->currentToken->name .= strtolower($chars);
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::DOCTYPE_NAME;
                     goto DOCTYPE_NAME;
                 }
             }
@@ -1995,7 +1975,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->position += $l;
                     $this->currentToken->publicIdentifier .= $chars;
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED;
                     goto DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED;
                 }
             }
@@ -2039,7 +2018,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->position += $l;
                     $this->currentToken->publicIdentifier .= $chars;
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED;
                     goto DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED;
                 }
             }
@@ -2282,7 +2260,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->position += $l;
                     $this->currentToken->systemIdentifier .= $chars;
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
                     goto DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
                 }
             }
@@ -2326,7 +2303,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->position += $l;
                     $this->currentToken->systemIdentifier .= $chars;
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
                     goto DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
                 }
             }
@@ -2408,7 +2384,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->position += $l;
                     $this->tokenQueue->enqueue(new Character($chars));
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::CDATA_SECTION;
                     goto CDATA_SECTION;
                 }
             }
@@ -2716,7 +2691,6 @@ final class Tokenizer extends AbstractTokenizer
                         $this->tokenQueue->enqueue(new Character($chars));
                     }
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::AMBIGUOUS_AMPERSAND;
                     goto AMBIGUOUS_AMPERSAND;
                 } elseif ($cc === ';') {
                     // This is an unknown-named-character-reference parse error.
