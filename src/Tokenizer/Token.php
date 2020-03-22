@@ -33,24 +33,17 @@ abstract class Token
 
     public static function character(string $data): Character
     {
-        $token = new Character();
-        $token->data = $data;
-
-        return $token;
+        return new Character($data);
     }
 
     public static function comment(string $data): Comment
     {
-        $token = new Comment();
-        $token->data = $data;
-
-        return $token;
+        return new Comment($data);
     }
 
     public static function startTag(string $name, bool $selfClosing = false, ?array $attributes = null): StartTag
     {
-        $token = new StartTag();
-        $token->name = $name;
+        $token = new StartTag($name);
         $token->selfClosing = $selfClosing;
         $token->attributes = $attributes;
 
@@ -59,9 +52,6 @@ abstract class Token
 
     public static function endTag(string $name): EndTag
     {
-        $token = new EndTag();
-        $token->name = $name;
-
-        return $token;
+        return new EndTag($name);
     }
 }

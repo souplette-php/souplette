@@ -21,5 +21,6 @@ class CommentTest extends TestCase
     public function commentsProvider()
     {
         yield ['<!-- comment -->', [Token::comment(' comment ')]];
+        yield ['<!-- XXX - XXX -->', [Token::comment(' XXX - XXX ')]];
     }
 }
