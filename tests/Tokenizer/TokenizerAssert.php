@@ -28,7 +28,7 @@ final class TokenizerAssert
         if ($omitEOF) {
             $eof = array_pop($tokens);
         }
-        $expectedTokens = self::convertExpectedTokens($tokens);
+        $expectedTokens = self::convertExpectedTokens($expectedTokens);
         Assert::assertEquals($expectedTokens, $tokens);
         if ($expectedErrors) {
             Assert::assertEquals($expectedErrors, $tokenizer->getErrors());
