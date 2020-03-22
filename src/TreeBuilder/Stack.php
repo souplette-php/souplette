@@ -63,24 +63,6 @@ class Stack extends \SplStack
         $this->add($offset - 1, $value);
     }
 
-    public function insertBack(int $offset, $value): void
-    {
-        $lastIndex = $this->count() - 1;
-        if ($offset === 0 || $offset < -$lastIndex - 2) {
-            $this->unshift($value);
-            return;
-        }
-        if ($offset === -1 || $offset > $lastIndex) {
-            $this->push($value);
-            return;
-        }
-        if ($offset < -1) {
-            $this->add(-$offset - 2, $value);
-            return;
-        }
-        $this->add($lastIndex - $offset, $value);
-    }
-
     public function remove($value): bool
     {
         $i = 0;
