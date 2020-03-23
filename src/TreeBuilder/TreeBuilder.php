@@ -432,14 +432,25 @@ final class TreeBuilder
         $localName = $token->name;
         // 7. Let element be the result of creating an element given document, localName, given namespace, null, and is.
         // If will execute script is true, set the synchronous custom elements flag; otherwise, leave it unset.
-        $element = $doc->createElementNS($namespace, $localName);
+        try {
+            $element = $doc->createElementNS($namespace, $localName);
+        } catch (\DOMException $err) {
+            $element = DomExceptionHandler::handleCreateElementException($err, $token, $namespace, $doc);
+            if ($element === null) {
+                throw new \LogicException("Could not create element: {$token->name}");
+            }
+        }
         // 8. Append each attribute in the given token to element.
         if ($token->attributes) {
             foreach ($token->attributes as $name => $value) {
                 if ($value instanceof \DOMAttr) {
                     $element->appendChild($value);
                 } else {
-                    $element->setAttribute($name, $value);
+                    try {
+                        $element->setAttribute((string)$name, $value);
+                    } catch (\DOMException $err) {
+                        DomExceptionHandler::handleSetAttributeException($err, $element, (string)$name, $value);
+                    }
                 }
             }
         }

@@ -3,6 +3,7 @@
 namespace ju1ius\HtmlParser\Serializer;
 
 use ju1ius\HtmlParser\Namespaces;
+use ju1ius\HtmlParser\TreeBuilder\XmlUtils;
 
 /**
  * @see https://html.spec.whatwg.org/multipage/parsing.html#serialising-html-fragments
@@ -40,6 +41,7 @@ final class Serializer
                 } else {
                     $tagName = $currentNode->tagName;
                 }
+                $tagName = XmlUtils::unescapeXmlName($tagName);
                 // Append a U+003C LESS-THAN SIGN character (<), followed by tagName.
                 $s .= "<{$tagName}";
                 // NOTE: next spec step is skipped since we do not support custom elements.
@@ -54,7 +56,7 @@ final class Serializer
                     // and a second U+0022 QUOTATION MARK character (").
                     $s .= sprintf(
                         ' %s="%s"',
-                        $this->serializeAttributeName($attr),
+                        XmlUtils::unescapeXmlName($this->serializeAttributeName($attr)),
                         $this->escapeString($attr->nodeValue, true)
                     );
                 }
