@@ -161,7 +161,7 @@ final class InForeignContent extends RuleSet
             if (strcasecmp($node->localName, $token->name) !== 0) {
                 // TODO: Parse error.
             }
-            while ($node->namespaceURI !== Namespaces::HTML) {
+            while ($node && $node->namespaceURI !== Namespaces::HTML) {
                 // Loop: If node is the topmost element in the stack of open elements, then return. (fragment case)
                 if ($node === $tree->openElements->bottom()) {
                     return;
