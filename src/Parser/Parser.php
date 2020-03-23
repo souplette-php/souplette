@@ -64,7 +64,7 @@ final class Parser
             return Encoding::tentative($sniffed);
         }
 
-        return Encoding::unknown();
+        return Encoding::default();
     }
 
     private function preprocessInput(string $input, Encoding $encoding): string
