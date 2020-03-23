@@ -2,9 +2,13 @@
 
 namespace ju1ius\HtmlParser\Tests\Html5Lib;
 
+use ju1ius\HtmlParser\Parser\InputPreprocessor;
 use ju1ius\HtmlParser\Tests\ResourceCollector;
-use ju1ius\HtmlParser\Tests\Tokenizer\TokenizerAssert;
 use ju1ius\HtmlParser\Tokenizer\Token;
+use ju1ius\HtmlParser\Tokenizer\Tokenizer;
+use ju1ius\HtmlParser\Tokenizer\TokenizerStates;
+use ju1ius\HtmlParser\Tokenizer\TokenTypes;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 
 class TokenizationTest extends TestCase
@@ -15,9 +19,24 @@ class TokenizationTest extends TestCase
      */
     public function testTokenization(array $test)
     {
-        $input = $test['input'];
-        $expected = self::convertHtml5LibTokens($test['output']);
-        TokenizerAssert::tokensEquals($input, $expected);
+        $doubleEscaped = $test['doubleEscaped'] ?? false;
+        $input = $doubleEscaped ? self::unescape($test['input']) : $test['input'];
+        $expectedTokens = self::convertHtml5LibTokens($test['output'], $doubleEscaped);
+        //$expectedErrors = self::convertHtml5LibErrors($test['errors'] ?? [], $input);
+
+        $input = InputPreprocessor::removeBOM($input);
+        $input = InputPreprocessor::normalizeNewlines($input);
+        $tokenizer = new Tokenizer($input);
+        $initialStates = self::convertHtml5LibStates($test['initialStates'] ?? []);
+        foreach ($initialStates as $state) {
+            $tokens = iterator_to_array($tokenizer->tokenize($state));
+            array_pop($tokens);
+            $tokens = self::concatenateCharacterTokens($tokens);
+            Assert::assertEquals($expectedTokens, $tokens, 'Tokens differ.');
+            //if ($expectedErrors) {
+            //    Assert::assertEquals($expectedErrors, $tokenizer->getErrors(), 'Errors differ.');
+            //}
+        }
     }
 
     public function tokenizationProvider()
@@ -30,24 +49,36 @@ class TokenizationTest extends TestCase
         }
     }
 
-    private static function convertHtml5LibTokens(array $input): array
+    private static function convertHtml5LibTokens(array $input, bool $doubleEscaped = false): array
     {
         $tokens = [];
         foreach ($input as $item) {
             $type = $item[0];
             $args = array_slice($item, 1);
+            if ($doubleEscaped) {
+                $args[0] = self::unescape($args[0]);
+            }
             switch ($type) {
                 case 'DOCTYPE':
-                    $tokens[] = Token::doctype($args[0] ?? '', $args[1] ?? null, $args[2] ?? null, $args[3] ?? false);
+                    $tokens[] = Token::doctype($args[0] ?? '', $args[1] ?? null, $args[2] ?? null, !($args[3] ?? true));
                     break;
                 case 'Comment':
-                    $tokens[] = Token::comment($args[0] ?? '');
+                    $tokens[] = Token::comment($args[0]);
                     break;
                 case 'Character':
-                    $tokens[] = Token::character($args[0] ?? '');
+                    $tokens[] = Token::character($args[0]);
                     break;
                 case 'StartTag':
-                    $tokens[] = Token::startTag($args[0], $args[2] ?? false, $args[1] ?? null);
+                    $attrs = $args[1] ?? null;
+                    if (!empty($attrs)) {
+                        foreach ($attrs as $name => $value) {
+                            unset($attrs[$name]);
+                            $attrs[self::unescape((string)$name)] = self::unescape($value);
+                        }
+                    } else {
+                        $attrs = null;
+                    }
+                    $tokens[] = Token::startTag($args[0], $args[2] ?? false, $attrs);
                     break;
                 case 'EndTag':
                     $tokens[] = Token::endTag($args[0]);
@@ -69,5 +100,74 @@ class TokenizationTest extends TestCase
         foreach (ResourceCollector::collect($path, 'test') as $relPath => $fileInfo) {
             yield $relPath => new JsonFile($fileInfo->getPathname());
         }
+    }
+
+    /**
+     * @param Token[] $tokens
+     * @return Token[]
+     */
+    private static function concatenateCharacterTokens(array $tokens): array
+    {
+        $output = new \SplDoublyLinkedList();
+        foreach ($tokens as $i => $token) {
+            if ($output->isEmpty()) {
+                $output->push($token);
+                continue;
+            }
+            $last = $output->top();
+            if ($token->type === TokenTypes::CHARACTER && $last->type === $token->type) {
+                $last->data .= $token->data;
+            } else {
+                $output->push($token);
+            }
+        }
+
+        return iterator_to_array($output);
+    }
+
+    private static function unescape(string $input): string
+    {
+        return preg_replace_callback('/\\\\u(?P<cp>[a-zA-Z0-9]{4})/', function($matches) {
+            return \IntlChar::chr(hexdec($matches['cp']));
+        }, $input);
+    }
+
+    private static function convertHtml5LibErrors(array $errors, string $input): array
+    {
+        $output = [];
+        foreach ($errors as $error) {
+            $output[] = [$error['code'], self::sourcePositionToOffset($input, $error['line'], $error['col'])];
+        }
+
+        return $output;
+    }
+
+    private static function convertHtml5LibStates(array $stateNames): array
+    {
+        if (!$stateNames) {
+            return [TokenizerStates::DATA];
+        }
+        $states = [];
+        foreach ($stateNames as $stateName) {
+            $name = str_replace([' ', '_STATE'], ['_', ''], strtoupper($stateName));
+            $states[] = constant(sprintf('%s::%s', TokenizerStates::class, $name));
+        }
+        return $states;
+    }
+
+    public static function sourcePositionToOffset(string $source, int $lineno, int $col): int
+    {
+        if ($lineno === 1) {
+            return $col - 1;
+        }
+
+        $lines = preg_split('/\r\n|\n/', $source, -1, PREG_SPLIT_OFFSET_CAPTURE);
+        $line = $lines[$lineno - 1] ?? null;
+        if ($line === null) {
+            throw new \RuntimeException("No such line: $lineno");
+        }
+        [, $offset] = $line;
+
+        return max(0, min($offset + $col - 1, strlen($source)));
     }
 }
