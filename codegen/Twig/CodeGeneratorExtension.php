@@ -13,6 +13,7 @@ final class CodeGeneratorExtension extends AbstractExtension
     {
         return [
             new TwigFilter('indent', [$this, 'indent']),
+            new TwigFilter('pascal_case', [$this, 'pascalCase']),
             new TwigFilter('repr', [$this, 'repr']),
             new TwigFilter('repr_str', [$this, 'reprString']),
             new TwigFilter('repr_bytes', [$this, 'reprBytes']),
@@ -39,12 +40,23 @@ final class CodeGeneratorExtension extends AbstractExtension
         return implode("\n", $output);
     }
 
+    public function pascalCase(string $input): string
+    {
+        $input = preg_replace('/[^a-z0-9 _-]+/i', '', $input);
+        $parts = preg_split('/[ _-]+/', $input, -1, PREG_SPLIT_NO_EMPTY);
+        return implode('', array_map(fn($s) => ucfirst(strtolower($s)), $parts));
+    }
+
     public function repr($value): string
     {
         if (is_string($value)) {
             return $this->reprString($value);
         } elseif (is_array($value)) {
             return $this->reprArray($value);
+        } elseif (is_bool($value)) {
+            return $value ? 'true': 'false';
+        } elseif (is_null($value)) {
+            return 'null';
         }
         return (string)$value;
     }
@@ -127,6 +139,9 @@ final class CodeGeneratorExtension extends AbstractExtension
 
     private function isCodepointPrintable(int $cp): bool
     {
+        if ($cp < 128) {
+            return !ctype_cntrl($cp);
+        }
         if (IntlChar::iscntrl($cp) || !IntlChar::isprint($cp) || !IntlChar::isgraph($cp)) {
             return false;
         }

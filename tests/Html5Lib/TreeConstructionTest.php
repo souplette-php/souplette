@@ -47,6 +47,8 @@ class TreeConstructionTest extends TestCase
     private function collectDataFiles()
     {
         $rootPath = __DIR__ . '/../resources/html5lib-tests/tree-construction';
+        //yield 'tests1.dat' => new DataFile($rootPath.'/tests1.dat');
+        //yield 'tests2.dat' => new DataFile($rootPath.'/tests2.dat');
         foreach (ResourceCollector::collect($rootPath, 'dat') as $relPath => $fileInfo) {
             yield $relPath => new DataFile($fileInfo->getPathname());
         }

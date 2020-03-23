@@ -26,8 +26,8 @@ final class Utils
     {
         $it = \IntlBreakIterator::createCodePointInstance();
         $it->setText($input);
-        foreach ($it as $i => $char) {
-            yield $i => $char;
+        foreach ($it->getPartsIterator(\IntlPartsIterator::KEY_LEFT) as $offset => $char) {
+            yield $offset => $char;
         }
     }
 
@@ -47,5 +47,21 @@ final class Utils
                 $destination
             ));
         }
+    }
+
+    public static function sourcePositionToOffset(string $source, int $lineno, int $col): int
+    {
+        if ($lineno === 1) {
+            return $col - 1;
+        }
+
+        $lines = preg_split('/\r\n|\n/', $source, -1, PREG_SPLIT_OFFSET_CAPTURE);
+        $line = $lines[$lineno - 1] ?? null;
+        if ($line === null) {
+            throw new \RuntimeException("No such line: $lineno");
+        }
+        [$text, $offset] = $line;
+
+        return max(0, min($offset + $col - 1, strlen($source)));
     }
 }
