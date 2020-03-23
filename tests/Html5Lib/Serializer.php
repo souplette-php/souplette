@@ -3,7 +3,7 @@
 namespace ju1ius\HtmlParser\Tests\Html5Lib;
 
 use ju1ius\HtmlParser\Namespaces;
-use ju1ius\HtmlParser\TreeBuilder\XmlUtils;
+use ju1ius\HtmlParser\Xml\XmlNameEscaper;
 
 final class Serializer
 {
@@ -43,7 +43,7 @@ final class Serializer
         } elseif ($node instanceof \DOMText) {
             $output[] = sprintf('|%s"%s"', $indent, $node->nodeValue);
         } else {
-            $localName = XmlUtils::unescapeXmlName($node->localName);
+            $localName = XmlNameEscaper::unescape($node->localName);
             if ($node->namespaceURI && $node->namespaceURI !== Namespaces::HTML) {
                 $name = sprintf('%s %s', Namespaces::PREFIXES[$node->namespaceURI], $localName);
             } else {
@@ -53,7 +53,7 @@ final class Serializer
             $attributes = [];
             /** @var \DOMAttr $attr */
             foreach ($node->attributes as $name => $attr) {
-                $nodeName = XmlUtils::unescapeXmlName($attr->nodeName);
+                $nodeName = XmlNameEscaper::unescape($attr->nodeName);
                 if ($attr->namespaceURI) {
                     $name = sprintf('%s %s', Namespaces::PREFIXES[$attr->namespaceURI], $nodeName);
                 } else {

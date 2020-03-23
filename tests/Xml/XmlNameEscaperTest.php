@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace ju1ius\HtmlParser\Tests\TreeBuilder;
+namespace ju1ius\HtmlParser\Tests\Xml;
 
 use ju1ius\HtmlParser\Namespaces;
-use ju1ius\HtmlParser\TreeBuilder\XmlUtils;
+use ju1ius\HtmlParser\Xml\XmlNameEscaper;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 
-final class XmlUtilsTest extends TestCase
+final class XmlNameEscaperTest extends TestCase
 {
     /**
      * @dataProvider escapeElementNameProvider
@@ -16,7 +16,7 @@ final class XmlUtilsTest extends TestCase
      */
     public function testEscapeElementName(string $input, string $expected)
     {
-        $name = XmlUtils::escapeXmlName($input);
+        $name = XmlNameEscaper::escape($input);
         Assert::assertSame($expected, $name);
         // Should not throw exception
         $element = new \DOMElement($name, Namespaces::HTML);
@@ -38,7 +38,7 @@ final class XmlUtilsTest extends TestCase
      */
     public function testUnescapeElementName(string $input, string $expected)
     {
-        Assert::assertSame($expected, XmlUtils::unescapeXmlName($input));
+        Assert::assertSame($expected, XmlNameEscaper::unescape($input));
     }
 
     public function unescapeElementNameProvider()
