@@ -29,9 +29,9 @@ final class Encoding
         $this->confidence = $confidence;
     }
 
-    public static function unknown(): self
+    public static function default(): self
     {
-        return new self(EncodingLookup::UTF_8, self::CONFIDENCE_TENTATIVE);
+        return new self(EncodingLookup::WINDOWS_1252, self::CONFIDENCE_TENTATIVE);
     }
 
     public static function irrelevant(string $encoding): self
