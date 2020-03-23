@@ -23,13 +23,14 @@ class TokenizationTest extends TestCase
         $input = $doubleEscaped ? self::unescape($test['input']) : $test['input'];
         $expectedTokens = self::convertHtml5LibTokens($test['output'], $doubleEscaped);
         //$expectedErrors = self::convertHtml5LibErrors($test['errors'] ?? [], $input);
+        $appropriateEndTag = $test['lastStartTag'] ?? null;
 
         $input = InputPreprocessor::removeBOM($input);
         $input = InputPreprocessor::normalizeNewlines($input);
         $tokenizer = new Tokenizer($input);
         $initialStates = self::convertHtml5LibStates($test['initialStates'] ?? []);
         foreach ($initialStates as $state) {
-            $tokens = iterator_to_array($tokenizer->tokenize($state));
+            $tokens = iterator_to_array($tokenizer->tokenize($state, $appropriateEndTag));
             array_pop($tokens);
             $tokens = self::concatenateCharacterTokens($tokens);
             Assert::assertEquals($expectedTokens, $tokens, 'Tokens differ.');

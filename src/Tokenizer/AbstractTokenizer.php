@@ -67,10 +67,11 @@ abstract class AbstractTokenizer
 
     abstract public function nextToken();
 
-    final public function tokenize(int $startState = TokenizerStates::DATA)
+    final public function tokenize(int $startState = TokenizerStates::DATA, ?string $appropriateEndTag = null)
     {
         $this->reset();
         $this->state = $startState;
+        $this->appropriateEndTag = $appropriateEndTag;
         do {
             $carryOn = $this->nextToken();
             while (!$this->tokenQueue->isEmpty()) {
