@@ -1708,7 +1708,7 @@ final class Tokenizer extends AbstractTokenizer
                     // Create a new DOCTYPE token.
                     $this->currentToken = new Doctype();
                     // Set the token's name to a U+FFFD REPLACEMENT CHARACTER character.
-                    $this->currentToken->name = "u\{FFFD}";
+                    $this->currentToken->name = "\u{FFFD}";
                     // Switch to the DOCTYPE name state.
                     $this->state = TokenizerStates::DOCTYPE_NAME;
                     $cc = $this->input[++$this->position] ?? null;
@@ -1764,7 +1764,7 @@ final class Tokenizer extends AbstractTokenizer
                     // This is an unexpected-null-character parse error.
                     $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                     // Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's name.
-                    $this->currentToken->name .= "u\{FFFD}";
+                    $this->currentToken->name .= "\u{FFFD}";
                     $cc = $this->input[++$this->position] ?? null;
                     goto DOCTYPE_NAME;
                 } elseif ($cc === null) {

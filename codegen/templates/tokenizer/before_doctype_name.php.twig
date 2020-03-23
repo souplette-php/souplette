@@ -12,7 +12,7 @@ if ({{ h.is_whitespace() }}) {
     // Create a new DOCTYPE token.
     $this->currentToken = new Doctype();
     // Set the token's name to a U+FFFD REPLACEMENT CHARACTER character.
-    $this->currentToken->name = "u\{FFFD}";
+    $this->currentToken->name = "\u{FFFD}";
     // Switch to the DOCTYPE name state.
     {{ h.advance_to('DOCTYPE_NAME') }}
 } elseif ($cc === '>') {
