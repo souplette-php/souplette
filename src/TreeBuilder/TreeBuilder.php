@@ -421,7 +421,7 @@ final class TreeBuilder
 
     public function createDoctype(Token\Doctype $token)
     {
-        return $this->dom->createDocumentType($token->name, $token->publicIdentifier ?: '', $token->publicIdentifier ?: '');
+        return $this->dom->createDocumentType($token->name, $token->publicIdentifier ?: '', $token->systemIdentifier ?: '');
     }
 
     public function createElement(Token\Tag $token, string $namespace, \DOMNode $intendedParent): \DOMElement
@@ -557,6 +557,7 @@ final class TreeBuilder
         if (!$token->attributes) return;
         foreach ($token->attributes as $name => $value) {
             if (isset(Attributes::ADJUSTED_SVG_ATTRIBUTES[$name])) {
+                unset($token->attributes[$name]);
                 $name = Attributes::ADJUSTED_SVG_ATTRIBUTES[$name];
                 $token->attributes[$name] = $value;
             }
@@ -568,6 +569,7 @@ final class TreeBuilder
         if (!$token->attributes) return;
         foreach ($token->attributes as $name => $value) {
             if (isset(Attributes::ADJUSTED_MATHML_ATTRIBUTES[$name])) {
+                unset($token->attributes[$name]);
                 $name = Attributes::ADJUSTED_MATHML_ATTRIBUTES[$name];
                 $token->attributes[$name] = $value;
             }
@@ -579,6 +581,7 @@ final class TreeBuilder
         if (!$token->attributes) return;
         foreach ($token->attributes as $name => $value) {
             if (isset(Attributes::ADJUSTED_FOREIGN_ATTRIBUTES[$name])) {
+                unset($token->attributes[$name]);
                 [$prefix, $localName, $ns] = Attributes::ADJUSTED_FOREIGN_ATTRIBUTES[$name];
                 if (!$prefix) {
                     $attr = $this->document->createAttribute($name);

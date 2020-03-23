@@ -13,7 +13,7 @@ final class Namespaces
 
     const PREFIXES = [
         self::HTML => 'html',
-        self::MATHML => 'mathml',
+        self::MATHML => 'math',
         self::SVG => 'svg',
         self::XLINK => 'xlink',
         self::XML => 'xml',
@@ -22,7 +22,7 @@ final class Namespaces
 
     const NAMESPACES = [
         'html' => self::HTML,
-        'mathml' => self::MATHML,
+        'math' => self::MATHML,
         'svg' => self::SVG,
         'xlink' => self::XLINK,
         'xml' => self::XML,
