@@ -81,12 +81,7 @@ final class InBody extends RuleSet
                 // check to see if the attribute is already present on the top element of the stack of open elements.
                 // If it is not, add the attribute and its corresponding value to that element.
                 if ($token->attributes) {
-                    $top = $tree->openElements->bottom();
-                    foreach ($token->attributes as $name => $value) {
-                        if (!$top->hasAttribute($name)) {
-                            $top->setAttribute($name, $value);
-                        }
-                    }
+                    $tree->mergeAttributes($token, $tree->openElements->bottom());
                 }
                 return;
             } elseif (
@@ -124,11 +119,9 @@ final class InBody extends RuleSet
                 // then, for each attribute on the token,
                 // check to see if the attribute is already present on the body element (the second element) on the stack of open elements,
                 // and if it is not, add the attribute and its corresponding value to that element.
-                $body = $tree->openElements[$count - 2];
-                foreach ($token->attributes as $name => $value) {
-                    if (!$body->hasAttribute($name)) {
-                        $body->setAttribute($name, $value);
-                    }
+                if ($token->attributes) {
+                    $body = $tree->openElements[$count - 2];
+                    $tree->mergeAttributes($token, $body);
                 }
                 return;
             } elseif ($tagName === 'frameset') {

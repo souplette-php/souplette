@@ -11,6 +11,7 @@ use ju1ius\HtmlParser\Tokenizer\Tokenizer;
 use ju1ius\HtmlParser\Tokenizer\TokenizerStates;
 use ju1ius\HtmlParser\Tokenizer\TokenTypes;
 use ju1ius\HtmlParser\TreeBuilder\RuleSet\InForeignContent;
+use ju1ius\HtmlParser\Xml\XmlNameEscaper;
 use SplStack;
 
 final class TreeBuilder
@@ -532,6 +533,23 @@ final class TreeBuilder
 
         // 5. Return element.
         return $element;
+    }
+
+    public function mergeAttributes(Token\StartTag $fromToken, \DOMElement $toElement): void
+    {
+        foreach ($fromToken->attributes as $name => $value) {
+            try {
+                $name = (string)$name;
+                if (!$toElement->hasAttribute($name)) {
+                    $toElement->setAttribute($name, $value);
+                }
+            } catch (\DOMException $err) {
+                $name = XmlNameEscaper::escape((string)$name);
+                if (!$toElement->hasAttribute($name)) {
+                    $toElement->setAttribute($name, $value);
+                }
+            }
+        }
     }
 
     /**
