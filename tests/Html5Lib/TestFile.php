@@ -38,11 +38,11 @@ abstract class TestFile implements \ArrayAccess, \IteratorAggregate
 
     public function offsetSet($offset, $value)
     {
-        throw new \LogicException('TestFile cannot be modified.');
+        $this->tests[$offset] = $value;
     }
 
     public function offsetUnset($offset)
     {
-        throw new \LogicException('TestFile cannot be modified.');
+        unset($this->tests[$offset]);
     }
 }

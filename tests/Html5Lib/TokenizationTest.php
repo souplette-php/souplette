@@ -22,6 +22,7 @@ class TokenizationTest extends TestCase
         $doubleEscaped = $test['doubleEscaped'] ?? false;
         $input = $doubleEscaped ? self::unescape($test['input']) : $test['input'];
         $expectedTokens = self::convertHtml5LibTokens($test['output'], $doubleEscaped);
+        // TODO: test parse errors.
         //$expectedErrors = self::convertHtml5LibErrors($test['errors'] ?? [], $input);
         $appropriateEndTag = $test['lastStartTag'] ?? null;
 
@@ -71,13 +72,14 @@ class TokenizationTest extends TestCase
                     break;
                 case 'StartTag':
                     $attrs = $args[1] ?? null;
-                    if (!empty($attrs)) {
+                    if (empty($attrs)) {
+                        $attrs = null;
+                    }
+                    if ($doubleEscaped && $attrs) {
                         foreach ($attrs as $name => $value) {
                             unset($attrs[$name]);
                             $attrs[self::unescape((string)$name)] = self::unescape($value);
                         }
-                    } else {
-                        $attrs = null;
                     }
                     $tokens[] = Token::startTag($args[0], $args[2] ?? false, $attrs);
                     break;
