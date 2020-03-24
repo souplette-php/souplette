@@ -20,5 +20,5 @@ if ($cc === '>') {
     // Append the current input character to the comment token's data.
     {{ h.chars_until(">\0") }}
     $this->currentToken->data .= $chars;
-    {{ h.advance_to(current_state) }}
+    {{ h.update_and_continue(current_state) }}
 }

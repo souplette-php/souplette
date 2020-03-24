@@ -1369,8 +1369,7 @@ final class Tokenizer extends AbstractTokenizer
                     $chars = substr($this->input, $this->position, $l);
                     $this->position += $l;
                     $this->currentToken->data .= $chars;
-                    $this->state = TokenizerStates::BOGUS_COMMENT;
-                    $cc = $this->input[++$this->position] ?? null;
+                    $cc = $this->input[$this->position] ?? null;
                     goto BOGUS_COMMENT;
                 }
             }
