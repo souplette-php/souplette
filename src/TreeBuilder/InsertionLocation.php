@@ -26,7 +26,11 @@ final class InsertionLocation
         $this->parent = $parent;
         $this->target = $target ?: $parent->lastChild;
         $this->beforeTarget = $beforeTarget;
-        $this->document = $parent->nodeType === XML_DOCUMENT_NODE ? $parent : $parent->ownerDocument;
+        if ($parent->nodeType === XML_HTML_DOCUMENT_NODE || $parent->nodeType === XML_DOCUMENT_NODE) {
+            $this->document = $parent;
+        } else {
+            $this->document = $parent->ownerDocument;
+        }
     }
 
     public function insert(\DOMNode $node)

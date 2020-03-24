@@ -107,6 +107,11 @@ final class TreeBuilder
      */
     public $framesetOK = true;
 
+    /**
+     * @var \DOMDocumentType
+     */
+    private $blankDoctype;
+
     public function __construct(\DOMImplementation $dom)
     {
         $this->dom = $dom;
@@ -170,7 +175,7 @@ final class TreeBuilder
         $this->fosterParenting = false;
         $this->framesetOK = true;
         $this->insertionMode = InsertionModes::INITIAL;
-        $this->document = $this->dom->createDocument();
+        $this->document = $this->createDocument();
     }
 
     private function run()
@@ -420,15 +425,35 @@ final class TreeBuilder
         return $adjustedInsertionLocation;
     }
 
+    private function createDocument(): \DOMDocument
+    {
+        $doc = $this->dom->createDocument();
+        // This seems to be the only way to create a doctype with an empty name...
+        @$doc->loadHTML('<!DOCTYPE>');
+        $this->blankDoctype = $doc->removeChild($doc->doctype);
+        if ($doc === null) {
+            throw new \LogicException('Document is null');
+        }
+
+        return $doc;
+    }
+
     public function createDoctype(Token\Doctype $token)
     {
+        if ($token->name === '') {
+            return $this->blankDoctype;
+        }
         return $this->dom->createDocumentType($token->name, $token->publicIdentifier ?: '', $token->systemIdentifier ?: '');
     }
 
     public function createElement(Token\Tag $token, string $namespace, \DOMNode $intendedParent): \DOMElement
     {
         // 1. Let document be intended parent's node document.
-        $doc = $intendedParent->nodeType === XML_DOCUMENT_NODE ? $intendedParent : $intendedParent->ownerDocument;
+        if ($intendedParent->nodeType === XML_HTML_DOCUMENT_NODE || $intendedParent->nodeType === XML_DOCUMENT_NODE) {
+            $doc = $intendedParent;
+        } else {
+            $doc = $intendedParent->ownerDocument;
+        }
         // 2. Let local name be the tag name of the token.
         $localName = $token->name;
         // 7. Let element be the result of creating an element given document, localName, given namespace, null, and is.
@@ -503,7 +528,7 @@ final class TreeBuilder
         $location->insert($node);
     }
 
-    public function insertElement(Token\Tag $token, string $namespace = Namespaces::HTML)
+    public function insertElement(Token\Tag $token, string $namespace = Namespaces::HTML): \DOMElement
     {
         // 1. Let the adjusted insertion location be the appropriate place for inserting a node.
         $location = $this->appropriatePlaceForInsertingANode();
