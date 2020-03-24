@@ -4,15 +4,18 @@ namespace ju1ius\HtmlParser\Tokenizer;
 
 final class EntitySearch extends EntitySearchNode
 {
+    private static $instance;
+
     public static function create(): self
     {
-        // TODO: this could become a singleton to improve speed over memory.
-        $root = new self();
-        foreach (EntityLookup::NAMED_ENTITIES as $entity => $unicodeValue) {
-            $root->add($entity, $unicodeValue);
+        if (!self::$instance) {
+            self::$instance = new self();
+            foreach (EntityLookup::NAMED_ENTITIES as $entity => $unicodeValue) {
+                self::$instance->add($entity, $unicodeValue);
+            }
         }
 
-        return $root;
+        return self::$instance;
     }
 
     private function __construct() {}
