@@ -7,7 +7,7 @@ use ju1ius\HtmlParser\Xml\XmlNameEscaper;
 
 final class Serializer
 {
-    public function serialize(\DOMDocument $doc): string
+    public function serialize(\DOMNode $doc): string
     {
         $output = [];
         $this->serializeNode($doc, $output);
@@ -61,7 +61,7 @@ final class Serializer
                 }
                 $attributes[$name] = $attr->nodeValue;
             }
-            ksort($attributes);
+            $attributes = $this->sortAttributes($attributes);
             foreach ($attributes as $name => $value) {
                 $output[] = sprintf('|%s  %s="%s"', $indent, $name, $value);
             }
@@ -71,5 +71,18 @@ final class Serializer
                 $this->serializeNode($child, $output, $depth + 1);
             }
         }
+    }
+
+    private function sortAttributes(array $attrs): array
+    {
+        $names = array_map(function($name) {
+            return (string)$name;
+        }, array_keys($attrs));
+        sort($names);
+
+        return array_reduce($names, function($acc, $name) use ($attrs) {
+            $acc[$name] = $attrs[$name];
+            return $acc;
+        }, []);
     }
 }
