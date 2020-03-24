@@ -1034,7 +1034,8 @@ final class Tokenizer extends AbstractTokenizer
             BEFORE_ATTRIBUTE_NAME: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Ignore the character.
-                    $cc = $this->input[++$this->position] ?? null;
+                    $this->position += strspn($this->input, " \t\n\f", $this->position);
+                    $cc = $this->input[$this->position] ?? null;
                     goto BEFORE_ATTRIBUTE_NAME;
                 } elseif ($cc === '/' || $cc === '>' || $cc === null) {
                     // Reconsume in the after attribute name state.

@@ -30,6 +30,10 @@ $this->position += $l;
 $this->position += strspn($this->input, {{ bytes|repr_bytes }}, $this->position);
 {%- endmacro %}
 
+{% macro skip_whitespace() -%}
+{{ _self.skip_while(" \t\n\f") }}
+{%- endmacro %}
+
 {% macro chars_while_alpha(return_var = 'chars') -%}
 {{ _self.chars_while(constant('ju1ius\\HtmlParser\\Tokenizer\\Characters::ALPHA'), return_var) }}
 {%- endmacro %}

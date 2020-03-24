@@ -4,7 +4,8 @@
 {% import 'tokenizer/_macros.php.twig' as h -%}
 if ({{ h.is_whitespace() }}) {
     // Ignore the character.
-    {{ h.consume('BEFORE_ATTRIBUTE_NAME') }}
+    {{ h.skip_whitespace() }}
+    {{ h.update_and_continue(current_state) }}
 } elseif ({{ cc_in('/', '>') }} || {{ h.is_eof() }}) {
     // Reconsume in the after attribute name state.
     {{ h.reconsume_in('AFTER_ATTRIBUTE_NAME') }}
