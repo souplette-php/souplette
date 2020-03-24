@@ -195,7 +195,7 @@ final class Elements
         'mtext' => true,
     ];
 
-    const HTHML_INTEGRATION_POINTS = [
+    const HTML_INTEGRATION_POINTS = [
         Namespaces::SVG => [
             'foreignObject' => true,
             'desc' => true,
@@ -304,7 +304,7 @@ final class Elements
             $encoding = strtolower($element->getAttribute('encoding'));
             return $encoding === 'text/html' || $encoding === 'application/xhtml+xml';
         }
-        return isset(self::HTHML_INTEGRATION_POINTS[$element->namespaceURI][$element->localName]);
+        return isset(self::HTML_INTEGRATION_POINTS[$element->namespaceURI][$element->localName]);
     }
 
     public static function isMathMlTextIntegrationPoint(\DOMElement $element)
