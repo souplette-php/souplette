@@ -7,7 +7,7 @@ final class EncodingSniffer
     private const ATTR_PATTERN = <<<'REGEXP'
 @
     \G
-    \s* (?P<name> [^=/>]+ )
+    [\t\n\f\r /]* (?P<name> [^=/>]+ )
     \s* = \s*
     (?:
         " (?P<value> [^"]* ) "
@@ -22,7 +22,7 @@ REGEXP;
     \G
     (?:
         (?P<comment> <!(?=--) .*? --> )
-        | (?P<meta> <meta[/ ] )
+        | (?P<meta> <meta[\t\n\f\r /] )
         | (?P<tag> < /? [a-z] [^\t\n\f\r >]* )
         | (?P<markup> < [!?/] [^>]* > )
     )
@@ -71,7 +71,7 @@ REGEXP;
         while ($pos < $length) {
             // skip until next '<' character
             $pos += strcspn($input, '<', $pos);
-            if (!preg_match(self::MAIN_PATTERN, $input, $matches, 0, $pos)) {
+            if (!preg_match(self::MAIN_PATTERN, $input, $matches, PREG_UNMATCHED_AS_NULL, $pos)) {
                 $pos++;
                 continue;
             }
