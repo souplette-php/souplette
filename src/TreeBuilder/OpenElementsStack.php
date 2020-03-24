@@ -77,7 +77,7 @@ final class OpenElementsStack extends Stack
 
     public function hasElementInSelectScope(\DOMElement $target): bool
     {
-        return !$this->hasElementInSpecificScope($target, Elements::SCOPE_SELECT);
+        return $this->hasElementInSpecificScope($target, Elements::SCOPE_SELECT, true);
     }
 
     /**
@@ -85,9 +85,10 @@ final class OpenElementsStack extends Stack
      *
      * @param \DOMElement $targetNode
      * @param array $scope
+     * @param bool $invert
      * @return bool
      */
-    private function hasElementInSpecificScope(\DOMElement $targetNode, array $scope): bool
+    private function hasElementInSpecificScope(\DOMElement $targetNode, array $scope, bool $invert = false): bool
     {
         foreach ($this as $node) {
             // If node is the target node, terminate in a match state.
@@ -95,7 +96,8 @@ final class OpenElementsStack extends Stack
                 return true;
             }
             // Otherwise, if node is one of the element types in list, terminate in a failure state.
-            if (isset($scope[$node->namespaceURI][$node->localName])) {
+            $inScope = isset($scope[$node->namespaceURI][$node->localName]);
+            if ($invert ^ $inScope) {
                 return false;
             }
         }
@@ -145,18 +147,24 @@ final class OpenElementsStack extends Stack
 
     public function hasTagInSelectScope(string $tagName, string $namespace = Namespaces::HTML): bool
     {
-        return !$this->hasTagInSpecificScope(Elements::SCOPE_SELECT, $tagName, $namespace);
+        return $this->hasTagInSpecificScope(Elements::SCOPE_SELECT, $tagName, $namespace, true);
     }
 
-    private function hasTagInSpecificScope(array $scope, string $tagName, string $namespace = Namespaces::HTML): bool
-    {
+    private function hasTagInSpecificScope(
+        array $scope,
+        string $tagName,
+        string $namespace = Namespaces::HTML,
+        bool $invert = false
+    ): bool {
         foreach ($this as $node) {
             // If node is the target node, terminate in a match state.
             if ($node->localName === $tagName && $node->namespaceURI === $namespace) {
                 return true;
             }
             // Otherwise, if node is one of the element types in list, terminate in a failure state.
-            if (isset($scope[$node->namespaceURI][$node->localName])) {
+            $inScope = isset($scope[$node->namespaceURI][$node->localName]);
+            //if (($invert && !$inScope) || (!$invert && $inScope)) {
+            if ($invert ^ $inScope) {
                 return false;
             }
         }
