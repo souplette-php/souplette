@@ -26,7 +26,8 @@ class TokenizationTest extends TestCase
         //$expectedErrors = self::convertHtml5LibErrors($test['errors'] ?? [], $input);
         $appropriateEndTag = $test['lastStartTag'] ?? null;
 
-        $input = InputPreprocessor::removeBOM($input);
+        // html5lib tests expect leading BOM to pass through...
+        //$input = InputPreprocessor::removeBOM($input);
         $input = InputPreprocessor::normalizeNewlines($input);
         $tokenizer = new Tokenizer($input);
         $initialStates = self::convertHtml5LibStates($test['initialStates'] ?? []);
@@ -48,6 +49,21 @@ class TokenizationTest extends TestCase
                 $key = sprintf('%s [%s]', $relPath, $i);
                 yield $key => [$test];
             }
+        }
+    }
+
+    /**
+     * @return \Generator|JsonFile[]
+     */
+    private function collectJsonFiles()
+    {
+        $path = __DIR__.'/../resources/html5lib-tests/tokenizer';
+        foreach (ResourceCollector::collect($path, 'test') as $relPath => $fileInfo) {
+            if ($relPath === 'xmlViolation.test') {
+                // Skip XML violation tests since they are dependant on the DOM implementation
+                continue;
+            }
+            yield $relPath => new JsonFile($fileInfo->getPathname());
         }
     }
 
@@ -92,17 +108,6 @@ class TokenizationTest extends TestCase
         }
 
         return $tokens;
-    }
-
-    /**
-     * @return \Generator|JsonFile[]
-     */
-    private function collectJsonFiles()
-    {
-        $path = __DIR__.'/../resources/html5lib-tests/tokenizer';
-        foreach (ResourceCollector::collect($path, 'test') as $relPath => $fileInfo) {
-            yield $relPath => new JsonFile($fileInfo->getPathname());
-        }
     }
 
     /**
