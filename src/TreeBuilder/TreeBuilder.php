@@ -94,7 +94,13 @@ final class TreeBuilder
      * @var \DOMElement
      */
     private $contextElement;
+    /**
+     * @var \DOMElement
+     */
     public $headElement;
+    /**
+     * @var \DOMElement
+     */
     public $formElement;
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#foster-parent
@@ -128,7 +134,7 @@ final class TreeBuilder
         $this->tokenizer = $tokenizer;
         $this->encoding = $encoding;
         $this->reset();
-        $this->run();
+        $this->run(TokenizerStates::DATA);
         return $this->document;
     }
 
@@ -146,41 +152,80 @@ final class TreeBuilder
         $this->reset();
         $this->isBuildingFragment = true;
         $this->contextElement = $contextElement;
-
+        // TODO: 2. If the node document of the context element is in quirks mode, then let the Document be in quirks mode.
+        // Otherwise, the node document of the context element is in limited-quirks mode,
+        // then let the Document be in limited-quirks mode.
+        // Otherwise, leave the Document in no-quirks mode.
+        $this->compatMode = $contextElement->ownerDocument->compatMode ?? CompatModes::NO_QUIRKS;
+        // 4. Set the state of the HTML parser's tokenization stage as follows, switching on the context element:
         $tagName = $this->contextElement->localName;
         if (isset(Elements::CDATA_ELEMENTS[$tagName])) {
-            $this->tokenizer->state = TokenizerStates::RCDATA;
+            $tokenizerState = TokenizerStates::RCDATA;
         } elseif (isset(Elements::RCDATA_ELEMENTS[$tagName])) {
-            $this->tokenizer->state = TokenizerStates::RAWTEXT;
+            $tokenizerState = TokenizerStates::RAWTEXT;
         } elseif ($tagName === 'plaintext') {
-            $this->tokenizer->state = TokenizerStates::PLAINTEXT;
+            $tokenizerState = TokenizerStates::PLAINTEXT;
+        } else {
+            $tokenizerState = TokenizerStates::DATA;
         }
-        $this->insertionMode = InsertionModes::BEFORE_HTML;
-        //$this->rules->insertHtmlElement();
+        // 5. Let root be a new html element with no attributes.
+        $root = $this->document->createElementNS(Namespaces::HTML, 'html');
+        // 6. Append the element root to the Document node created above.
+        $this->document->appendChild($root);
+        // 7. Set up the parser's stack of open elements so that it contains just the single element root.
+        $this->openElements->push($root);
+        $this->insertionMode = InsertionModes::BEFORE_HEAD;
+        // 8. If the context element is a template element, push "in template" onto the stack of template insertion modes
+        // so that it is the new current template insertion mode.
+        if ($tagName === 'template') {
+            $this->templateInsertionModes->push(InsertionModes::IN_TEMPLATE);
+        }
+        // 9. Create a start tag token whose name is the local name of context and whose attributes are the attributes of context.
+        // Let this start tag token be the start tag token of the context node,
+        // e.g. for the purposes of determining if it is an HTML integration point.
+        // --> not needed. $this->getAdjustedCurrentNode() will do the trick.
+        // 10. Reset the parser's insertion mode appropriately.
         $this->resetInsertionModeAppropriately();
-
-        $this->run();
-
-        return iterator_to_array($this->document->documentElement->childNodes);
+        // 11. Set the parser's form element pointer to the nearest node to the context element that is a form element
+        // (going straight up the ancestor chain, and including the element itself, if it is a form element), if any.
+        // (If there is no such form element, the form element pointer keeps its initial value, null.)
+        $node = $contextElement;
+        while ($node) {
+            if ($node->nodeName === 'form') {
+                $this->formElement = $node;
+                break;
+            }
+            $node = $node->parentNode;
+        }
+        // 12. Place the input into the input stream for the HTML parser just created.
+        // The encoding confidence is irrelevant.
+        $encoding->makeIrrelevant();
+        // 13. Start the parser and let it run until it has consumed all the characters just inserted into the input stream.
+        $this->run($tokenizerState);
+        // 14. Return the child nodes of root, in tree order.
+        return iterator_to_array($root->childNodes);
     }
 
     private function reset(): void
     {
         $this->compatMode = CompatModes::NO_QUIRKS;
+        $this->framesetOK = true;
         $this->isBuildingFragment = false;
         $this->openElements = new OpenElementsStack();
         $this->activeFormattingElements = new ActiveFormattingElementList();
         $this->templateInsertionModes = new SplStack();
         $this->contextElement = null;
-        $this->fosterParenting = false;
-        $this->framesetOK = true;
-        $this->insertionMode = InsertionModes::INITIAL;
+        $this->insertionMode = $this->originalInsertionMode = InsertionModes::INITIAL;
         $this->document = $this->createDocument();
+        $this->headElement = null;
+        $this->formElement = null;
+        $this->fosterParenting = false;
+        $this->pendingTableCharacterTokens = [];
     }
 
-    private function run()
+    private function run(int $tokenizerState)
     {
-        foreach ($this->tokenizer->tokenize() as $token) {
+        foreach ($this->tokenizer->tokenize($tokenizerState) as $token) {
             // Tree construction dispatcher
             // @see https://html.spec.whatwg.org/multipage/parsing.html#tree-construction-dispatcher
             if ($this->openElements->isEmpty()) {
@@ -215,7 +260,6 @@ final class TreeBuilder
                 )
                 || $token->type === TokenTypes::EOF
             ) {
-                //$this->processToken($token);
                 (self::RULES[$this->insertionMode])::process($token, $this);
             } else {
                 InForeignContent::process($token, $this);
@@ -316,8 +360,13 @@ final class TreeBuilder
             // 15. If node is an html element, run these substeps:
             if ($nodeName === 'html') {
                 // 15.1 If the head element pointer is null, switch the insertion mode to "before head" and return. (fragment case)
+                if ($this->headElement === null) {
+                    $this->insertionMode = InsertionModes::BEFORE_HEAD;
+                    return;
+                }
                 // 15.2 Otherwise, the head element pointer is not null, switch the insertion mode to "after head" and return.
-                break;
+                $this->insertionMode = InsertionModes::BEFORE_HEAD;
+                return;
             }
             // 16. If last is true, then switch the insertion mode to "in body" and return. (fragment case)
             if ($last/* && $this->isBuildingFragment*/) {

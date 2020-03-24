@@ -65,7 +65,7 @@ abstract class AbstractTokenizer
         return $this->parseErrors;
     }
 
-    abstract public function nextToken();
+    abstract public function nextToken(): bool;
 
     final public function tokenize(int $startState = TokenizerStates::DATA, ?string $appropriateEndTag = null)
     {

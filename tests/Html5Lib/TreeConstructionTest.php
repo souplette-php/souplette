@@ -2,6 +2,7 @@
 
 namespace ju1ius\HtmlParser\Tests\Html5Lib;
 
+use ju1ius\HtmlParser\Namespaces;
 use ju1ius\HtmlParser\Parser\Parser;
 use ju1ius\HtmlParser\Tests\ResourceCollector;
 use PHPUnit\Framework\Assert;
@@ -15,14 +16,41 @@ class TreeConstructionTest extends TestCase
      */
     public function testDataFile(array $test)
     {
+        if (!isset($test['document-fragment'])) {
+            $this->markTestSkipped('Document fragment parsing not yet implemented.');
+        }
+        if (isset($test['script-on'])) {
+            $this->markTestSkipped('Scripting flag not yet implemented.');
+        }
         $input = $test['data'];
-        $expected = sprintf("#document\n%s", $test['document']);
         $expectedErrors = $test['errors'];
+        $fragment = $test['document-fragment'] ?? null;
         // TODO: script-on / script-off
         $parser = new Parser();
-        $doc = $parser->parse($input, 'utf-8');
         $serializer = new Serializer();
-        $result = $serializer->serialize($doc);
+        if ($fragment) {
+            $doc = new \DOMDocument();
+            $context = explode(' ', trim($fragment));
+            if (count($context) === 2) {
+                [$prefix, $localName] = $context;
+                $context = $doc->createElementNS(Namespaces::NAMESPACES[$prefix], $localName);
+            } else {
+                [$localName] = $context;
+                $context = $doc->createElementNS(Namespaces::HTML, $localName);
+            }
+            $nodes = $parser->parseFragment($context, $input, 'utf-8');
+            $frag = $doc->createDocumentFragment();
+            foreach ($nodes as $node) {
+                $node = $doc->importNode($node, true);
+                $frag->appendChild($node);
+            }
+            $expected = sprintf("#document-fragment\n%s", $test['document']);
+            $result = $serializer->serialize($frag);
+        } else {
+            $expected = sprintf("#document\n%s", $test['document']);
+            $doc = $parser->parse($input, 'utf-8');
+            $result = $serializer->serialize($doc);
+        }
 
         Assert::assertSame($this->convertExpected($expected), $this->convertTreeDump($result));
     }
@@ -31,10 +59,6 @@ class TreeConstructionTest extends TestCase
     {
         foreach ($this->collectDataFiles() as $relPath => $dataFile) {
             foreach ($dataFile as $i => $test) {
-                if (isset($test['document-fragment'])) {
-                    // TODO: test document fragment mode
-                    continue;
-                }
                 $key = sprintf('%s [%s]', $relPath, $i);
                 yield $key => [$test];
             }
