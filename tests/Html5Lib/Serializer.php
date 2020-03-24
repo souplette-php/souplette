@@ -52,12 +52,15 @@ final class Serializer
             $output[] = sprintf('|%s<%s>', $indent, $name);
             $attributes = [];
             /** @var \DOMAttr $attr */
-            foreach ($node->attributes as $name => $attr) {
-                $name = XmlNameEscaper::unescape($attr->localName);
-                if ($attr->namespaceURI) {
-                    $name = sprintf('%s %s', Namespaces::PREFIXES[$attr->namespaceURI], $name);
+            foreach ($node->attributes as $attr) {
+                if ($node->namespaceURI === Namespaces::HTML && $attr->namespaceURI === Namespaces::XML) {
+                    $name = XmlNameEscaper::escape($attr->nodeName);
+                } elseif ($attr->namespaceURI) {
+                    $name = sprintf('%s %s', Namespaces::PREFIXES[$attr->namespaceURI], XmlNameEscaper::unescape($attr->localName));
+                } else {
+                    $name = XmlNameEscaper::unescape($attr->localName);
                 }
-                $attributes[$name] = $attr->nodeValue;
+                $attributes[$name] = $attr->value;
             }
             $attributes = $this->sortAttributes($attributes);
             foreach ($attributes as $name => $value) {

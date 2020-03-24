@@ -496,8 +496,12 @@ final class TreeBuilder
         return $this->dom->createDocumentType($token->name, $token->publicIdentifier ?: '', $token->systemIdentifier ?: '');
     }
 
-    public function createElement(Token\Tag $token, string $namespace, \DOMNode $intendedParent): \DOMElement
-    {
+    public function createElement(
+        Token\Tag $token,
+        string $namespace,
+        \DOMNode $intendedParent,
+        bool $inForeignContent = false
+    ): \DOMElement {
         // 1. Let document be intended parent's node document.
         if ($intendedParent->nodeType === XML_HTML_DOCUMENT_NODE || $intendedParent->nodeType === XML_DOCUMENT_NODE) {
             $doc = $intendedParent;
@@ -512,9 +516,6 @@ final class TreeBuilder
             $element = $doc->createElementNS($namespace, $localName);
         } catch (\DOMException $err) {
             $element = DomExceptionHandler::handleCreateElementException($err, $token, $namespace, $doc);
-            if ($element === null) {
-                throw new \LogicException("Could not create element: {$token->name}");
-            }
         }
         // 8. Append each attribute in the given token to element.
         if ($token->attributes) {
@@ -522,13 +523,13 @@ final class TreeBuilder
                 if ($value instanceof \DOMAttr) {
                     $element->appendChild($value);
                 } else {
+                    $name = (string)$name;
                     try {
-                        $attr = $doc->createAttribute((string)$name);
+                        $element->setAttribute($name, $value);
                     } catch (\DOMException $err) {
-                        $attr = DomExceptionHandler::handleCreateAttributeException($err, $doc, (string)$name);
+                        $name = XmlNameEscaper::escape($name);
+                        $element->setAttribute($name, $value);
                     }
-                    $attr->value = $value;
-                    $element->appendChild($attr);
                 }
             }
         }
@@ -580,13 +581,16 @@ final class TreeBuilder
         $location->insert($node);
     }
 
-    public function insertElement(Token\Tag $token, string $namespace = Namespaces::HTML): \DOMElement
-    {
+    public function insertElement(
+        Token\Tag $token,
+        string $namespace = Namespaces::HTML,
+        bool $inForeignContent = false
+    ): \DOMElement {
         // 1. Let the adjusted insertion location be the appropriate place for inserting a node.
         $location = $this->appropriatePlaceForInsertingANode();
         // 2. Let element be the result of creating an element for the token in the given namespace,
         // with the intended parent being the element in which the adjusted insertion location finds itself.
-        $element = $this->createElement($token, $namespace, $location->parent);
+        $element = $this->createElement($token, $namespace, $location->parent, $inForeignContent);
         // 3. TODO: If it is possible to insert element at the adjusted insertion location, then:
         $canInsert = !($location->parent === $this->document && $this->document->documentElement !== null);
         if ($canInsert) {
@@ -615,19 +619,14 @@ final class TreeBuilder
     public function mergeAttributes(Token\StartTag $fromToken, \DOMElement $toElement): void
     {
         foreach ($fromToken->attributes as $name => $value) {
+            $name = (string)$name;
             try {
-                $name = (string)$name;
-                if ($toElement->attributes->getNamedItem($name) === null) {
-                    $attr = $toElement->ownerDocument->createAttribute($name);
-                    $attr->value = $value;
-                    $toElement->appendChild($attr);
+                if (!$toElement->hasAttribute($name)) {
+                    $toElement->setAttribute($name, $value);
                 }
             } catch (\DOMException $err) {
-                $name = XmlNameEscaper::escape((string)$name);
-                if ($toElement->attributes->getNamedItem($name) === null) {
-                    $attr = $toElement->ownerDocument->createAttribute($name);
-                    $attr->value = $value;
-                    $toElement->appendChild($attr);
+                if (!$toElement->hasAttribute($name)) {
+                    $toElement->setAttribute(XmlNameEscaper::escape($name), $value);
                 }
             }
         }
@@ -689,17 +688,17 @@ final class TreeBuilder
     public function adjustForeignAttributes(Token\StartTag $token)
     {
         if (!$token->attributes) return;
-        foreach ($token->attributes as $name => $value) {
-            if (isset(Attributes::ADJUSTED_FOREIGN_ATTRIBUTES[$name])) {
-                unset($token->attributes[$name]);
-                [$prefix, $localName, $ns] = Attributes::ADJUSTED_FOREIGN_ATTRIBUTES[$name];
+        foreach ($token->attributes as $qname => $value) {
+            if (isset(Attributes::ADJUSTED_FOREIGN_ATTRIBUTES[$qname])) {
+                unset($token->attributes[$qname]);
+                [$prefix, $localName, $ns] = Attributes::ADJUSTED_FOREIGN_ATTRIBUTES[$qname];
                 if (!$prefix) {
-                    $attr = $this->document->createAttribute($name);
+                    $attr = $this->document->createAttribute($qname);
                 } else {
-                    $attr = $this->document->createAttributeNS($ns, $name);
+                    $attr = $this->document->createAttributeNS($ns, $qname);
                 }
                 $attr->value = $value;
-                $token->attributes[$name] = $attr;
+                $token->attributes[$qname] = $attr;
             }
         }
     }

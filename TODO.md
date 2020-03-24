@@ -8,3 +8,13 @@
 - [ ] TreeBuilder parse errors
 - [x] Encoding sniffing
 - [x] Encoding switching
+
+Memos:
+    - Attributes:
+        On html elements, an attribute in the form foo:bar should have the localName "foo:bar", no prefix and no namespace.
+        DOMElement::setAttribute() is fine with that, except for the xml prefix, e.g.
+        $element->setAttribute('xml:lang', 'en') will return an attribute node with the
+        localName "lang", prefix "xml" and XML namespace.
+        Creating attribute nodes via $document->createAttribute('xml:lang') is a workaround, but then
+        $attribute->value = "foo&" fails because of wrong entity parsing...
+        ATM it seems like a minor gotcha to have "xml:*" prefixed attributes in the XML namespace.
