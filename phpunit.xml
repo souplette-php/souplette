@@ -15,6 +15,7 @@
         <testsuite name="html5lib">
             <!--<directory>tests/Html5Lib</directory>-->
             <file>tests/Html5Lib/TokenizationTest.php</file>
+            <file>tests/Html5Lib/TreeConstructionTest.php</file>
         </testsuite>
     </testsuites>
     <filter>

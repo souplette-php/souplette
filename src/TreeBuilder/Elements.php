@@ -7,17 +7,26 @@ use ju1ius\HtmlParser\Namespaces;
 final class Elements
 {
     const CDATA_ELEMENTS = [
-        'textarea' => true,
-        'title' => true,
+        Namespaces::HTML => [
+            'textarea' => true,
+            'title' => true,
+        ],
     ];
     const RCDATA_ELEMENTS = [
-        'iframe' => true,
-        'noembed' => true,
-        'noframes' => true,
-        'noscript' => true,
-        'script' => true,
-        'style' => true,
-        'xmp' => true,
+        Namespaces::HTML => [
+            'iframe' => true,
+            'noembed' => true,
+            'noframes' => true,
+            'noscript' => true,
+            'script' => true,
+            'style' => true,
+            'xmp' => true,
+        ],
+    ];
+    const PLAINTEXT_ELEMENTS = [
+        Namespaces::HTML => [
+            'plaintext' => true,
+        ],
     ];
     const VOID_ELEMENTS = [
         'area' => true,

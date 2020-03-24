@@ -53,11 +53,9 @@ final class Serializer
             $attributes = [];
             /** @var \DOMAttr $attr */
             foreach ($node->attributes as $name => $attr) {
-                $nodeName = XmlNameEscaper::unescape($attr->nodeName);
+                $name = XmlNameEscaper::unescape($attr->localName);
                 if ($attr->namespaceURI) {
-                    $name = sprintf('%s %s', Namespaces::PREFIXES[$attr->namespaceURI], $nodeName);
-                } else {
-                    $name = $nodeName;
+                    $name = sprintf('%s %s', Namespaces::PREFIXES[$attr->namespaceURI], $name);
                 }
                 $attributes[$name] = $attr->nodeValue;
             }

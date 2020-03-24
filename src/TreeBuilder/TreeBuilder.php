@@ -158,12 +158,13 @@ final class TreeBuilder
         // Otherwise, leave the Document in no-quirks mode.
         $this->compatMode = $contextElement->ownerDocument->compatMode ?? CompatModes::NO_QUIRKS;
         // 4. Set the state of the HTML parser's tokenization stage as follows, switching on the context element:
-        $tagName = $this->contextElement->localName;
-        if (isset(Elements::CDATA_ELEMENTS[$tagName])) {
+        $contextTag = $this->contextElement->localName;
+        $contextNS = $this->contextElement->namespaceURI;
+        if (isset(Elements::CDATA_ELEMENTS[$contextNS][$contextTag])) {
             $tokenizerState = TokenizerStates::RCDATA;
-        } elseif (isset(Elements::RCDATA_ELEMENTS[$tagName])) {
+        } elseif (isset(Elements::RCDATA_ELEMENTS[$contextNS][$contextTag])) {
             $tokenizerState = TokenizerStates::RAWTEXT;
-        } elseif ($tagName === 'plaintext') {
+        } elseif (isset(Elements::PLAINTEXT_ELEMENTS[$contextNS][$contextTag])) {
             $tokenizerState = TokenizerStates::PLAINTEXT;
         } else {
             $tokenizerState = TokenizerStates::DATA;
@@ -177,7 +178,7 @@ final class TreeBuilder
         $this->insertionMode = InsertionModes::BEFORE_HEAD;
         // 8. If the context element is a template element, push "in template" onto the stack of template insertion modes
         // so that it is the new current template insertion mode.
-        if ($tagName === 'template') {
+        if ($contextTag === 'template' && $contextNS === Namespaces::HTML) {
             $this->templateInsertionModes->push(InsertionModes::IN_TEMPLATE);
         }
         // 9. Create a start tag token whose name is the local name of context and whose attributes are the attributes of context.
@@ -522,10 +523,12 @@ final class TreeBuilder
                     $element->appendChild($value);
                 } else {
                     try {
-                        $element->setAttribute((string)$name, $value);
+                        $attr = $doc->createAttribute((string)$name);
                     } catch (\DOMException $err) {
-                        DomExceptionHandler::handleSetAttributeException($err, $element, (string)$name, $value);
+                        $attr = DomExceptionHandler::handleCreateAttributeException($err, $doc, (string)$name);
                     }
+                    $attr->value = $value;
+                    $element->appendChild($attr);
                 }
             }
         }
@@ -614,13 +617,17 @@ final class TreeBuilder
         foreach ($fromToken->attributes as $name => $value) {
             try {
                 $name = (string)$name;
-                if (!$toElement->hasAttribute($name)) {
-                    $toElement->setAttribute($name, $value);
+                if ($toElement->attributes->getNamedItem($name) === null) {
+                    $attr = $toElement->ownerDocument->createAttribute($name);
+                    $attr->value = $value;
+                    $toElement->appendChild($attr);
                 }
             } catch (\DOMException $err) {
                 $name = XmlNameEscaper::escape((string)$name);
-                if (!$toElement->hasAttribute($name)) {
-                    $toElement->setAttribute($name, $value);
+                if ($toElement->attributes->getNamedItem($name) === null) {
+                    $attr = $toElement->ownerDocument->createAttribute($name);
+                    $attr->value = $value;
+                    $toElement->appendChild($attr);
                 }
             }
         }
