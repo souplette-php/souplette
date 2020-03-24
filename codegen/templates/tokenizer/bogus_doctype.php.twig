@@ -17,5 +17,6 @@ if ($cc === '>') {
     {{ h.emit_eof() }}
 } else {
     // Ignore the character
-    {{ h.advance_to(current_state) }}
+    {{ h.skip_until(">\0") }}
+    {{ h.update_and_continue(current_state) }}
 }

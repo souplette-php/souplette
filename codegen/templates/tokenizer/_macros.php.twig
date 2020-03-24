@@ -16,10 +16,18 @@ ${{ return_var }} = substr($this->input, $this->position, $l);
 $this->position += $l;
 {%- endmacro %}
 
+{% macro skip_until(bytes) -%}
+$this->position += strcspn($this->input, {{ bytes|repr_bytes }}, $this->position);
+{%- endmacro %}
+
 {% macro chars_while(bytes, return_var = 'chars') -%}
 $l = strspn($this->input, {{ bytes|repr_bytes }}, $this->position);
 ${{ return_var }} = substr($this->input, $this->position, $l);
 $this->position += $l;
+{%- endmacro %}
+
+{% macro skip_while(bytes) -%}
+$this->position += strspn($this->input, {{ bytes|repr_bytes }}, $this->position);
 {%- endmacro %}
 
 {% macro chars_while_alpha(return_var = 'chars') -%}

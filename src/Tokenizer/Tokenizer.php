@@ -2357,8 +2357,8 @@ final class Tokenizer extends AbstractTokenizer
                     return false;
                 } else {
                     // Ignore the character
-                    $this->state = TokenizerStates::BOGUS_DOCTYPE;
-                    $cc = $this->input[++$this->position] ?? null;
+                    $this->position += strcspn($this->input, ">\0", $this->position);
+                    $cc = $this->input[$this->position] ?? null;
                     goto BOGUS_DOCTYPE;
                 }
             }
