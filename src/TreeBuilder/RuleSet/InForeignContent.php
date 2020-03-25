@@ -102,11 +102,13 @@ final class InForeignContent extends RuleSet
             // NOTE: The rest of the spec is skipped since we don't execute scripts
         } elseif ($type === TokenTypes::END_TAG) {
             // Initialize node to be the current node (the bottommost node of the stack).
-            $node = $currentNode;
+            $tree->openElements->rewind();
+            $node = $tree->openElements->current();
             // If node's tag name, converted to ASCII lowercase, is not the same as the tag name of the token, then this is a parse error.
             if (strcasecmp($node->localName, $token->name) !== 0) {
                 // TODO: Parse error.
             }
+            // TODO: both Blink & html5lib do other work in here. Investigate this.
             while ($node && $node->namespaceURI !== Namespaces::HTML) {
                 // Loop: If node is the topmost element in the stack of open elements, then return. (fragment case)
                 if ($node === $tree->openElements->bottom()) {
