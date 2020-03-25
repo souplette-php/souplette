@@ -1396,9 +1396,8 @@ final class Tokenizer extends AbstractTokenizer
                     // Consume those characters.
                     $this->position += 7;
                     $cc = $this->input[$this->position] ?? null;
-                    if (false) {
+                    if ($this->allowCdata) {
                         // TODO: If there is an adjusted current node and it is not an element in the HTML namespace,
-                        // https://html.spec.whatwg.org/multipage/parsing.html#adjusted-current-node
                         // then switch to the CDATA section state.
                         $this->state = TokenizerStates::CDATA_SECTION;
                         goto CDATA_SECTION;

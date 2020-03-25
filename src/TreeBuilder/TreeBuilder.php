@@ -229,13 +229,10 @@ final class TreeBuilder
         foreach ($this->tokenizer->tokenize($tokenizerState) as $token) {
             // Tree construction dispatcher
             // @see https://html.spec.whatwg.org/multipage/parsing.html#tree-construction-dispatcher
-            if ($this->openElements->isEmpty()) {
-                $this->processToken($token);
-                continue;
-            }
             $adjustedCurrentNode = $this->getAdjustedCurrentNode();
             if (
-                $adjustedCurrentNode->namespaceURI === Namespaces::HTML
+                !$adjustedCurrentNode
+                || $adjustedCurrentNode->namespaceURI === Namespaces::HTML
                 || (
                     Elements::isMathMlTextIntegrationPoint($adjustedCurrentNode)
                     && (
@@ -265,6 +262,10 @@ final class TreeBuilder
             } else {
                 InForeignContent::process($token, $this);
             }
+            // TODO: the tokenizer only needs this information in the MARKUP_DECLARATION_OPEN state.
+            // Could we find a way for the tokenizer to ask for it instead of computing this twice ?
+            $adjustedCurrentNode = $this->getAdjustedCurrentNode();
+            $this->tokenizer->allowCdata = $adjustedCurrentNode && $adjustedCurrentNode->namespaceURI !== Namespaces::HTML;
         }
     }
 
@@ -400,8 +401,11 @@ final class TreeBuilder
         }
     }
 
-    public function getAdjustedCurrentNode(): \DOMElement
+    public function getAdjustedCurrentNode(): ?\DOMElement
     {
+        if ($this->openElements->isEmpty()) {
+            return null;
+        }
         if ($this->isBuildingFragment && $this->openElements->count() === 1) {
             return $this->contextElement;
         }

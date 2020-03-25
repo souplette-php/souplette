@@ -13,6 +13,10 @@ abstract class AbstractTokenizer
      */
     public $state;
     /**
+     * @var bool
+     */
+    public $allowCdata;
+    /**
      * @var int
      */
     protected $returnState;
@@ -87,6 +91,7 @@ abstract class AbstractTokenizer
         $this->temporaryBuffer = '';
         $this->tokenQueue = new SplQueue();
         $this->parseErrors = [];
+        $this->allowCdata = false;
     }
 
     /**
