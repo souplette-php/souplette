@@ -43,23 +43,11 @@ final class Serializer
         } elseif ($node instanceof \DOMText) {
             $output[] = sprintf('|%s"%s"', $indent, $node->nodeValue);
         } else {
-            $localName = XmlNameEscaper::unescape($node->localName);
-            if ($node->namespaceURI && $node->namespaceURI !== Namespaces::HTML) {
-                $name = sprintf('%s %s', Namespaces::PREFIXES[$node->namespaceURI], $localName);
-            } else {
-                $name = $localName;
-            }
-            $output[] = sprintf('|%s<%s>', $indent, $name);
+            $output[] = sprintf('|%s<%s>', $indent, $this->serializeTagName($node));
             $attributes = [];
             /** @var \DOMAttr $attr */
             foreach ($node->attributes as $attr) {
-                if ($node->namespaceURI === Namespaces::HTML && $attr->namespaceURI === Namespaces::XML) {
-                    $name = XmlNameEscaper::escape($attr->nodeName);
-                } elseif ($attr->namespaceURI) {
-                    $name = sprintf('%s %s', Namespaces::PREFIXES[$attr->namespaceURI], XmlNameEscaper::unescape($attr->localName));
-                } else {
-                    $name = XmlNameEscaper::unescape($attr->localName);
-                }
+                $name = $this->serializeAttributeName($node, $attr);
                 $attributes[$name] = $attr->value;
             }
             $attributes = $this->sortAttributes($attributes);
@@ -85,5 +73,28 @@ final class Serializer
             $acc[$name] = $attrs[$name];
             return $acc;
         }, []);
+    }
+
+    private function serializeTagName(\DOMElement $node): string
+    {
+        if ($node->namespaceURI && $node->namespaceURI !== Namespaces::HTML) {
+            $localName = XmlNameEscaper::unescape($node->localName);
+            $name = sprintf('%s %s', Namespaces::PREFIXES[$node->namespaceURI], $localName);
+        } else {
+            $name = XmlNameEscaper::unescape($node->tagName);
+        }
+        return $name;
+    }
+
+    private function serializeAttributeName(\DOMElement $node, \DOMAttr $attr): string
+    {
+        if ($node->namespaceURI === Namespaces::HTML && $attr->namespaceURI === Namespaces::XML) {
+            $name = XmlNameEscaper::escape($attr->nodeName);
+        } elseif ($attr->namespaceURI) {
+            $name = sprintf('%s %s', Namespaces::PREFIXES[$attr->namespaceURI], XmlNameEscaper::unescape($attr->localName));
+        } else {
+            $name = XmlNameEscaper::unescape($attr->localName);
+        }
+        return $name;
     }
 }
