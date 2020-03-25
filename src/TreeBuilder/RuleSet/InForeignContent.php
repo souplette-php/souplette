@@ -38,52 +38,7 @@ final class InForeignContent extends RuleSet
             // Ignore the token.
             return;
         } elseif ($type === TokenTypes::START_TAG && (
-            (
-                $token->name === 'b'
-                || $token->name === 'big'
-                || $token->name === 'blockquote'
-                || $token->name === 'body'
-                || $token->name === 'br'
-                || $token->name === 'center'
-                || $token->name === 'code'
-                || $token->name === 'dd'
-                || $token->name === 'div'
-                || $token->name === 'dl'
-                || $token->name === 'dt'
-                || $token->name === 'em'
-                || $token->name === 'embed'
-                || $token->name === 'h1'
-                || $token->name === 'h2'
-                || $token->name === 'h3'
-                || $token->name === 'h4'
-                || $token->name === 'h5'
-                || $token->name === 'h6'
-                || $token->name === 'head'
-                || $token->name === 'hr'
-                || $token->name === 'i'
-                || $token->name === 'img'
-                || $token->name === 'li'
-                || $token->name === 'listing'
-                || $token->name === 'menu'
-                || $token->name === 'meta'
-                || $token->name === 'nobr'
-                || $token->name === 'ol'
-                || $token->name === 'p'
-                || $token->name === 'pre'
-                || $token->name === 'ruby'
-                || $token->name === 's'
-                || $token->name === 'small'
-                || $token->name === 'span'
-                || $token->name === 'strong'
-                || $token->name === 'strike'
-                || $token->name === 'sub'
-                || $token->name === 'sup'
-                || $token->name === 'table'
-                || $token->name === 'tt'
-                || $token->name === 'u'
-                || $token->name === 'ul'
-                || $token->name === 'var'
-            )
+            isset(self::BREAKOUT_TAGS[$token->name])
             || ($token->name === 'font' && (
                 isset($token->attributes['color'])
                 || isset($token->attributes['face'])
@@ -99,16 +54,7 @@ final class InForeignContent extends RuleSet
             // Otherwise:
             // Pop an element from the stack of open elements, and then keep popping more elements from the stack of open elements
             // until the current node is a MathML text integration point, an HTML integration point, or an element in the HTML namespace.
-            while (!$tree->openElements->isEmpty()) {
-                $currentNode = $tree->openElements->pop();
-                if (
-                    Elements::isMathMlTextIntegrationPoint($currentNode)
-                    || Elements::isHtmlIntegrationPoint($currentNode)
-                    || $currentNode->namespaceURI === Namespaces::HTML
-                ) {
-                    break;
-                }
-            }
+            $tree->openElements->popUntilForeignContentScopeMarker();
             // Then, reprocess the token.
             $tree->processToken($token);
         } elseif ($type === TokenTypes::START_TAG) {
@@ -181,4 +127,51 @@ final class InForeignContent extends RuleSet
             $tree->processToken($token);
         }
     }
+
+    private const BREAKOUT_TAGS = [
+        'b' => true,
+        'big' => true,
+        'blockquote' => true,
+        'body' => true,
+        'br' => true,
+        'center' => true,
+        'code' => true,
+        'dd' => true,
+        'div' => true,
+        'dl' => true,
+        'dt' => true,
+        'em' => true,
+        'embed' => true,
+        'h1' => true,
+        'h2' => true,
+        'h3' => true,
+        'h4' => true,
+        'h5' => true,
+        'h6' => true,
+        'head' => true,
+        'hr' => true,
+        'i' => true,
+        'img' => true,
+        'li' => true,
+        'listing' => true,
+        'menu' => true,
+        'meta' => true,
+        'nobr' => true,
+        'ol' => true,
+        'p' => true,
+        'pre' => true,
+        'ruby' => true,
+        's' => true,
+        'small' => true,
+        'span' => true,
+        'strong' => true,
+        'strike' => true,
+        'sub' => true,
+        'sup' => true,
+        'table' => true,
+        'tt' => true,
+        'u' => true,
+        'ul' => true,
+        'var' => true,
+    ];
 }

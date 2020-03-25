@@ -55,6 +55,25 @@ final class OpenElementsStack extends Stack
         return null;
     }
 
+    /**
+     * Used in thr rules for parsing a token in foreign content.
+     * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inforeign
+     * The algorithm in the spec is not quite the same, but Blink and html5lib use this one.
+     */
+    public function popUntilForeignContentScopeMarker(): void
+    {
+        while (true) {
+            $node = $this->top();
+            if (Elements::isMathMlTextIntegrationPoint($node)
+                || Elements::isHtmlIntegrationPoint($node)
+                || $node->namespaceURI === Namespaces::HTML
+            ) {
+                return;
+            }
+            $this->pop();
+        }
+    }
+
     public function hasElementInScope(\DOMElement $target): bool
     {
         return $this->hasElementInSpecificScope($target, Elements::SCOPE_BASE);
