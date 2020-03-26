@@ -1,5 +1,6 @@
 - [x] Tokenizer States
-- [ ] Tokenizer Whitespace tokens
+- [ ] Tokenizer Whitespace tokens ?
+- [ ] Tokenizer character buffering to reduce the number of token objects ?
 - [ ] Check places where we could use chars_(while|until) instead of consuming one byte at a time.
     Typically when the spec says « Ignore the character »
 - [x] TreeBuilder States

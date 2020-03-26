@@ -46,7 +46,7 @@ class TokenizationTest extends TestCase
     {
         foreach ($this->collectJsonFiles() as $relPath => $jsonFile) {
             foreach ($jsonFile as $i => $test) {
-                $key = sprintf('%s [%s]', $relPath, $i);
+                $key = sprintf('%s::%s', $relPath, $i);
                 yield $key => [$test];
             }
         }
