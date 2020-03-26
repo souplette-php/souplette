@@ -3,11 +3,15 @@
 #}
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
-// NOTE: U+0000 NULL characters are handled in the tree construction stage,
-// as part of the in foreign content insertion mode, which is the only place where CDATA sections can appear.
 if ($cc === ']') {
     // Switch to the CDATA section bracket state.
     {{ h.advance_to('CDATA_SECTION_BRACKET') }}
+} elseif ($cc === "\0") {
+    // NOTE: U+0000 NULL characters are handled in the tree construction stage,
+    // as part of the in foreign content insertion mode, which is the only place where CDATA sections can appear.
+    {# {{ h.parse_error('UNEXPECTED_NULL_CHARACTER') }} #}
+    $this->tokenQueue->enqueue(new Character("\0"));
+    {{ h.consume(current_state) }}
 } elseif ($cc === null) {
     // This is an eof-in-cdata parse error.
     {{ h.parse_error('EOF_IN_CDATA') }}
@@ -15,7 +19,7 @@ if ($cc === ']') {
     {{ h.emit_eof() }}
 } else {
     // Emit the current input character as a character token.
-    {{ h.chars_until(']') }}
+    {{ h.chars_until("]\0") }}
     $this->tokenQueue->enqueue(new Character($chars));
     {{ h.update_and_continue(current_state) }}
 }

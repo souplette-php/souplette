@@ -2364,13 +2364,17 @@ final class Tokenizer extends AbstractTokenizer
             break;
             case TokenizerStates::CDATA_SECTION:
             CDATA_SECTION: {
-                // NOTE: U+0000 NULL characters are handled in the tree construction stage,
-                // as part of the in foreign content insertion mode, which is the only place where CDATA sections can appear.
                 if ($cc === ']') {
                     // Switch to the CDATA section bracket state.
                     $this->state = TokenizerStates::CDATA_SECTION_BRACKET;
                     $cc = $this->input[++$this->position] ?? null;
                     goto CDATA_SECTION_BRACKET;
+                } elseif ($cc === "\0") {
+                    // NOTE: U+0000 NULL characters are handled in the tree construction stage,
+                    // as part of the in foreign content insertion mode, which is the only place where CDATA sections can appear.
+                    $this->tokenQueue->enqueue(new Character("\0"));
+                    $cc = $this->input[++$this->position] ?? null;
+                    goto CDATA_SECTION;
                 } elseif ($cc === null) {
                     // This is an eof-in-cdata parse error.
                     $this->parseErrors[] = [ParseErrors::EOF_IN_CDATA, $this->position];
@@ -2378,7 +2382,7 @@ final class Tokenizer extends AbstractTokenizer
                     return false;
                 } else {
                     // Emit the current input character as a character token.
-                    $l = strcspn($this->input, ']', $this->position);
+                    $l = strcspn($this->input, "]\0", $this->position);
                     $chars = substr($this->input, $this->position, $l);
                     $this->position += $l;
                     $this->tokenQueue->enqueue(new Character($chars));

@@ -16,9 +16,6 @@ class TreeConstructionTest extends TestCase
      */
     public function testDataFile(array $test)
     {
-        //if (!isset($test['document-fragment'])) {
-        //    $this->markTestSkipped('Document fragment parsing not yet implemented.');
-        //}
         if (isset($test['script-on'])) {
             $this->markTestSkipped('Scripting flag not yet implemented.');
         }

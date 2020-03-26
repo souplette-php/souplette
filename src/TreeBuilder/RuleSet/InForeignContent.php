@@ -19,7 +19,7 @@ final class InForeignContent extends RuleSet
         $type = $token->type;
         $currentNode = $tree->openElements->top();
         if ($type === TokenTypes::CHARACTER && $token->data === "\0") {
-            // TODO: Parse error.
+            // TODO: Parse error. unexpected-null-character
             // Insert a U+FFFD REPLACEMENT CHARACTER character.
             $tree->insertCharacter(new Token\Character("\u{FFFD}"));
         } elseif ($type === TokenTypes::CHARACTER && ctype_space($token->data)) {

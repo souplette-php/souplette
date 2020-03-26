@@ -234,24 +234,22 @@ final class TreeBuilder
                 !$adjustedCurrentNode
                 || $adjustedCurrentNode->namespaceURI === Namespaces::HTML
                 || (
-                    Elements::isMathMlTextIntegrationPoint($adjustedCurrentNode)
-                    && (
-                        $token->type === TokenTypes::START_TAG
-                        && $token->name !== 'mglyph'
-                        && $token->name !== 'malignmark'
-                    ) || (
-                        $token->type === TokenTypes::CHARACTER
+                    Elements::isMathMlTextIntegrationPoint($adjustedCurrentNode) && (
+                        (
+                            $token->type === TokenTypes::START_TAG
+                            && $token->name !== 'mglyph'
+                            && $token->name !== 'malignmark'
+                        ) || (
+                            $token->type === TokenTypes::CHARACTER
+                        )
                     )
-                )
-                || (
+                ) || (
                     $adjustedCurrentNode->localName === 'annotation-xml'
                     && $adjustedCurrentNode->namespaceURI === Namespaces::MATHML
                     && $token->type === TokenTypes::START_TAG
                     && $token->name === 'svg'
-                )
-                || (
-                    Elements::isHtmlIntegrationPoint($adjustedCurrentNode)
-                    && (
+                ) || (
+                    Elements::isHtmlIntegrationPoint($adjustedCurrentNode) && (
                         $token->type === TokenTypes::START_TAG
                         || $token->type === TokenTypes::CHARACTER
                     )
@@ -265,7 +263,15 @@ final class TreeBuilder
             // TODO: the tokenizer only needs this information in the MARKUP_DECLARATION_OPEN state.
             // Could we find a way for the tokenizer to ask for it instead of computing this twice ?
             $adjustedCurrentNode = $this->getAdjustedCurrentNode();
-            $this->tokenizer->allowCdata = $adjustedCurrentNode && $adjustedCurrentNode->namespaceURI !== Namespaces::HTML;
+            // Also the following should be enough:
+            //$this->tokenizer->allowCdata = $adjustedCurrentNode && $adjustedCurrentNode->namespaceURI !== Namespaces::HTML;
+            $inForeignContent = (
+                $adjustedCurrentNode
+                && $adjustedCurrentNode->namespaceURI !== Namespaces::HTML
+                && !Elements::isHtmlIntegrationPoint($adjustedCurrentNode)
+                && !Elements::isMathMlTextIntegrationPoint($adjustedCurrentNode)
+            );
+            $this->tokenizer->allowCdata = $inForeignContent;
         }
     }
 
