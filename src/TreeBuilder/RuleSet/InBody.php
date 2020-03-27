@@ -17,6 +17,35 @@ use ju1ius\HtmlParser\TreeBuilder\TreeBuilder;
  */
 final class InBody extends RuleSet
 {
+    private const IN_HEAD_START_TAGS = [
+        'base' => true,
+        'basefont' => true,
+        'bgsound' => true,
+        'link' => true,
+        'meta' => true,
+        'noframes' => true,
+        'script' => true,
+        'style' => true,
+        'template' => true,
+        'title' => true,
+    ];
+
+    private const ADOPTION_AGENCY_END_TAG_TRIGGERS = [
+        'a' => true,
+        'b' => true,
+        'big' => true,
+        'code' => true,
+        'em' => true,
+        'font' => true,
+        'i' => true,
+        'nobr' => true,
+        's' => true,
+        'small' => true,
+        'strike' => true,
+        'strong' => true,
+        'tt' => true,
+        'u' => true,
+    ];
 
     public static function process(Token $token, TreeBuilder $tree)
     {
@@ -91,18 +120,7 @@ final class InBody extends RuleSet
                     $tree->mergeAttributes($token, $tree->openElements->bottom());
                 }
                 return;
-            } elseif (
-                $tagName === 'base'
-                || $tagName === 'basefont'
-                || $tagName === 'bgsound'
-                || $tagName === 'link'
-                || $tagName === 'meta'
-                || $tagName === 'noframes'
-                || $tagName === 'script'
-                || $tagName === 'style'
-                || $tagName === 'template'
-                || $tagName === 'title'
-            ) {
+            } elseif (isset(self::IN_HEAD_START_TAGS[$tagName])) {
                 // Process the token using the rules for the "in head" insertion mode.
                 InHead::process($token, $tree);
                 return;
@@ -197,28 +215,14 @@ final class InBody extends RuleSet
                 // Insert an HTML element for the token.
                 $tree->insertElement($token);
                 return;
-            } elseif (
-                $tagName === 'h1'
-                || $tagName === 'h2'
-                || $tagName === 'h3'
-                || $tagName === 'h4'
-                || $tagName === 'h5'
-                || $tagName === 'h6'
-            ) {
+            } elseif (isset(Elements::HEADING_ELEMENTS[$tagName])) {
                 // If the stack of open elements has a p element in button scope, then close a p element.
                 if ($tree->openElements->hasTagInButtonScope('p')) {
                     self::closeAPElement($tree);
                 }
                 // If the current node is an HTML element whose tag name is one of "h1", "h2", "h3", "h4", "h5", or "h6",
                 $currentNode = $tree->openElements->top();
-                if (
-                    $currentNode->localName === 'h1'
-                    || $currentNode->localName === 'h2'
-                    || $currentNode->localName === 'h3'
-                    || $currentNode->localName === 'h4'
-                    || $currentNode->localName === 'h5'
-                    || $currentNode->localName === 'h6'
-                ) {
+                if (isset(Elements::HEADING_ELEMENTS[$currentNode->localName])) {
                     // TODO: then this is a parse error;
                     // pop the current node off the stack of open elements.
                     $tree->openElements->pop();
@@ -237,7 +241,7 @@ final class InBody extends RuleSet
                 // TODO: If the next token is a U+000A LINE FEED (LF) character token,
                 // then ignore that token and move on to the next one.
                 // (Newlines at the start of pre blocks are ignored as an authoring convenience.)
-                self::$skipNextNewLine = true;
+
                 // Set the frameset-ok flag to "not ok".
                 $tree->framesetOK = false;
                 return;
@@ -517,6 +521,7 @@ final class InBody extends RuleSet
                 // TODO: 2. If the next token is a U+000A LINE FEED (LF) character token,
                 // then ignore that token and move on to the next one.
                 // (Newlines at the start of textarea elements are ignored as an authoring convenience.)
+
                 // 3. Switch the tokenizer to the RCDATA state.
                 $tree->tokenizer->state = TokenizerStates::RCDATA;
                 // 4. Let the original insertion mode be the current insertion mode.
@@ -841,14 +846,7 @@ final class InBody extends RuleSet
                 }
                 // 3. Pop elements from the stack of open elements until an HTML element with the same tag name as the token has been popped from the stack.
                 $tree->openElements->popUntilTag($tagName);
-            } elseif (
-                $tagName === 'h1'
-                || $tagName === 'h2'
-                || $tagName === 'h3'
-                || $tagName === 'h4'
-                || $tagName === 'h5'
-                || $tagName === 'h6'
-            ) {
+            } elseif (isset(Elements::HEADING_ELEMENTS[$tagName])) {
                 // If the stack of open elements does not have an element in scope that is an HTML element
                 // and whose tag name is one of "h1", "h2", "h3", "h4", "h5", or "h6",
                 if (!$tree->openElements->hasTagsInScope(['h1', 'h2', 'h3', 'h4', 'h5', 'h6'])) {
@@ -870,22 +868,7 @@ final class InBody extends RuleSet
                 // 😬 Take a deep breath, then act as described in the "any other end tag" entry below.
                 self::anyOtherEndTag($tree, $token);
                 return;
-            } elseif (
-                $tagName === 'a'
-                || $tagName === 'b'
-                || $tagName === 'big'
-                || $tagName === 'code'
-                || $tagName === 'em'
-                || $tagName === 'font'
-                || $tagName === 'i'
-                || $tagName === 'nobr'
-                || $tagName === 's'
-                || $tagName === 'small'
-                || $tagName === 'strike'
-                || $tagName === 'strong'
-                || $tagName === 'tt'
-                || $tagName === 'u'
-            ) {
+            } elseif (isset(self::ADOPTION_AGENCY_END_TAG_TRIGGERS[$tagName])) {
                 // Run the adoption agency algorithm for the token.
                 self::runTheAdoptionAgencyAlgorithm($tree, $token);
                 return;
