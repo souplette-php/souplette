@@ -16,6 +16,13 @@ final class Text extends RuleSet
     {
         $type = $token->type;
         if ($type === TokenTypes::CHARACTER) {
+            if ($tree->shouldSkipNextNewLine && $token->data[0] === "\n") {
+                // we're just after a "textarea" start tag token.
+                if (strlen($token->data) === 1) {
+                    return;
+                }
+                $token->data = substr($token->data, 1);
+            }
             $tree->insertCharacter($token);
         } elseif ($type === TokenTypes::EOF) {
             // TODO: Parse error.

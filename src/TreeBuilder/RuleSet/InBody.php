@@ -17,12 +17,6 @@ use ju1ius\HtmlParser\TreeBuilder\TreeBuilder;
  */
 final class InBody extends RuleSet
 {
-    /**
-     * @fixme This is a really ugly way to handle state...
-     *
-     * @var bool
-     */
-    private static $skipNextNewLine = false;
 
     public static function process(Token $token, TreeBuilder $tree)
     {
@@ -53,15 +47,13 @@ final class InBody extends RuleSet
             // 2. TODO: Stop parsing
             return;
         } elseif ($type === TokenTypes::CHARACTER) {
-            if (self::$skipNextNewLine && $token->data[0] === "\n") {
-                if (strlen($token->data) === 1) {
-                    self::$skipNextNewLine = false;
+            $data = $token->data;
+            if ($tree->shouldSkipNextNewLine && $data[0] === "\n") {
+                if (strlen($data) === 1) {
                     return;
                 }
-                self::$skipNextNewLine = false;
-                $token->data = substr($token->data, 1);
+                $data = $token->data = substr($data, 1);
             }
-            $data = $token->data;
             if ($data === "\0") {
                 // TODO: Parse error. Ignore the token.
             } elseif (ctype_space($data)) {

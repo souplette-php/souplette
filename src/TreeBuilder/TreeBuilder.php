@@ -112,7 +112,10 @@ final class TreeBuilder
      * @var bool
      */
     public $framesetOK = true;
-
+    /**
+     * @var bool
+     */
+    public $shouldSkipNextNewLine = false;
     /**
      * @var \DOMDocumentType
      */
@@ -221,12 +224,19 @@ final class TreeBuilder
         $this->headElement = null;
         $this->formElement = null;
         $this->fosterParenting = false;
+        $this->shouldSkipNextNewLine = false;
         $this->pendingTableCharacterTokens = [];
     }
 
     private function run(int $tokenizerState)
     {
+        $previousToken = null;
         foreach ($this->tokenizer->tokenize($tokenizerState) as $token) {
+            $this->shouldSkipNextNewLine = (
+                $previousToken
+                && $previousToken->type === TokenTypes::START_TAG
+                && ($previousToken->name === 'pre' || $previousToken->name === 'listing' || $previousToken->name === 'textarea')
+            );
             // Tree construction dispatcher
             // @see https://html.spec.whatwg.org/multipage/parsing.html#tree-construction-dispatcher
             $adjustedCurrentNode = $this->getAdjustedCurrentNode();
@@ -272,6 +282,7 @@ final class TreeBuilder
                 && !Elements::isMathMlTextIntegrationPoint($adjustedCurrentNode)
             );
             $this->tokenizer->allowCdata = $inForeignContent;
+            $previousToken = $token;
         }
     }
 
