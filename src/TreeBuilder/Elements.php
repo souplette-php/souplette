@@ -203,61 +203,6 @@ final class Elements
         ],
     ];
 
-    const SCOPE_BASE = [
-        Namespaces::HTML => [
-            'applet' => true,
-            'caption' => true,
-            'html' => true,
-            'table' => true,
-            'td' => true,
-            'th' => true,
-            'marquee' => true,
-            'object' => true,
-            'template' => true,
-        ],
-        Namespaces::MATHML => [
-            'mi' => true,
-            'mo' => true,
-            'mn' => true,
-            'ms' => true,
-            'mtext' => true,
-            'annotation-xml' => true,
-        ],
-        Namespaces::SVG => [
-            'foreignObject' => true,
-            'desc' => true,
-            'title' => true,
-        ],
-    ];
-
-    const SCOPE_LIST_ITEM = [
-        Namespaces::HTML => [
-            'ol' => true,
-            'ul' => true,
-        ],
-    ];
-
-    const SCOPE_BUTTON = [
-        Namespaces::HTML => [
-            'button' => true,
-        ],
-    ];
-
-    const SCOPE_TABLE = [
-        Namespaces::HTML => [
-            'html' => true,
-            'table' => true,
-            'template' => true,
-        ],
-    ];
-
-    const SCOPE_SELECT = [
-        Namespaces::HTML => [
-            'optgroup' => true,
-            'option' => true,
-        ],
-    ];
-
     const NORMALIZED_SVG_TAGS = [
         'altglyph' => 'altGlyph',
         'altglyphdef' => 'altGlyphDef',
