@@ -60,11 +60,12 @@ class TreeConstructionTest extends TestCase
         $xfails = include_once __DIR__ . '/../resources/html5lib-xfails.php';
         foreach ($this->collectDataFiles() as $relPath => $dataFile) {
             foreach ($dataFile as $i => $test) {
-                $key = sprintf('%s::%s', $relPath, $i);
-                if (isset($xfails['tree-construction'][$key])) {
-                    $test['xfail'] = $xfails['tree-construction'][$key];
+                $id = sprintf('%s::%s', $relPath, $i);
+                $test['id'] = $id;
+                if (isset($xfails['tree-construction'][$id])) {
+                    $test['xfail'] = $xfails['tree-construction'][$id];
                 }
-                yield $key => [$test];
+                yield $id => [$test];
             }
         }
     }

@@ -36,9 +36,9 @@ final class DataFile extends TestFile
         $tests = [];
         $currentTest = [];
         $currentSection = null;
-        $lines = preg_split('/\n/', $input, -1, PREG_SPLIT_NO_EMPTY);
+        $lines = explode("\n", $input);
         foreach ($lines as $line) {
-            if ($line[0] === '#') {
+            if ($line && $line[0] === '#') {
                 $heading = trim(substr($line, 1));
                 if ($currentTest && $heading === $this->testHeading) {
                     $tests[] = $this->normalizeTestData($currentTest);

@@ -39,9 +39,9 @@ final class Serializer
                 $output[] = sprintf('|%s<!DOCTYPE >', $indent);
             }
         } elseif ($node instanceof \DOMComment) {
-            $output[] = sprintf('|%s<!-- %s -->', $indent, $node->nodeValue);
+            $output[] = sprintf('|%s<!-- %s -->', $indent, $node->data);
         } elseif ($node instanceof \DOMText) {
-            $output[] = sprintf('|%s"%s"', $indent, $node->nodeValue);
+            $output[] = sprintf('|%s"%s"', $indent, $node->data);
         } else {
             $output[] = sprintf('|%s<%s>', $indent, $this->serializeTagName($node));
             $attributes = [];
