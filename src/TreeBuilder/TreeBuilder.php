@@ -117,13 +117,19 @@ final class TreeBuilder
      */
     public $shouldSkipNextNewLine = false;
     /**
+     * @see https://html.spec.whatwg.org/multipage/parsing.html#scripting-flag
+     * @var bool
+     */
+    public $scriptingEnabled = false;
+    /**
      * @var \DOMDocumentType
      */
     private $blankDoctype;
 
-    public function __construct(\DOMImplementation $dom)
+    public function __construct(\DOMImplementation $dom, bool $scriptingEnabled = false)
     {
         $this->dom = $dom;
+        $this->scriptingEnabled = $scriptingEnabled;
     }
 
     /**
@@ -166,6 +172,10 @@ final class TreeBuilder
         if (isset(Elements::CDATA_ELEMENTS[$contextNS][$contextTag])) {
             $tokenizerState = TokenizerStates::RCDATA;
         } elseif (isset(Elements::RCDATA_ELEMENTS[$contextNS][$contextTag])) {
+            $tokenizerState = TokenizerStates::RAWTEXT;
+        } elseif ($contextTag === 'script') {
+            $tokenizerState = TokenizerStates::SCRIPT_DATA;
+        } elseif ($this->scriptingEnabled && $contextTag === 'noscript') {
             $tokenizerState = TokenizerStates::RAWTEXT;
         } elseif (isset(Elements::PLAINTEXT_ELEMENTS[$contextNS][$contextTag])) {
             $tokenizerState = TokenizerStates::PLAINTEXT;

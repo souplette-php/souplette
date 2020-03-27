@@ -79,11 +79,15 @@ final class InHead extends RuleSet
                 // Follow the generic RCDATA element parsing algorithm.
                 $tree->followTheGenericTextElementParsingAlgorithm($token);
                 return;
-            } elseif ($name === 'noframes' || $name === 'style') {
+            } elseif (
+                ($tree->scriptingEnabled && $name === 'noscript')
+                || $name === 'noframes'
+                || $name === 'style'
+            ) {
                 // Follow the generic RAWTEXT element parsing algorithm.
                 $tree->followTheGenericTextElementParsingAlgorithm($token, true);
                 return;
-            } elseif ($name === 'noscript') {
+            } elseif (!$tree->scriptingEnabled && $name === 'noscript') {
                 $tree->insertElement($token);
                 $tree->insertionMode = InsertionModes::IN_HEAD_NOSCRIPT;
                 return;

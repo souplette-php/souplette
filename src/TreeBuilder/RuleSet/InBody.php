@@ -551,7 +551,7 @@ final class InBody extends RuleSet
                 return;
             } elseif (
                 $tagName === 'noembed'
-                || $tagName === 'noscript'
+                || ($tree->scriptingEnabled && $tagName === 'noscript')
             ) {
                 // Follow the generic raw text element parsing algorithm.
                 $tree->followTheGenericTextElementParsingAlgorithm($token, true);

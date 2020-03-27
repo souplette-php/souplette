@@ -19,14 +19,11 @@ class TreeConstructionTest extends TestCase
         if (isset($test['xfail'])) {
             $this->markTestSkipped($test['xfail']);
         }
-        if (isset($test['script-on'])) {
-            $this->markTestSkipped('Scripting flag not yet implemented.');
-        }
         $input = $test['data'];
         $expectedErrors = $test['errors'];
         $fragment = $test['document-fragment'] ?? null;
-        // TODO: script-on / script-off
-        $parser = new Parser();
+        $scriptingEnabled = isset($test['script-on']);
+        $parser = new Parser($scriptingEnabled);
         $serializer = new Serializer();
         if ($fragment) {
             $doc = new \DOMDocument();
@@ -77,6 +74,10 @@ class TreeConstructionTest extends TestCase
     {
         $rootPath = __DIR__ . '/../resources/html5lib-tests/tree-construction';
         foreach (ResourceCollector::collect($rootPath, 'dat') as $relPath => $fileInfo) {
+            if (strpos($relPath,'scripted/') === 0) {
+                // TODO: implement a scripting engine 😁
+                continue;
+            }
             if ($relPath === 'template.dat') {
                 // TODO: implement and test <template> elements
                 continue;

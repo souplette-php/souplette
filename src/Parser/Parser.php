@@ -20,9 +20,9 @@ final class Parser
      */
     private $treeBuilder;
 
-    public function __construct()
+    public function __construct(bool $scriptingEnabled = false)
     {
-        $this->treeBuilder = new TreeBuilder(new \DOMImplementation());
+        $this->treeBuilder = new TreeBuilder(new \DOMImplementation(), $scriptingEnabled);
     }
 
     public function parse(string $input, ?string $encoding = null): \DOMDocument
