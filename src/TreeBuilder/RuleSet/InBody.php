@@ -17,6 +17,13 @@ use ju1ius\HtmlParser\TreeBuilder\TreeBuilder;
  */
 final class InBody extends RuleSet
 {
+    /**
+     * @fixme This is a really ugly way to handle state...
+     *
+     * @var bool
+     */
+    private static $skipNextNewLine = false;
+
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token->type;
@@ -46,6 +53,14 @@ final class InBody extends RuleSet
             // 2. TODO: Stop parsing
             return;
         } elseif ($type === TokenTypes::CHARACTER) {
+            if (self::$skipNextNewLine && $token->data[0] === "\n") {
+                if (strlen($token->data) === 1) {
+                    self::$skipNextNewLine = false;
+                    return;
+                }
+                self::$skipNextNewLine = false;
+                $token->data = substr($token->data, 1);
+            }
             $data = $token->data;
             if ($data === "\0") {
                 // TODO: Parse error. Ignore the token.
@@ -230,7 +245,7 @@ final class InBody extends RuleSet
                 // TODO: If the next token is a U+000A LINE FEED (LF) character token,
                 // then ignore that token and move on to the next one.
                 // (Newlines at the start of pre blocks are ignored as an authoring convenience.)
-
+                self::$skipNextNewLine = true;
                 // Set the frameset-ok flag to "not ok".
                 $tree->framesetOK = false;
                 return;
@@ -860,7 +875,7 @@ final class InBody extends RuleSet
                 // whose tag name is one of "h1", "h2", "h3", "h4", "h5", or "h6" has been popped from the stack.
                 $tree->openElements->popUntilOneOf(['h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
             } elseif ($tagName === 'sarcasm') {
-                // Take a deep breath, then act as described in the "any other end tag" entry below.
+                // 😬 Take a deep breath, then act as described in the "any other end tag" entry below.
                 self::anyOtherEndTag($tree, $token);
                 return;
             } elseif (
