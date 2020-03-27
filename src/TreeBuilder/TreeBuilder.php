@@ -60,26 +60,32 @@ final class TreeBuilder
     public $document;
     /**
      * @var string
+     * @see https://dom.spec.whatwg.org/#concept-document-mode
      */
     public $compatMode = CompatModes::NO_QUIRKS;
     /**
      * @var int
+     * @see https://html.spec.whatwg.org/multipage/parsing.html#the-insertion-mode
      */
     public $insertionMode;
     /**
      * @var int
+     * @see https://html.spec.whatwg.org/multipage/parsing.html#original-insertion-mode
      */
     public $originalInsertionMode;
     /**
      * @var OpenElementsStack
+     * @see https://html.spec.whatwg.org/multipage/parsing.html#the-stack-of-open-elements
      */
     public $openElements;
     /**
      * @var ActiveFormattingElementList
+     * @see https://html.spec.whatwg.org/multipage/parsing.html#the-list-of-active-formatting-elements
      */
     public $activeFormattingElements;
     /**
      * @var SplStack
+     * @see https://html.spec.whatwg.org/multipage/parsing.html#stack-of-template-insertion-modes
      */
     public $templateInsertionModes;
     /**
@@ -92,35 +98,38 @@ final class TreeBuilder
     public $isBuildingFragment = false;
     /**
      * @var \DOMElement
+     * @see https://html.spec.whatwg.org/multipage/parsing.html#concept-frag-parse-context
      */
     private $contextElement;
     /**
      * @var \DOMElement
+     * @see https://html.spec.whatwg.org/multipage/parsing.html#head-element-pointer
      */
     public $headElement;
     /**
      * @var \DOMElement
+     * @see https://html.spec.whatwg.org/multipage/parsing.html#form-element-pointer
      */
     public $formElement;
     /**
-     * @see https://html.spec.whatwg.org/multipage/parsing.html#foster-parent
      * @var bool
+     * @see https://html.spec.whatwg.org/multipage/parsing.html#foster-parent
      */
     public $fosterParenting = false;
     /**
-     * @see https://html.spec.whatwg.org/multipage/parsing.html#frameset-ok-flag
      * @var bool
+     * @see https://html.spec.whatwg.org/multipage/parsing.html#frameset-ok-flag
      */
     public $framesetOK = true;
     /**
      * @var bool
-     */
-    public $shouldSkipNextNewLine = false;
-    /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#scripting-flag
-     * @var bool
      */
     public $scriptingEnabled = false;
+    /**
+     * @var bool
+     */
+    public $shouldSkipNextNewLine = false;
     /**
      * @var \DOMDocumentType
      */
