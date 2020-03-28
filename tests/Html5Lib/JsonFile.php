@@ -4,9 +4,9 @@ namespace ju1ius\HtmlParser\Tests\Html5Lib;
 
 final class JsonFile extends TestFile
 {
-    protected function parse(string $input): array
+    protected function parse(string $fileName): array
     {
-        $data = json_decode($input, true, 512, JSON_THROW_ON_ERROR);
+        $data = json_decode(file_get_contents($fileName), true, 512, JSON_THROW_ON_ERROR);
         if (isset($data['tests'])) {
             return $data['tests'];
         }

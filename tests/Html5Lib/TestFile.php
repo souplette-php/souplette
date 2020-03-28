@@ -16,10 +16,10 @@ abstract class TestFile implements \ArrayAccess, \IteratorAggregate
     public function __construct(string $fileName)
     {
         $this->fileName = $fileName;
-        $this->tests = $this->parse(file_get_contents($fileName));
+        $this->tests = $this->parse($fileName);
     }
 
-    abstract protected function parse(string $input): array;
+    abstract protected function parse(string $fileName): array;
 
     public function getIterator()
     {
