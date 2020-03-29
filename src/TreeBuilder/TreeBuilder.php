@@ -467,10 +467,10 @@ final class TreeBuilder
             $lastTablePosition = null;
             $pos = 0;
             foreach ($this->openElements as $element) {
-                if ($element->localName === 'template') {
+                if (!$lastTemplate && $element->localName === 'template') {
                     $lastTemplate = $element;
                     $lastTemplatePosition = $pos;
-                } elseif ($element->localName === 'table') {
+                } elseif (!$lastTable && $element->localName === 'table') {
                     $lastTable = $element;
                     $lastTablePosition = $pos;
                 }

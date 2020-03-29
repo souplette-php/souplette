@@ -5,7 +5,8 @@
     Typically when the spec says « Ignore the character »
 - [x] TreeBuilder States
 - [x] TreeBuilder fragment case
-- [x] TreeBuilder namespace handling
+- [ ] TreeBuilder namespace handling
+    - [ ] Use `DOMElement->tagName` instead of `localName` where adequate
 - [ ] TreeBuilder parse errors
 - [ ] TreeBuilder scriptingEnabled flag
 - [ ] Template elements
