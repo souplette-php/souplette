@@ -6,6 +6,9 @@
  * or because of unavoidable discrepancies between the underlying DOM implementations.
  */
 return [
+    'encoding' => [
+        'tests1.dat::54' => 'Not spec compliant.',
+    ],
     'tree-construction' => [
         'adoption01.dat::17' => 'Invalid adoption agency behavior.',
         'webkit02.dat::14' => 'Invalid adoption agency behavior.',
@@ -15,5 +18,5 @@ return [
         'tests11.dat::4' => 'Invalid SVG attribute normalization.',
         'tests11.dat::5' => 'Invalid SVG attribute normalization.',
         'tests11.dat::6' => 'Invalid SVG attribute normalization.',
-    ]
+    ],
 ];

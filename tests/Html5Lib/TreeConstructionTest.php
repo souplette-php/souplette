@@ -54,7 +54,7 @@ class TreeConstructionTest extends TestCase
 
     public function dataFileProvider()
     {
-        $xfails = include_once __DIR__ . '/../resources/html5lib-xfails.php';
+        $xfails = require __DIR__ . '/../resources/html5lib-xfails.php';
         foreach ($this->collectDataFiles() as $relPath => $dataFile) {
             foreach ($dataFile as $i => $test) {
                 $id = sprintf('%s::%s', $relPath, $i);

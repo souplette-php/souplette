@@ -64,6 +64,11 @@ abstract class AbstractTokenizer
         $this->entitySearch = EntitySearch::create();
     }
 
+    final public function getPosition(): int
+    {
+        return $this->position;
+    }
+
     final public function getErrors(): array
     {
         return $this->parseErrors;
