@@ -6,7 +6,7 @@
 if ($cc === '-') {
     // Emit a U+002D HYPHEN-MINUS character token.
     $this->tokenQueue->enqueue(new Character('-'));
-    {{ h.advance_to(current_state) }}
+    {{ h.consume(current_state) }}
 } elseif ($cc === '<') {
     // Emit a U+003C LESS-THAN SIGN character token.
     $this->tokenQueue->enqueue(new Character('<'));

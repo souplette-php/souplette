@@ -5,7 +5,7 @@
 
 if ({{ h.is_whitespace() }}) {
     // Ignore the character.
-    {{ h.advance_to('BEFORE_ATTRIBUTE_VALUE') }}
+    {{ h.consume(current_state) }}
 } elseif ($cc === '"') {
     // Switch to the attribute value (double-quoted) state.
     {{ h.advance_to('ATTRIBUTE_VALUE_DOUBLE_QUOTED') }}

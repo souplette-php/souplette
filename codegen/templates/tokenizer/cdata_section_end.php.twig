@@ -6,7 +6,7 @@
 if ($cc === ']') {
     // Emit a U+005D RIGHT SQUARE BRACKET character token.
     $this->tokenQueue->enqueue(new Character(']'));
-    {{ h.advance_to('CDATA_SECTION_END') }}
+    {{ h.consume(current_state) }}
 } elseif ($cc === '>') {
     // Switch to the data state.
     {{ h.advance_to('DATA') }}

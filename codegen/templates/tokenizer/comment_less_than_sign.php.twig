@@ -11,7 +11,7 @@ if ($cc === '!') {
 } elseif ($cc === '<') {
     // Append the current input character to the comment token's data.
     $this->currentToken->data .= $cc;
-    {{ h.advance_to(current_state) }}
+    {{ h.consume(current_state) }}
 } else {
     // Reconsume in the comment state.
     {{ h.reconsume_in('COMMENT') }}

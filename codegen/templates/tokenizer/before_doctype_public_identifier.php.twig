@@ -5,7 +5,7 @@
 
 if ({{ h.is_whitespace() }}) {
     // Ignore the character.
-    {{ h.advance_to(current_state) }}
+    {{ h.consume(current_state) }}
 } elseif ($cc === '"') {
     // Set the DOCTYPE token's public identifier to the empty string (not missing)
     $this->currentToken->publicIdentifier = '';

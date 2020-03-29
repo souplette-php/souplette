@@ -11,7 +11,7 @@ if ($cc === '>') {
 } elseif ($cc === '-') {
     // Append a U+002D HYPHEN-MINUS character (-) to the comment token's data.
     $this->currentToken->data .= '-';
-    {{ h.advance_to('COMMENT_END') }}
+    {{ h.consume(current_state) }}
 } elseif ($cc === null) {
     // This is an eof-in-comment parse error.
     {{ h.parse_error('EOF_IN_COMMENT') }}

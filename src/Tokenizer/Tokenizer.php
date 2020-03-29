@@ -677,7 +677,6 @@ final class Tokenizer extends AbstractTokenizer
                 if ($cc === '-') {
                     // Emit a U+002D HYPHEN-MINUS character token.
                     $this->tokenQueue->enqueue(new Character('-'));
-                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED_DASH_DASH;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA_ESCAPED_DASH_DASH;
                 } elseif ($cc === '<') {
@@ -935,7 +934,6 @@ final class Tokenizer extends AbstractTokenizer
                 if ($cc === '-') {
                     // Emit a U+002D HYPHEN-MINUS character token.
                     $this->tokenQueue->enqueue(new Character('-'));
-                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED_DASH_DASH;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA_DOUBLE_ESCAPED_DASH_DASH;
                 } elseif ($cc === '<') {
@@ -1135,7 +1133,6 @@ final class Tokenizer extends AbstractTokenizer
             BEFORE_ATTRIBUTE_VALUE: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Ignore the character.
-                    $this->state = TokenizerStates::BEFORE_ATTRIBUTE_VALUE;
                     $cc = $this->input[++$this->position] ?? null;
                     goto BEFORE_ATTRIBUTE_VALUE;
                 } elseif ($cc === '"') {
@@ -1269,7 +1266,6 @@ final class Tokenizer extends AbstractTokenizer
                     $this->parseErrors[] = [ParseErrors::UNEXPECTED_CHARACTER_IN_UNQUOTED_ATTRIBUTE_VALUE, $this->position];
                     // Treat it as per the "anything else" entry below.
                     $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= $cc;
-                    $this->state = TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto ATTRIBUTE_VALUE_UNQUOTED;
                 } elseif ($cc === null) {
@@ -1524,7 +1520,6 @@ final class Tokenizer extends AbstractTokenizer
                 } elseif ($cc === '<') {
                     // Append the current input character to the comment token's data.
                     $this->currentToken->data .= $cc;
-                    $this->state = TokenizerStates::COMMENT_LESS_THAN_SIGN;
                     $cc = $this->input[++$this->position] ?? null;
                     goto COMMENT_LESS_THAN_SIGN;
                 } else {
@@ -1614,7 +1609,6 @@ final class Tokenizer extends AbstractTokenizer
                 } elseif ($cc === '-') {
                     // Append a U+002D HYPHEN-MINUS character (-) to the comment token's data.
                     $this->currentToken->data .= '-';
-                    $this->state = TokenizerStates::COMMENT_END;
                     $cc = $this->input[++$this->position] ?? null;
                     goto COMMENT_END;
                 } elseif ($cc === null) {
@@ -1698,7 +1692,6 @@ final class Tokenizer extends AbstractTokenizer
             BEFORE_DOCTYPE_NAME: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Ignore the character.
-                    $this->state = TokenizerStates::BEFORE_DOCTYPE_NAME;
                     $cc = $this->input[++$this->position] ?? null;
                     goto BEFORE_DOCTYPE_NAME;
                 } elseif ($cc === "\0") {
@@ -1789,7 +1782,6 @@ final class Tokenizer extends AbstractTokenizer
             AFTER_DOCTYPE_NAME: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Ignore the character.
-                    $this->state = TokenizerStates::AFTER_DOCTYPE_NAME;
                     $cc = $this->input[++$this->position] ?? null;
                     goto AFTER_DOCTYPE_NAME;
                 } elseif ($cc === '>') {
@@ -1889,7 +1881,6 @@ final class Tokenizer extends AbstractTokenizer
             BEFORE_DOCTYPE_PUBLIC_IDENTIFIER: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Ignore the character.
-                    $this->state = TokenizerStates::BEFORE_DOCTYPE_PUBLIC_IDENTIFIER;
                     $cc = $this->input[++$this->position] ?? null;
                     goto BEFORE_DOCTYPE_PUBLIC_IDENTIFIER;
                 } elseif ($cc === '"') {
@@ -2075,7 +2066,6 @@ final class Tokenizer extends AbstractTokenizer
             BETWEEN_DOCTYPE_PUBLIC_AND_SYSTEM_IDENTIFIERS: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Ignore the character
-                    $this->state = TokenizerStates::BETWEEN_DOCTYPE_PUBLIC_AND_SYSTEM_IDENTIFIERS;
                     $cc = $this->input[++$this->position] ?? null;
                     goto BETWEEN_DOCTYPE_PUBLIC_AND_SYSTEM_IDENTIFIERS;
                 } elseif ($cc === '>') {
@@ -2175,7 +2165,6 @@ final class Tokenizer extends AbstractTokenizer
             BEFORE_DOCTYPE_SYSTEM_IDENTIFIER: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Ignore the character
-                    $this->state = TokenizerStates::BEFORE_DOCTYPE_SYSTEM_IDENTIFIER;
                     $cc = $this->input[++$this->position] ?? null;
                     goto BEFORE_DOCTYPE_SYSTEM_IDENTIFIER;
                 } elseif ($cc === '"') {
@@ -2310,7 +2299,6 @@ final class Tokenizer extends AbstractTokenizer
             AFTER_DOCTYPE_SYSTEM_IDENTIFIER: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Ignore the character.
-                    $this->state = TokenizerStates::AFTER_DOCTYPE_SYSTEM_IDENTIFIER;
                     $cc = $this->input[++$this->position] ?? null;
                     goto AFTER_DOCTYPE_SYSTEM_IDENTIFIER;
                 } elseif ($cc === '>') {
@@ -2412,7 +2400,6 @@ final class Tokenizer extends AbstractTokenizer
                 if ($cc === ']') {
                     // Emit a U+005D RIGHT SQUARE BRACKET character token.
                     $this->tokenQueue->enqueue(new Character(']'));
-                    $this->state = TokenizerStates::CDATA_SECTION_END;
                     $cc = $this->input[++$this->position] ?? null;
                     goto CDATA_SECTION_END;
                 } elseif ($cc === '>') {

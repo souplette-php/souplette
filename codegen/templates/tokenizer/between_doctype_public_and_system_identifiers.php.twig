@@ -5,7 +5,7 @@
 
 if ({{ h.is_whitespace() }}) {
     // Ignore the character
-    {{ h.advance_to(current_state) }}
+    {{ h.consume(current_state) }}
 } elseif ($cc === '>') {
     // Switch to the data state. Emit the current DOCTYPE token.
     {{ h.emit_and_resume_in('DATA') }}

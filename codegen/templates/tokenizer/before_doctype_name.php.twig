@@ -5,7 +5,7 @@
 
 if ({{ h.is_whitespace() }}) {
     // Ignore the character.
-    {{ h.advance_to('BEFORE_DOCTYPE_NAME') }}
+    {{ h.consume(current_state) }}
 } elseif ($cc === "\0") {
     // This is an unexpected-null-character parse error.
     {{ h.parse_error('UNEXPECTED_NULL_CHARACTER') }}
