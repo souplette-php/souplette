@@ -2,7 +2,6 @@
 
 namespace ju1ius\HtmlParser\Tests\Tokenizer;
 
-use ju1ius\HtmlParser\Tokenizer\Token;
 use PHPUnit\Framework\TestCase;
 
 class CharacterTest extends TestCase

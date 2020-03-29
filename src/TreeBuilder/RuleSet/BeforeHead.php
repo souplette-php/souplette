@@ -4,7 +4,6 @@ namespace ju1ius\HtmlParser\TreeBuilder\RuleSet;
 
 use ju1ius\HtmlParser\Tokenizer\Token;
 use ju1ius\HtmlParser\Tokenizer\TokenTypes;
-use ju1ius\HtmlParser\TreeBuilder\InsertionLocation;
 use ju1ius\HtmlParser\TreeBuilder\InsertionModes;
 use ju1ius\HtmlParser\TreeBuilder\RuleSet;
 use ju1ius\HtmlParser\TreeBuilder\TreeBuilder;
