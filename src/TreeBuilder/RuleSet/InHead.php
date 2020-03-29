@@ -7,6 +7,7 @@ use ju1ius\HtmlParser\Encoding\EncodingSniffer;
 use ju1ius\HtmlParser\Namespaces;
 use ju1ius\HtmlParser\Tokenizer\Token;
 use ju1ius\HtmlParser\Tokenizer\TokenizerStates;
+use ju1ius\HtmlParser\Tokenizer\TokenTypes;
 use ju1ius\HtmlParser\TreeBuilder\InsertionLocation;
 use ju1ius\HtmlParser\TreeBuilder\InsertionModes;
 use ju1ius\HtmlParser\TreeBuilder\RuleSet;
@@ -19,16 +20,17 @@ final class InHead extends RuleSet
 {
     public static function process(Token $token, TreeBuilder $tree)
     {
-        if ($token instanceof Token\Character && ctype_space($token->data)) {
+        $type = $token->type;
+        if ($type === TokenTypes::CHARACTER && ctype_space($token->data)) {
             $tree->insertCharacter($token);
             return;
-        } elseif ($token instanceof Token\Comment) {
+        } elseif ($type === TokenTypes::COMMENT) {
             $tree->insertComment($token);
             return;
-        } elseif ($token instanceof Token\Doctype) {
+        } elseif ($type === TokenTypes::DOCTYPE) {
             // TODO: Parse error. Ignore the token.
             return;
-        } elseif ($token instanceof Token\StartTag) {
+        } elseif ($type === TokenTypes::START_TAG) {
             $name = $token->name;
             if ($name === 'html') {
                 InBody::process($token, $tree);
@@ -116,7 +118,7 @@ final class InHead extends RuleSet
                 // TODO: Parse error. Ignore the token.
                 return;
             }
-        } elseif ($token instanceof Token\EndTag) {
+        } elseif ($type === TokenTypes::END_TAG) {
             $name = $token->name;
             if ($name === 'head') {
                 $tree->openElements->pop();

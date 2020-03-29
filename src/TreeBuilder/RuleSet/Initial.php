@@ -3,6 +3,7 @@
 namespace ju1ius\HtmlParser\TreeBuilder\RuleSet;
 
 use ju1ius\HtmlParser\Tokenizer\Token;
+use ju1ius\HtmlParser\Tokenizer\TokenTypes;
 use ju1ius\HtmlParser\TreeBuilder\CompatModes;
 use ju1ius\HtmlParser\TreeBuilder\InsertionLocation;
 use ju1ius\HtmlParser\TreeBuilder\InsertionModes;
@@ -18,12 +19,13 @@ final class Initial extends RuleSet
 
     public static function process(Token $token, TreeBuilder $tree)
     {
-        if ($token instanceof Token\Character && ctype_space($token->data)) {
+        $type = $token->type;
+        if ($type === TokenTypes::CHARACTER && ctype_space($token->data)) {
             // Ignore the token.
             return;
-        } elseif ($token instanceof Token\Comment) {
+        } elseif ($type === TokenTypes::COMMENT) {
             $tree->insertComment($token, new InsertionLocation($tree->document));
-        } elseif ($token instanceof Token\Doctype) {
+        } elseif ($type === TokenTypes::DOCTYPE) {
             if (self::$PUBLIC_ID_QUIRKS_PATTERN === null) {
                 self::buildDoctypeQuirksPattern();
             }

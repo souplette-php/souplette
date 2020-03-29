@@ -3,6 +3,7 @@
 namespace ju1ius\HtmlParser\TreeBuilder\RuleSet;
 
 use ju1ius\HtmlParser\Tokenizer\Token;
+use ju1ius\HtmlParser\Tokenizer\TokenTypes;
 use ju1ius\HtmlParser\TreeBuilder\InsertionLocation;
 use ju1ius\HtmlParser\TreeBuilder\InsertionModes;
 use ju1ius\HtmlParser\TreeBuilder\RuleSet;
@@ -12,24 +13,25 @@ final class BeforeHead extends RuleSet
 {
     public static function process(Token $token, TreeBuilder $tree)
     {
-        if ($token instanceof Token\Character && ctype_space($token->data)) {
+        $type = $token->type;
+        if ($type === TokenTypes::CHARACTER && ctype_space($token->data)) {
             // Ignore the token.
             return;
-        } elseif ($token instanceof Token\Comment) {
+        } elseif ($type === TokenTypes::COMMENT) {
             $tree->insertComment($token);
             return;
-        } elseif ($token instanceof Token\Doctype) {
+        } elseif ($type === TokenTypes::DOCTYPE) {
             // TODO: Parse error. Ignore the token.
             return;
-        } elseif ($token instanceof Token\StartTag && $token->name === 'html') {
+        } elseif ($type === TokenTypes::START_TAG && $token->name === 'html') {
             InBody::process($token, $tree);
             return;
-        } elseif ($token instanceof Token\StartTag && $token->name === 'head') {
+        } elseif ($type === TokenTypes::START_TAG && $token->name === 'head') {
             $head = $tree->insertElement($token);
             $tree->headElement = $head;
             $tree->insertionMode = InsertionModes::IN_HEAD;
             return;
-        } elseif ($token instanceof Token\EndTag) {
+        } elseif ($type === TokenTypes::END_TAG) {
             if ($token->name === 'head' || $token->name === 'body' || $token->name === 'html' || $token->name === 'br') {
                 // Act as described in the "anything else" entry below.
             } else {
