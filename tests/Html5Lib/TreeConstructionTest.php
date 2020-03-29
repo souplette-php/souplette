@@ -2,54 +2,18 @@
 
 namespace ju1ius\HtmlParser\Tests\Html5Lib;
 
-use ju1ius\HtmlParser\Namespaces;
-use ju1ius\HtmlParser\Parser\Parser;
 use ju1ius\HtmlParser\Tests\ResourceCollector;
-use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 
 class TreeConstructionTest extends TestCase
 {
     /**
      * @dataProvider dataFileProvider
-     * @param array $test
+     * @param TreeConstructionTestDTO $test
      */
-    public function testDataFile(array $test)
+    public function testDataFile(TreeConstructionTestDTO $test)
     {
-        if (isset($test['xfail'])) {
-            $this->markTestSkipped($test['xfail']);
-        }
-        $input = $test['data'];
-        $expectedErrors = $test['errors'];
-        $fragment = $test['document-fragment'] ?? null;
-        $scriptingEnabled = isset($test['script-on']);
-        $parser = new Parser($scriptingEnabled);
-        $serializer = new Serializer();
-        if ($fragment) {
-            $doc = new \DOMDocument();
-            $context = explode(' ', trim($fragment));
-            if (count($context) === 2) {
-                [$prefix, $localName] = $context;
-                $context = $doc->createElementNS(Namespaces::NAMESPACES[$prefix], $localName);
-            } else {
-                [$localName] = $context;
-                $context = $doc->createElementNS(Namespaces::HTML, $localName);
-            }
-            $nodes = $parser->parseFragment($context, $input, 'utf-8');
-            $frag = $doc->createDocumentFragment();
-            foreach ($nodes as $node) {
-                $node = $doc->importNode($node, true);
-                $frag->appendChild($node);
-            }
-            $expected = sprintf("#document-fragment\n%s", $test['document']);
-            $result = $serializer->serialize($frag);
-        } else {
-            $expected = sprintf("#document\n%s", $test['document']);
-            $doc = $parser->parse($input, 'utf-8');
-            $result = $serializer->serialize($doc);
-        }
-
-        Assert::assertSame($this->convertExpected($expected), $this->convertTreeDump($result));
+        TreeConstructionAssert::assertTestPasses($test);
     }
 
     public function dataFileProvider()
@@ -62,7 +26,7 @@ class TreeConstructionTest extends TestCase
                 if (isset($xfails['tree-construction'][$id])) {
                     $test['xfail'] = $xfails['tree-construction'][$id];
                 }
-                yield $id => [$test];
+                yield $id => [TreeConstructionTestDTO::fromArray($test)];
             }
         }
     }
@@ -84,15 +48,5 @@ class TreeConstructionTest extends TestCase
             }
             yield $relPath => new DataFile($fileInfo->getPathname());
         }
-    }
-
-    private function convertExpected(string $treeDump): string
-    {
-        return preg_replace('/^\| /m', '', $treeDump);
-    }
-
-    private function convertTreeDump(string $treeDump): string
-    {
-        return preg_replace('/^\|  /m', '', $treeDump);
     }
 }
