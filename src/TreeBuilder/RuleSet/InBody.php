@@ -1085,7 +1085,7 @@ final class InBody extends RuleSet
     private static function anyOtherEndTag(TreeBuilder $tree, Token\EndTag $token)
     {
         foreach ($tree->openElements as $node) {
-            if ($node->localName === $token->name && $node->namespaceURI === Namespaces::HTML) {
+            if ($node->tagName === $token->name && $node->namespaceURI === Namespaces::HTML) {
                 // Generate implied end tags, except for HTML elements with the same tag name as the token.
                 $tree->generateImpliedEndTags($node->localName);
                 // If node is not the current node, then this is a parse error.
