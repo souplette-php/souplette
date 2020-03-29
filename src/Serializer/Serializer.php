@@ -57,7 +57,7 @@ final class Serializer
                     $s .= sprintf(
                         ' %s="%s"',
                         XmlNameEscaper::unescape($this->serializeAttributeName($attr)),
-                        $this->escapeString($attr->nodeValue, true)
+                        $this->escapeString($attr->value, true)
                     );
                 }
                 // Append a U+003E GREATER-THAN SIGN character (>).
@@ -84,7 +84,7 @@ final class Serializer
                     // Otherwise, append the value of current node's data IDL attribute, escaped as described below.
                     $s .= $this->escapeString($currentNode->data);
                 }
-            } elseif ($currentNode instanceof \DOMText) {
+            } elseif ($currentNode instanceof \DOMComment) {
                 // Append the literal string "<!--" ,
                 // followed by the value of current node's data IDL attribute,
                 // followed by the literal string "-->".
