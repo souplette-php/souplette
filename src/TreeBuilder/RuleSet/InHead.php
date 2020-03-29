@@ -20,9 +20,15 @@ final class InHead extends RuleSet
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token->type;
-        if ($type === TokenTypes::CHARACTER && ctype_space($token->data)) {
-            $tree->insertCharacter($token);
-            return;
+        if ($type === TokenTypes::CHARACTER) {
+            if (ctype_space($token->data)) {
+                $tree->insertCharacter($token);
+                return;
+            }
+            if ($l = strspn($token->data, " \n\t\f")) {
+                $tree->insertCharacter($token, substr($token->data, 0, $l));
+                $token->data = substr($token->data, $l);
+            }
         } elseif ($type === TokenTypes::COMMENT) {
             $tree->insertComment($token);
             return;

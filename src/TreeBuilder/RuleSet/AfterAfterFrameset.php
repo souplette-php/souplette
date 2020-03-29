@@ -19,6 +19,15 @@ final class AfterAfterFrameset extends RuleSet
         if ($type === TokenTypes::COMMENT) {
             // Insert a comment as the last child of the Document object.
             $tree->insertComment($token, new InsertionLocation($tree->document));
+        } elseif ($type === TokenTypes::CHARACTER) {
+            $data = preg_replace('/[^ \n\t\f]+/S', '', $token->data, -1, $count);
+            if ($count > 0) {
+                // TODO: Parse error.
+                // Ignore the character tokens.
+                if (strlen($data) === 0) return;
+                $token->data = $data;
+            }
+            InBody::process($token, $tree);
         } elseif (
             $type === TokenTypes::DOCTYPE
             || ($type === TokenTypes::CHARACTER && ctype_space($token->data))

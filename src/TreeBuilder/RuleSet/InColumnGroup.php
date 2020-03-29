@@ -16,9 +16,18 @@ final class InColumnGroup extends RuleSet
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token->type;
-        if ($type === TokenTypes::CHARACTER && ctype_space($token->data)) {
-            // Insert the character.
-            $tree->insertCharacter($token);
+        if ($type === TokenTypes::CHARACTER) {
+            if (ctype_space($token->data)) {
+                // Insert the character.
+                $tree->insertCharacter($token);
+                return;
+            }
+            if ($l = strspn($token->data, " \n\t\f")) {
+                // Insert the character.
+                $tree->insertCharacter($token, substr($token->data, 0, $l));
+                $token->data = substr($token->data, $l);
+            }
+            goto ANYTHING_ELSE;
         } elseif ($type === TokenTypes::COMMENT) {
             // Insert a comment.
             $tree->insertComment($token);
@@ -56,6 +65,7 @@ final class InColumnGroup extends RuleSet
             // Process the token using the rules for the "in body" insertion mode.
             InBody::process($token, $tree);
         } else {
+            ANYTHING_ELSE:
             // If the current node is not a colgroup element, then this is a parse error; ignore the token.
             if ($tree->openElements->top()->localName !== 'colgroup') {
                 // TODO: Parse error.

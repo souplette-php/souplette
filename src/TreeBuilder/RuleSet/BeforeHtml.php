@@ -24,9 +24,14 @@ final class BeforeHtml extends RuleSet
         } elseif ($type === TokenTypes::COMMENT) {
             $tree->insertComment($token, new InsertionLocation($tree->document));
             return;
-        } elseif ($type === TokenTypes::CHARACTER && ctype_space($token->data)) {
-            // Ignore the token.
-            return;
+        } elseif ($type === TokenTypes::CHARACTER) {
+            if (ctype_space($token->data)) {
+                // Ignore the token.
+                return;
+            } else {
+                $token->data = ltrim($token->data, " \n\t\f");
+                goto ANYTHING_ELSE;
+            }
         } elseif ($type === TokenTypes::START_TAG && $token->name === 'html') {
             // Create an element for the token in the HTML namespace, with the Document as the intended parent.
             $element = $tree->createElement($token, Namespaces::HTML, $tree->document);

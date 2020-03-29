@@ -16,7 +16,13 @@ final class AfterFrameset extends RuleSet
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token->type;
-        if ($type === TokenTypes::CHARACTER && ctype_space($token->data)) {
+        if ($type === TokenTypes::CHARACTER) {
+            $data = preg_replace('/[^ \n\t\f]+/S', '', $token->data, -1, $count);
+            if ($count > 0) {
+                // TODO: Parse error. Ignore the character tokens.
+                if (strlen($data) === 0) return;
+                $token->data = $data;
+            }
             // Insert the character.
             $tree->insertCharacter($token);
         } elseif ($type === TokenTypes::COMMENT) {

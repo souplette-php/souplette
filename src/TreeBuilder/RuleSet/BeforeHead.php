@@ -13,9 +13,14 @@ final class BeforeHead extends RuleSet
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token->type;
-        if ($type === TokenTypes::CHARACTER && ctype_space($token->data)) {
-            // Ignore the token.
-            return;
+        if ($type === TokenTypes::CHARACTER) {
+            if (ctype_space($token->data)) {
+                // Ignore the token.
+                return;
+            }
+            if ($l = strspn($token->data, " \n\t\f")) {
+                $token->data = substr($token->data, $l);
+            }
         } elseif ($type === TokenTypes::COMMENT) {
             $tree->insertComment($token);
             return;

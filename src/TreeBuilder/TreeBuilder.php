@@ -153,6 +153,7 @@ final class TreeBuilder
         $this->encoding = $encoding;
         $this->reset();
         $this->run(TokenizerStates::DATA);
+        $this->document->normalize();
         return $this->document;
     }
 
@@ -225,6 +226,7 @@ final class TreeBuilder
         $encoding->makeIrrelevant();
         // 13. Start the parser and let it run until it has consumed all the characters just inserted into the input stream.
         $this->run($tokenizerState);
+        $root->normalize();
         // 14. Return the child nodes of root, in tree order.
         return iterator_to_array($root->childNodes);
     }
