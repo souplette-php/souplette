@@ -168,7 +168,7 @@ REGEXP;
     private function updateTokenizerState(StartTag $token): void
     {
         switch ($token->name) {
-            case 'testarea':
+            case 'textarea':
             case 'title':
                 $this->tokenizer->state = TokenizerStates::RCDATA;
                 break;

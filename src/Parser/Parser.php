@@ -12,10 +12,6 @@ use ju1ius\HtmlParser\TreeBuilder\TreeBuilder;
 final class Parser
 {
     /**
-     * @var Tokenizer
-     */
-    private $tokenizer;
-    /**
      * @var TreeBuilder
      */
     private $treeBuilder;
