@@ -1,0 +1,29 @@
+#data
+  foo bar baz
+#errors
+#document
+| <html>
+|   <head>
+|   <body>
+|     "foo bar baz"
+
+#data
+<!--foo--> bar baz
+#errors
+#document
+| <!-- foo -->
+| <html>
+|   <head>
+|   <body>
+|     "bar baz"
+
+#data
+  foo <!--bar--> baz
+#errors
+#document
+| <html>
+|   <head>
+|   <body>
+|     "foo "
+|     <!-- bar -->
+|     " baz"
