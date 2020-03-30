@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace ju1ius\HtmlParser\Codegen;
+namespace JoliPotage\Codegen;
 
-use ju1ius\HtmlParser\Codegen\Twig\TokenizerExtension;
-use ju1ius\HtmlParser\Tokenizer\TokenizerStates;
+use JoliPotage\Codegen\Twig\TokenizerExtension;
+use JoliPotage\Html\Parser\Tokenizer\TokenizerStates;
 use Twig\Environment;
 
 final class TokenizerGenerator extends AbstractCodeGenerator
@@ -15,7 +15,7 @@ final class TokenizerGenerator extends AbstractCodeGenerator
 
     protected function getOutputFile(): string
     {
-        return __DIR__.'/../src/Tokenizer/Tokenizer.php';
+        return __DIR__.'/../src/Html/Parser/Tokenizer/Tokenizer.php';
     }
 
     protected function createEnvironment(): Environment

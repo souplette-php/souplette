@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace ju1ius\HtmlParser\Tests\Xml;
+namespace JoliPotage\Tests\Xml;
 
-use ju1ius\HtmlParser\Namespaces;
-use ju1ius\HtmlParser\Xml\XmlNameEscaper;
+use JoliPotage\Html\Namespaces;
+use JoliPotage\Xml\XmlNameEscaper;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 

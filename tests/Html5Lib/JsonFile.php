@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace ju1ius\HtmlParser\Tests\Html5Lib;
+namespace JoliPotage\Tests\Html5Lib;
 
 final class JsonFile extends TestFile
 {

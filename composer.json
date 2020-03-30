@@ -1,5 +1,5 @@
 {
-    "name": "ju1ius/html-parser",
+    "name": "ju1ius/joli-potage",
     "description": "Standard compliant HTML parser.",
     "type": "library",
     "version": "0.0.1",
@@ -12,13 +12,13 @@
     ],
     "autoload": {
         "psr-4": {
-            "ju1ius\\HtmlParser\\": "src"
+            "JoliPotage\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "ju1ius\\HtmlParser\\Tests\\": "tests",
-            "ju1ius\\HtmlParser\\Codegen\\": "codegen"
+            "JoliPotage\\Tests\\": "tests",
+            "JoliPotage\\Codegen\\": "codegen"
         }
     },
     "require": {

@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace ju1ius\HtmlParser\Codegen;
+namespace JoliPotage\Codegen;
 
-use ju1ius\HtmlParser\Codegen\Twig\CodeGeneratorExtension;
+use JoliPotage\Codegen\Twig\CodeGeneratorExtension;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 

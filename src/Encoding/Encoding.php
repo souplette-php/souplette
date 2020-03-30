@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace ju1ius\HtmlParser\Encoding;
+namespace JoliPotage\Encoding;
 
-use ju1ius\HtmlParser\Encoding\Exception\UnsupportedEncoding;
+use JoliPotage\Encoding\Exception\UnsupportedEncoding;
 
 final class Encoding
 {

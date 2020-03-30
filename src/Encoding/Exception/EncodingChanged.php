@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace ju1ius\HtmlParser\Encoding\Exception;
+namespace JoliPotage\Encoding\Exception;
 
-use ju1ius\HtmlParser\Encoding\Encoding;
+use JoliPotage\Encoding\Encoding;
 
 final class EncodingChanged extends \RuntimeException
 {

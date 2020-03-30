@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace ju1ius\HtmlParser\Codegen\Twig;
+namespace JoliPotage\Codegen\Twig;
 
 use IntlChar;
-use ju1ius\HtmlParser\Codegen\Utils;
+use JoliPotage\Codegen\Utils;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 

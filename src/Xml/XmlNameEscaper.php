@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace ju1ius\HtmlParser\Xml;
+namespace JoliPotage\Xml;
 
 /**
  * @see https://html.spec.whatwg.org/multipage/parsing.html#coercing-an-html-dom-into-an-infoset

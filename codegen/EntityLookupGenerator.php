@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace ju1ius\HtmlParser\Codegen;
+namespace JoliPotage\Codegen;
 
 final class EntityLookupGenerator extends AbstractCodeGenerator
 {
@@ -13,7 +13,7 @@ final class EntityLookupGenerator extends AbstractCodeGenerator
 
     protected function getOutputFile(): string
     {
-        return __DIR__.'/../src/Tokenizer/EntityLookup.php';
+        return __DIR__.'/../src/Html/Parser/Tokenizer/EntityLookup.php';
     }
 
     protected function createContext(): array

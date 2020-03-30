@@ -3,7 +3,7 @@
  * This file was automatically generated.
  * All modifications will be lost.
  */
-namespace ju1ius\HtmlParser\Encoding;
+namespace JoliPotage\Encoding;
 
 /**
  * @see https://encoding.spec.whatwg.org/encodings.json

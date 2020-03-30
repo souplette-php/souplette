@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace ju1ius\HtmlParser\Codegen\Twig;
+namespace JoliPotage\Codegen\Twig;
 
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;

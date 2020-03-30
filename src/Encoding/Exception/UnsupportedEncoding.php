@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace ju1ius\HtmlParser\Encoding\Exception;
+namespace JoliPotage\Encoding\Exception;
 
 final class UnsupportedEncoding extends \RuntimeException
 {
