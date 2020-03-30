@@ -405,7 +405,7 @@ final class TreeBuilder
                     return;
                 }
                 // 15.2 Otherwise, the head element pointer is not null, switch the insertion mode to "after head" and return.
-                $this->insertionMode = InsertionModes::BEFORE_HEAD;
+                $this->insertionMode = InsertionModes::AFTER_HEAD;
                 return;
             }
             // 16. If last is true, then switch the insertion mode to "in body" and return. (fragment case)

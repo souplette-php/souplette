@@ -54,6 +54,10 @@ final class Serializer
             foreach ($attributes as $name => $value) {
                 $output[] = sprintf('|%s  %s="%s"', $indent, $name, $value);
             }
+            if ($node->localName === 'template' && $node->namespaceURI === Namespaces::HTML) {
+                $output[] = sprintf('|%s  content', $indent);
+                $depth++;
+            }
         }
         if ($node->hasChildNodes()) {
             foreach ($node->childNodes as $child) {

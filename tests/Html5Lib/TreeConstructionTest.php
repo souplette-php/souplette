@@ -42,10 +42,6 @@ class TreeConstructionTest extends TestCase
                 // TODO: implement a scripting engine 😁
                 continue;
             }
-            if ($relPath === 'template.dat') {
-                // TODO: implement and test <template> elements
-                continue;
-            }
             yield $relPath => new DataFile($fileInfo->getPathname());
         }
     }
