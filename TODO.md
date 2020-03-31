@@ -6,6 +6,7 @@
 - [ ] TreeBuilder parse errors
 - [ ] Template elements
 - [ ] Serializer
+    - [ ] boolean attributes
 
 ## Notes
 

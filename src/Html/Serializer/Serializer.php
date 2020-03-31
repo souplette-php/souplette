@@ -45,7 +45,7 @@ final class Serializer
                 // Append a U+003C LESS-THAN SIGN character (<), followed by tagName.
                 $s .= "<{$tagName}";
                 // NOTE: next spec step is skipped since we do not support custom elements.
-                // TODO: If current node's `is` value is not null, and the element does not have an `is` attribute in its attribute list,
+                // If current node's `is` value is not null, and the element does not have an `is` attribute in its attribute list,
                 // then append the string " is="", followed by current node's is value escaped as described below in attribute mode,
                 // followed by a U+0022 QUOTATION MARK character (").
                 foreach ($currentNode->attributes as $attr) {
@@ -54,11 +54,7 @@ final class Serializer
                     // a U+003D EQUALS SIGN character (=), a U+0022 QUOTATION MARK character ("),
                     // the attribute's value, escaped as described below in attribute mode,
                     // and a second U+0022 QUOTATION MARK character (").
-                    $s .= sprintf(
-                        ' %s="%s"',
-                        XmlNameEscaper::unescape($this->serializeAttributeName($attr)),
-                        $this->escapeString($attr->value, true)
-                    );
+                    $s .= ' ' . $this->serializeAttribute($tagName, $attr);
                 }
                 // Append a U+003E GREATER-THAN SIGN character (>).
                 $s .= '>';
@@ -108,6 +104,25 @@ final class Serializer
         return $s;
     }
 
+    private function serializeAttribute(string $tagName, \DOMAttr $attr): string
+    {
+        $name = $this->serializeAttributeName($attr);
+        $canonicalName = strtolower($name);
+        $isBoolean = isset(Elements::BOOLEAN_ATTRIBUTES[''][$canonicalName])
+            || isset(Elements::BOOLEAN_ATTRIBUTES[$tagName][$canonicalName]);
+        if ($isBoolean && (
+            $attr->value === '' ||
+            strcasecmp($attr->value, $canonicalName) === 0
+        )) {
+            return $name;
+        }
+        return sprintf(
+            '%s="%s"',
+            XmlNameEscaper::unescape($name),
+            $this->escapeString($attr->value, true)
+        );
+    }
+
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#attribute's-serialised-name
      * @param \DOMAttr $attr
@@ -121,6 +136,7 @@ final class Serializer
         } elseif ($ns === Namespaces::XML) {
             return "xml:{$attr->localName}" ;
         } elseif ($ns === Namespaces::XMLNS) {
+            // FIXME: there's no such thing as xmlns attributes when using DOMNode objects
             return $attr->localName === 'xmlns' ? 'xmlns' : "xmlns:{$attr->localName}";
         } elseif ($ns === Namespaces::XLINK) {
             return "xlink:{$attr->localName}";
