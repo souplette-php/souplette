@@ -2,6 +2,9 @@
 
 namespace JoliPotage\Html\Parser\TreeBuilder;
 
+use DOMDocument;
+use DOMElement;
+use DOMImplementation;
 use JoliPotage\Encoding\Encoding;
 use JoliPotage\Encoding\EncodingLookup;
 use JoliPotage\Encoding\Exception\EncodingChanged;
@@ -42,100 +45,68 @@ final class TreeBuilder
         InsertionModes::AFTER_AFTER_FRAMESET => RuleSet\AfterAfterFrameset::class,
         InsertionModes::IN_FOREIGN_CONTENT => RuleSet\InForeignContent::class,
     ];
+
+    public Tokenizer $tokenizer;
+    public Encoding $encoding;
+    private DOMImplementation $dom;
+    public DOMDocument $document;
     /**
-     * @var Tokenizer
-     */
-    public $tokenizer;
-    /**
-     * @var Encoding
-     */
-    public $encoding;
-    /**
-     * @var \DOMImplementation
-     */
-    private $dom;
-    /**
-     * @var \DOMDocument
-     */
-    public $document;
-    /**
-     * @var string
      * @see https://dom.spec.whatwg.org/#concept-document-mode
      */
-    public $compatMode = CompatModes::NO_QUIRKS;
+    public string $compatMode = CompatModes::NO_QUIRKS;
     /**
-     * @var int
      * @see https://html.spec.whatwg.org/multipage/parsing.html#the-insertion-mode
      */
-    public $insertionMode;
+    public int $insertionMode;
     /**
-     * @var int
      * @see https://html.spec.whatwg.org/multipage/parsing.html#original-insertion-mode
      */
-    public $originalInsertionMode;
+    public int $originalInsertionMode;
     /**
-     * @var OpenElementsStack
      * @see https://html.spec.whatwg.org/multipage/parsing.html#the-stack-of-open-elements
      */
-    public $openElements;
+    public OpenElementsStack $openElements;
     /**
-     * @var ActiveFormattingElementList
      * @see https://html.spec.whatwg.org/multipage/parsing.html#the-list-of-active-formatting-elements
      */
-    public $activeFormattingElements;
+    public ActiveFormattingElementList $activeFormattingElements;
     /**
-     * @var SplStack
      * @see https://html.spec.whatwg.org/multipage/parsing.html#stack-of-template-insertion-modes
      */
-    public $templateInsertionModes;
+    public SplStack $templateInsertionModes;
     /**
      * @var Token\Character[]
      */
-    public $pendingTableCharacterTokens;
+    public array $pendingTableCharacterTokens = [];
+    public bool $isBuildingFragment = false;
     /**
-     * @var bool
-     */
-    public $isBuildingFragment = false;
-    /**
-     * @var \DOMElement
      * @see https://html.spec.whatwg.org/multipage/parsing.html#concept-frag-parse-context
      */
-    private $contextElement;
+    private ?DOMElement $contextElement = null;
     /**
-     * @var \DOMElement
      * @see https://html.spec.whatwg.org/multipage/parsing.html#head-element-pointer
      */
-    public $headElement;
+    public ?DOMElement $headElement = null;
     /**
-     * @var \DOMElement
      * @see https://html.spec.whatwg.org/multipage/parsing.html#form-element-pointer
      */
-    public $formElement;
+    public ?DOMElement $formElement = null;
     /**
-     * @var bool
      * @see https://html.spec.whatwg.org/multipage/parsing.html#foster-parent
      */
-    public $fosterParenting = false;
+    public bool $fosterParenting = false;
     /**
-     * @var bool
      * @see https://html.spec.whatwg.org/multipage/parsing.html#frameset-ok-flag
      */
-    public $framesetOK = true;
+    public bool $framesetOK = true;
     /**
-     * @var bool
      * @see https://html.spec.whatwg.org/multipage/parsing.html#scripting-flag
      */
-    public $scriptingEnabled = false;
-    /**
-     * @var bool
-     */
-    public $shouldSkipNextNewLine = false;
-    /**
-     * @var \DOMDocumentType
-     */
-    private $blankDoctype;
+    public bool $scriptingEnabled = false;
+    public bool $shouldSkipNextNewLine = false;
+    private \DOMDocumentType $blankDoctype;
 
-    public function __construct(\DOMImplementation $dom, bool $scriptingEnabled = false)
+    public function __construct(DOMImplementation $dom, bool $scriptingEnabled = false)
     {
         $this->dom = $dom;
         $this->scriptingEnabled = $scriptingEnabled;
@@ -145,9 +116,9 @@ final class TreeBuilder
      * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing
      * @param Tokenizer $tokenizer
      * @param Encoding $encoding
-     * @return \DOMDocument
+     * @return DOMDocument
      */
-    public function buildDocument(Tokenizer $tokenizer, Encoding $encoding): \DOMDocument
+    public function buildDocument(Tokenizer $tokenizer, Encoding $encoding): DOMDocument
     {
         $this->tokenizer = $tokenizer;
         $this->encoding = $encoding;
@@ -161,10 +132,10 @@ final class TreeBuilder
      * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-html-fragments
      * @param Tokenizer $tokenizer
      * @param Encoding $encoding
-     * @param \DOMElement $contextElement
+     * @param DOMElement $contextElement
      * @return \DOMNode[]
      */
-    public function buildFragment(Tokenizer $tokenizer, Encoding $encoding, \DOMElement $contextElement): array
+    public function buildFragment(Tokenizer $tokenizer, Encoding $encoding, DOMElement $contextElement): array
     {
         $this->tokenizer = $tokenizer;
         $this->encoding = $encoding;
@@ -439,7 +410,7 @@ final class TreeBuilder
         }
     }
 
-    public function getAdjustedCurrentNode(): ?\DOMElement
+    public function getAdjustedCurrentNode(): ?DOMElement
     {
         if ($this->openElements->isEmpty()) {
             return null;
@@ -450,12 +421,12 @@ final class TreeBuilder
         return $this->openElements->top();
     }
 
-    public function appropriatePlaceForInsertingANode(?\DOMElement $overrideTarget = null): InsertionLocation
+    public function appropriatePlaceForInsertingANode(?DOMElement $overrideTarget = null): InsertionLocation
     {
         // @see https://html.spec.whatwg.org/multipage/parsing.html#creating-and-inserting-nodes
         // 1. If there was an override target specified, then let target be the override target.
         // Otherwise, let target be the current node.
-        /** @var \DOMElement $target */
+        /** @var DOMElement $target */
         $target = $overrideTarget ?: $this->openElements->top();
         // 2. Determine the adjusted insertion location using the first matching steps from the following list:
         if ($this->fosterParenting && isset(Elements::TABLE_INSERT_MODE_ELEMENTS[$target->localName])) {
@@ -517,7 +488,7 @@ final class TreeBuilder
         return $adjustedInsertionLocation;
     }
 
-    private function createDocument(): \DOMDocument
+    private function createDocument(): DOMDocument
     {
         $doc = $this->dom->createDocument();
         // This seems to be the only way to create a doctype with an empty name...
@@ -543,7 +514,7 @@ final class TreeBuilder
         string $namespace,
         \DOMNode $intendedParent,
         bool $inForeignContent = false
-    ): \DOMElement {
+    ): DOMElement {
         // 1. Let document be intended parent's node document.
         if ($intendedParent->nodeType === XML_HTML_DOCUMENT_NODE || $intendedParent->nodeType === XML_DOCUMENT_NODE) {
             $doc = $intendedParent;
@@ -627,7 +598,7 @@ final class TreeBuilder
         Token\Tag $token,
         string $namespace = Namespaces::HTML,
         bool $inForeignContent = false
-    ): \DOMElement {
+    ): DOMElement {
         // 1. Let the adjusted insertion location be the appropriate place for inserting a node.
         $location = $this->appropriatePlaceForInsertingANode();
         // 2. Let element be the result of creating an element for the token in the given namespace,
@@ -658,7 +629,7 @@ final class TreeBuilder
         return $element;
     }
 
-    public function mergeAttributes(Token\StartTag $fromToken, \DOMElement $toElement): void
+    public function mergeAttributes(Token\StartTag $fromToken, DOMElement $toElement): void
     {
         foreach ($fromToken->attributes as $name => $value) {
             $name = (string)$name;

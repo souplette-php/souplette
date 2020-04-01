@@ -13,16 +13,6 @@ use JoliPotage\Html\Dom\TokenList;
  */
 interface HtmlElementInterface extends HtmlNodeInterface
 {
-    const PROPERTIES_READ = [
-        'innerHTML' => 'getInnerHTML',
-        'outerHTML' => 'getOuterHTML',
-        'classList' => 'getClassList',
-    ];
-    const PROPERTIES_WRITE = [
-        'innerHTML' => 'setInnerHTML',
-        'outerHTML' => 'setOuterHTML',
-    ];
-
     public function getInnerHTML(): string;
     public function setInnerHTML(string $html): void;
     public function getOuterHTML(): string;

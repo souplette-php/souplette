@@ -29,8 +29,9 @@ final class HtmlDocument extends \DOMDocument implements HtmlDocumentInterface, 
 
     public function __get($name)
     {
-        $method = HtmlDocumentInterface::PROPERTIES_READ[$name] ?? null;
-        $method ??= ParentNodeInterface::PROPERTIES_READ[$name] ?? null;
+        $methods = PropertyMaps::READ;
+        $method = $methods[HtmlDocumentInterface::class][$name] ?? null;
+        $method ??= $methods[ParentNodeInterface::class][$name] ?? null;
         if ($method) {
             return $this->{$method}();
         }
@@ -38,7 +39,8 @@ final class HtmlDocument extends \DOMDocument implements HtmlDocumentInterface, 
 
     public function __set($name, $value)
     {
-        $method = HtmlDocumentInterface::PROPERTIES_WRITE[$name] ?? null;
+        $methods = PropertyMaps::WRITE;
+        $method = $methods[HtmlDocumentInterface::class][$name] ?? null;
         if ($method) {
             $this->{$method}($value);
         }

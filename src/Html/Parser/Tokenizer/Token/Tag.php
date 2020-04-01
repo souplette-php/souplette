@@ -6,18 +6,9 @@ use JoliPotage\Html\Parser\Tokenizer\Token;
 
 abstract class Tag extends Token
 {
-    /**
-     * @var string
-     */
-    public $name = '';
-    /**
-     * @var bool
-     */
-    public $selfClosing = false;
-    /**
-     * @var array|null
-     */
-    public $attributes;
+    public string $name = '';
+    public bool $selfClosing = false;
+    public ?array $attributes = null;
 
     public function __construct(string $name = '')
     {

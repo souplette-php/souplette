@@ -4,11 +4,11 @@ namespace JoliPotage\Html\Parser\Tokenizer;
 
 final class EntitySearch extends EntitySearchNode
 {
-    private static $instance;
+    private static self $instance;
 
     public static function create(): self
     {
-        if (!self::$instance) {
+        if (!isset(self::$instance)) {
             self::$instance = new self();
             foreach (EntityLookup::NAMED_ENTITIES as $entity => $unicodeValue) {
                 self::$instance->add($entity, $unicodeValue);

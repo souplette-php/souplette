@@ -2,38 +2,29 @@
 
 namespace JoliPotage\Html\Parser\TreeBuilder;
 
+use DOMDocument;
+use DOMNode;
+
 final class InsertionLocation
 {
-    /**
-     * @var \DOMNode
-     */
-    public $parent;
-    /**
-     * @var \DOMNode
-     */
-    public $target;
-    /**
-     * @var bool
-     */
-    public $beforeTarget = false;
-    /**
-     * @var \DOMDocument
-     */
-    public $document;
+    public DOMNode $parent;
+    public ?DOMNode $target;
+    public bool $beforeTarget = false;
+    public DOMDocument $document;
 
-    public function __construct(\DOMNode $parent, ?\DOMNode $target = null, bool $beforeTarget = false)
+    public function __construct(DOMNode $parent, ?DOMNode $target = null, bool $beforeTarget = false)
     {
         $this->parent = $parent;
         $this->target = $target ?: $parent->lastChild;
         $this->beforeTarget = $beforeTarget;
-        if ($parent->nodeType === XML_HTML_DOCUMENT_NODE || $parent->nodeType === XML_DOCUMENT_NODE) {
+        if ($parent instanceof DOMDocument) {
             $this->document = $parent;
         } else {
             $this->document = $parent->ownerDocument;
         }
     }
 
-    public function insert(\DOMNode $node)
+    public function insert(DOMNode $node)
     {
         if (!$this->target) {
             $this->parent->appendChild($node);

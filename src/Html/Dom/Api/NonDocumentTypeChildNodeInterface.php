@@ -10,10 +10,6 @@ use DOMElement;
  */
 interface NonDocumentTypeChildNodeInterface
 {
-    const PROPERTIES_READ = [
-        'previousElementSibling' => 'getPreviousElementSibling',
-        'nextElementSibling' => 'getNextElementSibling',
-    ];
     /**
      * Returns the first preceding sibling that is an element, and null otherwise.
      *

@@ -6,8 +6,5 @@ use JoliPotage\Html\Parser\Tokenizer\TokenTypes;
 
 final class StartTag extends Tag
 {
-    /**
-     * @var int
-     */
-    public $type = TokenTypes::START_TAG;
+    public int $type = TokenTypes::START_TAG;
 }

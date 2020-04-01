@@ -6,7 +6,7 @@ use JoliPotage\Encoding\Encoding;
 
 final class EncodingChanged extends \RuntimeException
 {
-    private $encoding;
+    private Encoding $encoding;
 
     public function __construct(Encoding $encoding)
     {

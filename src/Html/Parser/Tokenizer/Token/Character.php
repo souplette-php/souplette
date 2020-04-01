@@ -7,14 +7,8 @@ use JoliPotage\Html\Parser\Tokenizer\TokenTypes;
 
 final class Character extends Token
 {
-    /**
-     * @var int
-     */
-    public $type = TokenTypes::CHARACTER;
-    /**
-     * @var string
-     */
-    public $data;
+    public int $type = TokenTypes::CHARACTER;
+    public string $data;
 
     public function __construct(string $data = '')
     {

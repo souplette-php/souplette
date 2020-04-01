@@ -7,24 +7,9 @@ use JoliPotage\Html\Parser\Tokenizer\TokenTypes;
 
 final class Doctype extends Token
 {
-    /**
-     * @var int
-     */
-    public $type = TokenTypes::DOCTYPE;
-    /**
-     * @var string
-     */
-    public $name = '';
-    /**
-     * @var string|null
-     */
-    public $publicIdentifier;
-    /**
-     * @var string|null
-     */
-    public $systemIdentifier;
-    /**
-     * @var bool
-     */
-    public $forceQuirks = false;
+    public int $type = TokenTypes::DOCTYPE;
+    public string $name = '';
+    public ?string $publicIdentifier = null;
+    public ?string $systemIdentifier = null;
+    public bool $forceQuirks = false;
 }

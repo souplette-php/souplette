@@ -61,15 +61,15 @@ final class OpenElementsStack extends Stack
         ],
     ];
 
-    private static $SCOPE_BUTTON;
-    private static $SCOPE_LIST_ITEM;
+    private static array $SCOPE_BUTTON;
+    private static array $SCOPE_LIST_ITEM;
 
     public function __construct()
     {
-        if (!self::$SCOPE_BUTTON) {
+        if (!isset(self::$SCOPE_BUTTON)) {
             self::$SCOPE_BUTTON = array_merge_recursive(self::SCOPE_BASE, self::SCOPE_BUTTON);
         }
-        if (!self::$SCOPE_LIST_ITEM) {
+        if (!isset(self::$SCOPE_LIST_ITEM)) {
             self::$SCOPE_LIST_ITEM = array_merge_recursive(self::SCOPE_BASE, self::SCOPE_LIST_ITEM);
         }
         parent::__construct();

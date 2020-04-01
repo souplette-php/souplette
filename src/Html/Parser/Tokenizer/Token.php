@@ -15,10 +15,7 @@ use JoliPotage\Html\Parser\Tokenizer\Token\StartTag;
  */
 abstract class Token
 {
-    /**
-     * @var int
-     */
-    public $type;
+    public int $type;
 
     public static function doctype(string $name, ?string $publicId = null, ?string $systemId = null, bool $forceQuirks = false): Doctype
     {

@@ -4,9 +4,6 @@ namespace JoliPotage\Html\Parser\TreeBuilder;
 
 class Stack extends \SplStack
 {
-    const IT_MODE_LIST = self::IT_MODE_FIFO | self::IT_MODE_KEEP;
-    const IT_MODE_STACK = self::IT_MODE_LIFO | self::IT_MODE_KEEP;
-
     public function __construct(iterable $values = [])
     {
         foreach ($values as $value) {

@@ -7,5 +7,5 @@ use JoliPotage\Html\Parser\Tokenizer\TokenTypes;
 
 final class EOF extends Token
 {
-    public $type = TokenTypes::EOF;
+    public int $type = TokenTypes::EOF;
 }

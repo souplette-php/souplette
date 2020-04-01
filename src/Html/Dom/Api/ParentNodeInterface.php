@@ -14,11 +14,6 @@ use DOMNode;
  */
 interface ParentNodeInterface
 {
-    const PROPERTIES_READ = [
-        'children' => 'getChildren',
-        'firstElementChild' => 'getFirstElementChild',
-        'lastElementChild' => 'getLastElementChild',
-    ];
     /**
      * Inserts nodes before the first child of node, while replacing strings in nodes with equivalent Text nodes.
      *

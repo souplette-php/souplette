@@ -11,21 +11,19 @@ use JoliPotage\Html\Dom\HtmlElement;
  */
 final class HtmlTemplateElement extends HtmlElement implements HtmlTemplateElementInterface
 {
-    /**
-     * @var DOMDocumentFragment
-     */
-    private $internalContent;
+    private DOMDocumentFragment $internalContent;
 
     public function __get($name)
     {
         if ($name === 'content') {
             return $this->getContent();
         }
+        return parent::__get($name);
     }
 
     public function getContent(): ?DOMDocumentFragment
     {
-        if ($this->internalContent) {
+        if (isset($this->internalContent)) {
             return $this->internalContent;
         }
         if ($this->ownerDocument) {

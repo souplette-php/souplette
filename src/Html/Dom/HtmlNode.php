@@ -12,8 +12,8 @@ class HtmlNode extends \DOMNode implements HtmlNodeInterface, NonDocumentTypeChi
 
     public function __get($name)
     {
-        if (isset(NonDocumentTypeChildNodeInterface::PROPERTIES_READ[$name])) {
-            $method = NonDocumentTypeChildNodeInterface::PROPERTIES_READ[$name];
+        $method = PropertyMaps::READ[NonDocumentTypeChildNodeInterface::class][$name] ?? null;
+        if ($method) {
             return $this->{$method}();
         }
     }

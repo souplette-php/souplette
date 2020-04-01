@@ -7,9 +7,6 @@ class EntitySearchNode
     /**
      * @var EntitySearchNode[]
      */
-    public $children = [];
-    /**
-     * @var string
-     */
-    public $value;
+    public array $children = [];
+    public ?string $value = null;
 }

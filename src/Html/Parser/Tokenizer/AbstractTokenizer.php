@@ -8,55 +8,21 @@ use SplQueue;
 
 abstract class AbstractTokenizer
 {
+    public int $state = TokenizerStates::DATA;
+    public bool $allowCdata = false;
+    protected int $returnState = 0;
+    protected string $input = '';
+    protected int $position = 0;
+    protected SplQueue $tokenQueue;
+    protected Token $currentToken;
+    protected array $parseErrors = [];
     /**
-     * @var int
-     */
-    public $state;
-    /**
-     * @var bool
-     */
-    public $allowCdata;
-    /**
-     * @var int
-     */
-    protected $returnState;
-    /**
-     * @var string
-     */
-    protected $input;
-    /**
-     * @var int
-     */
-    protected $position;
-    /**
-     * @var SplQueue
-     */
-    protected $tokenQueue;
-    /**
-     * @var Token
-     */
-    protected $currentToken;
-    /**
-     * @var array
-     */
-    protected $parseErrors;
-    /**
-     * @var string
      * @see https://html.spec.whatwg.org/multipage/parsing.html#appropriate-end-tag-token
      */
-    protected $appropriateEndTag;
-    /**
-     * @var string
-     */
-    protected $temporaryBuffer;
-    /**
-     * @var EntitySearch
-     */
-    protected $entitySearch;
-    /**
-     * @var int
-     */
-    protected $characterReferenceCode;
+    protected ?string $appropriateEndTag = null;
+    protected string $temporaryBuffer = '';
+    protected EntitySearch $entitySearch;
+    protected int $characterReferenceCode;
 
     public function __construct(string $input)
     {

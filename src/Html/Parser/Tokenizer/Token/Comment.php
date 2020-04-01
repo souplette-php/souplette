@@ -7,14 +7,8 @@ use JoliPotage\Html\Parser\Tokenizer\TokenTypes;
 
 final class Comment extends Token
 {
-    /**
-     * @var int
-     */
-    public $type = TokenTypes::COMMENT;
-    /**
-     * @var string
-     */
-    public $data = '';
+    public int $type = TokenTypes::COMMENT;
+    public string $data = '';
 
     public function __construct(string $data = '')
     {

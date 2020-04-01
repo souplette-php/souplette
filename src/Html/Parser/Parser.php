@@ -11,10 +11,7 @@ use JoliPotage\Html\Parser\TreeBuilder\TreeBuilder;
 
 final class Parser
 {
-    /**
-     * @var TreeBuilder
-     */
-    private $treeBuilder;
+    private TreeBuilder $treeBuilder;
 
     public function __construct(bool $scriptingEnabled = false)
     {

@@ -17,16 +17,6 @@ use DOMNodeList;
  */
 interface HtmlDocumentInterface extends HtmlNodeInterface
 {
-    const PROPERTIES_READ = [
-        'mode' => 'getMode',
-        'compatMode' => 'getCompatMode',
-        'head' => 'getHead',
-        'body' => 'getBody',
-        'title' => 'getTitle',
-    ];
-    const PROPERTIES_WRITE = [
-        'title' => 'setTitle',
-    ];
     public function getMode(): string;
     public function getCompatMode(): string;
     public function getHead(): ?DOMElement;

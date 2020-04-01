@@ -2560,7 +2560,7 @@ final class Tokenizer extends AbstractTokenizer
                 $l = strspn($this->input, 'abcdefABCDEF0123456789', $this->position);
                 $chars = substr($this->input, $this->position, $l);
                 $this->position += $l;
-                $this->characterReferenceCode = hexdec($chars);
+                $this->characterReferenceCode = (int)hexdec($chars);
                 $cc = $this->input[$this->position] ?? null;
                 if ($cc === ';') {
                     // Switch to the numeric character reference end state.

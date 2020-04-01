@@ -35,10 +35,8 @@ final class MetaCharsetParser
    ) 
 @Jix
 REGEXP;
-    /**
-     * @var Tokenizer
-     */
-    private $tokenizer;
+
+    private Tokenizer $tokenizer;
 
     public function __construct(Tokenizer $tokenizer)
     {

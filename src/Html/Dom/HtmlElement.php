@@ -28,16 +28,18 @@ class HtmlElement extends \DOMElement implements
 
     public function __get($name)
     {
-        $method = HtmlElementInterface::PROPERTIES_READ[$name] ?? null;
-        $method ??= NonDocumentTypeChildNodeInterface::PROPERTIES_READ[$name] ?? null;
+        $methods = PropertyMaps::READ;
+        $method = $methods[HtmlElementInterface::class][$name] ?? null;
+        $method ??= $methods[NonDocumentTypeChildNodeInterface::class][$name] ?? null;
         if ($method) {
-            return $this->{$method};
+            return $this->{$method}();
         }
     }
 
     public function __set($name, $value)
     {
-        $method = HtmlElementInterface::PROPERTIES_WRITE[$name] ?? null;
+        $methods = PropertyMaps::WRITE;
+        $method = $methods[HtmlElementInterface::class][$name] ?? null;
         if ($method) {
             $this->{$method}($value);
         }
@@ -56,7 +58,7 @@ class HtmlElement extends \DOMElement implements
 
     public function getClassList(): TokenList
     {
-        if (!$this->internalClassList) {
+        if (!isset($this->internalClassList)) {
             $this->internalClassList = new TokenList(
                 parent::getAttribute('class'),
                 fn(string $value) => $this->setAttribute('class', $value)

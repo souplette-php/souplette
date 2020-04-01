@@ -10,14 +10,8 @@ final class Encoding
     const CONFIDENCE_TENTATIVE = 1;
     const CONFIDENCE_CERTAIN = 2;
 
-    /**
-     * @var string
-     */
-    public $encoding;
-    /**
-     * @var int
-     */
-    public $confidence;
+    public string $encoding;
+    public int $confidence;
 
     public function __construct(string $encoding, int $confidence)
     {
