@@ -5,8 +5,11 @@
     - [ ] Use `DOMElement->tagName` instead of `localName` where adequate
 - [ ] TreeBuilder parse errors
 - [ ] Template elements
+    - [x] Dom Implementation
+    - [ ] Tree Builder rules
+    - [ ] Serialization
 - [ ] Serializer
-    - [ ] boolean attributes
+    - [x] boolean attributes
 
 ## Notes
 
