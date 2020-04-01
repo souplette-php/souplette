@@ -19,7 +19,7 @@ while (true) {
     $pos++;
 }
 if ($lastTerminalIndex !== null) {
-    $buffer = substr($buffer, 0, $lastTerminalIndex + 1);
+    $buffer = \substr($buffer, 0, $lastTerminalIndex + 1);
     $this->position += $lastTerminalIndex + 1;
     if (
         // If the character reference was consumed as part of an attribute,
@@ -27,7 +27,7 @@ if ($lastTerminalIndex !== null) {
         // and the last character matched is not a U+003B SEMICOLON character (;),
         && $buffer[-1] !== ';'
         // and the next input character is either a U+003D EQUALS SIGN character (=) or an ASCII alphanumeric,
-        && 1 === strspn($this->input, '='.Characters::ALNUM, $this->position, 1)
+        && 1 === \strspn($this->input, '='.Characters::ALNUM, $this->position, 1)
     ) {
         // then, for historical reasons, flush code points consumed as a character reference
         $this->temporaryBuffer .= $buffer;

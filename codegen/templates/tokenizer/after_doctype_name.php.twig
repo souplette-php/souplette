@@ -18,11 +18,11 @@ if ({{ h.is_whitespace() }}) {
     {{ h.emit_current_token() }}
     {{ h.emit_eof() }}
 } else {
-    if (0 === substr_compare($this->input, 'PUBLIC', $this->position, 6, true)) {
+    if (0 === \substr_compare($this->input, 'PUBLIC', $this->position, 6, true)) {
         // consume those characters and switch to the after DOCTYPE public keyword state.
         $this->position += 6;
         {{ h.update_and_reconsume_in('AFTER_DOCTYPE_PUBLIC_KEYWORD') }}
-    } elseif (0 === substr_compare($this->input, 'SYSTEM', $this->position, 6, true)) {
+    } elseif (0 === \substr_compare($this->input, 'SYSTEM', $this->position, 6, true)) {
         // consume those characters and switch to the after DOCTYPE system keyword state.
         $this->position += 6;
         {{ h.update_and_reconsume_in('AFTER_DOCTYPE_SYSTEM_KEYWORD') }}

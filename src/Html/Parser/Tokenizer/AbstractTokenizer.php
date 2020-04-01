@@ -8,11 +8,11 @@ use SplQueue;
 
 abstract class AbstractTokenizer
 {
-    public int $state = TokenizerStates::DATA;
-    public bool $allowCdata = false;
-    protected int $returnState = 0;
     protected string $input = '';
     protected int $position = 0;
+    public int $state = TokenizerStates::DATA;
+    protected int $returnState = 0;
+    public bool $allowCdata = false;
     protected SplQueue $tokenQueue;
     protected Token $currentToken;
     protected array $parseErrors = [];

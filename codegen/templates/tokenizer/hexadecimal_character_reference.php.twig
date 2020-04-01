@@ -4,7 +4,7 @@
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
 {{ h.chars_while_hex() }}
-$this->characterReferenceCode = (int)hexdec($chars);
+$this->characterReferenceCode = (int)\hexdec($chars);
 {{ h.update_cc() }}
 if ($cc === ';') {
     // Switch to the numeric character reference end state.

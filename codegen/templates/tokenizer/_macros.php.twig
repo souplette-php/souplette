@@ -11,23 +11,23 @@ ctype_alpha($cc)
 {%- endmacro %}
 
 {% macro chars_until(bytes, return_var = 'chars') -%}
-$l = strcspn($this->input, {{ bytes|repr_bytes }}, $this->position);
-${{ return_var }} = substr($this->input, $this->position, $l);
+$l = \strcspn($this->input, {{ bytes|repr_bytes }}, $this->position);
+${{ return_var }} = \substr($this->input, $this->position, $l);
 $this->position += $l;
 {%- endmacro %}
 
 {% macro skip_until(bytes) -%}
-$this->position += strcspn($this->input, {{ bytes|repr_bytes }}, $this->position);
+$this->position += \strcspn($this->input, {{ bytes|repr_bytes }}, $this->position);
 {%- endmacro %}
 
 {% macro chars_while(bytes, return_var = 'chars') -%}
-$l = strspn($this->input, {{ bytes|repr_bytes }}, $this->position);
-${{ return_var }} = substr($this->input, $this->position, $l);
+$l = \strspn($this->input, {{ bytes|repr_bytes }}, $this->position);
+${{ return_var }} = \substr($this->input, $this->position, $l);
 $this->position += $l;
 {%- endmacro %}
 
 {% macro skip_while(bytes) -%}
-$this->position += strspn($this->input, {{ bytes|repr_bytes }}, $this->position);
+$this->position += \strspn($this->input, {{ bytes|repr_bytes }}, $this->position);
 {%- endmacro %}
 
 {% macro skip_whitespace() -%}
@@ -51,7 +51,7 @@ $this->position += strspn($this->input, {{ bytes|repr_bytes }}, $this->position)
 {%- endmacro %}
 
 {% macro peek_value(value, case_insensitive = false) -%}
-0 === substr_compare($this->input, {{ value }}, $this->position, {{ value|length }}, {{ case_insensitive }})
+0 === \substr_compare($this->input, {{ value }}, $this->position, {{ value|length }}, {{ case_insensitive }})
 {% endmacro %}
 
 {% macro set_return_state(state_name) -%}
@@ -71,11 +71,11 @@ $this->currentToken->attributes[] = [{{ name }}, {{ value }}];
 {%- endmacro %}
 
 {% macro append_to_attr_name(value) -%}
-$this->currentToken->attributes[count($this->currentToken->attributes) - 1][0] .= {{ value }};
+$this->currentToken->attributes[\count($this->currentToken->attributes) - 1][0] .= {{ value }};
 {%- endmacro %}
 
 {% macro append_to_attr_value(value) -%}
-$this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= {{ value }};
+$this->currentToken->attributes[\count($this->currentToken->attributes) - 1][1] .= {{ value }};
 {%- endmacro %}
 
 {#
