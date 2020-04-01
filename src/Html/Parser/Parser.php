@@ -4,8 +4,8 @@ namespace JoliPotage\Html\Parser;
 
 use JoliPotage\Encoding\Encoding;
 use JoliPotage\Encoding\EncodingLookup;
-use JoliPotage\Html\Parser\EncodingSniffer;
 use JoliPotage\Encoding\Exception\EncodingChanged;
+use JoliPotage\Html\Dom\HtmlDomImplementation;
 use JoliPotage\Html\Parser\Tokenizer\Tokenizer;
 use JoliPotage\Html\Parser\TreeBuilder\TreeBuilder;
 
@@ -18,7 +18,7 @@ final class Parser
 
     public function __construct(bool $scriptingEnabled = false)
     {
-        $this->treeBuilder = new TreeBuilder(new \DOMImplementation(), $scriptingEnabled);
+        $this->treeBuilder = new TreeBuilder(new HtmlDomImplementation(), $scriptingEnabled);
     }
 
     public function parse(string $input, ?string $encoding = null): \DOMDocument

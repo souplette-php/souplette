@@ -3,8 +3,8 @@
 namespace JoliPotage\Html\Parser\TreeBuilder\RuleSet;
 
 use JoliPotage\Encoding\EncodingLookup;
-use JoliPotage\Html\Parser\EncodingSniffer;
 use JoliPotage\Html\Namespaces;
+use JoliPotage\Html\Parser\EncodingSniffer;
 use JoliPotage\Html\Parser\Tokenizer\Token;
 use JoliPotage\Html\Parser\Tokenizer\TokenizerStates;
 use JoliPotage\Html\Parser\Tokenizer\TokenTypes;

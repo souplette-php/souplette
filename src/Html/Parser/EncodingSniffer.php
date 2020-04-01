@@ -3,7 +3,6 @@
 namespace JoliPotage\Html\Parser;
 
 use JoliPotage\Encoding\EncodingLookup;
-use JoliPotage\Html\Parser\MetaCharsetParser;
 use JoliPotage\Html\Parser\Tokenizer\Tokenizer;
 
 final class EncodingSniffer
