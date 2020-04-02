@@ -3,23 +3,24 @@
 namespace JoliPotage\Html\Dom\Node;
 
 use JoliPotage\Html\Dom\Api\ChildNodeInterface;
+use JoliPotage\Html\Dom\Api\HtmlNodeInterface;
 use JoliPotage\Html\Dom\Api\NonDocumentTypeChildNodeInterface;
 use JoliPotage\Html\Dom\PropertyMaps;
 use JoliPotage\Html\Dom\Traits\ChildNodeTrait;
+use JoliPotage\Html\Dom\Traits\HtmlNodeTrait;
 use JoliPotage\Html\Dom\Traits\NonDocumentTypeChildNodeTrait;
 
 final class HtmlComment extends \DOMComment implements
+    HtmlNodeInterface,
     NonDocumentTypeChildNodeInterface,
     ChildNodeInterface
 {
+    use HtmlNodeTrait;
     use NonDocumentTypeChildNodeTrait;
     use ChildNodeTrait;
 
     public function __get($name)
     {
-        $method = PropertyMaps::READ[NonDocumentTypeChildNodeInterface::class][$name] ?? null;
-        if ($method) {
-            return $this->{$method}();
-        }
+        return PropertyMaps::get($this, $name);
     }
 }

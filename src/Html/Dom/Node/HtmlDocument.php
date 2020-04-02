@@ -9,16 +9,22 @@ use DOMNodeList;
 use DOMText;
 use JoliPotage\Encoding\EncodingLookup;
 use JoliPotage\Html\Dom\Api\HtmlDocumentInterface;
+use JoliPotage\Html\Dom\Api\NonElementParentNodeInterface;
 use JoliPotage\Html\Dom\Api\ParentNodeInterface;
 use JoliPotage\Html\Dom\DomIdioms;
 use JoliPotage\Html\Dom\HtmlElementClasses;
 use JoliPotage\Html\Dom\PropertyMaps;
+use JoliPotage\Html\Dom\Traits\HtmlNodeTrait;
 use JoliPotage\Html\Dom\Traits\ParentNodeTrait;
 use JoliPotage\Html\Namespaces;
 use JoliPotage\Html\Parser\TreeBuilder\CompatModes;
 
-final class HtmlDocument extends \DOMDocument implements HtmlDocumentInterface, ParentNodeInterface
+final class HtmlDocument extends \DOMDocument implements
+    HtmlDocumentInterface,
+    ParentNodeInterface
+    //NonElementParentNodeInterface
 {
+    use HtmlNodeTrait;
     use ParentNodeTrait;
 
     const COMPAT_MODE_BACK = 'BackCompat';
@@ -29,7 +35,6 @@ final class HtmlDocument extends \DOMDocument implements HtmlDocumentInterface, 
     public function __construct()
     {
         parent::__construct('', EncodingLookup::UTF_8);
-        //$this->registerNodeClass(DOMNode::class, HtmlNode::class);
         $this->registerNodeClass(DOMText::class, HtmlText::class);
         $this->registerNodeClass(DOMComment::class, HtmlComment::class);
         $this->registerNodeClass(DOMElement::class, HtmlElement::class);
@@ -37,21 +42,12 @@ final class HtmlDocument extends \DOMDocument implements HtmlDocumentInterface, 
 
     public function __get($name)
     {
-        $methods = PropertyMaps::READ;
-        $method = $methods[HtmlDocumentInterface::class][$name] ?? null;
-        $method ??= $methods[ParentNodeInterface::class][$name] ?? null;
-        if ($method) {
-            return $this->{$method}();
-        }
+        return PropertyMaps::get($this, $name);
     }
 
     public function __set($name, $value)
     {
-        $methods = PropertyMaps::WRITE;
-        $method = $methods[HtmlDocumentInterface::class][$name] ?? null;
-        if ($method) {
-            $this->{$method}($value);
-        }
+        PropertyMaps::set($this, $name, $value);
     }
 
     public function createElement($name, $value = null)
@@ -122,7 +118,7 @@ final class HtmlDocument extends \DOMDocument implements HtmlDocumentInterface, 
         return DomIdioms::getElementsByClassName($this, $classNames, $this);
     }
 
-    public function getElementById($elementId)
+    public function getElementById($elementId): ?DOMElement
     {
         $expr = "//*[@id = '{$elementId}' ]";
         return (new \DOMXPath($this))->query($expr)->item(0);

@@ -34,40 +34,7 @@ final class Serializer
             // 4.1. Let current node be the child node being processed.
             // 4.2 Append the appropriate string from the following list to s:
             if ($currentNode instanceof \DOMElement) {
-                // If current node is an element in the HTML namespace, the MathML namespace, or the SVG namespace,
-                // then let tagName be current node's local name. Otherwise, let tagName be current node's qualified name.
-                if (isset(self::BLANK_NAMESPACES[$currentNode->namespaceURI])) {
-                    $tagName = $currentNode->localName;
-                } else {
-                    $tagName = $currentNode->tagName;
-                }
-                $tagName = XmlNameEscaper::unescape($tagName);
-                // Append a U+003C LESS-THAN SIGN character (<), followed by tagName.
-                $s .= "<{$tagName}";
-                // NOTE: next spec step is skipped since we do not support custom elements.
-                // If current node's `is` value is not null, and the element does not have an `is` attribute in its attribute list,
-                // then append the string " is="", followed by current node's is value escaped as described below in attribute mode,
-                // followed by a U+0022 QUOTATION MARK character (").
-                foreach ($currentNode->attributes as $attr) {
-                    // For each attribute that the element has, append a U+0020 SPACE character,
-                    // the attribute's serialized name as described below,
-                    // a U+003D EQUALS SIGN character (=), a U+0022 QUOTATION MARK character ("),
-                    // the attribute's value, escaped as described below in attribute mode,
-                    // and a second U+0022 QUOTATION MARK character (").
-                    $s .= ' ' . $this->serializeAttribute($tagName, $attr);
-                }
-                // Append a U+003E GREATER-THAN SIGN character (>).
-                $s .= '>';
-                // If current node serializes as void, then continue on to the next child node at this point.
-                if (isset(Elements::VOID_ELEMENTS[$currentNode->localName])) {
-                    continue;
-                }
-                // Append the value of running the HTML fragment serialization algorithm on the current node element
-                // (thus recursing into this algorithm for that element),
-                // followed by a U+003C LESS-THAN SIGN character (<), a U+002F SOLIDUS character (/),
-                // tagName again, and finally a U+003E GREATER-THAN SIGN character (>).
-                $s .= $this->serialize($currentNode);
-                $s .= "</{$tagName}>";
+                $s .= $this->serializeElement($currentNode);
             } elseif ($currentNode instanceof \DOMText) {
                 // If the parent of current node is a style, script, xmp, iframe, noembed, noframes, or plaintext element,
                 // or if the parent of current node is a noscript element and scripting is enabled for the node,
@@ -101,6 +68,46 @@ final class Serializer
             }
         }
 
+        return $s;
+    }
+
+    public function serializeElement(\DOMElement $node): string
+    {
+        $s = '';
+        // If current node is an element in the HTML namespace, the MathML namespace, or the SVG namespace,
+        // then let tagName be current node's local name. Otherwise, let tagName be current node's qualified name.
+        if (isset(self::BLANK_NAMESPACES[$node->namespaceURI])) {
+            $tagName = $node->localName;
+        } else {
+            $tagName = $node->tagName;
+        }
+        $tagName = XmlNameEscaper::unescape($tagName);
+        // Append a U+003C LESS-THAN SIGN character (<), followed by tagName.
+        $s .= "<{$tagName}";
+        // NOTE: next spec step is skipped since we do not support custom elements.
+        // If current node's `is` value is not null, and the element does not have an `is` attribute in its attribute list,
+        // then append the string " is="", followed by current node's is value escaped as described below in attribute mode,
+        // followed by a U+0022 QUOTATION MARK character (").
+        foreach ($node->attributes as $attr) {
+            // For each attribute that the element has, append a U+0020 SPACE character,
+            // the attribute's serialized name as described below,
+            // a U+003D EQUALS SIGN character (=), a U+0022 QUOTATION MARK character ("),
+            // the attribute's value, escaped as described below in attribute mode,
+            // and a second U+0022 QUOTATION MARK character (").
+            $s .= ' ' . $this->serializeAttribute($tagName, $attr);
+        }
+        // Append a U+003E GREATER-THAN SIGN character (>).
+        $s .= '>';
+        // If current node serializes as void, then continue on to the next child node at this point.
+        if (isset(Elements::VOID_ELEMENTS[$node->localName])) {
+            return $s;
+        }
+        // Append the value of running the HTML fragment serialization algorithm on the current node element
+        // (thus recursing into this algorithm for that element),
+        // followed by a U+003C LESS-THAN SIGN character (<), a U+002F SOLIDUS character (/),
+        // tagName again, and finally a U+003E GREATER-THAN SIGN character (>).
+        $s .= $this->serialize($node);
+        $s .= "</{$tagName}>";
         return $s;
     }
 
