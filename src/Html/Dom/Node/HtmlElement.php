@@ -1,11 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Dom;
+namespace JoliPotage\Html\Dom\Node;
 
 use DOMNodeList;
 use JoliPotage\Html\Dom\Api\ChildNodeInterface;
 use JoliPotage\Html\Dom\Api\HtmlElementInterface;
 use JoliPotage\Html\Dom\Api\NonDocumentTypeChildNodeInterface;
+use JoliPotage\Html\Dom\DomIdioms;
+use JoliPotage\Html\Dom\PropertyMaps;
+use JoliPotage\Html\Dom\TokenList;
 use JoliPotage\Html\Dom\Traits\ChildNodeTrait;
 use JoliPotage\Html\Dom\Traits\NonDocumentTypeChildNodeTrait;
 use JoliPotage\Html\Parser\Parser;

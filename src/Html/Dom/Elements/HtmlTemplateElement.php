@@ -4,7 +4,7 @@ namespace JoliPotage\Html\Dom\Elements;
 
 use DOMDocumentFragment;
 use JoliPotage\Html\Dom\Api\HtmlTemplateElementInterface;
-use JoliPotage\Html\Dom\HtmlElement;
+use JoliPotage\Html\Dom\Node\HtmlElement;
 
 /**
  * @property-read DOMDocumentFragment|null $content

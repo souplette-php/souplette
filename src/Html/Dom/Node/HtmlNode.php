@@ -1,12 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Dom;
+namespace JoliPotage\Html\Dom\Node;
 
 use JoliPotage\Html\Dom\Api\HtmlNodeInterface;
 use JoliPotage\Html\Dom\Api\NonDocumentTypeChildNodeInterface;
+use JoliPotage\Html\Dom\PropertyMaps;
 use JoliPotage\Html\Dom\Traits\NonDocumentTypeChildNodeTrait;
 
-class HtmlNode extends \DOMNode implements HtmlNodeInterface, NonDocumentTypeChildNodeInterface
+final class HtmlNode extends \DOMNode implements HtmlNodeInterface, NonDocumentTypeChildNodeInterface
 {
     use NonDocumentTypeChildNodeTrait;
 

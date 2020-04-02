@@ -1,12 +1,18 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Dom;
+namespace JoliPotage\Html\Dom\Node;
 
+use DOMComment;
 use DOMElement;
+use DOMNode;
 use DOMNodeList;
+use DOMText;
 use JoliPotage\Encoding\EncodingLookup;
 use JoliPotage\Html\Dom\Api\HtmlDocumentInterface;
 use JoliPotage\Html\Dom\Api\ParentNodeInterface;
+use JoliPotage\Html\Dom\DomIdioms;
+use JoliPotage\Html\Dom\HtmlElementClasses;
+use JoliPotage\Html\Dom\PropertyMaps;
 use JoliPotage\Html\Dom\Traits\ParentNodeTrait;
 use JoliPotage\Html\Namespaces;
 use JoliPotage\Html\Parser\TreeBuilder\CompatModes;
@@ -18,12 +24,14 @@ final class HtmlDocument extends \DOMDocument implements HtmlDocumentInterface, 
     const COMPAT_MODE_BACK = 'BackCompat';
     const COMPAT_MODE_CSS1 = 'CSS1Compat';
 
-    private string $internalMode;
+    private string $internalMode = CompatModes::NO_QUIRKS;
 
     public function __construct()
     {
         parent::__construct('', EncodingLookup::UTF_8);
-        $this->registerNodeClass(\DOMNode::class, HtmlNode::class);
+        //$this->registerNodeClass(DOMNode::class, HtmlNode::class);
+        $this->registerNodeClass(DOMText::class, HtmlText::class);
+        $this->registerNodeClass(DOMComment::class, HtmlComment::class);
         $this->registerNodeClass(DOMElement::class, HtmlElement::class);
     }
 
@@ -112,5 +120,11 @@ final class HtmlDocument extends \DOMDocument implements HtmlDocumentInterface, 
     public function getElementsByClassName(string $classNames): DOMNodeList
     {
         return DomIdioms::getElementsByClassName($this, $classNames, $this);
+    }
+
+    public function getElementById($elementId)
+    {
+        $expr = "//*[@id = '{$elementId}' ]";
+        return (new \DOMXPath($this))->query($expr)->item(0);
     }
 }
