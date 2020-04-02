@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace JoliPotage\Html\Dom\Traits;
-
 
 use JoliPotage\Html\Dom\DomIdioms;
 
@@ -62,9 +60,10 @@ trait ChildNodeTrait
         //    This could have been inserted into node.
         if ($this->parentNode === $parent) {
             $this->parentNode->replaceChild($node, $this);
+        } else {
+            // 6. Otherwise, pre-insert node into parent before viableNextSibling.
+            $parent->insertBefore($node, $viableNextSibling);
         }
-        // 6. Otherwise, pre-insert node into parent before viableNextSibling.
-        $parent->insertBefore($node, $viableNextSibling);
     }
 
     public function remove(): void

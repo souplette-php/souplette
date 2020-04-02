@@ -2,22 +2,17 @@
 
 namespace JoliPotage\Tests\Html;
 
+use JoliPotage\Html\Dom\Node\HtmlDocument;
 use JoliPotage\Html\Namespaces;
 
 final class DomBuilder
 {
-    /**
-     * @var \DOMDocument
-     */
-    private $document;
-    /**
-     * @var \SplStack
-     */
-    private $openElements;
+    protected HtmlDocument $document;
+    protected \SplStack $openElements;
 
     private function __construct()
     {
-        $this->document = new \DOMDocument();
+        $this->document = new HtmlDocument();
         $this->openElements = new \SplStack();
     }
 
@@ -26,7 +21,7 @@ final class DomBuilder
         return new self();
     }
 
-    public function getDocument(): \DOMDocument
+    public function getDocument(): HtmlDocument
     {
         while (!$this->openElements->isEmpty()) {
             $this->openElements->pop();
