@@ -23,6 +23,7 @@ final class HtmlDomImplementationTest extends TestCase
         $doctype = $doc->firstChild;
         Assert::assertInstanceOf(\DOMDocumentType::class, $doctype);
         Assert::assertSame('html', $doctype->name);
+        Assert::assertSame($doc->doctype, $doctype);
         // document element
         Assert::assertInstanceOf(HtmlElement::class, $doc->documentElement);
         Assert::assertSame('html', $doc->documentElement->tagName);
@@ -30,6 +31,7 @@ final class HtmlDomImplementationTest extends TestCase
         $head = $doc->documentElement->firstChild;
         Assert::assertInstanceOf(HtmlElement::class, $head);
         Assert::assertSame('head', $head->tagName);
+        Assert::assertSame($doc->head, $head);
         // <meta charset="UTF-8">
         $meta = $head->firstChild;
         Assert::assertInstanceOf(HtmlElement::class, $meta);
@@ -39,5 +41,6 @@ final class HtmlDomImplementationTest extends TestCase
         $body = $head->nextSibling;
         Assert::assertInstanceOf(HtmlElement::class, $body);
         Assert::assertSame('body', $body->tagName);
+        Assert::assertSame($doc->body, $body);
     }
 }

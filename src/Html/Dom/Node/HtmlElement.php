@@ -70,7 +70,7 @@ class HtmlElement extends \DOMElement implements
 
     public function setClassName(string $className): void
     {
-        $this->setAttribute('className', $className);
+        $this->setAttribute('class', $className);
     }
 
     public function getClassList(): TokenList
