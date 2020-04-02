@@ -4,7 +4,7 @@ namespace JoliPotage\Html\Parser\TreeBuilder\RuleSet;
 
 use JoliPotage\Html\Parser\Tokenizer\Token;
 use JoliPotage\Html\Parser\Tokenizer\TokenTypes;
-use JoliPotage\Html\Parser\TreeBuilder\CompatModes;
+use JoliPotage\Html\Dom\DocumentModes;
 use JoliPotage\Html\Parser\TreeBuilder\InsertionLocation;
 use JoliPotage\Html\Parser\TreeBuilder\InsertionModes;
 use JoliPotage\Html\Parser\TreeBuilder\RuleSet;
@@ -43,20 +43,20 @@ final class Initial extends RuleSet
                 || $sys && strcasecmp($sys, 'http://www.ibm.com/data/dtd/v11/ibmxhtml1-transitional.dtd') === 0
                 || !$sys && $pub && preg_match(self::MISSING_SYSTEM_PUBLIC_PATTERN, $pub)
             ) {
-                $tree->compatMode = CompatModes::QUIRKS;
+                $tree->compatMode = DocumentModes::QUIRKS;
             } elseif (
                 $pub && preg_match(self::PUBLIC_ID_LIMITED_QUIRKS_PATTERN, $pub)
                 || $sys && $pub && preg_match(self::MISSING_SYSTEM_PUBLIC_PATTERN, $pub)
             ) {
                 // Otherwise, if the document is not an iframe srcdoc document,
                 // and the DOCTYPE token matches one of the conditions in the following list, then set the Document to limited-quirks mode:
-                $tree->compatMode = CompatModes::LIMITED_QUIRKS;
+                $tree->compatMode = DocumentModes::LIMITED_QUIRKS;
             }
             $tree->insertionMode = InsertionModes::BEFORE_HTML;
         } else {
             // TODO: If the document is not an iframe srcdoc document, then this is a parse error;
             // set the Document to quirks mode.
-            $tree->compatMode = CompatModes::QUIRKS;
+            $tree->compatMode = DocumentModes::QUIRKS;
             // In any case, switch the insertion mode to "before html", then reprocess the token.
             $tree->insertionMode = InsertionModes::BEFORE_HTML;
             $tree->processToken($token);

@@ -8,6 +8,7 @@ use DOMImplementation;
 use JoliPotage\Encoding\Encoding;
 use JoliPotage\Encoding\EncodingLookup;
 use JoliPotage\Encoding\Exception\EncodingChanged;
+use JoliPotage\Html\Dom\DocumentModes;
 use JoliPotage\Html\Namespaces;
 use JoliPotage\Html\Parser\Tokenizer\Token;
 use JoliPotage\Html\Parser\Tokenizer\Tokenizer;
@@ -53,7 +54,7 @@ final class TreeBuilder
     /**
      * @see https://dom.spec.whatwg.org/#concept-document-mode
      */
-    public string $compatMode = CompatModes::NO_QUIRKS;
+    public string $compatMode = DocumentModes::NO_QUIRKS;
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#the-insertion-mode
      */
@@ -146,7 +147,7 @@ final class TreeBuilder
         // Otherwise, the node document of the context element is in limited-quirks mode,
         // then let the Document be in limited-quirks mode.
         // Otherwise, leave the Document in no-quirks mode.
-        $this->compatMode = $contextElement->ownerDocument->compatMode ?? CompatModes::NO_QUIRKS;
+        $this->compatMode = $contextElement->ownerDocument->compatMode ?? DocumentModes::NO_QUIRKS;
         // 4. Set the state of the HTML parser's tokenization stage as follows, switching on the context element:
         $contextTag = $this->contextElement->localName;
         $contextNS = $this->contextElement->namespaceURI;
@@ -204,7 +205,7 @@ final class TreeBuilder
 
     private function reset(): void
     {
-        $this->compatMode = CompatModes::NO_QUIRKS;
+        $this->compatMode = DocumentModes::NO_QUIRKS;
         $this->framesetOK = true;
         $this->isBuildingFragment = false;
         $this->openElements = new OpenElementsStack();

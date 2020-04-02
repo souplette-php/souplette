@@ -6,7 +6,7 @@ use JoliPotage\Html\Namespaces;
 use JoliPotage\Html\Parser\Tokenizer\Token;
 use JoliPotage\Html\Parser\Tokenizer\TokenizerStates;
 use JoliPotage\Html\Parser\Tokenizer\TokenTypes;
-use JoliPotage\Html\Parser\TreeBuilder\CompatModes;
+use JoliPotage\Html\Dom\DocumentModes;
 use JoliPotage\Html\Parser\TreeBuilder\Elements;
 use JoliPotage\Html\Parser\TreeBuilder\InsertionModes;
 use JoliPotage\Html\Parser\TreeBuilder\RuleSet;
@@ -432,7 +432,7 @@ final class InBody extends RuleSet
             } elseif ($tagName === 'table') {
                 // If the Document is not set to quirks mode, and the stack of open elements has a p element in button scope,
                 if (
-                    $tree->compatMode !== CompatModes::QUIRKS
+                    $tree->compatMode !== DocumentModes::QUIRKS
                     && $tree->openElements->hasTagInButtonScope('p')
                 ) {
                     // then close a p element.

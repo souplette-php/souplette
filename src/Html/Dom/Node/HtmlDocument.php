@@ -4,12 +4,10 @@ namespace JoliPotage\Html\Dom\Node;
 
 use DOMComment;
 use DOMElement;
-use DOMNode;
 use DOMNodeList;
 use DOMText;
 use JoliPotage\Encoding\EncodingLookup;
 use JoliPotage\Html\Dom\Api\HtmlDocumentInterface;
-use JoliPotage\Html\Dom\Api\NonElementParentNodeInterface;
 use JoliPotage\Html\Dom\Api\ParentNodeInterface;
 use JoliPotage\Html\Dom\DomIdioms;
 use JoliPotage\Html\Dom\HtmlElementClasses;
@@ -17,7 +15,7 @@ use JoliPotage\Html\Dom\PropertyMaps;
 use JoliPotage\Html\Dom\Traits\HtmlNodeTrait;
 use JoliPotage\Html\Dom\Traits\ParentNodeTrait;
 use JoliPotage\Html\Namespaces;
-use JoliPotage\Html\Parser\TreeBuilder\CompatModes;
+use JoliPotage\Html\Dom\DocumentModes;
 
 final class HtmlDocument extends \DOMDocument implements
     HtmlDocumentInterface,
@@ -30,7 +28,7 @@ final class HtmlDocument extends \DOMDocument implements
     const COMPAT_MODE_BACK = 'BackCompat';
     const COMPAT_MODE_CSS1 = 'CSS1Compat';
 
-    private string $internalMode = CompatModes::NO_QUIRKS;
+    private string $internalMode = DocumentModes::NO_QUIRKS;
 
     public function __construct()
     {
@@ -101,7 +99,7 @@ final class HtmlDocument extends \DOMDocument implements
 
     public function getCompatMode(): string
     {
-        return $this->internalMode === CompatModes::QUIRKS ? self::COMPAT_MODE_BACK : self::COMPAT_MODE_CSS1;
+        return $this->internalMode === DocumentModes::QUIRKS ? self::COMPAT_MODE_BACK : self::COMPAT_MODE_CSS1;
     }
 
     /**
