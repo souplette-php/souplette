@@ -9,8 +9,8 @@ use DOMNode;
  * @see https://dom.spec.whatwg.org/#parentnode
  *
  * @property-read DOMElement[] $children
- * @property-read ?DOMElement $firstElementChild
- * @property-read ?DOMElement $lastElementChild
+ * @property-read DOMElement|null $firstElementChild
+ * @property-read DOMElement|null $lastElementChild
  */
 interface ParentNodeInterface
 {

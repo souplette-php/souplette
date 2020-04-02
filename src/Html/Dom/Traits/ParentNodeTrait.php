@@ -10,15 +10,17 @@ trait ParentNodeTrait
     public function prepend(...$nodes): void
     {
         // 1. Let node be the result of converting nodes into a node given nodes and this’s node document.
-        $node = DomIdioms::convertNodesIntoNode($this->ownerDocument, $nodes);
+        $doc = DomIdioms::getOwnerDocument($this);
+        $node = DomIdioms::convertNodesIntoNode($doc, $nodes);
         // 2. Pre-insert node into this before this’s first child.
         $this->insertBefore($node, $this->firstChild);
     }
 
     public function append(...$nodes): void
     {
+        $doc = DomIdioms::getOwnerDocument($this);
         // 1. Let node be the result of converting nodes into a node given nodes and this’s node document.
-        $node = DomIdioms::convertNodesIntoNode($this->ownerDocument, $nodes);
+        $node = DomIdioms::convertNodesIntoNode($doc, $nodes);
         // 2. Append node to this.
         $this->appendChild($node);
     }

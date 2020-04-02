@@ -10,6 +10,12 @@
     - [ ] Serialization
 - [ ] Serializer
     - [x] boolean attributes
+- [ ] DOM
+    - [ ] refactor TokenList to:
+        1. work even when using `$element->getAttributeNode('class')->value = 'foo'`
+        2. be even more lazy (no instantiation while parsing)
+        3. maybe use WeakRef ?
+    - [ ] HTMLCollection
 
 ## Notes
 

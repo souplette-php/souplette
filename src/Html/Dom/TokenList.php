@@ -12,12 +12,9 @@ final class TokenList implements \Countable, \IteratorAggregate
      * @var int[]
      */
     private array $indices = [];
-    /**
-     * @var callable
-     */
-    private $synchronize;
+    private \Closure $synchronize;
 
-    public function __construct(string $value, callable $synchronize)
+    public function __construct(string $value, \Closure $synchronize)
     {
         $this->setValue($value);
         $this->synchronize = $synchronize;

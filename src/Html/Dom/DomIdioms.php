@@ -9,6 +9,16 @@ use DOMXPath;
 
 final class DomIdioms
 {
+    public static function getOwnerDocument(DOMNode $node): ?DOMDocument
+    {
+        $document = $node->ownerDocument;
+        if (!$document && ($node->nodeType === XML_HTML_DOCUMENT_NODE ||$node->nodeType === XML_DOCUMENT_NODE)) {
+            return $node;
+        }
+
+        return $document;
+    }
+
     public static function getElementsByClassName(DOMDocument $doc, string $classNames, DOMNode $context): DOMNodeList
     {
         // TODO: match must be case-insensitive in quirks mode
