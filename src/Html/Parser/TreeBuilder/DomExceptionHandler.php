@@ -2,7 +2,7 @@
 
 namespace JoliPotage\Html\Parser\TreeBuilder;
 
-use JoliPotage\Html\Dom\ErrorCodes;
+use JoliPotage\Html\Dom\Exception\ErrorCodes;
 use JoliPotage\Html\Parser\Tokenizer\Token\Tag;
 use JoliPotage\Xml\XmlNameEscaper;
 
