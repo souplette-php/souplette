@@ -2,6 +2,12 @@
 
 namespace JoliPotage\Html\Dom;
 
+/**
+ * @see https://dom.spec.whatwg.org/#interface-domtokenlist
+ *
+ * @property string $value
+ * @property-read int $length
+ */
 final class TokenList implements \Countable, \IteratorAggregate
 {
     /**
@@ -18,6 +24,22 @@ final class TokenList implements \Countable, \IteratorAggregate
     {
         $this->setValue($value);
         $this->synchronize = $synchronize;
+    }
+
+    public function __get($name)
+    {
+        if ($name === 'value') {
+            return $this->getValue();
+        } elseif ($name === 'length') {
+            return $this->count();
+        }
+    }
+
+    public function __set($name, $value)
+    {
+        if ($name === 'value') {
+            $this->setValue($value);
+        }
     }
 
     public function setValue(string $value): void

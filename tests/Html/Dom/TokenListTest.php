@@ -1,0 +1,145 @@
+<?php declare(strict_types=1);
+
+namespace JoliPotage\Tests\Html\Dom;
+
+use JoliPotage\Html\Dom\Node\HtmlElement;
+use JoliPotage\Html\Dom\TokenList;
+use JoliPotage\Tests\Html\DomBuilder;
+use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\TestCase;
+
+final class TokenListTest extends TestCase
+{
+    public function testTokenListConstruction()
+    {
+        $doc = DomBuilder::create()
+            ->tag('html')
+                ->attr('class', 'foo bar baz')
+            ->getDocument();
+        $node = $doc->documentElement;
+        /** @var HtmlElement $node */
+        $classList = $node->classList;
+        Assert::assertInstanceOf(TokenList::class, $classList);
+        Assert::assertCount(3, $classList);
+        Assert::assertSame(3, $classList->length);
+        Assert::assertSame(['foo', 'bar', 'baz'], iterator_to_array($classList));
+        Assert::assertSame('foo bar baz', $classList->value);
+        Assert::assertSame('foo bar baz', (string)$classList);
+    }
+
+    public function testContains()
+    {
+        $doc = DomBuilder::create()
+            ->tag('html')
+                ->attr('class', 'foo bar baz')
+            ->getDocument();
+        /** @var HtmlElement $node */
+        $node = $doc->documentElement;
+        foreach (['foo', 'bar', 'baz'] as $token) {
+            Assert::assertTrue($node->classList->contains($token));
+        }
+        Assert::assertFalse($node->classList->contains('nope'));
+    }
+
+    public function testAdd()
+    {
+        $doc = DomBuilder::create()
+            ->tag('html')
+                ->attr('class', 'foo')
+            ->getDocument();
+        /** @var HtmlElement $node */
+        $node = $doc->documentElement;
+        //
+        $node->classList->add('bar', 'baz');
+        Assert::assertSame('foo bar baz', $node->getAttribute('class'));
+        //
+        $node->classList->add('foo', 'baz');
+        Assert::assertSame('foo bar baz', $node->getAttribute('class'), 'Should not add duplicates');
+    }
+
+    public function testRemove()
+    {
+        $doc = DomBuilder::create()
+            ->tag('html')
+                ->attr('class', 'foo bar baz qux')
+            ->getDocument();
+        /** @var HtmlElement $node */
+        $node = $doc->documentElement;
+        $node->classList->remove('baz', 'bar');
+        Assert::assertSame('foo qux', $node->getAttribute('class'));
+    }
+
+    public function testAddAfterRemove()
+    {
+        $doc = DomBuilder::create()
+            ->tag('html')
+                ->attr('class', 'foo bar baz')
+            ->getDocument();
+        /** @var HtmlElement $node */
+        $node = $doc->documentElement;
+        $node->classList->remove('bar');
+        $node->classList->add('qux');
+        Assert::assertSame('foo baz qux', $node->getAttribute('class'));
+    }
+
+    public function testReplace()
+    {
+        $doc = DomBuilder::create()
+            ->tag('html')
+                ->attr('class', 'foo bar baz')
+            ->getDocument();
+        /** @var HtmlElement $node */
+        $node = $doc->documentElement;
+        $node->classList->replace('bar', 'qux');
+        Assert::assertSame('foo qux baz', $node->getAttribute('class'));
+    }
+
+    public function testToggle()
+    {
+        $doc = DomBuilder::create()
+            ->tag('html')
+                ->attr('class', 'foo bar baz')
+            ->getDocument();
+        /** @var HtmlElement $node */
+        $node = $doc->documentElement;
+
+        $isActive = $node->classList->toggle('bar');
+        Assert::assertFalse($isActive);
+        Assert::assertSame('foo baz', $node->getAttribute('class'));
+
+        $isActive = $node->classList->toggle('bar');
+        Assert::assertTrue($isActive);
+        Assert::assertSame('foo baz bar', $node->getAttribute('class'));
+    }
+
+    public function testToggleForceParameter()
+    {
+        $doc = DomBuilder::create()
+            ->tag('html')
+                ->attr('class', 'foo bar baz')
+            ->getDocument();
+        /** @var HtmlElement $node */
+        $node = $doc->documentElement;
+
+        $isActive = $node->classList->toggle('bar', true);
+        Assert::assertTrue($isActive);
+        Assert::assertSame('foo bar baz', $node->getAttribute('class'));
+
+        $isActive = $node->classList->toggle('bar', false);
+        Assert::assertFalse($isActive);
+        Assert::assertSame('foo baz', $node->getAttribute('class'));
+    }
+
+    public function testValueReflectsAttributeChanges()
+    {
+        $doc = DomBuilder::create()->tag('html')->getDocument();
+        /** @var HtmlElement $node */
+        $node = $doc->documentElement;
+        $classList = $node->classList;
+        Assert::assertSame('', $classList->value);
+        $node->setAttribute('class', 'foo bar');
+        Assert::assertSame('foo bar', $classList->value);
+        $node->getAttributeNode('class')->value = 'baz qux';
+        Assert::assertSame('baz qux', $classList->value);
+    }
+}
