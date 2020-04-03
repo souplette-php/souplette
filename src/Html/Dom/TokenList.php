@@ -2,6 +2,12 @@
 
 namespace JoliPotage\Html\Dom;
 
+use JoliPotage\Html\Dom\Exception\InvalidCharacter;
+use JoliPotage\Html\Dom\Exception\SyntaxError;
+use JoliPotage\Html\Dom\Internal\OrderedTokenSet;
+use JoliPotage\Html\Dom\Node\HtmlElement;
+use WeakReference;
+
 /**
  * @see https://dom.spec.whatwg.org/#interface-domtokenlist
  *
@@ -10,20 +16,21 @@ namespace JoliPotage\Html\Dom;
  */
 final class TokenList implements \Countable, \IteratorAggregate
 {
+    private OrderedTokenSet $tokenSet;
     /**
-     * @var string[]
+     * @var WeakReference<HtmlElement>
      */
-    private array $tokens = [];
-    /**
-     * @var int[]
-     */
-    private array $indices = [];
-    private \Closure $synchronize;
+    private WeakReference $elementRef;
+    private string $attributeName;
+    private string $previousValue;
 
-    public function __construct(string $value, \Closure $synchronize)
+    public function __construct(HtmlElement $element, string $attributeName)
     {
-        $this->setValue($value);
-        $this->synchronize = $synchronize;
+        $this->tokenSet = new OrderedTokenSet();
+        $this->elementRef = WeakReference::create($element);
+        $this->attributeName = $attributeName;
+        $this->previousValue = $element->getAttribute($attributeName);
+        $this->tokenSet->parse($this->previousValue);
     }
 
     public function __get($name)
@@ -44,93 +51,122 @@ final class TokenList implements \Countable, \IteratorAggregate
 
     public function setValue(string $value): void
     {
-        $this->indices = [];
-        $this->tokens = preg_split('/\s+/', $value, -1, PREG_SPLIT_NO_EMPTY);
-        foreach ($this->tokens as $i => $token) {
-            $this->indices[$token] = $i;
-        }
+        $this->tokenSet->parse($value);
+        $this->updateAttribute();
     }
 
     public function getValue(): string
     {
-        return implode(' ', $this->tokens);
+        $this->synchronize();
+        return $this->tokenSet->serialize();
     }
 
     public function contains(string $token): bool
     {
-        return isset($this->indices[$token]);
+        $this->synchronize();
+        return $this->tokenSet->contains($token);
     }
 
     public function add(string ...$tokens): void
     {
-        $index = array_key_last($this->tokens) ?? -1;
+        $this->validateTokens(...$tokens);
+        $this->synchronize();
         foreach ($tokens as $token) {
-            if ($this->contains($token)) {
-                continue;
-            }
-            $index++;
-            $this->tokens[$index] = $token;
-            $this->indices[$token] = $index;
+            $this->tokenSet->add($token);
         }
-        ($this->synchronize)($this->getValue());
+        $this->updateAttribute();
     }
 
     public function remove(string ...$tokens): void
     {
+        $this->validateTokens(...$tokens);
+        $this->synchronize();
         foreach ($tokens as $token) {
-            if (!$this->contains($token)) {
-                continue;
-            }
-            $index = $this->indices[$token];
-            unset($this->indices[$token]);
-            unset($this->tokens[$index]);
+            $this->tokenSet->remove($token);
         }
-        ($this->synchronize)($this->getValue());
+        $this->updateAttribute();
     }
 
     public function replace(string $old, string $new): void
     {
-        if (!$this->contains($old)) {
-            return;
-        }
-        $index = $this->indices[$old];
-        unset($this->indices[$old]);
-        $this->indices[$new] = $index;
-        $this->tokens[$index] = $new;
-        ($this->synchronize)($this->getValue());
+        $this->validateTokens($old, $new);
+        $this->synchronize();
+        $this->tokenSet->replace($old, $new);
+        $this->updateAttribute();
     }
 
     public function toggle(string $token, ?bool $force = null): bool
     {
-        if ($force === null) {
-            if ($this->contains($token)) {
-                $this->remove($token);
-                return false;
-            }
-            $this->add($token);
-            return true;
-        }
-        if ($force) {
-            $this->add($token);
-            return true;
-        }
+        $this->synchronize();
+        $this->validateTokens($token);
+        $result = $this->tokenSet->toggle($token, $force);
+        $this->updateAttribute();
+        return $result;
+    }
 
-        $this->remove($token);
-        return false;
+    public function item(int $offset)
+    {
+        return $this->tokenSet->offsetGet($offset);
     }
 
     public function count()
     {
-        return count($this->tokens);
+        $this->synchronize();
+        return $this->tokenSet->count();
     }
 
     public function getIterator()
     {
-        return new \ArrayIterator(array_values($this->tokens));
+        $this->synchronize();
+        return $this->tokenSet->getIterator();
     }
 
     public function __toString()
     {
         return $this->getValue();
+    }
+
+    private function validateTokens(string ...$tokens)
+    {
+        foreach ($tokens as $token) {
+            if ($token === '') {
+                throw new SyntaxError('Empty token.');
+            } elseif (strcspn($token, " \n\t\f") !== strlen($token)) {
+                throw new InvalidCharacter('Token contains whitespace.');
+            }
+        }
+    }
+
+    private function getAttributeValue(): string
+    {
+        /** @var HtmlElement $element */
+        $element = $this->elementRef->get();
+        return $element->getAttribute($this->attributeName);
+    }
+
+    private function synchronize()
+    {
+        $value = $this->getAttributeValue();
+        if ($value === $this->previousValue) {
+            return;
+        }
+        $this->previousValue = $value;
+        $this->tokenSet->parse($value);
+    }
+
+    private function updateAttribute()
+    {
+        /** @var HtmlElement $element */
+        $element = $this->elementRef->get();
+        // 1. If the associated element does not have an associated attribute and token set is empty, then return.
+        if (!$element->hasAttribute($this->attributeName) && $this->tokenSet->isEmpty()) {
+            return;
+        }
+        // 2. Set an attribute value for the associated element using associated attribute’s local name
+        // and the result of running the ordered set serializer for token set.
+        $newValue = $this->tokenSet->serialize();
+        $attr = $element->getAttributeNode($this->attributeName);
+        $attr->value = $newValue;
+        $this->previousValue = $newValue;
     }
 }

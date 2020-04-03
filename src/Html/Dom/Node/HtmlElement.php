@@ -42,17 +42,6 @@ class HtmlElement extends \DOMElement implements
         PropertyMaps::set($this, $name, $value);
     }
 
-    public function setAttribute($name, $value)
-    {
-        if ($name === 'class') {
-            $attr = parent::setAttribute('class', $value);
-            $this->getClassList()->setValue($attr->value);
-            return $attr;
-        }
-
-        return parent::setAttribute($name, $value);
-    }
-
     public function getId(): string
     {
         return $this->getAttribute('id');
@@ -76,10 +65,7 @@ class HtmlElement extends \DOMElement implements
     public function getClassList(): TokenList
     {
         if (!isset($this->internalClassList)) {
-            $this->internalClassList = new TokenList(
-                parent::getAttribute('class'),
-                fn(string $value) => parent::setAttribute('class', $value)
-            );
+            $this->internalClassList = new TokenList($this, 'class');
         }
         return $this->internalClassList;
     }

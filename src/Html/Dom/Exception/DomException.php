@@ -2,7 +2,7 @@
 
 namespace JoliPotage\Html\Dom\Exception;
 
-class DomException extends \DOMException
+class DomException extends \Exception
 {
 
 }

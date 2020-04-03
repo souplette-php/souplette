@@ -2,6 +2,8 @@
 
 namespace JoliPotage\Tests\Html\Dom;
 
+use JoliPotage\Html\Dom\Exception\InvalidCharacter;
+use JoliPotage\Html\Dom\Exception\SyntaxError;
 use JoliPotage\Html\Dom\Node\HtmlElement;
 use JoliPotage\Html\Dom\TokenList;
 use JoliPotage\Tests\Html\DomBuilder;
@@ -141,5 +143,23 @@ final class TokenListTest extends TestCase
         Assert::assertSame('foo bar', $classList->value);
         $node->getAttributeNode('class')->value = 'baz qux';
         Assert::assertSame('baz qux', $classList->value);
+    }
+
+    public function testWhitespaceInToken()
+    {
+        $this->expectException(InvalidCharacter::class);
+        $doc = DomBuilder::create()->tag('html')->getDocument();
+        /** @var HtmlElement $node */
+        $node = $doc->documentElement;
+        $node->classList->add('foo bar');
+    }
+
+    public function testEmptyToken()
+    {
+        $this->expectException(SyntaxError::class);
+        $doc = DomBuilder::create()->tag('html')->getDocument();
+        /** @var HtmlElement $node */
+        $node = $doc->documentElement;
+        $node->classList->add('');
     }
 }
