@@ -2,12 +2,12 @@
 
 namespace JoliPotage\Tests\Css\Syntax;
 
-use JoliPotage\Css\CssOm\AnPlusB;
-use JoliPotage\Css\Parser\AnPlusBParser;
-use JoliPotage\Css\Parser\AnPlusBStringParser;
-use JoliPotage\Css\Parser\Exception\ParseError;
-use JoliPotage\Css\Parser\Tokenizer\Tokenizer;
-use JoliPotage\Css\Parser\TokenStream\TokenStream;
+use JoliPotage\Css\Syntax\AnPlusBParser;
+use JoliPotage\Css\Syntax\AnPlusBStringParser;
+use JoliPotage\Css\Syntax\Exception\ParseError;
+use JoliPotage\Css\Syntax\Node\AnPlusB;
+use JoliPotage\Css\Syntax\Tokenizer\Tokenizer;
+use JoliPotage\Css\Syntax\TokenStream\TokenStream;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 
