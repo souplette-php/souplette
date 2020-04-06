@@ -160,8 +160,7 @@ final class Tokenizer
             // 2. Consume a name. Set the <dimension-token>’s unit to the returned value.
             // 3. Return the <dimension-token>.
             $unit = $this->consumeName();
-            $token = new Dimension($number, $start);
-            $token->unit = $unit;
+            $token = new Dimension($number, $unit, $start);
             return $token;
         } elseif ($cc === '%') {
             // Otherwise, if the next input code point is '%', consume it.
@@ -263,18 +262,15 @@ final class Tokenizer
     }
 
     /**
-     * @see https://www.w3.org/TR/css-syntax-3/#starts-with-a-number
+     * @see https://www.w3.org/TR/css-syntax-3/index.html#check-if-three-code-points-would-start-a-number
      */
     private function wouldStartANumber(): bool
     {
-        $lookahead = substr($this->input, $this->position, 3);
-        return is_numeric($lookahead);
+        return (bool)preg_match(Patterns::NUMBER_START, $this->input, $_, 0, $this->position);
     }
 
     /**
      * @see https://www.w3.org/TR/css-syntax-3/#check-if-three-code-points-would-start-an-identifier
-     * @param string|null $value
-     * @return bool
      */
     private function wouldStartAnIdentifier(?string $value = null): bool
     {

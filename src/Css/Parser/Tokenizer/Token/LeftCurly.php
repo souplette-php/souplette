@@ -8,4 +8,5 @@ final class LeftCurly extends SingleCharToken
 {
     public int $type = TokenTypes::LCURLY;
     public string $value = '{';
+    public string $representation = '{';
 }

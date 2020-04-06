@@ -8,6 +8,7 @@ use JoliPotage\Css\Parser\Tokenizer\TokenTypes;
 final class Whitespace extends Token
 {
     public int $type = TokenTypes::WHITESPACE;
+    public string $representation = ' ';
 
     public function __construct(int $position)
     {

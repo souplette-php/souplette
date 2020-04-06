@@ -8,4 +8,5 @@ final class LeftBracket extends SingleCharToken
 {
     public int $type = TokenTypes::LBRACK;
     public string $value = '[';
+    public string $representation = '[';
 }

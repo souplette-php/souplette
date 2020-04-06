@@ -8,6 +8,7 @@ use JoliPotage\Css\Parser\Tokenizer\TokenTypes;
 final class CDO extends Token
 {
     public int $type = TokenTypes::CDO;
+    public string $representation = '<!--';
 
     public function __construct(int $pos)
     {

@@ -8,4 +8,5 @@ final class RightCurly extends SingleCharToken
 {
     public int $type = TokenTypes::RCURLY;
     public string $value = '}';
+    public string $representation = '}';
 }

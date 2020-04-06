@@ -40,6 +40,17 @@ REGEXP;
    | \\\\ [^n]                              # or a valid escape
 /x
 REGEXP;
+
+    /**
+     * @see https://www.w3.org/TR/css-syntax-3/index.html#check-if-three-code-points-would-start-a-number
+     */
+    const NUMBER_START = <<<'REGEXP'
+/\G
+    [+-]? \.? \d
+/x
+REGEXP;
+
+
     /**
      * @see https://www.w3.org/TR/css-syntax-3/#consume-comment
      */

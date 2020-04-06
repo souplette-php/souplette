@@ -8,4 +8,5 @@ final class LeftParen extends SingleCharToken
 {
     public int $type = TokenTypes::LPAREN;
     public string $value = '(';
+    public string $representation = '(';
 }

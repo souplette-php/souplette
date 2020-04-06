@@ -8,4 +8,5 @@ final class Colon extends SingleCharToken
 {
     public int $type = TokenTypes::COLON;
     public string $value = ':';
+    public string $representation = ':';
 }

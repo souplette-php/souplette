@@ -8,4 +8,5 @@ final class SemiColon extends SingleCharToken
 {
     public int $type = TokenTypes::SEMICOLON;
     public string $value = ';';
+    public string $representation = ';';
 }

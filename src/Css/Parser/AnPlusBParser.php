@@ -162,6 +162,11 @@ final class AnPlusBParser
         if ($token->isInteger && preg_match('/^n-(\d+)$/i', $token->unit, $m)) {
             return new AnPlusB($token->value, $m[1] * -1);
         }
+
+        throw $this->tokenStream->unexpectedValue(
+            sprintf('%s%s', $token->value, $token->unit),
+            'a valid dimension'
+        );
     }
 
     private function handleNumber(Number $token): AnPlusB
@@ -170,7 +175,7 @@ final class AnPlusBParser
         if ($token->isInteger) {
             return new AnPlusB(0, $token->value);
         }
-        throw $this->tokenStream->unexpectedValue($token->value, 'an integer');
+        throw $this->tokenStream->unexpectedValue((string)$token->value, 'an integer');
     }
 
     private function handleDelimiter(Delimiter $token): AnPlusB

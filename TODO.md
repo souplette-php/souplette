@@ -1,3 +1,4 @@
+# HTML
 - [ ] Tokenizer character buffering to reduce the number of token objects ?
 - [ ] Check places where we could use chars_(while|until) instead of consuming one byte at a time.
     Typically when the spec says « Ignore the character »
@@ -43,3 +44,19 @@ the tokenizer needs to know about the parser's adjustedCurrentNode.
 ATM we update it's value twice for each invocation of the tree construction dispatcher.
 Since the information is needed only in one tokenizer state, the tokenizer may act on the parser
 to retrieve the information. We should investigate that.
+
+# CSS
+
+- [ ] Syntax Module Level 3
+    - [x] Tokenizer
+    - [x] Parser
+- [ ] Selectors Module Level 4
+    - [ ] Parser
+    - [ ] Nodes
+    - [ ] XPath converter
+    - [ ] Query executor
+- [ ] CSSOM
+- [ ] CSS Values and Units Module Level 4
+- [ ] Media Queries Module
+- [ ] Paged Media Module
+- [ ] CSS Typed OM

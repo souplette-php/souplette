@@ -8,4 +8,5 @@ final class RightBracket extends SingleCharToken
 {
     public int $type = TokenTypes::RBRACK;
     public string $value = ']';
+    public string $representation = ']';
 }
