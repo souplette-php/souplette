@@ -3,7 +3,6 @@
 namespace JoliPotage\Html\Dom\Api;
 
 use DOMElement;
-use DOMNode;
 use DOMNodeList;
 
 /**

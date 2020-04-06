@@ -3,8 +3,6 @@
 namespace JoliPotage\Tests\Html5Lib\TreeConstruction;
 
 use JoliPotage\Html\Parser\Parser;
-use JoliPotage\Tests\Html5Lib\TreeConstruction\Serializer;
-use JoliPotage\Tests\Html5Lib\TreeConstruction\TreeConstructionTestDTO;
 use PHPUnit\Framework\Assert;
 
 final class TreeConstructionAssert

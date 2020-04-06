@@ -3,7 +3,6 @@
 namespace JoliPotage\Html\Dom\Api;
 
 use DOMAttr;
-use DOMNode;
 
 /**
  * @property-read bool $schemaTypeInfo

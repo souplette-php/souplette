@@ -2,9 +2,9 @@
 
 namespace JoliPotage\Html\Parser\TreeBuilder\RuleSet;
 
+use JoliPotage\Html\Dom\DocumentModes;
 use JoliPotage\Html\Parser\Tokenizer\Token;
 use JoliPotage\Html\Parser\Tokenizer\TokenTypes;
-use JoliPotage\Html\Dom\DocumentModes;
 use JoliPotage\Html\Parser\TreeBuilder\InsertionLocation;
 use JoliPotage\Html\Parser\TreeBuilder\InsertionModes;
 use JoliPotage\Html\Parser\TreeBuilder\RuleSet;

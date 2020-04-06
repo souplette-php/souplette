@@ -2,7 +2,6 @@
 
 namespace JoliPotage\Html\Dom\Api;
 
-use DOMAttr;
 use DOMNodeList;
 use JoliPotage\Html\Dom\TokenList;
 

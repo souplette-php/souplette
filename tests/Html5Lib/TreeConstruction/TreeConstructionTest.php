@@ -3,8 +3,6 @@
 namespace JoliPotage\Tests\Html5Lib\TreeConstruction;
 
 use JoliPotage\Tests\Html5Lib\DataFile;
-use JoliPotage\Tests\Html5Lib\TreeConstruction\TreeConstructionAssert;
-use JoliPotage\Tests\Html5Lib\TreeConstruction\TreeConstructionTestDTO;
 use JoliPotage\Tests\ResourceCollector;
 use PHPUnit\Framework\TestCase;
 

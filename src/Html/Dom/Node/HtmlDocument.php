@@ -9,13 +9,13 @@ use DOMText;
 use JoliPotage\Encoding\EncodingLookup;
 use JoliPotage\Html\Dom\Api\HtmlDocumentInterface;
 use JoliPotage\Html\Dom\Api\ParentNodeInterface;
+use JoliPotage\Html\Dom\DocumentModes;
 use JoliPotage\Html\Dom\DomIdioms;
 use JoliPotage\Html\Dom\HtmlElementClasses;
 use JoliPotage\Html\Dom\PropertyMaps;
 use JoliPotage\Html\Dom\Traits\HtmlNodeTrait;
 use JoliPotage\Html\Dom\Traits\ParentNodeTrait;
 use JoliPotage\Html\Namespaces;
-use JoliPotage\Html\Dom\DocumentModes;
 
 final class HtmlDocument extends \DOMDocument implements
     HtmlDocumentInterface,
