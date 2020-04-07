@@ -18,4 +18,12 @@ final class UnicodeRange extends CssValue
         $this->start = $start;
         $this->end = $end;
     }
+
+    public function __toString()
+    {
+        if ($this->start === $this->end) {
+            return sprintf('U+%X', $this->start);
+        }
+        return sprintf('U+%X-%X', $this->start, $this->end);
+    }
 }

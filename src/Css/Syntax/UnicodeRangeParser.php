@@ -30,9 +30,12 @@ REGEXP;
         $this->tokenStream = $tokenStream;
     }
 
-    public function parse(): UnicodeRange
+    public function parse(array $endTokenTypes = [TokenTypes::EOF]): UnicodeRange
     {
         $text = $this->concatenateTokens();
+        if ($endTokenTypes) {
+            $this->tokenStream->expectOneOf(...$endTokenTypes);
+        }
         if (preg_match(self::URANGE_PATTERN, $text, $m, PREG_UNMATCHED_AS_NULL)) {
             if (isset($m['mask'])) {
                 $start = strtr($m['mask'], ['?' => '0']);
@@ -41,7 +44,11 @@ REGEXP;
                 $start = $m['start'];
                 $end = $m['end'] ?? $start;
             }
-            return new UnicodeRange(hexdec($start), hexdec($end));
+            try {
+                return new UnicodeRange(hexdec($start), hexdec($end));
+            } catch (\Exception $err) {
+                throw new ParseError("Invalid unicode range: {$text}", 0, $err);
+            }
         }
         throw new ParseError("Invalid unicode range: {$text}");
     }
@@ -53,7 +60,8 @@ REGEXP;
             throw $this->tokenStream->unexpectedValue($token->value, 'an "U" identifier');
         }
         $text = 'U';
-        $token = $this->tokenStream->eatOneOf(TokenTypes::DELIM, TokenTypes::DIMENSION, TokenTypes::NUMBER);
+        $this->tokenStream->consume();
+        $token = $this->tokenStream->expectOneOf(TokenTypes::DELIM, TokenTypes::DIMENSION, TokenTypes::NUMBER);
         if ($token->type === TokenTypes::DELIM && $token->representation === '+') {
             $text .= '+';
             $token = $this->tokenStream->consume();
@@ -61,11 +69,11 @@ REGEXP;
             if ($token->type === TokenTypes::IDENT) {
                 $text .= $token->representation;
                 $token = $this->tokenStream->consume();
-            } elseif ($token->type === TokenTypes::DELIM && $token->representation === '+') {
-                $text .= '+';
+            } elseif ($token->type === TokenTypes::DELIM && $token->representation === '?') {
+                $text .= '?';
                 $token = $this->tokenStream->consume();
             } else {
-                throw $this->tokenStream->unexpectedValue($token->representation, 'an identifier or "+"');
+                throw $this->tokenStream->unexpectedValue($token->representation, 'an identifier or "?"');
             }
             while ($token->type === TokenTypes::DELIM && $token->representation === '?') {
                 $text .= '?';
@@ -85,7 +93,6 @@ REGEXP;
         if ($token->type === TokenTypes::NUMBER) {
             $text .= $token->representation;
             $token = $this->tokenStream->consume();
-            $this->tokenStream->expectOneOf(TokenTypes::DELIM, TokenTypes::DIMENSION, TokenTypes::NUMBER);
             if ($token->type === TokenTypes::DELIM && $token->representation === '?') {
                 do {
                     $text .= '?';
@@ -98,7 +105,6 @@ REGEXP;
                 $this->tokenStream->consume();
                 return $text;
             }
-            throw $this->tokenStream->unexpectedValue($token->representation, 'a dimension, number or "?"');
         }
 
         return $text;

@@ -2,6 +2,7 @@
 
 namespace JoliPotage\Css\Syntax\Tokenizer;
 
+use Exception;
 use JoliPotage\Css\Syntax\Tokenizer\Token\AtKeyword;
 use JoliPotage\Css\Syntax\Tokenizer\Token\BadString;
 use JoliPotage\Css\Syntax\Tokenizer\Token\BadUrl;
@@ -20,11 +21,12 @@ use JoliPotage\Css\Syntax\Tokenizer\Token\SingleCharToken;
 use JoliPotage\Css\Syntax\Tokenizer\Token\Str;
 use JoliPotage\Css\Syntax\Tokenizer\Token\Url;
 use JoliPotage\Css\Syntax\Tokenizer\Token\Whitespace;
+use Traversable;
 
 /**
  * @see https://www.w3.org/TR/css-syntax-3/#tokenization
  */
-final class Tokenizer
+final class Tokenizer implements \IteratorAggregate
 {
     private string $input;
     private int $position = 0;
@@ -34,7 +36,17 @@ final class Tokenizer
         $this->input = $input;
     }
 
-    public function consumeToken()
+    public function getIterator()
+    {
+        $this->position = 0;
+        do {
+            /** @var Token $token */
+            $token = $this->consumeToken();
+            yield $token;
+        } while($token->type !== TokenTypes::EOF);
+    }
+
+    public function consumeToken(): Token
     {
         $this->consumeComments();
         $pos = $this->position;
@@ -50,10 +62,10 @@ final class Tokenizer
         if ($cc === '#') {
             if (preg_match(Patterns::HASH, $this->input, $m, 0, $pos)) {
                 $this->position += strlen($m[0]);
-                $token = new Hash($m['name'], $pos);
-                $token->isId = $this->wouldStartAnIdentifier($token->value);
+                $token = new Hash($m['name'], $pos, $this->wouldStartAnIdentifier($m['name']));
                 return $token;
             }
+            ++$this->position;
             return new Delimiter('#', $pos);
         }
         if ($cc === '+') {
@@ -93,12 +105,11 @@ final class Tokenizer
             return new Delimiter($cc, $pos);
         }
         if ($cc === '@') {
+            ++$this->position;
             if ($this->wouldStartAnIdentifier()) {
-                ++$this->position;
                 $name = $this->consumeName();
                 return new AtKeyword($name, $pos);
             }
-            ++$this->position;
             return new Delimiter($cc, $pos);
         }
         if ($cc === '\\') {
@@ -124,12 +135,7 @@ final class Tokenizer
         if (preg_match(Patterns::NAME_START_CODEPOINT, $cc)) {
             return $this->consumeIdentLikeToken();
         }
-        if ($cc > "\x7F") {
-            // TODO: use IntlCodePointBreakIterator
-            $cp = \mb_substr($this->input, $this->position, 1, 'utf-8');
-            $this->position += strlen($cp);
-            return new Delimiter($cp, $pos);
-        }
+        // Since the previous rule consumes all non-ascii codepoints, we're safe here.
         ++$this->position;
         return new Delimiter((string)$cc, $pos);
     }
