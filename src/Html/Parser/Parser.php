@@ -5,6 +5,7 @@ namespace JoliPotage\Html\Parser;
 use JoliPotage\Encoding\Encoding;
 use JoliPotage\Encoding\EncodingLookup;
 use JoliPotage\Encoding\Exception\EncodingChanged;
+use JoliPotage\Encoding\Utf8Converter;
 use JoliPotage\Html\Dom\HtmlDomImplementation;
 use JoliPotage\Html\Parser\Tokenizer\Tokenizer;
 use JoliPotage\Html\Parser\TreeBuilder\TreeBuilder;
@@ -63,7 +64,7 @@ final class Parser
     private function preprocessInput(string $input, Encoding $encoding): string
     {
         if ($encoding->getName() !== EncodingLookup::UTF_8) {
-            $input = InputPreprocessor::convertToUtf8($input, $encoding->getName());
+            $input = Utf8Converter::convert($input, $encoding->getName());
         }
         $input = InputPreprocessor::removeBOM($input);
         $input = InputPreprocessor::normalizeNewlines($input);

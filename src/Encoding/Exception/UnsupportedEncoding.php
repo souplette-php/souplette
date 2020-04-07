@@ -2,7 +2,7 @@
 
 namespace JoliPotage\Encoding\Exception;
 
-final class UnsupportedEncoding extends \RuntimeException
+final class UnsupportedEncoding extends EncodingException
 {
     public function __construct(string $encoding)
     {
