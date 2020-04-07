@@ -2,7 +2,6 @@
 
 namespace JoliPotage\Css\Syntax\Tokenizer;
 
-use Exception;
 use JoliPotage\Css\Syntax\Tokenizer\Token\AtKeyword;
 use JoliPotage\Css\Syntax\Tokenizer\Token\BadString;
 use JoliPotage\Css\Syntax\Tokenizer\Token\BadUrl;
@@ -21,7 +20,6 @@ use JoliPotage\Css\Syntax\Tokenizer\Token\SingleCharToken;
 use JoliPotage\Css\Syntax\Tokenizer\Token\Str;
 use JoliPotage\Css\Syntax\Tokenizer\Token\Url;
 use JoliPotage\Css\Syntax\Tokenizer\Token\Whitespace;
-use Traversable;
 
 /**
  * @see https://www.w3.org/TR/css-syntax-3/#tokenization

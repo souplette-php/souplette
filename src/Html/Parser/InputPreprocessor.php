@@ -2,9 +2,6 @@
 
 namespace JoliPotage\Html\Parser;
 
-use JoliPotage\Encoding\EncodingLookup;
-use UConverter;
-
 final class InputPreprocessor
 {
     private const BOM = "\u{FEFF}";
