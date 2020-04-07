@@ -456,12 +456,12 @@ final class SelectorParser
     {
         $parser = new AnPlusBParser($this->tokenStream, [TokenTypes::RPAREN, TokenTypes::IDENT]);
         $anPlusB = $parser->parse();
-        $selectors = [];
+        $selectors = null;
         $token = $this->tokenStream->current();
         if ($token->type === TokenTypes::IDENT && strcasecmp($token->value, 'of') === 0) {
             $token = $this->tokenStream->consumeAndSkipWhitespace();
             // TODO: create a new selector parser ?
-            $selectors = [];
+            $selectors = $this->parseRelativeSelectorList();
             $this->tokenStream->skipWhitespace();
         }
         $this->tokenStream->eat(TokenTypes::RPAREN);

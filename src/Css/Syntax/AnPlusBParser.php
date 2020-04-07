@@ -10,6 +10,9 @@ use JoliPotage\Css\Syntax\Tokenizer\Token\Number;
 use JoliPotage\Css\Syntax\Tokenizer\TokenTypes;
 use JoliPotage\Css\Syntax\TokenStream\TokenStreamInterface;
 
+/**
+ * @see https://www.w3.org/TR/css-syntax-3/#anb-microsyntax
+ */
 final class AnPlusBParser
 {
     private TokenStreamInterface $tokenStream;
@@ -37,11 +40,11 @@ final class AnPlusBParser
         } elseif ($tt === TokenTypes::DELIM) {
             $expr = $this->handleDelimiter($token);
         } else {
-            throw $this->tokenStream->unexpectedToken($tt, TokenTypes::IDENT, TokenTypes::DIMENSION);
+            throw $this->tokenStream->unexpectedToken($tt, TokenTypes::NUMBER, TokenTypes::IDENT, TokenTypes::DIMENSION);
         }
 
         $this->tokenStream->consumeAndSkipWhitespace();
-        $this->tokenStream->expect(...$this->endTokenTypes);
+        $this->tokenStream->expectOneOf(...$this->endTokenTypes);
 
         return $expr;
     }

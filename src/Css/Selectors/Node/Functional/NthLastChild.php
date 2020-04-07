@@ -3,11 +3,12 @@
 namespace JoliPotage\Css\Selectors\Node\Functional;
 
 use JoliPotage\Css\Selectors\Node\FunctionalSelector;
+use JoliPotage\Css\Selectors\Node\SelectorList;
 use JoliPotage\Css\Syntax\Node\AnPlusB;
 
 final class NthLastChild extends FunctionalSelector
 {
-    public function __construct(AnPlusB $anPlusB, array $selectors = [])
+    public function __construct(AnPlusB $anPlusB, ?SelectorList $selectors = null)
     {
         parent::__construct('nth-last-child', [$anPlusB, $selectors]);
     }
@@ -17,8 +18,7 @@ final class NthLastChild extends FunctionalSelector
         $args = (string)$this->arguments[0];
         $selectors = $this->arguments[1];
         if ($selectors) {
-            $args .= ' of ';
-            $args .= implode(', ', array_map(fn($s) => (string)$s, $selectors));
+            $args .= " of {$selectors}";
         }
         return ":nth-last-child({$args})";
     }
