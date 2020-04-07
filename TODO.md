@@ -48,8 +48,7 @@ to retrieve the information. We should investigate that.
 # CSS
 
 - [ ] Syntax Module Level 3
-    - [x] Tokenizer
-    - [x] Parser
+    - [ ] Tests
 - [ ] Selectors Module Level 4
     - [ ] Parser
     - [ ] Nodes

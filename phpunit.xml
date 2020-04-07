@@ -10,11 +10,7 @@
     <testsuites>
         <testsuite name="html">
             <directory>tests</directory>
-            <exclude>tests/Html5Lib</exclude>
             <exclude>tests/Css</exclude>
-        </testsuite>
-        <testsuite name="html5lib">
-            <directory>tests/Html5Lib</directory>
         </testsuite>
         <testsuite name="css">
             <directory>tests/Css</directory>
