@@ -13,6 +13,6 @@ final class Dimension extends NumericToken
     {
         parent::__construct($value, $position);
         $this->unit = $unit;
-        $this->representation = $this->value . $this->unit;
+        $this->representation = $value . $unit;
     }
 }
