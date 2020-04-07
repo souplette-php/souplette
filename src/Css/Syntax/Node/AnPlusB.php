@@ -13,32 +13,37 @@ final class AnPlusB extends CssValue
         $this->b = $b;
     }
 
+    /**
+     * @see https://www.w3.org/TR/css-syntax-3/#serializing-anb
+     * @return string
+     */
     public function __toString()
     {
-        if ($this->a === 2 && $this->b === 0) {
+        // 1.
+        if ($this->a === 0) {
+            return (string)$this->b;
+        } elseif ($this->a === 2 && $this->b === 0) {
             return 'even';
         } elseif ($this->a === 2 && $this->b === 1) {
             return 'odd';
-        } elseif ($this->a === 0) {
-            return (string)$this->b;
         }
-
+        // 2.
+        $result = '';
+        // 3.
         if ($this->a === 1) {
-            $a = 'n';
+            $result .= 'n';
         } elseif ($this->a === -1) {
-            $a = '-n';
+            $result .= '-n';
         } else {
-            $a = "{$this->a}n";
+            $result .= "{$this->a}n";
         }
-
-        if ($this->b === 0) {
-            $b = '';
-        } elseif ($this->b > 0) {
-            $b = "+{$this->b}";
-        } else {
-            $b = (string)$this->b;
+        // 4.
+        if ($this->b > 0) {
+            $result .= "+{$this->b}";
+        } elseif ($this->b < 0) {
+            $result .= $this->b;
         }
-
-        return "{$a}{$b}";
+        // 5.
+        return $result;
     }
 }
