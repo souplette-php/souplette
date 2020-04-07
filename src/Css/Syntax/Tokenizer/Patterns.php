@@ -20,17 +20,16 @@ namespace JoliPotage\Css\Syntax\Tokenizer;
 final class Patterns
 {
     const NAME_START_CODEPOINT = <<<'REGEXP'
-/\G
+/
     [A-Za-z_]           # ascii letter or "_"
     | [^\x00-\x7F]      # or non-ascii
-/x
+/xA
 REGEXP;
-
     /**
      * @see https://www.w3.org/TR/css-syntax-3/#check-if-three-code-points-would-start-an-identifier
      */
     const IDENT_START = <<<'REGEXP'
-/\G
+/
    - (?:                                    # "-" followed by
         -                                   # "-"
         | (?: [A-Za-z_] | [^\x00-\x7F] )    # or name-start 
@@ -38,34 +37,31 @@ REGEXP;
    )
    | (?: [A-Za-z_] | [^\x00-\x7F] )         # or a name-start
    | \\\\ [^n]                              # or a valid escape
-/x
+/xA
 REGEXP;
-
     /**
      * @see https://www.w3.org/TR/css-syntax-3/index.html#check-if-three-code-points-would-start-a-number
      */
     const NUMBER_START = <<<'REGEXP'
-/\G
+/
     [+-]? \.? \d
-/x
+/xA
 REGEXP;
-
-
     /**
      * @see https://www.w3.org/TR/css-syntax-3/#consume-comment
      */
     const COMMENT = <<<'REGEXP'
-~\G
+~
     /\*                     # "/*" followed by
     (?: (?! \*/ ) . )*      # anything that's not "*/"
     (?: \*/ | \z)           # "*/" or EOF
-~xs
+~xsA
 REGEXP;
     /**
      * @see https://www.w3.org/TR/css-syntax-3/index.html#consume-a-number
      */
     const NUMBER = <<<'REGEXP'
-/\G
+/
     [+-]?
     (?:
         \. \d+
@@ -73,75 +69,74 @@ REGEXP;
         | \d+
     )
     (?: e [+-] \d+ )?
-/xi
+/xiA
 REGEXP;
     /**
      * @see https://www.w3.org/TR/css-syntax-3/#consume-a-name
      */
     const NAME = <<<'REGEXP'
-/\G
+/
     (?:
         [a-z0-9_-] | [^\x00-\x7F]                       # a name codepoint
         | \\\\ (?: [a-f0-9]{1,6} \s? | \z | [^\n])      # or an escaped codepoint
     )+
-/xi
+/xiA
 REGEXP;
     /**
      * @see https://www.w3.org/TR/css-syntax-3/#consume-the-remnants-of-a-bad-url
      */
     const BAD_URL_REMNANTS = <<<'REGEXP'
-/\G
+/
    (?:
         \\\\ (?: [a-f0-9]{1,6} \s? | \z | [^\n])        # an escaped codepoint
         | [^)]                                          # or anythins but ")"
    )+
    (?: \) | \z )                                        # ending with ")" or EOF
-/xi
+/xiA
 REGEXP;
     /**
      * @see https://www.w3.org/TR/css-syntax-3/#consume-a-url-token
      */
     const URL = <<<'REGEXP'
-/\G
+/
     [ \n\t]*                                            # optional whitespace
     (?<url> (?:
         \\\\ (?: [a-f0-9]{1,6} \s? | \z | [^\n])        # an escaped codepoint
-        | [^\x00-\x08\x0B\x0E-\x1F\x7F"')]              # or aything except a non-printable codepoint '"', "'" or ")"
+        | [^\x00-\x08\x0B\x0E-\x1F\x7F"'() \n\t]        # or aything except non-printable codepoints, '"', "'", "(", ")" or whitespace
     )+ )
     [ \n\t]*                                            # ending with optional whitespace
     (?: \) | \z )                                       # and either ")" or EOF
-/xi
+/xiA
 REGEXP;
     /**
-     * @see https://www.w3.org/TR/css-syntax-3/#consume-a-url-token
+     * @see https://www.w3.org/TR/css-syntax-3/#consume-string-token
      */
     const STRING = <<<'REGEXP'
-/\G
+/
     (?<quote>["'])                                      # the delimiter
     (?<value> (?:
-        \\\\ (?: [a-f0-9]{1,6} \s? | \z | .)            # an escaped codepoint (including escaped newline)
-        | (?! \g<quote> ) [^\n]                         # anything that's not a newline or the delimiter
+        \\ (?: [a-f0-9]{1,6} \s? | \n | \z | .)         # an escaped codepoint (including escaped newline)
+        | (?! \k<quote> ) [^\n]                         # anything that's not the delimiter or an unescaped newline
     )* )
-    (?: \g<quote> | \z )                                # ending with the delimiter or EOF
-/xi
+    (?: \k<quote> | \z )                                # ending with the delimiter or EOF
+/xiA
 REGEXP;
 
     const BAD_STRING = <<<'REGEXP'
-/\G
+/
     (["'])
     (?: (?! \1 ) [^\n] )*
-/xi
+/xiA
 REGEXP;
 
     const HASH = <<<'REGEXP'
-/\G
+/
     \#
     (?<name> (?:
         [a-z0-9_-] | [^\x00-\x7F]                       # a name codepoint
         | \\\\ (?: [a-f0-9]{1,6} \s? | \z | [^\n])      # or an escaped codepoint
     )+ )
-/xi
+/xiA
 REGEXP;
-
 
 }
