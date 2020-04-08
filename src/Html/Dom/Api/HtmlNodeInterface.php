@@ -29,4 +29,6 @@ interface HtmlNodeInterface extends DomNodeInterface
     public function contains(?DOMNode $other): bool;
 
     public function getParentElement(): ?DOMElement;
+
+    public function getRootNode(): DOMNode;
 }

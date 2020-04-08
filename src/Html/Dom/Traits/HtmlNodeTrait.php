@@ -33,4 +33,15 @@ trait HtmlNodeTrait
 
         return $parent;
     }
+
+    public function getRootNode(): DOMNode
+    {
+        /** @var DOMNode $this */
+        $node = $this;
+        while ($node->parentNode) {
+            $node = $node->parentNode;
+        }
+
+        return $node;
+    }
 }
