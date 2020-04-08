@@ -2,10 +2,11 @@
 
 namespace JoliPotage\Css\Selectors\Node;
 
-use JoliPotage\Css\Syntax\SyntaxNode;
-
-final class SelectorList extends SyntaxNode implements \IteratorAggregate, \Countable
+final class SelectorList extends Selector implements \IteratorAggregate, \Countable
 {
+    /**
+     * @var Selector[]
+     */
     private array $selectors;
 
     public function __construct(array $selectors)
