@@ -3,6 +3,7 @@
 namespace JoliPotage\Css\Syntax\TokenStream;
 
 use JoliPotage\Css\Syntax\Exception\UnexpectedToken;
+use JoliPotage\Css\Syntax\Exception\UnexpectedValue;
 use JoliPotage\Css\Syntax\Tokenizer\BalancedPairs;
 use JoliPotage\Css\Syntax\Tokenizer\Token;
 use JoliPotage\Css\Syntax\Tokenizer\TokenTypes;
@@ -79,7 +80,7 @@ abstract class AbstractTokenStream implements TokenStreamInterface
     {
         $token = $this->current();
         if ($token->type !== $tokenType) {
-            throw $this->unexpectedToken($token->type, $tokenType);
+            throw UnexpectedToken::expecting($token, $tokenType);
         }
         return $token;
     }
@@ -88,7 +89,7 @@ abstract class AbstractTokenStream implements TokenStreamInterface
     {
         $token = $this->current();
         if (!in_array($token->type, $tokenTypes, true)) {
-            throw $this->unexpectedToken($token->type, ...$tokenTypes);
+            throw UnexpectedToken::expectingOneOf($token, ...$tokenTypes);
         }
         return $token;
     }
@@ -97,24 +98,10 @@ abstract class AbstractTokenStream implements TokenStreamInterface
     {
         $token = $this->current();
         if ($token->type !== $tokenType) {
-            throw $this->unexpectedToken($token->type, $tokenType);
+            throw UnexpectedToken::expecting($token, $tokenType);
         }
         if ($token->value !== $value) {
-            throw $this->unexpectedValue($token->value, $value);
+            throw UnexpectedValue::expecting($token->value, $value);
         }
-    }
-
-    public function unexpectedToken(int $tokenType, int ...$expected): UnexpectedToken
-    {
-        $actual = TokenTypes::nameOf($tokenType);
-        $expected = array_map(fn($tt) => TokenTypes::nameOf($tt), $expected);
-        $msg = sprintf('Expected %s but got %s', implode(' | ', $expected), $actual);
-        return new UnexpectedToken($msg);
-    }
-
-    public function unexpectedValue(string $value, string ...$expected): UnexpectedToken
-    {
-        $msg = sprintf('Expected %s but got: %s', implode(' | ', $expected), $value);
-        return new UnexpectedToken($msg);
     }
 }

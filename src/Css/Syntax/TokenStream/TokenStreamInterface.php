@@ -2,7 +2,6 @@
 
 namespace JoliPotage\Css\Syntax\TokenStream;
 
-use JoliPotage\Css\Syntax\Exception\UnexpectedToken;
 use JoliPotage\Css\Syntax\Tokenizer\Token;
 
 interface TokenStreamInterface
@@ -100,15 +99,4 @@ interface TokenStreamInterface
      * @return mixed
      */
     public function expectValue(int $tokenType, string $value);
-
-    /**
-     * Creates an `UnexpectedToken` exception.
-     *
-     * @param int $tokenType
-     * @param int ...$expected
-     * @return UnexpectedToken
-     */
-    public function unexpectedToken(int $tokenType, int ...$expected): UnexpectedToken;
-
-    public function unexpectedValue(string $value, string ...$expected): UnexpectedToken;
 }

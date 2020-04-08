@@ -3,6 +3,7 @@
 namespace JoliPotage\Css\Syntax;
 
 use JoliPotage\Css\Syntax\Exception\ParseError;
+use JoliPotage\Css\Syntax\Exception\UnexpectedValue;
 use JoliPotage\Css\Syntax\Node\UnicodeRange;
 use JoliPotage\Css\Syntax\Tokenizer\TokenTypes;
 use JoliPotage\Css\Syntax\TokenStream\TokenStreamInterface;
@@ -57,7 +58,7 @@ REGEXP;
     {
         $token = $this->tokenStream->expect(TokenTypes::IDENT);
         if (strcasecmp($token->representation, 'u') !== 0) {
-            throw $this->tokenStream->unexpectedValue($token->value, 'an "U" identifier');
+            throw UnexpectedValue::expecting($token->value, 'an "U" identifier');
         }
         $text = 'U';
         $this->tokenStream->consume();
@@ -73,7 +74,7 @@ REGEXP;
                 $text .= '?';
                 $token = $this->tokenStream->consume();
             } else {
-                throw $this->tokenStream->unexpectedValue($token->representation, 'an identifier or "?"');
+                throw UnexpectedValue::expecting($token->representation, 'an identifier or "?"');
             }
             while ($token->type === TokenTypes::DELIM && $token->representation === '?') {
                 $text .= '?';

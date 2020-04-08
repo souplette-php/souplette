@@ -29,6 +29,7 @@ use JoliPotage\Css\Selectors\Node\SimpleSelector;
 use JoliPotage\Css\Selectors\Node\TypeSelector;
 use JoliPotage\Css\Selectors\Node\UniversalSelector;
 use JoliPotage\Css\Syntax\AnPlusBParser;
+use JoliPotage\Css\Syntax\Exception\UnexpectedToken;
 use JoliPotage\Css\Syntax\Tokenizer\TokenTypes;
 use JoliPotage\Css\Syntax\TokenStream\TokenStreamInterface;
 
@@ -246,7 +247,7 @@ final class SelectorParser
                 $this->tokenStream->consume(2);
                 return new ClassSelector($nextToken->value);
             }
-            throw $this->tokenStream->unexpectedToken($nextToken->type, TokenTypes::IDENT);
+            throw UnexpectedToken::expecting($nextToken, TokenTypes::IDENT);
         }
         if ($token->type === TokenTypes::LBRACK) {
             return $this->parseAttributeSelector();
@@ -255,10 +256,7 @@ final class SelectorParser
             return $this->parsePseudoClassSelector();
         }
 
-        throw $this->tokenStream->unexpectedToken(
-            $token->type,
-            TokenTypes::HASH, TokenTypes::DELIM, TokenTypes::LBRACK, TokenTypes::COLON
-        );
+        throw UnexpectedToken::expectingOneOf($token, TokenTypes::HASH, TokenTypes::DELIM, TokenTypes::LBRACK, TokenTypes::COLON);
     }
 
     private function parseAttributeSelector(): ?AttributeSelector
@@ -450,7 +448,7 @@ final class SelectorParser
     /**
      * @see https://drafts.csswg.org/selectors/#the-nth-child-pseudo
      * @return NthChild|NthLastChild
-     * @throws \JoliPotage\Css\Syntax\Exception\UnexpectedToken
+     * @throws UnexpectedToken
      */
     private function parseNthChild(bool $last = false)
     {
