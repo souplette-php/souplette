@@ -304,7 +304,7 @@ final class SelectorParser
     private function parsePseudoClassSelector(): PseudoClassSelector
     {
         // <pseudo-class-selector> = ':' <ident-token> | ':' <function-token> <any-value> ')'
-        $token = $this->tokenStream->eat(TokenTypes::COLON);
+        $this->tokenStream->eat(TokenTypes::COLON);
         $token = $this->tokenStream->expectOneOf(TokenTypes::IDENT, TokenTypes::FUNCTION);
         if ($token->type === TokenTypes::IDENT) {
             $this->tokenStream->consume();
