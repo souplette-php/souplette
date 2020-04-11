@@ -2,7 +2,7 @@
 
 namespace JoliPotage\Css\Selectors\Node;
 
-class AttributeSelector extends SimpleSelector
+final class AttributeSelector extends SimpleSelector
 {
     const OPERATOR_EXISTS = '';
     const OPERATOR_EQUALS = '=';

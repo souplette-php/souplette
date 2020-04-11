@@ -273,15 +273,22 @@ final class SelectorParser
         $token = $this->tokenStream->skipWhitespace();
         if ($token->type === TokenTypes::RBRACK) {
             $this->tokenStream->consume();
-            return new AttributeSelector($prefix, $attribute);
+            return new AttributeSelector($attribute, $prefix);
         }
         $operator = $this->parseAttributeMatcher();
         $this->tokenStream->skipWhitespace();
         $token = $this->tokenStream->expectOneOf(TokenTypes::STRING, TokenTypes::IDENT);
         $value = $token->value;
-        $this->tokenStream->consumeAndSkipWhitespace();
+        $token = $this->tokenStream->consumeAndSkipWhitespace();
+        $forceCase = null;
+        if ($token->type === TokenTypes::IDENT) {
+            if ($token->value === 'i' || $token->value === 's') {
+                $forceCase = $token->value;
+                $this->tokenStream->consumeAndSkipWhitespace();
+            }
+        }
         $this->tokenStream->eat(TokenTypes::RBRACK);
-        $this->tokenStream->consume();
+        return new AttributeSelector($attribute, $prefix, $operator, $value, $forceCase);
     }
 
     private function parseAttributeMatcher(): string
