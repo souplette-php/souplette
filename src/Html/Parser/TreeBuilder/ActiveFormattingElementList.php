@@ -97,12 +97,8 @@ final class ActiveFormattingElementList extends Stack
     /**
      * Check if an element exists between the end of the active formatting elements and the last marker.
      * If it does, return it, else return false
-     *
-     * @param string $tagName
-     * @param string $namespace
-     * @return \DOMElement|false
      */
-    public function containsTag(string $tagName, string $namespace = Namespaces::HTML)
+    public function containsTag(string $tagName, string $namespace = Namespaces::HTML): \DOMElement|false
     {
         foreach ($this as $entry) {
             if ($entry === null) {

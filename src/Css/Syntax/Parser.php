@@ -409,7 +409,8 @@ final class Parser
      */
     private function consumeSimpleBlock(): CssSimpleBlock
     {
-        // Note: This algorithm assumes that the current input token has already been checked to be an {, [, or ( token.
+        // Note:
+        // This algorithm assumes that the current input token has already been checked to be an {, [, or ( token.
         $token = $this->tokenStream->current();
         switch ($token->type) {
             case TokenTypes::LCURLY:
@@ -420,6 +421,8 @@ final class Parser
                 break;
             case TokenTypes::LBRACK:
                 $endToken = TokenTypes::RBRACK;
+                break;
+            default:
                 break;
         }
         // Create a simple block with its associated token set to the current input token

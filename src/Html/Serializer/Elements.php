@@ -25,7 +25,7 @@ final class Elements
     ];
 
     const BOOLEAN_ATTRIBUTES = [
-        '' => [
+        '*' => [
             'hidden' => true,
             'irrelevant' => true,
             'itemscope' => true,

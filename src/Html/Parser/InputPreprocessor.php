@@ -2,16 +2,18 @@
 
 namespace JoliPotage\Html\Parser;
 
+use JetBrains\PhpStorm\Pure;
+
 final class InputPreprocessor
 {
     private const BOM = "\u{FEFF}";
-    private const BOM_LENGTH = 3; // strlen(self::BOM)
 
+    #[Pure]
     public static function removeBOM(string $input): string
     {
         // One leading U+FEFF BYTE ORDER MARK character must be ignored if any are present.
-        if (0 === substr_compare($input, self::BOM, 0, self::BOM_LENGTH)) {
-            return substr($input, self::BOM_LENGTH);
+        if (str_starts_with($input, self::BOM)) {
+            return substr($input, strlen(self::BOM));
         }
 
         return $input;

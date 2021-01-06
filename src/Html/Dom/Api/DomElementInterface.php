@@ -10,22 +10,24 @@ use DOMAttr;
  */
 interface DomElementInterface extends DomNodeInterface
 {
-    public function getAttribute($name);
-    public function setAttribute($name, $value);
-    public function removeAttribute($name);
-    public function getAttributeNode($name);
+    public function hasAttribute(string $qualifiedName);
+    public function getAttribute(string $qualifiedName);
+    public function setAttribute(string $qualifiedName, string $value);
+    public function removeAttribute(string $qualifiedName);
+    public function getAttributeNode(string $qualifiedName);
     public function setAttributeNode(DOMAttr $attr);
-    public function removeAttributeNode(DOMAttr $oldNode);
-    public function getElementsByTagName($name);
-    public function getAttributeNS($namespaceURI, $localName);
-    public function setAttributeNS($namespaceURI, $qualifiedName, $value);
-    public function removeAttributeNS($namespaceURI, $localName);
-    public function getAttributeNodeNS($namespaceURI, $localName);
+    // FIXME: waiting for https://bugs.php.net/bug.php?id=80537 to be fixed
+    //public function removeAttributeNode(DOMAttr $oldNode);
+    public function getElementsByTagName(string $qualifiedName);
+    // FIXME: waitinf for https://bugs.php.net/bug.php?id=80599
+    //public function hasAttributeNS(?string $namespace, string $localName);
+    //public function getAttributeNS(?string $namespace, string $localName);
+    //public function setAttributeNS(?string $namespace, string $qualifiedName, string $value);
+    //public function removeAttributeNS(?string $namespace, string $localName);
+    //public function getAttributeNodeNS(?string $namespace, string $localName);
     public function setAttributeNodeNS(DOMAttr $attr);
-    public function getElementsByTagNameNS($namespaceURI, $localName);
-    public function hasAttribute($name);
-    public function hasAttributeNS($namespaceURI, $localName);
-    public function setIdAttribute($name, $isId);
-    public function setIdAttributeNS($namespaceURI, $localName, $isId);
-    public function setIdAttributeNode(DOMAttr $attr, $isId);
+    public function getElementsByTagNameNS(string $namespace, string $localName);
+    public function setIdAttribute(string $qualifiedName, bool $isId);
+    public function setIdAttributeNS(string $namespace, string $qualifiedName, bool $isId);
+    public function setIdAttributeNode(DOMAttr $attr, bool $isId);
 }

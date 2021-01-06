@@ -6,10 +6,7 @@ use JoliPotage\Css\Syntax\Tokenizer\Token;
 
 abstract class NumericToken extends Token
 {
-    /**
-     * @var int|float
-     */
-    public $value;
+    public int|float $value;
     public string $representation;
     public bool $isInteger;
 

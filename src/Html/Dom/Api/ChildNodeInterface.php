@@ -2,24 +2,9 @@
 
 namespace JoliPotage\Html\Dom\Api;
 
-use DOMNode;
-
 /**
  * @see https://dom.spec.whatwg.org/#interface-childnode
  */
-interface ChildNodeInterface
+interface ChildNodeInterface extends \DOMChildNode
 {
-    /**
-     * @param DOMNode|string ...$nodes
-     */
-    public function before(...$nodes): void;
-    /**
-     * @param DOMNode|string ...$nodes
-     */
-    public function after(...$nodes): void;
-    /**
-     * @param DOMNode|string ...$nodes
-     */
-    public function replaceWith(...$nodes): void;
-    public function remove(): void;
 }

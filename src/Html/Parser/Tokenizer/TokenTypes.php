@@ -24,10 +24,8 @@ final class TokenTypes
      * Convenience method for printing a token type.
      *
      * @codeCoverageIgnore
-     * @param int|Token $tokenOrType
-     * @return string
      */
-    public static function nameOf($tokenOrType): string
+    public static function nameOf(Token|int $tokenOrType): string
     {
         if ($tokenOrType instanceof Token) {
             $type = $tokenOrType->type;

@@ -2,6 +2,7 @@
 
 namespace JoliPotage\Html\Parser;
 
+use JetBrains\PhpStorm\Pure;
 use JoliPotage\Encoding\Encoding;
 use JoliPotage\Encoding\EncodingLookup;
 use JoliPotage\Encoding\Exception\EncodingChanged;
@@ -23,30 +24,42 @@ final class Parser
     {
         $encoding = $this->detectEncoding($input, $encoding);
         $converted = $this->preprocessInput($input, $encoding);
-        $tokenizer = new Tokenizer($converted);
+        $tokenizer = $this->createTokenizer($converted);
         try {
             return $this->treeBuilder->buildDocument($tokenizer, $encoding);
         } catch (EncodingChanged $err) {
             $encoding = $err->getEncoding();
             $converted = $this->preprocessInput($input, $encoding);
-            $tokenizer = new Tokenizer($converted);
+            $tokenizer = $this->createTokenizer($converted);
             return $this->treeBuilder->buildDocument($tokenizer, $encoding);
         }
     }
 
-    public function parseFragment(\DOMElement $contextElement, string $input, ?string $encoding = null)
+    /**
+     * @param \DOMElement $contextElement
+     * @param string $input
+     * @param string|null $encoding
+     * @return \DOMNode[]
+     */
+    public function parseFragment(\DOMElement $contextElement, string $input, ?string $encoding = null): array
     {
         $encoding = $this->detectEncoding($input, $encoding);
         $converted = $this->preprocessInput($input, $encoding);
-        $tokenizer = new Tokenizer($converted);
+        $tokenizer = $this->createTokenizer($converted);
         try {
             return $this->treeBuilder->buildFragment($tokenizer, $encoding, $contextElement);
         } catch (EncodingChanged $err) {
             $encoding = $err->getEncoding();
             $converted = $this->preprocessInput($input, $encoding);
-            $tokenizer = new Tokenizer($converted);
+            $tokenizer = $this->createTokenizer($converted);
             return $this->treeBuilder->buildFragment($tokenizer, $encoding, $contextElement);
         }
+    }
+
+    #[Pure]
+    private function createTokenizer(string $input): Tokenizer
+    {
+        return new Tokenizer($input);
     }
 
     private function detectEncoding(string $input, ?string $override = null): Encoding

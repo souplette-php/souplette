@@ -6,14 +6,12 @@ use DOMNodeList;
 use JoliPotage\Html\Dom\Api\ChildNodeInterface;
 use JoliPotage\Html\Dom\Api\HtmlElementInterface;
 use JoliPotage\Html\Dom\Api\HtmlNodeInterface;
-use JoliPotage\Html\Dom\Api\NonDocumentTypeChildNodeInterface;
 use JoliPotage\Html\Dom\Api\ParentNodeInterface;
 use JoliPotage\Html\Dom\DomIdioms;
 use JoliPotage\Html\Dom\PropertyMaps;
 use JoliPotage\Html\Dom\TokenList;
 use JoliPotage\Html\Dom\Traits\ChildNodeTrait;
 use JoliPotage\Html\Dom\Traits\HtmlNodeTrait;
-use JoliPotage\Html\Dom\Traits\NonDocumentTypeChildNodeTrait;
 use JoliPotage\Html\Dom\Traits\ParentNodeTrait;
 use JoliPotage\Html\Parser\Parser;
 use JoliPotage\Html\Serializer\Serializer;
@@ -21,13 +19,11 @@ use JoliPotage\Html\Serializer\Serializer;
 class HtmlElement extends \DOMElement implements
     HtmlNodeInterface,
     ParentNodeInterface,
-    NonDocumentTypeChildNodeInterface,
     ChildNodeInterface,
     HtmlElementInterface
 {
     use HtmlNodeTrait;
     use ParentNodeTrait;
-    use NonDocumentTypeChildNodeTrait;
     use ChildNodeTrait;
 
     private TokenList $internalClassList;

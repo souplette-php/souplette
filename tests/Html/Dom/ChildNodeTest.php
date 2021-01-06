@@ -4,7 +4,6 @@ namespace JoliPotage\Tests\Html\Dom;
 
 use JoliPotage\Html\Dom\Api\ChildNodeInterface;
 use JoliPotage\Html\Dom\Node\HtmlDocument;
-use JoliPotage\Html\Dom\Node\HtmlNode;
 use JoliPotage\Tests\Html\DomBuilder;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
@@ -40,7 +39,7 @@ final class ChildNodeTest extends TestCase
 
     /**
      * @dataProvider beforeProvider
-     * @param HtmlNode $target
+     * @param \DOMChildNode $target
      * @param $nodes
      */
     public function testBefore($target, $nodes)

@@ -20,6 +20,9 @@ use SplStack;
 
 final class TreeBuilder
 {
+    /**
+     * @var array<string, RuleSet>
+     */
     private const RULES = [
         InsertionModes::INITIAL => RuleSet\Initial::class,
         InsertionModes::BEFORE_HTML => RuleSet\BeforeHtml::class,
@@ -263,18 +266,19 @@ final class TreeBuilder
             } else {
                 InForeignContent::process($token, $this);
             }
-            // TODO: the tokenizer only needs this information in the MARKUP_DECLARATION_OPEN state.
-            // Could we find a way for the tokenizer to ask for it instead of computing this twice ?
+
+            // NOTE: This is needed for the tokenizer,
+            // to know if it should allow CDATA sections in the MARKUP_DECLARATION_OPEN state.
+            // This has to happen here since the adjusted current node changes during rules invocations.
+            // If there is an adjusted current node and it is not an element in the HTML namespace,
+            // then switch to the CDATA section state.
             $adjustedCurrentNode = $this->getAdjustedCurrentNode();
-            // Also the following should be enough:
-            //$this->tokenizer->allowCdata = $adjustedCurrentNode && $adjustedCurrentNode->namespaceURI !== Namespaces::HTML;
-            $inForeignContent = (
-                $adjustedCurrentNode
+            $this->tokenizer->allowCdata = $adjustedCurrentNode
                 && $adjustedCurrentNode->namespaceURI !== Namespaces::HTML
-                && !Elements::isHtmlIntegrationPoint($adjustedCurrentNode)
-                && !Elements::isMathMlTextIntegrationPoint($adjustedCurrentNode)
-            );
-            $this->tokenizer->allowCdata = $inForeignContent;
+                //&& !Elements::isHtmlIntegrationPoint($adjustedCurrentNode)
+                //&& !Elements::isMathMlTextIntegrationPoint($adjustedCurrentNode)
+            ;
+
             $previousToken = $token;
         }
     }
@@ -411,12 +415,17 @@ final class TreeBuilder
         }
     }
 
+    /**
+     * @see https://html.spec.whatwg.org/multipage/parsing.html#adjusted-current-node
+     * @return DOMElement|null
+     */
     public function getAdjustedCurrentNode(): ?DOMElement
     {
-        if ($this->openElements->isEmpty()) {
+        $openElementsCount = $this->openElements->count();
+        if (!$openElementsCount) {
             return null;
         }
-        if ($this->isBuildingFragment && $this->openElements->count() === 1) {
+        if ($this->isBuildingFragment && $openElementsCount === 1) {
             return $this->contextElement;
         }
         return $this->openElements->top();

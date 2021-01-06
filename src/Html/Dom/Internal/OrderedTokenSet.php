@@ -2,6 +2,8 @@
 
 namespace JoliPotage\Html\Dom\Internal;
 
+use JetBrains\PhpStorm\Pure;
+
 /**
  * This class backs up the implementation of DOMTokenList interface.
  *
@@ -28,6 +30,7 @@ final class OrderedTokenSet implements \Countable, \IteratorAggregate, \ArrayAcc
         }
     }
 
+    #[Pure]
     public function serialize(): string
     {
         return implode(' ', $this->tokens);
@@ -41,6 +44,7 @@ final class OrderedTokenSet implements \Countable, \IteratorAggregate, \ArrayAcc
         return $this->tokens;
     }
 
+    #[Pure]
     public function isEmpty(): bool
     {
         return count($this->tokens) === 0;
@@ -105,7 +109,8 @@ final class OrderedTokenSet implements \Countable, \IteratorAggregate, \ArrayAcc
         return false;
     }
 
-    public function count()
+    #[Pure]
+    public function count(): int
     {
         return count($this->tokens);
     }
@@ -115,7 +120,7 @@ final class OrderedTokenSet implements \Countable, \IteratorAggregate, \ArrayAcc
         return new \ArrayIterator(array_values($this->tokens));
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->tokens[$offset]);
     }

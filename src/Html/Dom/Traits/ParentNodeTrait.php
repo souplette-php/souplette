@@ -3,10 +3,29 @@
 namespace JoliPotage\Html\Dom\Traits;
 
 use DOMElement;
+use DOMNode;
 use JoliPotage\Html\Dom\DomIdioms;
 
 trait ParentNodeTrait
 {
+    /**
+     * @return DOMElement[]
+     */
+    public function getChildren(): array
+    {
+        $children = [];
+        foreach ($this->childNodes as $node) {
+            if ($node->nodeType === XML_ELEMENT_NODE) {
+                $children[] = $node;
+            }
+        }
+
+        return $children;
+    }
+
+    /**
+     * @param DOMNode|string ...$nodes
+     */
     public function prepend(...$nodes): void
     {
         // 1. Let node be the result of converting nodes into a node given nodes and this’s node document.
@@ -16,6 +35,9 @@ trait ParentNodeTrait
         $this->insertBefore($node, $this->firstChild);
     }
 
+    /**
+     * @param DOMNode|string ...$nodes
+     */
     public function append(...$nodes): void
     {
         $doc = DomIdioms::getOwnerDocument($this);
@@ -25,44 +47,26 @@ trait ParentNodeTrait
         $this->appendChild($node);
     }
 
+    /**
+     * @param DOMNode|string ...$nodes
+     */
+    public function replaceChildren(...$nodes): void
+    {
+        $doc = DomIdioms::getOwnerDocument($this);
+        // 1. Let node be the result of converting nodes into a node given nodes and this’s node document.
+        $node = DomIdioms::convertNodesIntoNode($doc, $nodes);
+        // 2. Ensure pre-insertion validity of node into this before null.
+        // 3. Replace all with node within this.
+        DomIdioms::replaceAllWithNodeWithinParent($node, $this);
+    }
+
     public function querySelector(string $selector): ?DOMElement
     {
-        // TODO: Implement querySelector() method.
+        throw new \LogicException('Not implemented');
     }
 
-    public function querySelectorAll(string $selector)
+    public function querySelectorAll(string $selector): iterable
     {
-        // TODO: Implement querySelectorAll() method.
+        throw new \LogicException('Not implemented');
     }
-
-    public function getChildren()
-    {
-        $children = [];
-        foreach ($this->childNodes as $node) {
-            if ($node->nodeType === XML_ELEMENT_NODE) {
-                $children[] = $node;
-            }
-        }
-        return $children;
-    }
-
-    public function getFirstElementChild(): ?DOMElement
-    {
-        foreach ($this->childNodes as $node) {
-            if ($node->nodeType === XML_ELEMENT_NODE) {
-                return $node;
-            }
-        }
-        return null;
-    }
-
-    public function getLastElementChild(): ?DOMElement
-    {
-        $node = $this->lastChild;
-        while ($node && $node->nodeType !== XML_ELEMENT_NODE) {
-            $node = $node->previousSibling;
-        }
-        return $node;
-    }
-
 }

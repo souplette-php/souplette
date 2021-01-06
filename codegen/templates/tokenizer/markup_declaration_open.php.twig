@@ -20,7 +20,7 @@ if (0 === \substr_compare($this->input, '--', $this->position, 2)) {
     $this->position += 7;
     {{ h.update_cc() }}
     if ($this->allowCdata) {
-        // TODO: If there is an adjusted current node and it is not an element in the HTML namespace,
+        // If there is an adjusted current node and it is not an element in the HTML namespace,
         // then switch to the CDATA section state.
         {{ h.reconsume_in('CDATA_SECTION') }}
     } else {

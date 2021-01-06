@@ -14,7 +14,6 @@ trait HtmlNodeTrait
             return false;
         }
 
-        // TODO: check if comparing w/ getNodePath() is faster in the case $this and $other are in the same document.
         for ($node = $other; $node; $node = $node->parentNode) {
             if ($node === $this) {
                 return true;

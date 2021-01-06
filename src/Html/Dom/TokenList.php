@@ -109,7 +109,7 @@ final class TokenList implements \Countable, \IteratorAggregate
         return $this->tokenSet->offsetGet($offset);
     }
 
-    public function count()
+    public function count(): int
     {
         $this->synchronize();
         return $this->tokenSet->count();

@@ -7,16 +7,15 @@ use DOMNode;
 
 final class InsertionLocation
 {
-    public DOMNode $parent;
     public ?DOMNode $target;
-    public bool $beforeTarget = false;
     public DOMDocument $document;
 
-    public function __construct(DOMNode $parent, ?DOMNode $target = null, bool $beforeTarget = false)
-    {
-        $this->parent = $parent;
+    public function __construct(
+        public DOMNode $parent,
+        ?DOMNode $target = null,
+        public bool $beforeTarget = false
+    ) {
         $this->target = $target ?: $parent->lastChild;
-        $this->beforeTarget = $beforeTarget;
         if ($parent instanceof DOMDocument) {
             $this->document = $parent;
         } else {

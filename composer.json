@@ -1,36 +1,36 @@
 {
-    "name": "ju1ius/joli-potage",
-    "description": "Standard compliant HTML parser.",
-    "type": "library",
-    "version": "0.0.1",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "ju1ius",
-            "email": "jules.bernable@gmail.com"
-        }
-    ],
-    "autoload": {
-        "psr-4": {
-            "JoliPotage\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "JoliPotage\\Tests\\": "tests",
-            "JoliPotage\\Codegen\\": "codegen"
-        }
-    },
-    "require": {
-        "php": ">=7.4",
-        "ext-dom": "*",
-        "ext-mbstring": "*",
-        "ext-ctype": "*",
-        "ext-intl": "*"
-    },
-    "require-dev": {
-        "ext-json": "*",
-        "twig/twig": "^3.0",
-        "blackfire/php-sdk": "^1.21"
+  "name": "ju1ius/joli-potage",
+  "description": "Standard compliant HTML parser.",
+  "type": "library",
+  "version": "0.0.1",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "ju1ius",
+      "email": "jules.bernable@gmail.com"
     }
+  ],
+  "autoload": {
+    "psr-4": {
+      "JoliPotage\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "JoliPotage\\Tests\\": "tests",
+      "JoliPotage\\Codegen\\": "codegen"
+    }
+  },
+  "require": {
+    "php": ">=8.0",
+    "ext-dom": "*",
+    "ext-mbstring": "*",
+    "ext-ctype": "*",
+    "ext-intl": "*"
+  },
+  "require-dev": {
+    "ext-json": "*",
+    "twig/twig": "^3.0",
+    "blackfire/php-sdk": "^1.21"
+  }
 }

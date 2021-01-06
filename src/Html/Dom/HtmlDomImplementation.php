@@ -8,12 +8,12 @@ use JoliPotage\Html\Dom\Node\HtmlDocument;
 final class HtmlDomImplementation extends \DOMImplementation
 {
     /**
-     * @param null $namespaceURI
+     * @param null $namespace
      * @param null $qualifiedName
      * @param DOMDocumentType|null $doctype
      * @return HtmlDocument
      */
-    public function createDocument($namespaceURI = null, $qualifiedName = null, DOMDocumentType $doctype = null)
+    public function createDocument($namespace = null, $qualifiedName = null, DOMDocumentType $doctype = null): HtmlDocument
     {
         return new HtmlDocument();
     }
@@ -23,8 +23,8 @@ final class HtmlDomImplementation extends \DOMImplementation
         $doc = $this->createDocument();
         $doc->appendChild($this->createDocumentType('html'));
         $html = $doc->createElement('html');
-        $head = $html->appendChild($doc->createElement('head'));
-        $meta = $head->appendChild($doc->createElement('meta'));
+        $html->appendChild($head = $doc->createElement('head'));
+        $head->appendChild($meta = $doc->createElement('meta'));
         $meta->setAttribute('charset', 'UTF-8');
         $html->appendChild($doc->createElement('body'));
         $doc->appendChild($html);

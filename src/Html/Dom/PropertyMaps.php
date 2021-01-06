@@ -5,7 +5,6 @@ namespace JoliPotage\Html\Dom;
 use JoliPotage\Html\Dom\Api\HtmlDocumentInterface;
 use JoliPotage\Html\Dom\Api\HtmlElementInterface;
 use JoliPotage\Html\Dom\Api\HtmlNodeInterface;
-use JoliPotage\Html\Dom\Api\NonDocumentTypeChildNodeInterface;
 use JoliPotage\Html\Dom\Api\ParentNodeInterface;
 
 final class PropertyMaps
@@ -34,14 +33,8 @@ final class PropertyMaps
         HtmlNodeInterface::class => [
             'parentElement' => 'getParentElement',
         ],
-        NonDocumentTypeChildNodeInterface::class => [
-            'previousElementSibling' => 'getPreviousElementSibling',
-            'nextElementSibling' => 'getNextElementSibling',
-        ],
         ParentNodeInterface::class => [
             'children' => 'getChildren',
-            'firstElementChild' => 'getFirstElementChild',
-            'lastElementChild' => 'getLastElementChild',
         ],
         HtmlDocumentInterface::class => [
             'mode' => 'getMode',

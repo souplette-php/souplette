@@ -115,7 +115,7 @@ final class Serializer
     {
         $name = $this->serializeAttributeName($attr);
         $canonicalName = strtolower($name);
-        $isBoolean = isset(Elements::BOOLEAN_ATTRIBUTES[''][$canonicalName])
+        $isBoolean = isset(Elements::BOOLEAN_ATTRIBUTES['*'][$canonicalName])
             || isset(Elements::BOOLEAN_ATTRIBUTES[$tagName][$canonicalName]);
         if ($isBoolean && (
             $attr->value === '' ||

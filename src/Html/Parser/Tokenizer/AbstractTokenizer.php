@@ -3,16 +3,17 @@
 namespace JoliPotage\Html\Parser\Tokenizer;
 
 use JoliPotage\Html\Parser\Tokenizer\Token\Character;
+use JoliPotage\Html\Parser\Tokenizer\Token\EndTag;
 use JoliPotage\Html\Parser\Tokenizer\Token\EOF;
+use JoliPotage\Html\Parser\Tokenizer\Token\StartTag;
 use SplQueue;
 
 abstract class AbstractTokenizer
 {
-    protected string $input = '';
-    protected int $position = 0;
     public int $state = TokenizerStates::DATA;
-    protected int $returnState = 0;
     public bool $allowCdata = false;
+    protected int $position = 0;
+    protected int $returnState = 0;
     protected SplQueue $tokenQueue;
     protected Token $currentToken;
     protected array $parseErrors = [];
@@ -24,9 +25,8 @@ abstract class AbstractTokenizer
     protected EntitySearch $entitySearch;
     protected int $characterReferenceCode;
 
-    public function __construct(string $input)
+    public function __construct(protected string $input)
     {
-        $this->input = $input;
         $this->entitySearch = EntitySearch::create();
     }
 
@@ -72,6 +72,7 @@ abstract class AbstractTokenizer
     {
         $token = $this->currentToken;
         if ($token->type === TokenTypes::START_TAG) {
+            /** @var StartTag $token */
             $this->appropriateEndTag = $token->name;
             if ($token->attributes) {
                 $attrs = [];
@@ -85,6 +86,7 @@ abstract class AbstractTokenizer
                 $token->attributes = $attrs;
             }
         } elseif ($token->type === TokenTypes::END_TAG) {
+            /** @var EndTag $token */
             if ($token->attributes) {
                 // This is an end-tag-with-attributes parse error.
                 $this->parseErrors[] = [ParseErrors::END_TAG_WITH_ATTRIBUTES, $this->position];

@@ -1393,7 +1393,7 @@ final class Tokenizer extends AbstractTokenizer
                     $this->position += 7;
                     $cc = $this->input[$this->position] ?? null;
                     if ($this->allowCdata) {
-                        // TODO: If there is an adjusted current node and it is not an element in the HTML namespace,
+                        // If there is an adjusted current node and it is not an element in the HTML namespace,
                         // then switch to the CDATA section state.
                         $this->state = TokenizerStates::CDATA_SECTION;
                         goto CDATA_SECTION;

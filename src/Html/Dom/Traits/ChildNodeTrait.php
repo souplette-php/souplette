@@ -2,10 +2,15 @@
 
 namespace JoliPotage\Html\Dom\Traits;
 
+use DOMNode;
 use JoliPotage\Html\Dom\DomIdioms;
 
 trait ChildNodeTrait
 {
+    /**
+     * @todo remove when https://bugs.php.net/bug.php?id=80602 is fixed
+     * @param DOMNode|string ...$nodes
+     */
     public function before(...$nodes): void
     {
         // 1. Let parent be this’s parent.
@@ -28,6 +33,9 @@ trait ChildNodeTrait
         $parent->insertBefore($node, $viablePreviousSibling);
     }
 
+    /**
+     * @param DOMNode|string ...$nodes
+     */
     public function after(...$nodes): void
     {
         // 1. Let parent be this’s parent.
@@ -44,6 +52,9 @@ trait ChildNodeTrait
         $parent->insertBefore($node, $viableNextSibling);
     }
 
+    /**
+     * @param DOMNode|string ...$nodes
+     */
     public function replaceWith(...$nodes): void
     {
         // 1. Let parent be this’s parent.
@@ -66,6 +77,9 @@ trait ChildNodeTrait
         }
     }
 
+    /**
+     * @todo remove this when  https://bugs.php.net/bug.php?id=80600 is closed.
+     */
     public function remove(): void
     {
         // 1. If this’s parent is null, then return.

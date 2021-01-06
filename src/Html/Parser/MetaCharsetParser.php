@@ -11,6 +11,7 @@ use JoliPotage\Html\Parser\Tokenizer\TokenTypes;
 final class MetaCharsetParser
 {
     private const MIN_BYTES_CHECKED = 1024;
+
     private const ALLOWED_END_TAGS = [
         'script' => true,
         'noscript' => true,
@@ -21,26 +22,25 @@ final class MetaCharsetParser
         'title' => true,
         'base' => true,
     ];
+
     private const ALLOWED_START_TAGS = self::ALLOWED_END_TAGS + [
         'html' => true,
         'head' => true,
     ];
+
     private const META_CHARSET_PATTERN = <<<'REGEXP'
-@
-   charset \s* = \s*
-   (?>
-        " (?<value> [^"]+ ) "
-        | ' (?<value> [^']+ ) '
-        | (?<value> [^\t\n\f\r ;]+ ) 
-   ) 
-@Jix
-REGEXP;
+    @
+       charset \s* = \s*
+       (?>
+            " (?<value> [^"]+ ) "
+            | ' (?<value> [^']+ ) '
+            | (?<value> [^\t\n\f\r ;]+ )
+       )
+    @Jix
+    REGEXP;
 
-    private Tokenizer $tokenizer;
-
-    public function __construct(Tokenizer $tokenizer)
+    public function __construct(private Tokenizer $tokenizer)
     {
-        $this->tokenizer = $tokenizer;
     }
 
     public function parse(): ?string
@@ -147,9 +147,6 @@ REGEXP;
 
     /**
      * @see https://html.spec.whatwg.org/multipage/urls-and-fetching.html#algorithm-for-extracting-a-character-encoding-from-a-meta-element
-     *
-     * @param string $input
-     * @return string|null
      */
     public static function extractFromMetaContentAttribute(string $input): ?string
     {

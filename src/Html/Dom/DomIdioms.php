@@ -6,6 +6,7 @@ use DOMDocument;
 use DOMNode;
 use DOMNodeList;
 use DOMXPath;
+use JetBrains\PhpStorm\Pure;
 
 final class DomIdioms
 {
@@ -13,6 +14,7 @@ final class DomIdioms
     {
         $document = $node->ownerDocument;
         if (!$document && ($node->nodeType === XML_HTML_DOCUMENT_NODE ||$node->nodeType === XML_DOCUMENT_NODE)) {
+            /** @var DOMDocument $node */
             return $node;
         }
 
@@ -58,6 +60,7 @@ final class DomIdioms
         return $frag;
     }
 
+    #[Pure]
     public static function findViablePreviousSibling(DOMNode $refNode, array $nodes): ?DOMNode
     {
         for ($sibling = $refNode->previousSibling; $sibling; $sibling = $sibling->previousSibling) {
@@ -68,6 +71,7 @@ final class DomIdioms
         return null;
     }
 
+    #[Pure]
     public static function findViableNextSibling(DOMNode $refNode, array $nodes): ?DOMNode
     {
         for ($sibling = $refNode->nextSibling; $sibling; $sibling = $sibling->nextSibling) {
@@ -76,5 +80,20 @@ final class DomIdioms
             }
         }
         return null;
+    }
+
+    /**
+     * @see https://dom.spec.whatwg.org/#concept-node-replace-all
+     *
+     * @param DOMNode $node
+     * @param DOMNode $parent
+     */
+    public static function replaceAllWithNodeWithinParent(DOMNode $node, DOMNode $parent): void
+    {
+        // most of the spec steps are related to mutation records which we do not support.
+        while ($parent->firstChild) {
+            $parent->removeChild($parent->firstChild);
+        }
+        $parent->appendChild($node);
     }
 }

@@ -5,18 +5,18 @@ namespace JoliPotage\Css\Syntax;
 final class Utils
 {
     private const UNESCAPE_STRING_PATTERN = <<<'REGEXP'
-/
-    \\ (?:
-        (?<unicode> [a-f0-9]{1,6} \s? )
-        | (?<ignored> \n )
-        | (?<any> . )
-    )
-/xi
-REGEXP;
+    /
+        \\ (?:
+            (?<unicode> [a-f0-9]{1,6} \s? )
+            | (?<ignored> \n )
+            | (?<any> . )
+        )
+    /xi
+    REGEXP;
 
     public static function unescapeString(string $input): string
     {
-        if (strpos($input, '\\') === false) {
+        if (!str_contains($input, '\\')) {
             return $input;
         }
 

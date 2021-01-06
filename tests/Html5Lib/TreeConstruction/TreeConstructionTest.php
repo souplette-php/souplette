@@ -39,7 +39,7 @@ class TreeConstructionTest extends TestCase
     {
         $rootPath = __DIR__ . '/../../resources/html5lib-tests/tree-construction';
         foreach (ResourceCollector::collect($rootPath, 'dat') as $relPath => $fileInfo) {
-            if (strpos($relPath,'scripted/') === 0) {
+            if (str_starts_with($relPath, 'scripted/')) {
                 // TODO: implement a scripting engine 😁
                 continue;
             }
