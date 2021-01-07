@@ -31,6 +31,10 @@ final class EncodingSnifferTest extends TestCase
     {
         $xfails = require __DIR__ . "/../../resources/html5lib-xfails.php";
         foreach (ResourceCollector::collect(self::RESOURCE_PATH) as $relPath => $fileInfo) {
+            if (str_starts_with($relPath, 'scripted/')) {
+                // TODO: implement a scripting engine 😁
+                continue;
+            }
             $file = new DataFile($fileInfo->getPathname());
             foreach ($file as $i => $test) {
                 $encoding = strtolower($test['encoding']);
