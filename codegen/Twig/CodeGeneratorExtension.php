@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Codegen\Twig;
+namespace Souplette\Codegen\Twig;
 
 use IntlChar;
-use JoliPotage\Codegen\Utils;
+use Souplette\Codegen\Utils;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 

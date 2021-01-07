@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Tests\Html\Dom;
+namespace Souplette\Tests\Html\Dom;
 
-use JoliPotage\Html\Dom\Exception\InvalidCharacter;
-use JoliPotage\Html\Dom\Exception\SyntaxError;
-use JoliPotage\Html\Dom\Node\HtmlElement;
-use JoliPotage\Html\Dom\TokenList;
-use JoliPotage\Tests\Html\DomBuilder;
+use Souplette\Html\Dom\Exception\InvalidCharacter;
+use Souplette\Html\Dom\Exception\SyntaxError;
+use Souplette\Html\Dom\Node\HtmlElement;
+use Souplette\Html\Dom\TokenList;
+use Souplette\Tests\Html\DomBuilder;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 

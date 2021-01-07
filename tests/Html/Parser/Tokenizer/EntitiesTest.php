@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Tests\Html\Parser\Tokenizer;
+namespace Souplette\Tests\Html\Parser\Tokenizer;
 
-use JoliPotage\Html\Parser\Tokenizer\EntityLookup;
-use JoliPotage\Html\Parser\Tokenizer\ParseErrors;
-use JoliPotage\Html\Parser\Tokenizer\Token;
+use Souplette\Html\Parser\Tokenizer\EntityLookup;
+use Souplette\Html\Parser\Tokenizer\ParseErrors;
+use Souplette\Html\Parser\Tokenizer\Token;
 use PHPUnit\Framework\TestCase;
 
 class EntitiesTest extends TestCase

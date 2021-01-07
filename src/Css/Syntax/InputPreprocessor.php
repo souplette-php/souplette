@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Css\Syntax;
+namespace Souplette\Css\Syntax;
 
-use JoliPotage\Encoding\Utf8Converter;
+use Souplette\Encoding\Utf8Converter;
 
 final class InputPreprocessor
 {

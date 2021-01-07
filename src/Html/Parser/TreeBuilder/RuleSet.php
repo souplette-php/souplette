@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Parser\TreeBuilder;
+namespace Souplette\Html\Parser\TreeBuilder;
 
-use JoliPotage\Html\Parser\Tokenizer\Token;
+use Souplette\Html\Parser\Tokenizer\Token;
 
 abstract class RuleSet
 {

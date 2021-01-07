@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Tests\Html\Parser\TreeBuilder;
+namespace Souplette\Tests\Html\Parser\TreeBuilder;
 
-use JoliPotage\Html\Parser\TreeBuilder\Stack;
+use Souplette\Html\Parser\TreeBuilder\Stack;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 

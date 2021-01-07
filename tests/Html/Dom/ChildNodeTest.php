@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Tests\Html\Dom;
+namespace Souplette\Tests\Html\Dom;
 
-use JoliPotage\Html\Dom\Api\ChildNodeInterface;
-use JoliPotage\Html\Dom\Node\HtmlDocument;
-use JoliPotage\Tests\Html\DomBuilder;
+use Souplette\Html\Dom\Api\ChildNodeInterface;
+use Souplette\Html\Dom\Node\HtmlDocument;
+use Souplette\Tests\Html\DomBuilder;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 

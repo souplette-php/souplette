@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Css\Syntax;
+namespace Souplette\Css\Syntax;
 
-use JoliPotage\Css\Syntax\Exception\ParseError;
-use JoliPotage\Css\Syntax\Node\AnPlusB;
-use JoliPotage\Css\Syntax\Tokenizer\TokenTypes;
-use JoliPotage\Css\Syntax\TokenStream\TokenStreamInterface;
+use Souplette\Css\Syntax\Exception\ParseError;
+use Souplette\Css\Syntax\Node\AnPlusB;
+use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\TokenStream\TokenStreamInterface;
 
 final class AnPlusBStringParser
 {

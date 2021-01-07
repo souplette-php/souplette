@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Tests\Html\Parser\Tokenizer;
+namespace Souplette\Tests\Html\Parser\Tokenizer;
 
-use JoliPotage\Html\Parser\Tokenizer\TokenizerStates;
+use Souplette\Html\Parser\Tokenizer\TokenizerStates;
 use PHPUnit\Framework\TestCase;
 
 class RCDataTest extends TestCase

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Tests;
+namespace Souplette\Tests;
 
 class ResourceCollector
 {

@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Tests\Html5Lib\Encoding;
+namespace Souplette\Tests\Html5Lib\Encoding;
 
-use JoliPotage\Html\Parser\EncodingSniffer;
-use JoliPotage\Tests\Html5Lib\DataFile;
-use JoliPotage\Tests\ResourceCollector;
+use Souplette\Html\Parser\EncodingSniffer;
+use Souplette\Tests\Html5Lib\DataFile;
+use Souplette\Tests\ResourceCollector;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 

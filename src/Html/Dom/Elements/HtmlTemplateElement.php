@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Dom\Elements;
+namespace Souplette\Html\Dom\Elements;
 
 use DOMDocumentFragment;
-use JoliPotage\Html\Dom\Api\HtmlTemplateElementInterface;
-use JoliPotage\Html\Dom\Node\HtmlElement;
+use Souplette\Html\Dom\Api\HtmlTemplateElementInterface;
+use Souplette\Html\Dom\Node\HtmlElement;
 
 /**
  * @property-read DOMDocumentFragment|null $content

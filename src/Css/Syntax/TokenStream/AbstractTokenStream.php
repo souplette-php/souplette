@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Css\Syntax\TokenStream;
+namespace Souplette\Css\Syntax\TokenStream;
 
-use JoliPotage\Css\Syntax\Exception\UnexpectedToken;
-use JoliPotage\Css\Syntax\Exception\UnexpectedValue;
-use JoliPotage\Css\Syntax\Tokenizer\BalancedPairs;
-use JoliPotage\Css\Syntax\Tokenizer\Token;
-use JoliPotage\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\Exception\UnexpectedToken;
+use Souplette\Css\Syntax\Exception\UnexpectedValue;
+use Souplette\Css\Syntax\Tokenizer\BalancedPairs;
+use Souplette\Css\Syntax\Tokenizer\Token;
+use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 abstract class AbstractTokenStream implements TokenStreamInterface
 {

@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Tests\Css\Syntax;
+namespace Souplette\Tests\Css\Syntax;
 
-use JoliPotage\Css\Syntax\Exception\ParseError;
-use JoliPotage\Css\Syntax\Tokenizer\Tokenizer;
-use JoliPotage\Css\Syntax\TokenStream\TokenStream;
-use JoliPotage\Css\Syntax\UnicodeRangeParser;
+use Souplette\Css\Syntax\Exception\ParseError;
+use Souplette\Css\Syntax\Tokenizer\Tokenizer;
+use Souplette\Css\Syntax\TokenStream\TokenStream;
+use Souplette\Css\Syntax\UnicodeRangeParser;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 

@@ -1,37 +1,37 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Css\Selectors;
+namespace Souplette\Css\Selectors;
 
-use JoliPotage\Css\Selectors\Node\AttributeSelector;
-use JoliPotage\Css\Selectors\Node\ClassSelector;
-use JoliPotage\Css\Selectors\Node\Combinators;
-use JoliPotage\Css\Selectors\Node\ComplexSelector;
-use JoliPotage\Css\Selectors\Node\CompoundSelector;
-use JoliPotage\Css\Selectors\Node\Functional\Dir;
-use JoliPotage\Css\Selectors\Node\Functional\Has;
-use JoliPotage\Css\Selectors\Node\Functional\Is;
-use JoliPotage\Css\Selectors\Node\Functional\Lang;
-use JoliPotage\Css\Selectors\Node\Functional\Not;
-use JoliPotage\Css\Selectors\Node\Functional\NthChild;
-use JoliPotage\Css\Selectors\Node\Functional\NthCol;
-use JoliPotage\Css\Selectors\Node\Functional\NthLastChild;
-use JoliPotage\Css\Selectors\Node\Functional\NthLastCol;
-use JoliPotage\Css\Selectors\Node\Functional\NthLastOfType;
-use JoliPotage\Css\Selectors\Node\Functional\NthOfType;
-use JoliPotage\Css\Selectors\Node\Functional\Where;
-use JoliPotage\Css\Selectors\Node\FunctionalSelector;
-use JoliPotage\Css\Selectors\Node\IdSelector;
-use JoliPotage\Css\Selectors\Node\PseudoClassSelector;
-use JoliPotage\Css\Selectors\Node\RelativeSelector;
-use JoliPotage\Css\Selectors\Node\Selector;
-use JoliPotage\Css\Selectors\Node\SelectorList;
-use JoliPotage\Css\Selectors\Node\SimpleSelector;
-use JoliPotage\Css\Selectors\Node\TypeSelector;
-use JoliPotage\Css\Selectors\Node\UniversalSelector;
-use JoliPotage\Css\Syntax\AnPlusBParser;
-use JoliPotage\Css\Syntax\Exception\UnexpectedToken;
-use JoliPotage\Css\Syntax\Tokenizer\TokenTypes;
-use JoliPotage\Css\Syntax\TokenStream\TokenStreamInterface;
+use Souplette\Css\Selectors\Node\AttributeSelector;
+use Souplette\Css\Selectors\Node\ClassSelector;
+use Souplette\Css\Selectors\Node\Combinators;
+use Souplette\Css\Selectors\Node\ComplexSelector;
+use Souplette\Css\Selectors\Node\CompoundSelector;
+use Souplette\Css\Selectors\Node\Functional\Dir;
+use Souplette\Css\Selectors\Node\Functional\Has;
+use Souplette\Css\Selectors\Node\Functional\Is;
+use Souplette\Css\Selectors\Node\Functional\Lang;
+use Souplette\Css\Selectors\Node\Functional\Not;
+use Souplette\Css\Selectors\Node\Functional\NthChild;
+use Souplette\Css\Selectors\Node\Functional\NthCol;
+use Souplette\Css\Selectors\Node\Functional\NthLastChild;
+use Souplette\Css\Selectors\Node\Functional\NthLastCol;
+use Souplette\Css\Selectors\Node\Functional\NthLastOfType;
+use Souplette\Css\Selectors\Node\Functional\NthOfType;
+use Souplette\Css\Selectors\Node\Functional\Where;
+use Souplette\Css\Selectors\Node\FunctionalSelector;
+use Souplette\Css\Selectors\Node\IdSelector;
+use Souplette\Css\Selectors\Node\PseudoClassSelector;
+use Souplette\Css\Selectors\Node\RelativeSelector;
+use Souplette\Css\Selectors\Node\Selector;
+use Souplette\Css\Selectors\Node\SelectorList;
+use Souplette\Css\Selectors\Node\SimpleSelector;
+use Souplette\Css\Selectors\Node\TypeSelector;
+use Souplette\Css\Selectors\Node\UniversalSelector;
+use Souplette\Css\Syntax\AnPlusBParser;
+use Souplette\Css\Syntax\Exception\UnexpectedToken;
+use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\TokenStream\TokenStreamInterface;
 
 /**
  * @see https://drafts.csswg.org/selectors/#grammar
@@ -64,11 +64,10 @@ final class SelectorParser
         '*' => AttributeSelector::OPERATOR_SUBSTRING_MATCH,
     ];
 
-    private TokenStreamInterface $tokenStream;
+    private bool $isParsingAttribute = false;
 
-    public function __construct(TokenStreamInterface $tokenStream)
+    public function __construct(private TokenStreamInterface $tokenStream)
     {
-        $this->tokenStream = $tokenStream;
     }
 
     public function parseSelectorList(): SelectorList
@@ -114,22 +113,21 @@ final class SelectorParser
     {
         // <compound-selector> [ <combinator>? <compound-selector> ]*
         $this->tokenStream->skipWhitespace();
-        $complex = new ComplexSelector();
-        $complex->add(null, $this->parseCompoundSelector());
+        $selector = $this->parseCompoundSelector();
         while (true) {
             $combinator = $this->parseCombinator();
             if (!$combinator) {
-                return $complex;
+                return new ComplexSelector($selector);
             }
             $compound = $this->parseCompoundSelector();
             if (!$compound) {
-                return $complex;
+                return new ComplexSelector($selector);
             }
-            $complex->add($combinator, $compound);
+            $selector = new ComplexSelector($selector, $combinator, $compound);
         }
         $this->tokenStream->skipWhitespace();
 
-        return $complex;
+        return $selector;
     }
 
     private function parseCompoundSelector(): ?CompoundSelector
@@ -150,7 +148,8 @@ final class SelectorParser
             if (
                 $tt === TokenTypes::HASH
                 || $tt === TokenTypes::COLON
-                || ($tt === TokenTypes::DELIM && ($token->value === '.' || $token->value === '['))
+                || $tt === TokenTypes::LBRACK
+                || ($tt === TokenTypes::DELIM && $token->value === '.')
             ) {
                 $selectors[] = $this->parseSubclassSelector();
             } else {
@@ -178,7 +177,7 @@ final class SelectorParser
         // <type-selector> = <wq-name> | <ns-prefix>? '*'
         if ($qualifiedName = $this->parseQualifiedName()) {
             [$prefix, $tagName] = $qualifiedName;
-            return new TypeSelector($prefix, $tagName);
+            return new TypeSelector($tagName, $prefix);
         }
         $prefix = $this->parseNamespacePrefix();
         $token = $this->tokenStream->current();
@@ -187,7 +186,7 @@ final class SelectorParser
             if ($prefix === '*') {
                 return new UniversalSelector();
             }
-            return new TypeSelector($prefix, '*');
+            return new TypeSelector('*', $prefix);
         }
 
         return new UniversalSelector();
@@ -206,18 +205,18 @@ final class SelectorParser
         return null;
     }
 
-    private function parseNamespacePrefix(): string
+    private function parseNamespacePrefix(): ?string
     {
         // <ns-prefix> = [ <ident-token> | '*' ]? '|'
-        $prefix = '*';
         $token = $this->tokenStream->current();
         if ($token->type === TokenTypes::DELIM && $token->value === '|') {
             $this->tokenStream->consume();
-            return $prefix;
+            return null;
         }
 
-        $nextToken = $this->tokenStream->lookahead();
-        if ($nextToken->type === TokenTypes::DELIM && $nextToken->value === '|') {
+        $la = $this->tokenStream->lookahead();
+        if ($la->type === TokenTypes::DELIM && $la->value === '|') {
+            $la2 = $this->tokenStream->lookahead(2);
             if ($token->type === TokenTypes::DELIM && $token->value === '*') {
                 $this->tokenStream->consume(2);
                 return '*';
@@ -228,7 +227,7 @@ final class SelectorParser
             }
         }
 
-        return $prefix;
+        return '*';
     }
 
     private function parseSubclassSelector(): SimpleSelector
@@ -265,6 +264,8 @@ final class SelectorParser
         // | '[' <wq-name> <attr-matcher> [ <string-token> | <ident-token> ] <attr-modifier>? ']'
         $this->tokenStream->eat(TokenTypes::LBRACK);
         $this->tokenStream->skipWhitespace();
+        $this->isParsingAttribute = true;
+
         $qualifiedName = $this->parseQualifiedName();
         if (!$qualifiedName) {
             // TODO: parse error
@@ -282,12 +283,14 @@ final class SelectorParser
         $token = $this->tokenStream->consumeAndSkipWhitespace();
         $forceCase = null;
         if ($token->type === TokenTypes::IDENT) {
-            if ($token->value === 'i' || $token->value === 's') {
+            if (strcasecmp($token->value,'i') === 0 || strcasecmp($token->value, 's') === 0) {
                 $forceCase = $token->value;
                 $this->tokenStream->consumeAndSkipWhitespace();
             }
         }
         $this->tokenStream->eat(TokenTypes::RBRACK);
+        $this->isParsingAttribute = false;
+
         return new AttributeSelector($attribute, $prefix, $operator, $value, $forceCase);
     }
 

@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Css\Selectors\Node;
+namespace Souplette\Css\Selectors\Node;
 
-use JoliPotage\Css\Syntax\SyntaxNode;
+use Souplette\Css\Syntax\SyntaxNode;
 
 abstract class Selector extends SyntaxNode
 {

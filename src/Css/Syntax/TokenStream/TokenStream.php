@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Css\Syntax\TokenStream;
+namespace Souplette\Css\Syntax\TokenStream;
 
-use JoliPotage\Css\Syntax\Tokenizer\Token;
-use JoliPotage\Css\Syntax\Tokenizer\Tokenizer;
+use Souplette\Css\Syntax\Tokenizer\Token;
+use Souplette\Css\Syntax\Tokenizer\Tokenizer;
 
 final class TokenStream extends AbstractTokenStream
 {
@@ -32,8 +32,10 @@ final class TokenStream extends AbstractTokenStream
 
     public function lookahead(int $offset = 1): Token
     {
-        // TODO: should we throw when $offset > $lookaheadBufferSize ?
-        $bufferOffset = ($this->position + $offset - 1) % $this->lookaheadBufferSize;
+        if ($offset >= $this->lookaheadBufferSize) {
+            throw new \OutOfBoundsException('Lookahead attempt past the lookahead buffer size.');
+        }
+        $bufferOffset = ($this->position + $offset /*- 1*/) % $this->lookaheadBufferSize;
         return $this->lookaheadBuffer[$bufferOffset];
     }
 

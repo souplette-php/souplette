@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Codegen;
+namespace Souplette\Codegen;
 
 final class EntityLookupGenerator extends AbstractCodeGenerator
 {

@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Dom\Traits;
+namespace Souplette\Html\Dom\Traits;
 
 use DOMElement;
 use DOMNode;
-use JoliPotage\Html\Dom\DomIdioms;
+use Souplette\Html\Dom\DomIdioms;
 
 trait ParentNodeTrait
 {

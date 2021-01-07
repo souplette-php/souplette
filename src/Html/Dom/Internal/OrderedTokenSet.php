@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Dom\Internal;
+namespace Souplette\Html\Dom\Internal;
 
 use JetBrains\PhpStorm\Pure;
 

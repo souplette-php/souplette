@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Css\Selectors\Node;
+namespace Souplette\Css\Selectors\Node;
 
 class PseudoClassSelector extends SimpleSelector
 {

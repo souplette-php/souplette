@@ -1,8 +1,8 @@
 #!/usr/bin/env php
 <?php
 
-use JoliPotage\Tests\Html5Lib\JsonFile;
-use JoliPotage\Html\Parser\Tokenizer\Tokenizer;
+use Souplette\Tests\Html5Lib\JsonFile;
+use Souplette\Html\Parser\Tokenizer\Tokenizer;
 
 require __DIR__.'/../vendor/autoload.php';
 

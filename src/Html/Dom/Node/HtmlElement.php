@@ -1,20 +1,20 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Dom\Node;
+namespace Souplette\Html\Dom\Node;
 
 use DOMNodeList;
-use JoliPotage\Html\Dom\Api\ChildNodeInterface;
-use JoliPotage\Html\Dom\Api\HtmlElementInterface;
-use JoliPotage\Html\Dom\Api\HtmlNodeInterface;
-use JoliPotage\Html\Dom\Api\ParentNodeInterface;
-use JoliPotage\Html\Dom\DomIdioms;
-use JoliPotage\Html\Dom\PropertyMaps;
-use JoliPotage\Html\Dom\TokenList;
-use JoliPotage\Html\Dom\Traits\ChildNodeTrait;
-use JoliPotage\Html\Dom\Traits\HtmlNodeTrait;
-use JoliPotage\Html\Dom\Traits\ParentNodeTrait;
-use JoliPotage\Html\Parser\Parser;
-use JoliPotage\Html\Serializer\Serializer;
+use Souplette\Html\Dom\Api\ChildNodeInterface;
+use Souplette\Html\Dom\Api\HtmlElementInterface;
+use Souplette\Html\Dom\Api\HtmlNodeInterface;
+use Souplette\Html\Dom\Api\ParentNodeInterface;
+use Souplette\Html\Dom\DomIdioms;
+use Souplette\Html\Dom\PropertyMaps;
+use Souplette\Html\Dom\TokenList;
+use Souplette\Html\Dom\Traits\ChildNodeTrait;
+use Souplette\Html\Dom\Traits\HtmlNodeTrait;
+use Souplette\Html\Dom\Traits\ParentNodeTrait;
+use Souplette\Html\Parser\Parser;
+use Souplette\Html\Serializer\Serializer;
 
 class HtmlElement extends \DOMElement implements
     HtmlNodeInterface,

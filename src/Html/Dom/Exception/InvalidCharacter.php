@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Dom\Exception;
+namespace Souplette\Html\Dom\Exception;
 
 use Throwable;
 

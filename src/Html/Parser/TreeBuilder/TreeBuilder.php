@@ -1,21 +1,21 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Parser\TreeBuilder;
+namespace Souplette\Html\Parser\TreeBuilder;
 
 use DOMDocument;
 use DOMElement;
 use DOMImplementation;
-use JoliPotage\Encoding\Encoding;
-use JoliPotage\Encoding\EncodingLookup;
-use JoliPotage\Encoding\Exception\EncodingChanged;
-use JoliPotage\Html\Dom\DocumentModes;
-use JoliPotage\Html\Namespaces;
-use JoliPotage\Html\Parser\Tokenizer\Token;
-use JoliPotage\Html\Parser\Tokenizer\Tokenizer;
-use JoliPotage\Html\Parser\Tokenizer\TokenizerStates;
-use JoliPotage\Html\Parser\Tokenizer\TokenTypes;
-use JoliPotage\Html\Parser\TreeBuilder\RuleSet\InForeignContent;
-use JoliPotage\Xml\XmlNameEscaper;
+use Souplette\Encoding\Encoding;
+use Souplette\Encoding\EncodingLookup;
+use Souplette\Encoding\Exception\EncodingChanged;
+use Souplette\Html\Dom\DocumentModes;
+use Souplette\Html\Namespaces;
+use Souplette\Html\Parser\Tokenizer\Token;
+use Souplette\Html\Parser\Tokenizer\Tokenizer;
+use Souplette\Html\Parser\Tokenizer\TokenizerStates;
+use Souplette\Html\Parser\Tokenizer\TokenTypes;
+use Souplette\Html\Parser\TreeBuilder\RuleSet\InForeignContent;
+use Souplette\Xml\XmlNameEscaper;
 use SplStack;
 
 final class TreeBuilder
@@ -275,6 +275,7 @@ final class TreeBuilder
             $adjustedCurrentNode = $this->getAdjustedCurrentNode();
             $this->tokenizer->allowCdata = $adjustedCurrentNode
                 && $adjustedCurrentNode->namespaceURI !== Namespaces::HTML
+                // NOTE: I can't remember why these two lines were here, but the tests pass without them, so...
                 //&& !Elements::isHtmlIntegrationPoint($adjustedCurrentNode)
                 //&& !Elements::isMathMlTextIntegrationPoint($adjustedCurrentNode)
             ;

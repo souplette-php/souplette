@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Parser;
+namespace Souplette\Html\Parser;
 
 use JetBrains\PhpStorm\Pure;
-use JoliPotage\Encoding\Encoding;
-use JoliPotage\Encoding\EncodingLookup;
-use JoliPotage\Encoding\Exception\EncodingChanged;
-use JoliPotage\Encoding\Utf8Converter;
-use JoliPotage\Html\Dom\HtmlDomImplementation;
-use JoliPotage\Html\Parser\Tokenizer\Tokenizer;
-use JoliPotage\Html\Parser\TreeBuilder\TreeBuilder;
+use Souplette\Encoding\Encoding;
+use Souplette\Encoding\EncodingLookup;
+use Souplette\Encoding\Exception\EncodingChanged;
+use Souplette\Encoding\Utf8Converter;
+use Souplette\Html\Dom\HtmlDomImplementation;
+use Souplette\Html\Parser\Tokenizer\Tokenizer;
+use Souplette\Html\Parser\TreeBuilder\TreeBuilder;
 
 final class Parser
 {

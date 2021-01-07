@@ -1,18 +1,18 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Tests\Css\Syntax;
+namespace Souplette\Tests\Css\Syntax;
 
-use JoliPotage\Css\Syntax\Tokenizer\Token\AtKeyword;
-use JoliPotage\Css\Syntax\Tokenizer\Token\Comma;
-use JoliPotage\Css\Syntax\Tokenizer\Token\Delimiter;
-use JoliPotage\Css\Syntax\Tokenizer\Token\Dimension;
-use JoliPotage\Css\Syntax\Tokenizer\Token\Hash;
-use JoliPotage\Css\Syntax\Tokenizer\Token\Identifier;
-use JoliPotage\Css\Syntax\Tokenizer\Token\Number;
-use JoliPotage\Css\Syntax\Tokenizer\Token\Percentage;
-use JoliPotage\Css\Syntax\Tokenizer\Token\Str;
-use JoliPotage\Css\Syntax\Tokenizer\Token\Whitespace;
-use JoliPotage\Css\Syntax\Tokenizer\Tokenizer;
+use Souplette\Css\Syntax\Tokenizer\Token\AtKeyword;
+use Souplette\Css\Syntax\Tokenizer\Token\Comma;
+use Souplette\Css\Syntax\Tokenizer\Token\Delimiter;
+use Souplette\Css\Syntax\Tokenizer\Token\Dimension;
+use Souplette\Css\Syntax\Tokenizer\Token\Hash;
+use Souplette\Css\Syntax\Tokenizer\Token\Identifier;
+use Souplette\Css\Syntax\Tokenizer\Token\Number;
+use Souplette\Css\Syntax\Tokenizer\Token\Percentage;
+use Souplette\Css\Syntax\Tokenizer\Token\Str;
+use Souplette\Css\Syntax\Tokenizer\Token\Whitespace;
+use Souplette\Css\Syntax\Tokenizer\Tokenizer;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 

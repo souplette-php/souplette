@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Tests\Html\Dom;
+namespace Souplette\Tests\Html\Dom;
 
-use JoliPotage\Html\Dom\Api\ParentNodeInterface;
-use JoliPotage\Tests\Html\DomBuilder;
+use Souplette\Html\Dom\Api\ParentNodeInterface;
+use Souplette\Tests\Html\DomBuilder;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 

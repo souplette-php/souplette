@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Css\Syntax\Tokenizer;
+namespace Souplette\Css\Syntax\Tokenizer;
 
-use JoliPotage\Css\Syntax\SyntaxNode;
+use Souplette\Css\Syntax\SyntaxNode;
 
 abstract class Token extends SyntaxNode
 {

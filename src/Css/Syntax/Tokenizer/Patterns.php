@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Css\Syntax\Tokenizer;
+namespace Souplette\Css\Syntax\Tokenizer;
 
 /**
  * @see https://www.w3.org/TR/css-syntax-3/index.html#tokenizer-definitions

@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Tests\Html\Parser\TreeBuilder;
+namespace Souplette\Tests\Html\Parser\TreeBuilder;
 
-use JoliPotage\Html\Namespaces;
-use JoliPotage\Html\Parser\TreeBuilder\OpenElementsStack;
+use Souplette\Html\Namespaces;
+use Souplette\Html\Parser\TreeBuilder\OpenElementsStack;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 

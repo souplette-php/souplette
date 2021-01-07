@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Parser;
+namespace Souplette\Html\Parser;
 
-use JoliPotage\Encoding\EncodingLookup;
-use JoliPotage\Html\Parser\Tokenizer\Token\StartTag;
-use JoliPotage\Html\Parser\Tokenizer\Tokenizer;
-use JoliPotage\Html\Parser\Tokenizer\TokenizerStates;
-use JoliPotage\Html\Parser\Tokenizer\TokenTypes;
+use Souplette\Encoding\EncodingLookup;
+use Souplette\Html\Parser\Tokenizer\Token\StartTag;
+use Souplette\Html\Parser\Tokenizer\Tokenizer;
+use Souplette\Html\Parser\Tokenizer\TokenizerStates;
+use Souplette\Html\Parser\Tokenizer\TokenTypes;
 
 final class MetaCharsetParser
 {

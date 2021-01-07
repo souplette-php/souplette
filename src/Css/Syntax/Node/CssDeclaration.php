@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Css\Syntax\Node;
+namespace Souplette\Css\Syntax\Node;
 
 final class CssDeclaration extends CssRule
 {

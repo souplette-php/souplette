@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Encoding\Exception;
+namespace Souplette\Encoding\Exception;
 
 final class ConversionException extends EncodingException
 {

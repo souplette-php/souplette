@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Dom\Api;
+namespace Souplette\Html\Dom\Api;
 
 use DOMElement;
 

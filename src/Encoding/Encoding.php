@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Encoding;
+namespace Souplette\Encoding;
 
-use JoliPotage\Encoding\Exception\UnsupportedEncoding;
+use Souplette\Encoding\Exception\UnsupportedEncoding;
 
 final class Encoding
 {

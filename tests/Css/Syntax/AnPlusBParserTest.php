@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Tests\Css\Syntax;
+namespace Souplette\Tests\Css\Syntax;
 
-use JoliPotage\Css\Syntax\AnPlusBParser;
-use JoliPotage\Css\Syntax\AnPlusBStringParser;
-use JoliPotage\Css\Syntax\Exception\ParseError;
-use JoliPotage\Css\Syntax\Node\AnPlusB;
-use JoliPotage\Css\Syntax\Tokenizer\Tokenizer;
-use JoliPotage\Css\Syntax\TokenStream\TokenStream;
+use Souplette\Css\Syntax\AnPlusBParser;
+use Souplette\Css\Syntax\AnPlusBStringParser;
+use Souplette\Css\Syntax\Exception\ParseError;
+use Souplette\Css\Syntax\Node\AnPlusB;
+use Souplette\Css\Syntax\Tokenizer\Tokenizer;
+use Souplette\Css\Syntax\TokenStream\TokenStream;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 

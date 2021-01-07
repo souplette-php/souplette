@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Tests\Html5Lib;
+namespace Souplette\Tests\Html5Lib;
 
 abstract class TestFile implements \ArrayAccess, \IteratorAggregate
 {

@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Tests\Html\Serializer;
+namespace Souplette\Tests\Html\Serializer;
 
-use JoliPotage\Html\Serializer\Serializer;
+use Souplette\Html\Serializer\Serializer;
 use PHPUnit\Framework\Assert;
 
 final class SerializerAssert

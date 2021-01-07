@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Parser\Tokenizer;
+namespace Souplette\Html\Parser\Tokenizer;
 
 final class EntitySearch extends EntitySearchNode
 {

@@ -1,5 +1,5 @@
 {
-  "name": "ju1ius/joli-potage",
+  "name": "ju1ius/souplette",
   "description": "Standard compliant HTML parser.",
   "type": "library",
   "version": "0.0.1",
@@ -12,13 +12,13 @@
   ],
   "autoload": {
     "psr-4": {
-      "JoliPotage\\": "src"
+      "Souplette\\": "src"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "JoliPotage\\Tests\\": "tests",
-      "JoliPotage\\Codegen\\": "codegen"
+      "Souplette\\Tests\\": "tests",
+      "Souplette\\Codegen\\": "codegen"
     }
   },
   "require": {

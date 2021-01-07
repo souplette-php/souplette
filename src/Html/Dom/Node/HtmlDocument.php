@@ -1,21 +1,21 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Dom\Node;
+namespace Souplette\Html\Dom\Node;
 
 use DOMComment;
 use DOMElement;
 use DOMNodeList;
 use DOMText;
-use JoliPotage\Encoding\EncodingLookup;
-use JoliPotage\Html\Dom\Api\HtmlDocumentInterface;
-use JoliPotage\Html\Dom\Api\ParentNodeInterface;
-use JoliPotage\Html\Dom\DocumentModes;
-use JoliPotage\Html\Dom\DomIdioms;
-use JoliPotage\Html\Dom\HtmlElementClasses;
-use JoliPotage\Html\Dom\PropertyMaps;
-use JoliPotage\Html\Dom\Traits\HtmlNodeTrait;
-use JoliPotage\Html\Dom\Traits\ParentNodeTrait;
-use JoliPotage\Html\Namespaces;
+use Souplette\Encoding\EncodingLookup;
+use Souplette\Html\Dom\Api\HtmlDocumentInterface;
+use Souplette\Html\Dom\Api\ParentNodeInterface;
+use Souplette\Html\Dom\DocumentModes;
+use Souplette\Html\Dom\DomIdioms;
+use Souplette\Html\Dom\HtmlElementClasses;
+use Souplette\Html\Dom\PropertyMaps;
+use Souplette\Html\Dom\Traits\HtmlNodeTrait;
+use Souplette\Html\Dom\Traits\ParentNodeTrait;
+use Souplette\Html\Namespaces;
 
 final class HtmlDocument extends \DOMDocument implements
     HtmlDocumentInterface,

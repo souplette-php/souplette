@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Parser\TreeBuilder;
+namespace Souplette\Html\Parser\TreeBuilder;
 
-use JoliPotage\Html\Namespaces;
+use Souplette\Html\Namespaces;
 
 final class OpenElementsStack extends Stack
 {

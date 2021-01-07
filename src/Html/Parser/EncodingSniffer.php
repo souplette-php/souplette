@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Parser;
+namespace Souplette\Html\Parser;
 
 use JetBrains\PhpStorm\Pure;
-use JoliPotage\Encoding\EncodingLookup;
-use JoliPotage\Html\Parser\Tokenizer\Tokenizer;
+use Souplette\Encoding\EncodingLookup;
+use Souplette\Html\Parser\Tokenizer\Tokenizer;
 
 final class EncodingSniffer
 {

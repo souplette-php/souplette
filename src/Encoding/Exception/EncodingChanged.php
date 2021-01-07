@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Encoding\Exception;
+namespace Souplette\Encoding\Exception;
 
-use JoliPotage\Encoding\Encoding;
+use Souplette\Encoding\Encoding;
 
 final class EncodingChanged extends \RuntimeException
 {

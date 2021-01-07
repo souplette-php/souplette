@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Codegen\Twig;
+namespace Souplette\Codegen\Twig;
 
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;

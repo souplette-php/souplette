@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Tests\Html\Parser\Tokenizer;
+namespace Souplette\Tests\Html\Parser\Tokenizer;
 
-use JoliPotage\Html\Parser\Tokenizer\Token;
-use JoliPotage\Html\Parser\Tokenizer\Tokenizer;
-use JoliPotage\Html\Parser\Tokenizer\TokenizerStates;
+use Souplette\Html\Parser\Tokenizer\Token;
+use Souplette\Html\Parser\Tokenizer\Tokenizer;
+use Souplette\Html\Parser\Tokenizer\TokenizerStates;
 use PHPUnit\Framework\Assert;
 
 final class TokenizerAssert

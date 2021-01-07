@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Tests\Html5Lib\TreeConstruction;
+namespace Souplette\Tests\Html5Lib\TreeConstruction;
 
-use JoliPotage\Html\Namespaces;
+use Souplette\Html\Namespaces;
 
 final class TreeConstructionTestDTO
 {

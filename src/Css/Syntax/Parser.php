@@ -1,18 +1,18 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Css\Syntax;
+namespace Souplette\Css\Syntax;
 
-use JoliPotage\Css\Syntax\Node\CssAtRule;
-use JoliPotage\Css\Syntax\Node\CssDeclaration;
-use JoliPotage\Css\Syntax\Node\CssFunction;
-use JoliPotage\Css\Syntax\Node\CssQualifiedRule;
-use JoliPotage\Css\Syntax\Node\CssRule;
-use JoliPotage\Css\Syntax\Node\CssSimpleBlock;
-use JoliPotage\Css\Syntax\Node\CssStylesheet;
-use JoliPotage\Css\Syntax\Tokenizer\Token;
-use JoliPotage\Css\Syntax\Tokenizer\Tokenizer;
-use JoliPotage\Css\Syntax\Tokenizer\TokenTypes;
-use JoliPotage\Css\Syntax\TokenStream\TokenStream;
+use Souplette\Css\Syntax\Node\CssAtRule;
+use Souplette\Css\Syntax\Node\CssDeclaration;
+use Souplette\Css\Syntax\Node\CssFunction;
+use Souplette\Css\Syntax\Node\CssQualifiedRule;
+use Souplette\Css\Syntax\Node\CssRule;
+use Souplette\Css\Syntax\Node\CssSimpleBlock;
+use Souplette\Css\Syntax\Node\CssStylesheet;
+use Souplette\Css\Syntax\Tokenizer\Token;
+use Souplette\Css\Syntax\Tokenizer\Tokenizer;
+use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\TokenStream\TokenStream;
 
 final class Parser
 {

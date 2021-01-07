@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Codegen;
+namespace Souplette\Codegen;
 
-use JoliPotage\Codegen\Twig\TokenizerExtension;
-use JoliPotage\Html\Parser\Tokenizer\TokenizerStates;
+use Souplette\Codegen\Twig\TokenizerExtension;
+use Souplette\Html\Parser\Tokenizer\TokenizerStates;
 use Twig\Environment;
 
 final class TokenizerGenerator extends AbstractCodeGenerator

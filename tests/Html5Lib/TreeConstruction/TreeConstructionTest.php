@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Tests\Html5Lib\TreeConstruction;
+namespace Souplette\Tests\Html5Lib\TreeConstruction;
 
-use JoliPotage\Tests\Html5Lib\DataFile;
-use JoliPotage\Tests\ResourceCollector;
+use Souplette\Tests\Html5Lib\DataFile;
+use Souplette\Tests\ResourceCollector;
 use PHPUnit\Framework\TestCase;
 
 class TreeConstructionTest extends TestCase

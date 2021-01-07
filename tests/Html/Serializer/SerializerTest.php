@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Tests\Html\Serializer;
+namespace Souplette\Tests\Html\Serializer;
 
-use JoliPotage\Html\Namespaces;
-use JoliPotage\Tests\Html\DomBuilder;
+use Souplette\Html\Namespaces;
+use Souplette\Tests\Html\DomBuilder;
 use PHPUnit\Framework\TestCase;
 
 final class SerializerTest extends TestCase

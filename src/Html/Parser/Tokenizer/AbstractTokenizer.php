@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Parser\Tokenizer;
+namespace Souplette\Html\Parser\Tokenizer;
 
-use JoliPotage\Html\Parser\Tokenizer\Token\Character;
-use JoliPotage\Html\Parser\Tokenizer\Token\EndTag;
-use JoliPotage\Html\Parser\Tokenizer\Token\EOF;
-use JoliPotage\Html\Parser\Tokenizer\Token\StartTag;
+use Souplette\Html\Parser\Tokenizer\Token\Character;
+use Souplette\Html\Parser\Tokenizer\Token\EndTag;
+use Souplette\Html\Parser\Tokenizer\Token\EOF;
+use Souplette\Html\Parser\Tokenizer\Token\StartTag;
 use SplQueue;
 
 abstract class AbstractTokenizer

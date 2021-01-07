@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Css\Syntax\Exception;
+namespace Souplette\Css\Syntax\Exception;
 
-use JoliPotage\Css\Syntax\Tokenizer\Token;
-use JoliPotage\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\Tokenizer\Token;
+use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 final class UnexpectedToken extends ParseError
 {

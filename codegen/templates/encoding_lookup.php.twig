@@ -3,7 +3,7 @@
  * This file was automatically generated.
  * All modifications will be lost.
  */
-namespace JoliPotage\Encoding;
+namespace Souplette\Encoding;
 
 /**
  * @see https://encoding.spec.whatwg.org/encodings.json

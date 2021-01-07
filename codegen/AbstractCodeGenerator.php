@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Codegen;
+namespace Souplette\Codegen;
 
-use JoliPotage\Codegen\Twig\CodeGeneratorExtension;
+use Souplette\Codegen\Twig\CodeGeneratorExtension;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 

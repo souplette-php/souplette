@@ -1,25 +1,25 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Css\Syntax\Tokenizer;
+namespace Souplette\Css\Syntax\Tokenizer;
 
-use JoliPotage\Css\Syntax\Tokenizer\Token\AtKeyword;
-use JoliPotage\Css\Syntax\Tokenizer\Token\BadString;
-use JoliPotage\Css\Syntax\Tokenizer\Token\BadUrl;
-use JoliPotage\Css\Syntax\Tokenizer\Token\CDC;
-use JoliPotage\Css\Syntax\Tokenizer\Token\CDO;
-use JoliPotage\Css\Syntax\Tokenizer\Token\Delimiter;
-use JoliPotage\Css\Syntax\Tokenizer\Token\Dimension;
-use JoliPotage\Css\Syntax\Tokenizer\Token\EOF;
-use JoliPotage\Css\Syntax\Tokenizer\Token\Functional;
-use JoliPotage\Css\Syntax\Tokenizer\Token\Hash;
-use JoliPotage\Css\Syntax\Tokenizer\Token\Identifier;
-use JoliPotage\Css\Syntax\Tokenizer\Token\Number;
-use JoliPotage\Css\Syntax\Tokenizer\Token\NumericToken;
-use JoliPotage\Css\Syntax\Tokenizer\Token\Percentage;
-use JoliPotage\Css\Syntax\Tokenizer\Token\SingleCharToken;
-use JoliPotage\Css\Syntax\Tokenizer\Token\Str;
-use JoliPotage\Css\Syntax\Tokenizer\Token\Url;
-use JoliPotage\Css\Syntax\Tokenizer\Token\Whitespace;
+use Souplette\Css\Syntax\Tokenizer\Token\AtKeyword;
+use Souplette\Css\Syntax\Tokenizer\Token\BadString;
+use Souplette\Css\Syntax\Tokenizer\Token\BadUrl;
+use Souplette\Css\Syntax\Tokenizer\Token\CDC;
+use Souplette\Css\Syntax\Tokenizer\Token\CDO;
+use Souplette\Css\Syntax\Tokenizer\Token\Delimiter;
+use Souplette\Css\Syntax\Tokenizer\Token\Dimension;
+use Souplette\Css\Syntax\Tokenizer\Token\EOF;
+use Souplette\Css\Syntax\Tokenizer\Token\Functional;
+use Souplette\Css\Syntax\Tokenizer\Token\Hash;
+use Souplette\Css\Syntax\Tokenizer\Token\Identifier;
+use Souplette\Css\Syntax\Tokenizer\Token\Number;
+use Souplette\Css\Syntax\Tokenizer\Token\NumericToken;
+use Souplette\Css\Syntax\Tokenizer\Token\Percentage;
+use Souplette\Css\Syntax\Tokenizer\Token\SingleCharToken;
+use Souplette\Css\Syntax\Tokenizer\Token\Str;
+use Souplette\Css\Syntax\Tokenizer\Token\Url;
+use Souplette\Css\Syntax\Tokenizer\Token\Whitespace;
 
 /**
  * @see https://www.w3.org/TR/css-syntax-3/#tokenization

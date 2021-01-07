@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Dom;
+namespace Souplette\Html\Dom;
 
 use DOMDocumentType;
-use JoliPotage\Html\Dom\Node\HtmlDocument;
+use Souplette\Html\Dom\Node\HtmlDocument;
 
 final class HtmlDomImplementation extends \DOMImplementation
 {

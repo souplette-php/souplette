@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Dom;
+namespace Souplette\Html\Dom;
 
-use JoliPotage\Html\Dom\Api\HtmlDocumentInterface;
-use JoliPotage\Html\Dom\Api\HtmlElementInterface;
-use JoliPotage\Html\Dom\Api\HtmlNodeInterface;
-use JoliPotage\Html\Dom\Api\ParentNodeInterface;
+use Souplette\Html\Dom\Api\HtmlDocumentInterface;
+use Souplette\Html\Dom\Api\HtmlElementInterface;
+use Souplette\Html\Dom\Api\HtmlNodeInterface;
+use Souplette\Html\Dom\Api\ParentNodeInterface;
 
 final class PropertyMaps
 {

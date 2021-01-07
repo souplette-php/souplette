@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Css\Syntax;
+namespace Souplette\Css\Syntax;
 
-use JoliPotage\Css\Syntax\Exception\ParseError;
-use JoliPotage\Css\Syntax\Exception\UnexpectedValue;
-use JoliPotage\Css\Syntax\Node\UnicodeRange;
-use JoliPotage\Css\Syntax\Tokenizer\TokenTypes;
-use JoliPotage\Css\Syntax\TokenStream\TokenStreamInterface;
+use Souplette\Css\Syntax\Exception\ParseError;
+use Souplette\Css\Syntax\Exception\UnexpectedValue;
+use Souplette\Css\Syntax\Node\UnicodeRange;
+use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\TokenStream\TokenStreamInterface;
 
 /**
  * @see https://www.w3.org/TR/css-syntax-3/#urange

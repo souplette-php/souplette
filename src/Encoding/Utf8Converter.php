@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Encoding;
+namespace Souplette\Encoding;
 
-use JoliPotage\Encoding\Exception\ConversionException;
-use JoliPotage\Encoding\Exception\UnsupportedEncoding;
+use Souplette\Encoding\Exception\ConversionException;
+use Souplette\Encoding\Exception\UnsupportedEncoding;
 use UConverter;
 
 final class Utf8Converter

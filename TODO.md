@@ -54,6 +54,7 @@ to retrieve the information. We should investigate that.
     - [ ] Nodes
     - [ ] XPath converter
     - [ ] Query executor
+    - [ ] Correctly handle [namespaces](https://drafts.csswg.org/selectors/index.html#type-nmsp)
 - [ ] CSSOM
 - [ ] CSS Values and Units Module Level 4
 - [ ] Media Queries Module

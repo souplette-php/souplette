@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Css\Syntax\Tokenizer;
+namespace Souplette\Css\Syntax\Tokenizer;
 
 final class BalancedPairs
 {

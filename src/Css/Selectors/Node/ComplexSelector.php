@@ -1,41 +1,23 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Css\Selectors\Node;
+namespace Souplette\Css\Selectors\Node;
 
-final class ComplexSelector extends Selector implements \IteratorAggregate, \Countable
+final class ComplexSelector extends Selector
 {
-    /**
-     * @var CompoundSelector[]
-     */
-    private array $selectors;
+    private Selector $lhs;
+    private ?Selector $rhs;
+    private ?string $combinator;
 
-    public function __construct()
+    public function __construct(Selector $lhs, ?string $combinator = null, ?Selector $rhs = null)
     {
-        $this->selectors = [];
-    }
-
-    public function add(?string $combinator, CompoundSelector $selector): void
-    {
-        $this->selectors[] = [$combinator, $selector];
-    }
-
-    public function getIterator()
-    {
-        return new \ArrayIterator($this->selectors);
-    }
-
-    public function count()
-    {
-        return count($this->selectors);
+        $this->lhs = $lhs;
+        $this->rhs = $rhs;
+        $this->combinator = $combinator;
     }
 
     public function __toString()
     {
-        $s = '';
-        foreach ($this->selectors as [$combinator, $selector]) {
-            $s .= "{$combinator}{$selector}";
-        }
-
-        return $s;
+        $combinator = $this->combinator === Combinators::DESCENDANT ? ' ' : " {$this->combinator} ";
+        return "{$this->lhs}{$combinator}{$this->rhs}";
     }
 }

@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Css\Syntax\Node;
+namespace Souplette\Css\Syntax\Node;
 
-use JoliPotage\Css\Syntax\SyntaxNode;
+use Souplette\Css\Syntax\SyntaxNode;
 
 abstract class CssValue extends SyntaxNode
 {

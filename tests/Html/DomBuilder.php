@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Tests\Html;
+namespace Souplette\Tests\Html;
 
-use JoliPotage\Html\Dom\Node\HtmlDocument;
-use JoliPotage\Html\Namespaces;
+use Souplette\Html\Dom\Node\HtmlDocument;
+use Souplette\Html\Namespaces;
 
 final class DomBuilder
 {

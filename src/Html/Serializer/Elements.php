@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Serializer;
+namespace Souplette\Html\Serializer;
 
-use JoliPotage\Html\Parser\TreeBuilder\Elements as TreeBuilderElements;
+use Souplette\Html\Parser\TreeBuilder\Elements as TreeBuilderElements;
 
 final class Elements
 {

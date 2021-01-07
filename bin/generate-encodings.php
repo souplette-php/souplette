@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-use JoliPotage\Codegen\EncodingLookupGenerator;
+use Souplette\Codegen\EncodingLookupGenerator;
 
 require_once __DIR__.'/../vendor/autoload.php';
 

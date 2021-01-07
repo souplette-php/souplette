@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Css\Selectors\Node\Functional;
+namespace Souplette\Css\Selectors\Node\Functional;
 
-use JoliPotage\Css\Selectors\Node\FunctionalSelector;
-use JoliPotage\Css\Syntax\Node\AnPlusB;
+use Souplette\Css\Selectors\Node\FunctionalSelector;
+use Souplette\Css\Syntax\Node\AnPlusB;
 
 final class NthOfType extends FunctionalSelector
 {

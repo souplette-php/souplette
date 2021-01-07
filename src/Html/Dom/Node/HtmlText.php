@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Dom\Node;
+namespace Souplette\Html\Dom\Node;
 
-use JoliPotage\Html\Dom\Api\ChildNodeInterface;
-use JoliPotage\Html\Dom\Api\HtmlNodeInterface;
-use JoliPotage\Html\Dom\PropertyMaps;
-use JoliPotage\Html\Dom\Traits\ChildNodeTrait;
-use JoliPotage\Html\Dom\Traits\HtmlNodeTrait;
+use Souplette\Html\Dom\Api\ChildNodeInterface;
+use Souplette\Html\Dom\Api\HtmlNodeInterface;
+use Souplette\Html\Dom\PropertyMaps;
+use Souplette\Html\Dom\Traits\ChildNodeTrait;
+use Souplette\Html\Dom\Traits\HtmlNodeTrait;
 
 final class HtmlText extends \DOMText implements
     HtmlNodeInterface,

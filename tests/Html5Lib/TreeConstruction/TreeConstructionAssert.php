@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Tests\Html5Lib\TreeConstruction;
+namespace Souplette\Tests\Html5Lib\TreeConstruction;
 
-use JoliPotage\Html\Parser\Parser;
+use Souplette\Html\Parser\Parser;
 use PHPUnit\Framework\Assert;
 
 final class TreeConstructionAssert

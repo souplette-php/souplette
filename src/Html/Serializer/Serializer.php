@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Serializer;
+namespace Souplette\Html\Serializer;
 
-use JoliPotage\Html\Namespaces;
-use JoliPotage\Xml\XmlNameEscaper;
+use Souplette\Html\Namespaces;
+use Souplette\Xml\XmlNameEscaper;
 
 /**
  * @see https://html.spec.whatwg.org/multipage/parsing.html#serialising-html-fragments

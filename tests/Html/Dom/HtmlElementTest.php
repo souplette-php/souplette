@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Tests\Html\Dom;
+namespace Souplette\Tests\Html\Dom;
 
-use JoliPotage\Html\Dom\Node\HtmlComment;
-use JoliPotage\Html\Dom\Node\HtmlElement;
-use JoliPotage\Html\Dom\Node\HtmlText;
-use JoliPotage\Tests\Html\DomBuilder;
+use Souplette\Html\Dom\Node\HtmlComment;
+use Souplette\Html\Dom\Node\HtmlElement;
+use Souplette\Html\Dom\Node\HtmlText;
+use Souplette\Tests\Html\DomBuilder;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 

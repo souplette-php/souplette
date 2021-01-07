@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Dom;
+namespace Souplette\Html\Dom;
 
-use JoliPotage\Html\Dom\Exception\InvalidCharacter;
-use JoliPotage\Html\Dom\Exception\SyntaxError;
-use JoliPotage\Html\Dom\Internal\OrderedTokenSet;
-use JoliPotage\Html\Dom\Node\HtmlElement;
+use Souplette\Html\Dom\Exception\InvalidCharacter;
+use Souplette\Html\Dom\Exception\SyntaxError;
+use Souplette\Html\Dom\Internal\OrderedTokenSet;
+use Souplette\Html\Dom\Node\HtmlElement;
 use WeakReference;
 
 /**

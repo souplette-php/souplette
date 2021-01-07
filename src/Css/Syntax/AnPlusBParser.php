@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Css\Syntax;
+namespace Souplette\Css\Syntax;
 
-use JoliPotage\Css\Syntax\Exception\UnexpectedToken;
-use JoliPotage\Css\Syntax\Exception\UnexpectedValue;
-use JoliPotage\Css\Syntax\Node\AnPlusB;
-use JoliPotage\Css\Syntax\Tokenizer\Token\Delimiter;
-use JoliPotage\Css\Syntax\Tokenizer\Token\Dimension;
-use JoliPotage\Css\Syntax\Tokenizer\Token\Identifier;
-use JoliPotage\Css\Syntax\Tokenizer\Token\Number;
-use JoliPotage\Css\Syntax\Tokenizer\TokenTypes;
-use JoliPotage\Css\Syntax\TokenStream\TokenStreamInterface;
+use Souplette\Css\Syntax\Exception\UnexpectedToken;
+use Souplette\Css\Syntax\Exception\UnexpectedValue;
+use Souplette\Css\Syntax\Node\AnPlusB;
+use Souplette\Css\Syntax\Tokenizer\Token\Delimiter;
+use Souplette\Css\Syntax\Tokenizer\Token\Dimension;
+use Souplette\Css\Syntax\Tokenizer\Token\Identifier;
+use Souplette\Css\Syntax\Tokenizer\Token\Number;
+use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\TokenStream\TokenStreamInterface;
 
 /**
  * @see https://www.w3.org/TR/css-syntax-3/#anb-microsyntax

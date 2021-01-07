@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Dom\Api;
+namespace Souplette\Html\Dom\Api;
 
 use DOMNodeList;
-use JoliPotage\Html\Dom\TokenList;
+use Souplette\Html\Dom\TokenList;
 
 /**
  * @property string $id

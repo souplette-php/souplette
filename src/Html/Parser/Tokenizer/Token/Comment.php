@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Parser\Tokenizer\Token;
+namespace Souplette\Html\Parser\Tokenizer\Token;
 
-use JoliPotage\Html\Parser\Tokenizer\Token;
-use JoliPotage\Html\Parser\Tokenizer\TokenTypes;
+use Souplette\Html\Parser\Tokenizer\Token;
+use Souplette\Html\Parser\Tokenizer\TokenTypes;
 
 final class Comment extends Token
 {

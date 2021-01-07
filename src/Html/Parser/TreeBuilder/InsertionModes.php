@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Parser\TreeBuilder;
+namespace Souplette\Html\Parser\TreeBuilder;
 
 final class InsertionModes
 {

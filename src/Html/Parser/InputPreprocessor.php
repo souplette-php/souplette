@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Parser;
+namespace Souplette\Html\Parser;
 
 use JetBrains\PhpStorm\Pure;
 

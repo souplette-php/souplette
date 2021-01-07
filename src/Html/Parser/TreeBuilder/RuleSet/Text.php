@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Parser\TreeBuilder\RuleSet;
+namespace Souplette\Html\Parser\TreeBuilder\RuleSet;
 
-use JoliPotage\Html\Parser\Tokenizer\Token;
-use JoliPotage\Html\Parser\Tokenizer\TokenTypes;
-use JoliPotage\Html\Parser\TreeBuilder\RuleSet;
-use JoliPotage\Html\Parser\TreeBuilder\TreeBuilder;
+use Souplette\Html\Parser\Tokenizer\Token;
+use Souplette\Html\Parser\Tokenizer\TokenTypes;
+use Souplette\Html\Parser\TreeBuilder\RuleSet;
+use Souplette\Html\Parser\TreeBuilder\TreeBuilder;
 
 /**
  * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-incdata

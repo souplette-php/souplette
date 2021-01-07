@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-use JoliPotage\Codegen\EntityLookupGenerator;
+use Souplette\Codegen\EntityLookupGenerator;
 
 require_once __DIR__.'/../vendor/autoload.php';
 

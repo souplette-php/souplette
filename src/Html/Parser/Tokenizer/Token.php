@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Parser\Tokenizer;
+namespace Souplette\Html\Parser\Tokenizer;
 
-use JoliPotage\Html\Parser\Tokenizer\Token\Character;
-use JoliPotage\Html\Parser\Tokenizer\Token\Comment;
-use JoliPotage\Html\Parser\Tokenizer\Token\Doctype;
-use JoliPotage\Html\Parser\Tokenizer\Token\EndTag;
-use JoliPotage\Html\Parser\Tokenizer\Token\StartTag;
+use Souplette\Html\Parser\Tokenizer\Token\Character;
+use Souplette\Html\Parser\Tokenizer\Token\Comment;
+use Souplette\Html\Parser\Tokenizer\Token\Doctype;
+use Souplette\Html\Parser\Tokenizer\Token\EndTag;
+use Souplette\Html\Parser\Tokenizer\Token\StartTag;
 
 /**
  * Static constructor methods are to be used for tests only.

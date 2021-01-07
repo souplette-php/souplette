@@ -1,9 +1,9 @@
 #!/usr/bin/env php
 <?php
 
-use JoliPotage\Html\Parser\Parser;
-use JoliPotage\Tests\Html5Lib\DataFile;
-use JoliPotage\Tests\Html5Lib\Serializer;
+use Souplette\Html\Parser\Parser;
+use Souplette\Tests\Html5Lib\DataFile;
+use Souplette\Tests\Html5Lib\Serializer;
 
 require __DIR__.'/../vendor/autoload.php';
 

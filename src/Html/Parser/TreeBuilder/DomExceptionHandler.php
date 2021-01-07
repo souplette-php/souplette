@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Html\Parser\TreeBuilder;
+namespace Souplette\Html\Parser\TreeBuilder;
 
-use JoliPotage\Html\Dom\Exception\ErrorCodes;
-use JoliPotage\Html\Parser\Tokenizer\Token\Tag;
-use JoliPotage\Xml\XmlNameEscaper;
+use Souplette\Html\Dom\Exception\ErrorCodes;
+use Souplette\Html\Parser\Tokenizer\Token\Tag;
+use Souplette\Xml\XmlNameEscaper;
 
 final class DomExceptionHandler
 {

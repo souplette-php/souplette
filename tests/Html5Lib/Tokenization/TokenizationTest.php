@@ -1,14 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace JoliPotage\Tests\Html5Lib\Tokenization;
+namespace Souplette\Tests\Html5Lib\Tokenization;
 
-use JoliPotage\Html\Parser\InputPreprocessor;
-use JoliPotage\Html\Parser\Tokenizer\Token;
-use JoliPotage\Html\Parser\Tokenizer\Tokenizer;
-use JoliPotage\Html\Parser\Tokenizer\TokenizerStates;
-use JoliPotage\Html\Parser\Tokenizer\TokenTypes;
-use JoliPotage\Tests\Html5Lib\JsonFile;
-use JoliPotage\Tests\ResourceCollector;
+use Souplette\Html\Parser\InputPreprocessor;
+use Souplette\Html\Parser\Tokenizer\Token;
+use Souplette\Html\Parser\Tokenizer\Tokenizer;
+use Souplette\Html\Parser\Tokenizer\TokenizerStates;
+use Souplette\Html\Parser\Tokenizer\TokenTypes;
+use Souplette\Tests\Html5Lib\JsonFile;
+use Souplette\Tests\ResourceCollector;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 
