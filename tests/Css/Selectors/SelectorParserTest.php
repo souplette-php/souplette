@@ -39,51 +39,13 @@ final class SelectorParserTest extends TestCase
 
     public function parseSelectorListWithSimpleSelectorsProvider()
     {
-        yield 'namespaced element' => ['foo|bar', new TypeSelector('bar', 'foo')];
-        yield 'element in any namespace' => ['*|foo', new TypeSelector('foo', '*')];
-        yield 'any element in any namespace' => ['*|*', new UniversalSelector()];
-        yield 'element with no namespace' => ['|bar', new TypeSelector('bar', null)];
-        // FIXME: check this type selector `|*`
-        //yield 'any element with no namespace' => ['|*', new TypeSelector('*', null)];
-        yield 'element without explicit namespace' => ['foo', new TypeSelector('foo', '*')];
+        // Type selectors
+        yield from SimpleSelectorProvider::typeSelectors();
+        // ID
         yield '#id' => ['#foo', new IdSelector('foo')];
+        // class
         yield '.class' => ['.bar', new ClassSelector('bar')];
-        yield 'attribute exists' => ['[disabled]', new AttributeSelector('disabled')];
-        yield 'attribute equals (string)' => [
-            '[foo="bar"]', new AttributeSelector('foo', '*', AttributeSelector::OPERATOR_EQUALS, 'bar')
-        ];
-        yield 'attribute equals (identifier)' => [
-            '[foo=bar]', new AttributeSelector('foo', '*', AttributeSelector::OPERATOR_EQUALS, 'bar')
-        ];
-        yield 'attribute includes (string)' => [
-            '[foo~="bar"]', new AttributeSelector('foo', '*', AttributeSelector::OPERATOR_INCLUDES, 'bar')
-        ];
-        yield 'attribute includes (identifier)' => [
-            '[foo~=bar]', new AttributeSelector('foo', '*', AttributeSelector::OPERATOR_INCLUDES, 'bar')
-        ];
-        yield 'attribute dash match (string)' => [
-            '[foo|="bar"]', new AttributeSelector('foo', '*', AttributeSelector::OPERATOR_DASH_MATCH, 'bar')
-        ];
-        yield 'attribute dash match (identifier)' => [
-            '[foo|=bar]', new AttributeSelector('foo', '*', AttributeSelector::OPERATOR_DASH_MATCH, 'bar')
-        ];
-        yield 'attribute prefix match (string)' => [
-            '[foo^="bar"]', new AttributeSelector('foo', '*', AttributeSelector::OPERATOR_PREFIX_MATCH, 'bar')
-        ];
-        yield 'attribute prefix match (identifier)' => [
-            '[foo^=bar]', new AttributeSelector('foo', '*', AttributeSelector::OPERATOR_PREFIX_MATCH, 'bar')
-        ];
-        yield 'attribute suffix match (string)' => [
-            '[foo$="bar"]', new AttributeSelector('foo', '*', AttributeSelector::OPERATOR_SUFFIX_MATCH, 'bar')
-        ];
-        yield 'attribute suffix match (identifier)' => [
-            '[foo$=bar]', new AttributeSelector('foo', '*', AttributeSelector::OPERATOR_SUFFIX_MATCH, 'bar')
-        ];
-        yield 'attribute substring match (string)' => [
-            '[foo*="bar"]', new AttributeSelector('foo', '*', AttributeSelector::OPERATOR_SUBSTRING_MATCH, 'bar')
-        ];
-        yield 'attribute substring match (identifier)' => [
-            '[foo*=bar]', new AttributeSelector('foo', '*', AttributeSelector::OPERATOR_SUBSTRING_MATCH, 'bar')
-        ];
+        // Attributes
+        yield from SimpleSelectorProvider::attributeSelectors();
     }
 }

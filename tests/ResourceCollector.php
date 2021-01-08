@@ -4,7 +4,7 @@ namespace Souplette\Tests;
 
 class ResourceCollector
 {
-    public static function collect(string $rootPath, ?string $extension = null)
+    public static function collect(string $rootPath, ?string $extension = null): \Generator
     {
         $it = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(
             $rootPath,

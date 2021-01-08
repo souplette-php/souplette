@@ -22,6 +22,7 @@ use Souplette\Css\Selectors\Node\Functional\Where;
 use Souplette\Css\Selectors\Node\FunctionalSelector;
 use Souplette\Css\Selectors\Node\IdSelector;
 use Souplette\Css\Selectors\Node\PseudoClassSelector;
+use Souplette\Css\Selectors\Node\PseudoElementSelector;
 use Souplette\Css\Selectors\Node\RelativeSelector;
 use Souplette\Css\Selectors\Node\Selector;
 use Souplette\Css\Selectors\Node\SelectorList;
@@ -29,7 +30,9 @@ use Souplette\Css\Selectors\Node\SimpleSelector;
 use Souplette\Css\Selectors\Node\TypeSelector;
 use Souplette\Css\Selectors\Node\UniversalSelector;
 use Souplette\Css\Syntax\AnPlusBParser;
+use Souplette\Css\Syntax\Exception\ParseError;
 use Souplette\Css\Syntax\Exception\UnexpectedToken;
+use Souplette\Css\Syntax\Exception\UnexpectedValue;
 use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 use Souplette\Css\Syntax\TokenStream\TokenStreamInterface;
 
@@ -47,6 +50,13 @@ final class SelectorParser
         ],
     ];
 
+    private const LEGACY_PSEUDO_ELEMENTS = [
+        'before' => true,
+        'after' => true,
+        'first-line' => true,
+        'first-letter' => true,
+    ];
+
     private const SIMPLE_COMBINATORS = [
         Combinators::CHILD => Combinators::CHILD,
         Combinators::NEXT_SIBLING => Combinators::NEXT_SIBLING,
@@ -60,14 +70,21 @@ final class SelectorParser
         '~' => AttributeSelector::OPERATOR_INCLUDES,
         '|' => AttributeSelector::OPERATOR_DASH_MATCH,
         '^' => AttributeSelector::OPERATOR_PREFIX_MATCH,
-        '$' => AttributeSelector::OPERATOR_PREFIX_MATCH,
+        '$' => AttributeSelector::OPERATOR_SUFFIX_MATCH,
         '*' => AttributeSelector::OPERATOR_SUBSTRING_MATCH,
     ];
 
     private bool $isParsingAttribute = false;
 
+    private string $defaultNamespace = '*';
+
     public function __construct(private TokenStreamInterface $tokenStream)
     {
+    }
+
+    public function setDefaultNamespace(string $namespace)
+    {
+        $this->defaultNamespace = $namespace;
     }
 
     public function parseSelectorList(): SelectorList
@@ -175,59 +192,60 @@ final class SelectorParser
     private function parseTypeSelector(): TypeSelector
     {
         // <type-selector> = <wq-name> | <ns-prefix>? '*'
-        if ($qualifiedName = $this->parseQualifiedName()) {
-            [$prefix, $tagName] = $qualifiedName;
-            return new TypeSelector($tagName, $prefix);
-        }
-        $prefix = $this->parseNamespacePrefix();
-        $token = $this->tokenStream->current();
-        if ($token->type === TokenTypes::DELIM && $token->value === '*') {
-            $this->tokenStream->consume();
-            if ($prefix === '*') {
-                return new UniversalSelector();
-            }
-            return new TypeSelector('*', $prefix);
-        }
-
-        return new UniversalSelector();
+        [$namespace, $localName] = $this->parseQualifiedName(true, $this->defaultNamespace);
+        return $localName === '*' ? new UniversalSelector($namespace) : new TypeSelector($localName, $namespace);
     }
 
-    private function parseQualifiedName(): ?array
+    private function parseQualifiedName(bool $allowStar = false, ?string $defaultNamespace = null): ?array
     {
         // <wq-name> = <ns-prefix>? <ident-token>
-        $prefix = $this->parseNamespacePrefix();
         $token = $this->tokenStream->current();
-        if ($token->type === TokenTypes::IDENT) {
-            $this->tokenStream->consume();
-            return [$prefix, $token->value];
-        }
 
-        return null;
-    }
-
-    private function parseNamespacePrefix(): ?string
-    {
-        // <ns-prefix> = [ <ident-token> | '*' ]? '|'
-        $token = $this->tokenStream->current();
+        // handle the "|" <ident-or-star> case
         if ($token->type === TokenTypes::DELIM && $token->value === '|') {
-            $this->tokenStream->consume();
-            return null;
+            $token = $this->tokenStream->consume();
+            if (
+                $token->type === TokenTypes::IDENT
+                || ($allowStar && $token->type === TokenTypes::DELIM && $token->value === '*')
+            ) {
+                $this->tokenStream->consume();
+                return [null, $token->value];
+            }
+            throw UnexpectedToken::expectingOneOf($token, TokenTypes::IDENT, TokenTypes::DELIM);
         }
 
+        // handle the <ns-prefix> "|" <ident-or-star> case
         $la = $this->tokenStream->lookahead();
         if ($la->type === TokenTypes::DELIM && $la->value === '|') {
             $la2 = $this->tokenStream->lookahead(2);
-            if ($token->type === TokenTypes::DELIM && $token->value === '*') {
-                $this->tokenStream->consume(2);
-                return '*';
+            if (
+                $la2->type === TokenTypes::IDENT
+                || ($allowStar && $la2->type === TokenTypes::DELIM && $la2->value === '*')
+            ) {
+                if (
+                    $token->type === TokenTypes::IDENT
+                    || ($token->type === TokenTypes::DELIM && $token->value === '*')
+                ) {
+                    $namespace = $token->value;
+                    $localName = $la2->value;
+                    $this->tokenStream->consume(3);
+                    return [$namespace, $localName];
+                }
+                throw UnexpectedToken::expectingOneOf($token, TokenTypes::IDENT, TokenTypes::DELIM);
             }
-            if ($token->type === TokenTypes::IDENT) {
-                $this->tokenStream->consume(2);
-                return $token->value;
-            }
+            // no valid local name found, fallback to the no-namespace case
         }
 
-        return '*';
+        // handle the <ident-or-star> case
+        if (
+            $token->type === TokenTypes::IDENT
+            || ($allowStar && $token->type === TokenTypes::DELIM && $token->value === '*')
+        ) {
+            $this->tokenStream->consume();
+            return [$defaultNamespace, $token->value];
+        }
+
+        throw UnexpectedToken::expectingOneOf($token, TokenTypes::IDENT, TokenTypes::DELIM);
     }
 
     private function parseSubclassSelector(): SimpleSelector
@@ -262,20 +280,19 @@ final class SelectorParser
     {
         // '[' <wq-name> ']'
         // | '[' <wq-name> <attr-matcher> [ <string-token> | <ident-token> ] <attr-modifier>? ']'
+        // '[' <ns-prefix>? <ident-token> [ <attr-matcher> [ <string-token> | <ident-token> ] <attr-modifier>? ]? ']'
         $this->tokenStream->eat(TokenTypes::LBRACK);
         $this->tokenStream->skipWhitespace();
         $this->isParsingAttribute = true;
 
-        $qualifiedName = $this->parseQualifiedName();
-        if (!$qualifiedName) {
-            // TODO: parse error
-        }
-        [$prefix, $attribute] = $qualifiedName;
+        [$namespace, $localName] = $this->parseQualifiedName(false);
+
         $token = $this->tokenStream->skipWhitespace();
         if ($token->type === TokenTypes::RBRACK) {
             $this->tokenStream->consume();
-            return new AttributeSelector($attribute, $prefix);
+            return new AttributeSelector($localName, $namespace);
         }
+
         $operator = $this->parseAttributeMatcher();
         $this->tokenStream->skipWhitespace();
         $token = $this->tokenStream->expectOneOf(TokenTypes::STRING, TokenTypes::IDENT);
@@ -291,7 +308,7 @@ final class SelectorParser
         $this->tokenStream->eat(TokenTypes::RBRACK);
         $this->isParsingAttribute = false;
 
-        return new AttributeSelector($attribute, $prefix, $operator, $value, $forceCase);
+        return new AttributeSelector($localName, $namespace, $operator, $value, $forceCase);
     }
 
     private function parseAttributeMatcher(): string
@@ -302,8 +319,8 @@ final class SelectorParser
             return AttributeSelector::OPERATOR_EQUALS;
         }
         $operator = self::ATTRIBUTE_MATCHERS[$token->value] ?? null;
-        if ($operator === null) {
-            throw $this->unexpectedValue($token->value, '=', ...self::ATTRIBUTE_MATCHERS);
+        if (!$operator) {
+            throw UnexpectedValue::expectingOneOf($token->value, '=', ...self::ATTRIBUTE_MATCHERS);
         }
         $this->tokenStream->consume();
         $this->tokenStream->eatValue(TokenTypes::DELIM, '=');
@@ -311,14 +328,18 @@ final class SelectorParser
         return $operator;
     }
 
-    private function parsePseudoClassSelector(): PseudoClassSelector
+    private function parsePseudoClassSelector(): PseudoClassSelector|PseudoElementSelector|FunctionalSelector
     {
         // <pseudo-class-selector> = ':' <ident-token> | ':' <function-token> <any-value> ')'
         $this->tokenStream->eat(TokenTypes::COLON);
         $token = $this->tokenStream->expectOneOf(TokenTypes::IDENT, TokenTypes::FUNCTION);
         if ($token->type === TokenTypes::IDENT) {
             $this->tokenStream->consume();
-            return new PseudoClassSelector($token->value);
+            $pseudoClass = $token->value;
+            if (isset(self::LEGACY_PSEUDO_ELEMENTS[$pseudoClass])) {
+                return new PseudoElementSelector($pseudoClass);
+            }
+            return new PseudoClassSelector($pseudoClass);
         }
         return $this->parseFunctionalSelector();
     }
@@ -353,10 +374,16 @@ final class SelectorParser
         return $seenWhitespace ? Combinators::DESCENDANT : null;
     }
 
-    private function parsePseudoElementSelector()
+    private function parsePseudoElementSelector(): PseudoElementSelector|FunctionalSelector
     {
         $this->tokenStream->eat(TokenTypes::COLON);
-        return $this->parsePseudoClassSelector();
+        $this->tokenStream->eat(TokenTypes::COLON);
+        $token = $this->tokenStream->expectOneOf(TokenTypes::IDENT, TokenTypes::FUNCTION);
+        if ($token->type === TokenTypes::IDENT) {
+            $this->tokenStream->consume();
+            return new PseudoElementSelector($token->value);
+        }
+        return $this->parseFunctionalSelector();
     }
 
     private function parseFunctionalSelector(): FunctionalSelector
@@ -457,10 +484,11 @@ final class SelectorParser
 
     /**
      * @see https://drafts.csswg.org/selectors/#the-nth-child-pseudo
-     * @return NthChild|NthLastChild
+     * @param bool $last
+     * @return NthLastChild|NthChild
      * @throws UnexpectedToken
      */
-    private function parseNthChild(bool $last = false)
+    private function parseNthChild(bool $last = false): NthLastChild|NthChild
     {
         $parser = new AnPlusBParser($this->tokenStream, [TokenTypes::RPAREN, TokenTypes::IDENT]);
         $anPlusB = $parser->parse();
@@ -477,7 +505,7 @@ final class SelectorParser
         return $last ? new NthLastChild($anPlusB, $selectors) : new NthChild($anPlusB, $selectors);
     }
 
-    private function parseNthOfType(bool $last = false)
+    private function parseNthOfType(bool $last = false): NthLastOfType|NthOfType
     {
         $parser = new AnPlusBParser($this->tokenStream, [TokenTypes::RPAREN]);
         $anPlusB = $parser->parse();
@@ -486,7 +514,7 @@ final class SelectorParser
         return $last ? new NthLastOfType($anPlusB) : new NthOfType($anPlusB);
     }
 
-    private function parseNthCol(bool $last = false)
+    private function parseNthCol(bool $last = false): NthLastCol|NthCol
     {
         $parser = new AnPlusBParser($this->tokenStream, [TokenTypes::RPAREN]);
         $anPlusB = $parser->parse();

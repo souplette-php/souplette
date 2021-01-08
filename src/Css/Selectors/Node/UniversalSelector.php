@@ -4,8 +4,8 @@ namespace Souplette\Css\Selectors\Node;
 
 final class UniversalSelector extends TypeSelector
 {
-    public function __construct()
+    public function __construct(?string $namespace = null)
     {
-        parent::__construct('*', '*');
+        parent::__construct('*', $namespace);
     }
 }
