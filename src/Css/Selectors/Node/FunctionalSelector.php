@@ -9,7 +9,7 @@ class FunctionalSelector extends PseudoClassSelector
 
     public function __construct(string $name, array $arguments = [])
     {
-        $this->name = $name;
+        parent::__construct($name);
         $this->arguments = $arguments;
     }
 
