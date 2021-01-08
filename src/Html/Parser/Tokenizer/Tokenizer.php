@@ -179,7 +179,7 @@ final class Tokenizer extends AbstractTokenizer
                     $this->state = TokenizerStates::END_TAG_OPEN;
                     $cc = $this->input[++$this->position] ?? null;
                     goto END_TAG_OPEN;
-                } elseif (ctype_alpha($cc)) {
+                } elseif (\ctype_alpha($cc)) {
                     // Create a new start tag token, set its tag name to the empty string.
                     $this->currentToken = new StartTag();
                     // Reconsume in the tag name state.
@@ -212,7 +212,7 @@ final class Tokenizer extends AbstractTokenizer
             break;
             case TokenizerStates::END_TAG_OPEN:
             END_TAG_OPEN: {
-                if (ctype_alpha($cc)) {
+                if (\ctype_alpha($cc)) {
                     // Create a new end tag token, set its tag name to the empty string.
                     $this->currentToken = new EndTag();
                     // Reconsume in the tag name state.
@@ -302,7 +302,7 @@ final class Tokenizer extends AbstractTokenizer
             break;
             case TokenizerStates::RCDATA_END_TAG_OPEN:
             RCDATA_END_TAG_OPEN: {
-                if (ctype_alpha($cc)) {
+                if (\ctype_alpha($cc)) {
                     // Create a new end tag token, set its tag name to the empty string.
                     $this->currentToken = new EndTag();
                     // Reconsume in the RCDATA end tag name state.
@@ -353,7 +353,7 @@ final class Tokenizer extends AbstractTokenizer
                         // Otherwise, treat it as per the "anything else" entry below.
                         goto RCDATA_END_TAG_NAME_ANYTHING_ELSE;
                     }
-                } elseif (ctype_alpha($cc)) {
+                } elseif (\ctype_alpha($cc)) {
                     $l = \strspn($this->input, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', $this->position);
                     $chars = \substr($this->input, $this->position, $l);
                     $this->position += $l;
@@ -394,7 +394,7 @@ final class Tokenizer extends AbstractTokenizer
             break;
             case TokenizerStates::RAWTEXT_END_TAG_OPEN:
             RAWTEXT_END_TAG_OPEN: {
-                if (ctype_alpha($cc)) {
+                if (\ctype_alpha($cc)) {
                     // Create a new end tag token, set its tag name to the empty string.
                     $this->currentToken = new EndTag();
                     // Reconsume in the RAWTEXT end tag name state.
@@ -445,7 +445,7 @@ final class Tokenizer extends AbstractTokenizer
                         // Otherwise, treat it as per the "anything else" entry below.
                         goto RAWTEXT_END_TAG_NAME_ANYTHING_ELSE;
                     }
-                } elseif (ctype_alpha($cc)) {
+                } elseif (\ctype_alpha($cc)) {
                     $l = \strspn($this->input, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', $this->position);
                     $chars = \substr($this->input, $this->position, $l);
                     $this->position += $l;
@@ -493,7 +493,7 @@ final class Tokenizer extends AbstractTokenizer
             break;
             case TokenizerStates::SCRIPT_DATA_END_TAG_OPEN:
             SCRIPT_DATA_END_TAG_OPEN: {
-                if (ctype_alpha($cc)) {
+                if (\ctype_alpha($cc)) {
                     // Create a new end tag token, set its tag name to the empty string.
                     $this->currentToken = new EndTag();
                     // Reconsume in the script data end tag name state.
@@ -542,7 +542,7 @@ final class Tokenizer extends AbstractTokenizer
                     } else {
                         goto SCRIPT_DATA_END_TAG_NAME_ANYTHING_ELSE;
                     }
-                } elseif (ctype_alpha($cc)) {
+                } elseif (\ctype_alpha($cc)) {
                     // Append the lowercase version of the current input character to the current tag token's tag name.
                     // Append the current input character to the temporary buffer.
                     $l = \strspn($this->input, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', $this->position);
@@ -726,7 +726,7 @@ final class Tokenizer extends AbstractTokenizer
                     $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED_END_TAG_OPEN;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA_ESCAPED_END_TAG_OPEN;
-                } elseif (ctype_alpha($cc)) {
+                } elseif (\ctype_alpha($cc)) {
                     // Set the temporary buffer to the empty string.
                     $this->temporaryBuffer = '';
                     // Emit a U+003C LESS-THAN SIGN character token.
@@ -745,7 +745,7 @@ final class Tokenizer extends AbstractTokenizer
             break;
             case TokenizerStates::SCRIPT_DATA_ESCAPED_END_TAG_OPEN:
             SCRIPT_DATA_ESCAPED_END_TAG_OPEN: {
-                if (ctype_alpha($cc)) {
+                if (\ctype_alpha($cc)) {
                     // Create a new end tag token, set its tag name to the empty string.
                     $this->currentToken = new EndTag();
                     // Reconsume in the script data escaped end tag name state.
@@ -794,7 +794,7 @@ final class Tokenizer extends AbstractTokenizer
                     } else {
                         goto SCRIPT_DATA_ESCAPED_END_TAG_NAME_ANYTHING_ELSE;
                     }
-                } elseif (ctype_alpha($cc)) {
+                } elseif (\ctype_alpha($cc)) {
                     // Append the lowercase version of the current input character to the current tag token's tag name.
                     // Append the current input character to the temporary buffer.
                     $l = \strspn($this->input, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', $this->position);
@@ -831,7 +831,7 @@ final class Tokenizer extends AbstractTokenizer
                         $cc = $this->input[++$this->position] ?? null;
                         goto SCRIPT_DATA_ESCAPED;
                     }
-                } elseif (ctype_alpha($cc)) {
+                } elseif (\ctype_alpha($cc)) {
                     // Append the lowercase version of the current input character to the temporary buffer.
                     $l = \strspn($this->input, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', $this->position);
                     $chars = \substr($this->input, $this->position, $l);
@@ -1011,7 +1011,7 @@ final class Tokenizer extends AbstractTokenizer
                         $cc = $this->input[++$this->position] ?? null;
                         goto SCRIPT_DATA_DOUBLE_ESCAPED;
                     }
-                } elseif (ctype_alpha($cc)) {
+                } elseif (\ctype_alpha($cc)) {
                     // Append the lowercase version of the current input character to the temporary buffer.
                     $l = \strspn($this->input, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', $this->position);
                     $chars = \substr($this->input, $this->position, $l);
@@ -2420,7 +2420,7 @@ final class Tokenizer extends AbstractTokenizer
             CHARACTER_REFERENCE: {
                 // Set the temporary buffer to the empty string. Append a U+0026 AMPERSAND (&) character to the temporary buffer.
                 $this->temporaryBuffer = '&';
-                if (ctype_alnum($cc)) {
+                if (\ctype_alnum($cc)) {
                     // Reconsume in the named character reference state.
                     $this->state = TokenizerStates::NAMED_CHARACTER_REFERENCE;
                     goto NAMED_CHARACTER_REFERENCE;
@@ -2523,7 +2523,7 @@ final class Tokenizer extends AbstractTokenizer
             break;
             case TokenizerStates::HEXADECIMAL_CHARACTER_REFERENCE_START:
             HEXADECIMAL_CHARACTER_REFERENCE_START: {
-                if (ctype_xdigit($cc)) {
+                if (\ctype_xdigit($cc)) {
                     // Reconsume in the hexadecimal character reference state.
                     $this->state = TokenizerStates::HEXADECIMAL_CHARACTER_REFERENCE;
                     goto HEXADECIMAL_CHARACTER_REFERENCE;
@@ -2540,7 +2540,7 @@ final class Tokenizer extends AbstractTokenizer
             break;
             case TokenizerStates::DECIMAL_CHARACTER_REFERENCE_START:
             DECIMAL_CHARACTER_REFERENCE_START: {
-                if (ctype_digit($cc)) {
+                if (\ctype_digit($cc)) {
                     // Reconsume in the decimal character reference state.
                     $this->state = TokenizerStates::DECIMAL_CHARACTER_REFERENCE;
                     goto DECIMAL_CHARACTER_REFERENCE;
@@ -2668,7 +2668,7 @@ final class Tokenizer extends AbstractTokenizer
             break;
             case TokenizerStates::AMBIGUOUS_AMPERSAND:
             AMBIGUOUS_AMPERSAND: {
-                if (ctype_alnum($cc)) {
+                if (\ctype_alnum($cc)) {
                     $l = \strspn($this->input, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', $this->position);
                     $chars = \substr($this->input, $this->position, $l);
                     $this->position += $l;

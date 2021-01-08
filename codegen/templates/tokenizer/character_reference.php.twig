@@ -5,7 +5,7 @@
 
 // Set the temporary buffer to the empty string. Append a U+0026 AMPERSAND (&) character to the temporary buffer.
 $this->temporaryBuffer = '&';
-if (ctype_alnum($cc)) {
+if (\ctype_alnum($cc)) {
     // Reconsume in the named character reference state.
     {{ h.reconsume_in('NAMED_CHARACTER_REFERENCE') }}
 } elseif ($cc === '#') {

@@ -3,7 +3,7 @@
 #}
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
-if (ctype_alnum($cc)) {
+if (\ctype_alnum($cc)) {
     {{ h.chars_while_alnum() }}
     // If the character reference was consumed as part of an attribute
     if ({{ h.is_attribute_return_state() }}) {

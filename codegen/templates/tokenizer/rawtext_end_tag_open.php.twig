@@ -3,7 +3,7 @@
 #}
 {% import 'tokenizer/_macros.php.twig' as h -%}
 
-if (ctype_alpha($cc)) {
+if (\ctype_alpha($cc)) {
     // Create a new end tag token, set its tag name to the empty string.
     $this->currentToken = new EndTag();
     // Reconsume in the RAWTEXT end tag name state.
