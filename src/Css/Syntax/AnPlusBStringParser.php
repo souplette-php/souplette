@@ -16,17 +16,17 @@ final class AnPlusBStringParser
     private array $endTokenTypes;
 
     private const SYNTAX = <<<'REGEXP'
-/
-    ^ \s*
-    (?:
-        (?<odd> odd )
-        | (?<even> even )
-        | (?<int> [+-]? \d+ )
-        | (?<a_sign> [+-]? ) (?<a> \d* ) n (?: \s* (?<b_sign> [+-] ) \s* (?<b> \d+ ) )?
-    )
-    \s* $
-/xi
-REGEXP;
+    /
+        ^ \s*
+        (?:
+            (?<odd> odd )
+            | (?<even> even )
+            | (?<int> [+-]? \d+ )
+            | (?<a_sign> [+-]? ) (?<a> \d* ) n (?: \s* (?<b_sign> [+-] ) \s* (?<b> \d+ ) )?
+        )
+        \s* $
+    /xi
+    REGEXP;
 
     public function __construct(TokenStreamInterface $tokenStream, array $endTokenTypes = [TokenTypes::EOF])
     {

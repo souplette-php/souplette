@@ -112,7 +112,7 @@ final class AnPlusBParserTest extends TestCase
         $result = self::parseRegexp($input);
     }
 
-    private static function parseRegexp(string $input)
+    private static function parseRegexp(string $input): AnPlusB
     {
         $tokenizer = new Tokenizer($input);
         $parser = new AnPlusBStringParser(new TokenStream($tokenizer, 1));
