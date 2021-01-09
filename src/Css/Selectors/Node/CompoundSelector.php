@@ -2,8 +2,13 @@
 
 namespace Souplette\Css\Selectors\Node;
 
+use Souplette\Css\Selectors\Specificity;
+
 final class CompoundSelector extends Selector implements \IteratorAggregate, \Countable
 {
+    /**
+     * @var Selector[]
+     */
     public array $selectors;
 
     public function __construct(array $selectors)
@@ -11,22 +16,30 @@ final class CompoundSelector extends Selector implements \IteratorAggregate, \Co
         $this->selectors = $selectors;
     }
 
-    public function getIterator()
+    /**
+     * @return Selector[]
+     */
+    public function getIterator(): iterable
     {
         return new \ArrayIterator($this->selectors);
     }
 
-    public function count()
+    public function count(): int
     {
         return count($this->selectors);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
-        $s = '';
+        return implode('', array_map(fn($s) => (string)$s, $this->selectors));
+    }
+
+    public function getSpecificity(): Specificity
+    {
+        $spec = new Specificity();
         foreach ($this->selectors as $selector) {
-            $s .= "{$selector}";
+            $spec = $spec->add($selector->getSpecificity());
         }
-        return $s;
+        return $spec;
     }
 }

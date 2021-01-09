@@ -2,6 +2,8 @@
 
 namespace Souplette\Css\Selectors\Node;
 
+use Souplette\Css\Selectors\Specificity;
+
 final class IdSelector extends SimpleSelector
 {
     private string $id;
@@ -14,5 +16,10 @@ final class IdSelector extends SimpleSelector
     public function __toString()
     {
         return "#{$this->id}";
+    }
+
+    public function getSpecificity(): Specificity
+    {
+        return new Specificity(1);
     }
 }

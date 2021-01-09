@@ -2,6 +2,8 @@
 
 namespace Souplette\Css\Selectors\Node;
 
+use Souplette\Css\Selectors\Specificity;
+
 final class RelativeSelector extends Selector
 {
     private string $combinator;
@@ -16,5 +18,10 @@ final class RelativeSelector extends Selector
     public function __toString()
     {
         return "{$this->combinator} {$this->selector}";
+    }
+
+    public function getSpecificity(): Specificity
+    {
+        return $this->selector->getSpecificity();
     }
 }

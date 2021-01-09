@@ -4,16 +4,22 @@ namespace Souplette\Css\Selectors\Node\Functional;
 
 use Souplette\Css\Selectors\Node\FunctionalSelector;
 use Souplette\Css\Selectors\Node\SelectorList;
+use Souplette\Css\Selectors\Specificity;
 
 final class Is extends FunctionalSelector
 {
-    public function __construct(SelectorList $selectors)
+    public function __construct(private SelectorList $selectorList)
     {
-        parent::__construct('is', [$selectors]);
+        parent::__construct('is', [$this->selectorList]);
     }
 
     public function __toString()
     {
-        return ":is({$this->arguments[0]})";
+        return ":is({$this->selectorList})";
+    }
+
+    public function getSpecificity(): Specificity
+    {
+        return $this->selectorList->getSpecificity();
     }
 }

@@ -2,9 +2,11 @@
 
 namespace Souplette\Css\Selectors\Node;
 
+use Souplette\Css\Selectors\Specificity;
+
 class PseudoClassSelector extends SimpleSelector
 {
-    private string $name;
+    protected string $name;
 
     public function __construct(string $name)
     {
@@ -14,5 +16,10 @@ class PseudoClassSelector extends SimpleSelector
     public function __toString()
     {
         return ":{$this->name}";
+    }
+
+    public function getSpecificity(): Specificity
+    {
+        return new Specificity(0, 1);
     }
 }

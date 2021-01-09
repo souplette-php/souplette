@@ -2,6 +2,8 @@
 
 namespace Souplette\Css\Selectors\Node;
 
+use Souplette\Css\Selectors\Specificity;
+
 class TypeSelector extends SimpleSelector
 {
     protected string $tagName;
@@ -19,5 +21,10 @@ class TypeSelector extends SimpleSelector
             return $this->tagName;
         }
         return "{$this->namespace}|{$this->tagName}";
+    }
+
+    public function getSpecificity(): Specificity
+    {
+        return new Specificity(0, 0, 1);
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Souplette\Css\Selectors\Node;
 
+use Souplette\Css\Selectors\Specificity;
+
 final class AttributeSelector extends SimpleSelector
 {
     const OPERATOR_EQUALS = '=';
@@ -33,5 +35,10 @@ final class AttributeSelector extends SimpleSelector
             $this->value,
             $this->forceCase ? " {$this->forceCase}" : ''
         );
+    }
+
+    public function getSpecificity(): Specificity
+    {
+        return new Specificity(0, 1);
     }
 }

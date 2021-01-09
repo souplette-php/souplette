@@ -4,22 +4,38 @@ namespace Souplette\Css\Selectors\Node\Functional;
 
 use Souplette\Css\Selectors\Node\FunctionalSelector;
 use Souplette\Css\Selectors\Node\SelectorList;
+use Souplette\Css\Selectors\Specificity;
 use Souplette\Css\Syntax\Node\AnPlusB;
 
 final class NthLastChild extends FunctionalSelector
 {
-    public function __construct(AnPlusB $anPlusB, ?SelectorList $selectors = null)
-    {
-        parent::__construct('nth-last-child', [$anPlusB, $selectors]);
+    public function __construct(
+        private AnPlusB $anPlusB,
+        private ?SelectorList $selectorList = null
+    ) {
+        $args = [$this->anPlusB];
+        if ($this->selectorList) {
+            $args[] = $this->selectorList;
+        }
+
+        parent::__construct('nth-last-child', $args);
     }
 
     public function __toString()
     {
-        $args = (string)$this->arguments[0];
-        $selectors = $this->arguments[1];
-        if ($selectors) {
-            $args .= " of {$selectors}";
+        return sprintf(
+            ':nth-last-child(%s%s)',
+            $this->anPlusB,
+            $this->selectorList ? " of {$this->selectorList}" : '',
+        );
+    }
+
+    public function getSpecificity(): Specificity
+    {
+        $spec = parent::getSpecificity();
+        if ($this->selectorList) {
+            $spec = $spec->add($this->selectorList->getSpecificity());
         }
-        return ":nth-last-child({$args})";
+        return $spec;
     }
 }

@@ -2,10 +2,17 @@
 
 namespace Souplette\Css\Selectors\Node;
 
+use Souplette\Css\Selectors\Specificity;
+
 final class UniversalSelector extends TypeSelector
 {
     public function __construct(?string $namespace = null)
     {
         parent::__construct('*', $namespace);
+    }
+
+    public function getSpecificity(): Specificity
+    {
+        return new Specificity();
     }
 }
