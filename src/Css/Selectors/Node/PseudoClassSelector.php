@@ -6,14 +6,11 @@ use Souplette\Css\Selectors\Specificity;
 
 class PseudoClassSelector extends SimpleSelector
 {
-    protected string $name;
-
-    public function __construct(string $name)
+    public function __construct(public string $name)
     {
-        $this->name = $name;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return ":{$this->name}";
     }

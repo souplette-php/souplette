@@ -6,11 +6,8 @@ use Souplette\Css\Selectors\Specificity;
 
 final class IdSelector extends SimpleSelector
 {
-    private string $id;
-
-    public function __construct(string $id)
+    public function __construct(public string $id)
     {
-        $this->id = $id;
     }
 
     public function __toString()

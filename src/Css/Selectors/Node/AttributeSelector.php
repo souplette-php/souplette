@@ -14,11 +14,11 @@ final class AttributeSelector extends SimpleSelector
     const OPERATOR_SUBSTRING_MATCH = '*=';
 
     public function __construct(
-        private string $attribute,
-        private ?string $namespace = null,
-        private ?string $operator = null,
-        private ?string $value = null,
-        private ?string $forceCase = null
+        public string $attribute,
+        public ?string $namespace = null,
+        public ?string $operator = null,
+        public ?string $value = null,
+        public ?string $forceCase = null
     ) {
     }
 

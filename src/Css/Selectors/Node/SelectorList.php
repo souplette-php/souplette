@@ -9,7 +9,7 @@ final class SelectorList extends Selector implements \IteratorAggregate, \Counta
     /**
      * @var Selector[]
      */
-    private array $selectors;
+    public array $selectors;
 
     public function __construct(array $selectors)
     {

@@ -53,7 +53,8 @@ to retrieve the information. We should investigate that.
     - [ ] Parser
     - [ ] Nodes
     - [ ] XPath converter
-    - [ ] Query executor
+        - [ ] Functional translators
+    - [ ] Query executor ???
     - [ ] Correctly handle [namespaces](https://drafts.csswg.org/selectors/index.html#type-nmsp)
 - [ ] CSSOM
 - [ ] CSS Values and Units Module Level 4

@@ -6,11 +6,8 @@ use Souplette\Css\Selectors\Specificity;
 
 final class ClassSelector extends SimpleSelector
 {
-    private string $class;
-
-    public function __construct(string $class)
+    public function __construct(public string $class)
     {
-        $this->class = $class;
     }
 
     public function __toString()

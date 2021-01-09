@@ -41,15 +41,6 @@ use Souplette\Css\Syntax\TokenStream\TokenStreamInterface;
  */
 final class SelectorParser
 {
-    private const SUBCLASS_SELECTOR_START = [
-        TokenTypes::HASH => true,
-        TokenTypes::COLON => true,
-        TokenTypes::DELIM => [
-            '.' => true,
-            '[' => true,
-        ],
-    ];
-
     private const LEGACY_PSEUDO_ELEMENTS = [
         'before' => true,
         'after' => true,
@@ -139,6 +130,8 @@ final class SelectorParser
                 // TODO: ParseError ?
                 return $selector instanceof ComplexSelector ? $selector : new ComplexSelector($selector);
             }
+            // NOTE: left-associativity is required for the Xpath translator to work
+            // if we were to change that, we should refactor both.
             $selector = new ComplexSelector($selector, $combinator, $compound);
         }
         $this->tokenStream->skipWhitespace();

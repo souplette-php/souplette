@@ -6,16 +6,11 @@ use Souplette\Css\Selectors\Specificity;
 
 class TypeSelector extends SimpleSelector
 {
-    protected string $tagName;
-    protected ?string $namespace;
-
-    public function __construct(string $tagName, ?string $namespace = null)
+    public function __construct(public string $tagName, public ?string $namespace = null)
     {
-        $this->tagName = $tagName;
-        $this->namespace = $namespace;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         if ($this->namespace === '*' || !$this->namespace) {
             return $this->tagName;
