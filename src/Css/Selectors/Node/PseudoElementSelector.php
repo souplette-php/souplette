@@ -2,7 +2,7 @@
 
 namespace Souplette\Css\Selectors\Node;
 
-final class PseudoElementSelector extends Selector
+final class PseudoElementSelector extends SimpleSelector
 {
     private string $name;
 

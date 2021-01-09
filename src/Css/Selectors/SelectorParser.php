@@ -164,9 +164,9 @@ final class SelectorParser
             $tt = $token->type;
             if (
                 $tt === TokenTypes::HASH
-                || $tt === TokenTypes::COLON
                 || $tt === TokenTypes::LBRACK
                 || ($tt === TokenTypes::DELIM && $token->value === '.')
+                || ($tt === TokenTypes::COLON && $this->tokenStream->lookahead()->type !== TokenTypes::COLON)
             ) {
                 $selectors[] = $this->parseSubclassSelector();
             } else {
@@ -183,6 +183,7 @@ final class SelectorParser
             $token = $this->tokenStream->current();
             while ($token->type === TokenTypes::COLON) {
                 $selectors[] = $this->parsePseudoClassSelector();
+                $token = $this->tokenStream->current();
             }
         }
 

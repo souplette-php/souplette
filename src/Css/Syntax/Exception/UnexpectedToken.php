@@ -10,9 +10,10 @@ final class UnexpectedToken extends ParseError
     public static function expecting(Token $token, int $expectedType): self
     {
         return new self(sprintf(
-            'Expected %s but got %s',
+            'Got %s@%d, expected %s',
+            TokenTypes::nameOf($token->type),
+            $token->position,
             TokenTypes::nameOf($expectedType),
-            TokenTypes::nameOf($token->type)
         ));
     }
 
@@ -20,9 +21,10 @@ final class UnexpectedToken extends ParseError
     {
         $expectedNames = array_map(fn($tt) => TokenTypes::nameOf($tt), $expectedTypes);
         return new self(sprintf(
-            'Expected %s but got %s',
+            'Got %s@%d, expected %s',
+            TokenTypes::nameOf($token->type),
+            $token->position,
             implode(' | ', $expectedNames),
-            TokenTypes::nameOf($token->type)
         ));
     }
 }
