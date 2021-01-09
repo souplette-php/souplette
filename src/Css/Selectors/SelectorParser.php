@@ -74,8 +74,6 @@ final class SelectorParser
         '*' => AttributeSelector::OPERATOR_SUBSTRING_MATCH,
     ];
 
-    private bool $isParsingAttribute = false;
-
     private string $defaultNamespace = '*';
 
     public function __construct(private TokenStreamInterface $tokenStream)
@@ -134,11 +132,12 @@ final class SelectorParser
         while (true) {
             $combinator = $this->parseCombinator();
             if (!$combinator) {
-                return new ComplexSelector($selector);
+                return $selector instanceof ComplexSelector ? $selector : new ComplexSelector($selector);
             }
             $compound = $this->parseCompoundSelector();
             if (!$compound) {
-                return new ComplexSelector($selector);
+                // TODO: ParseError ?
+                return $selector instanceof ComplexSelector ? $selector : new ComplexSelector($selector);
             }
             $selector = new ComplexSelector($selector, $combinator, $compound);
         }
@@ -284,7 +283,6 @@ final class SelectorParser
         // '[' <ns-prefix>? <ident-token> [ <attr-matcher> [ <string-token> | <ident-token> ] <attr-modifier>? ]? ']'
         $this->tokenStream->eat(TokenTypes::LBRACK);
         $this->tokenStream->skipWhitespace();
-        $this->isParsingAttribute = true;
 
         [$namespace, $localName] = $this->parseQualifiedName(false);
 
@@ -307,7 +305,6 @@ final class SelectorParser
             }
         }
         $this->tokenStream->eat(TokenTypes::RBRACK);
-        $this->isParsingAttribute = false;
 
         return new AttributeSelector($localName, $namespace, $operator, $value, $forceCase);
     }
@@ -430,24 +427,36 @@ final class SelectorParser
         }
     }
 
+    /**
+     * @see https://www.w3.org/TR/selectors-4/#matches
+     */
     private function parseMatchesAny(): Is
     {
         $selectors = $this->parseSelectorList();
         return new Is($selectors);
     }
 
+    /**
+     * @see https://www.w3.org/TR/selectors-4/#negation
+     */
     private function parseMatchesNone(): Not
     {
         $selectors = $this->parseSelectorList();
         return new Not($selectors);
     }
 
+    /**
+     * @see https://www.w3.org/TR/selectors-4/#zero-matches
+     */
     private function parseWhere(): Where
     {
         $selectors = $this->parseSelectorList();
         return new Where($selectors);
     }
 
+    /**
+     * @see https://www.w3.org/TR/selectors-4/#relational
+     */
     private function parseHas(): Has
     {
         $selectors = $this->parseRelativeSelectorList();
