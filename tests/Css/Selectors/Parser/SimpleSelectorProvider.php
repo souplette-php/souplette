@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Tests\Css\Selectors;
+namespace Souplette\Tests\Css\Selectors\Parser;
 
 use Souplette\Css\Selectors\Node\AttributeSelector;
 use Souplette\Css\Selectors\Node\Functional\NthChild;
