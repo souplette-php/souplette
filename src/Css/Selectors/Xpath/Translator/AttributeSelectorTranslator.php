@@ -11,20 +11,21 @@ final class AttributeSelectorTranslator
     public function __invoke(AttributeSelector $selector, TranslationContext $context)
     {
         // TODO: handle namespaces
-        // TODO: handle forceCase
+        // TODO: handle caseInsensitivity wrt document modes
+        $caseInsensitive = $selector->forceCase === 'i';
         $predicate = match($selector->operator) {
             AttributeSelector::OPERATOR_EQUALS =>
-                XpathIdioms::attributeEquals($selector->attribute, $selector->value),
+                XpathIdioms::attributeEquals($selector->attribute, $selector->value, $caseInsensitive),
             AttributeSelector::OPERATOR_PREFIX_MATCH =>
-                XpathIdioms::attributeStartsWith($selector->attribute, $selector->value),
+                XpathIdioms::attributeStartsWith($selector->attribute, $selector->value, $caseInsensitive),
             AttributeSelector::OPERATOR_SUFFIX_MATCH =>
-                XpathIdioms::attributeEndsWith($selector->attribute, $selector->value),
+                XpathIdioms::attributeEndsWith($selector->attribute, $selector->value, $caseInsensitive),
             AttributeSelector::OPERATOR_INCLUDES =>
-                XpathIdioms::attributeIncludes($selector->attribute, $selector->value),
+                XpathIdioms::attributeIncludes($selector->attribute, $selector->value, $caseInsensitive),
             AttributeSelector::OPERATOR_SUBSTRING_MATCH =>
-                XpathIdioms::attributeContains($selector->attribute, $selector->value),
+                XpathIdioms::attributeContains($selector->attribute, $selector->value, $caseInsensitive),
             AttributeSelector::OPERATOR_DASH_MATCH =>
-                XpathIdioms::attributeDashMatches($selector->attribute, $selector->value),
+                XpathIdioms::attributeDashMatches($selector->attribute, $selector->value, $caseInsensitive),
             default =>
                 "@{$selector->attribute}",
         };
