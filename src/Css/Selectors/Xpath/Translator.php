@@ -6,6 +6,10 @@ use Souplette\Css\Selectors\Node\AttributeSelector;
 use Souplette\Css\Selectors\Node\ClassSelector;
 use Souplette\Css\Selectors\Node\ComplexSelector;
 use Souplette\Css\Selectors\Node\CompoundSelector;
+use Souplette\Css\Selectors\Node\Functional\NthChild;
+use Souplette\Css\Selectors\Node\Functional\NthLastChild;
+use Souplette\Css\Selectors\Node\Functional\NthLastOfType;
+use Souplette\Css\Selectors\Node\Functional\NthOfType;
 use Souplette\Css\Selectors\Node\FunctionalSelector;
 use Souplette\Css\Selectors\Node\IdSelector;
 use Souplette\Css\Selectors\Node\PseudoClassSelector;
@@ -18,6 +22,10 @@ use Souplette\Css\Selectors\Xpath\Translator\AttributeSelectorTranslator;
 use Souplette\Css\Selectors\Xpath\Translator\ClassSelectorTranslator;
 use Souplette\Css\Selectors\Xpath\Translator\ComplexSelectorTranslator;
 use Souplette\Css\Selectors\Xpath\Translator\CompoundSelectorTranslator;
+use Souplette\Css\Selectors\Xpath\Translator\Functional\NthChildSelectorTranslator;
+use Souplette\Css\Selectors\Xpath\Translator\Functional\NthLastChildSelectorTranslator;
+use Souplette\Css\Selectors\Xpath\Translator\Functional\NthLastOfTypeSelectorTranslator;
+use Souplette\Css\Selectors\Xpath\Translator\Functional\NthOfTypeSelectorTranslator;
 use Souplette\Css\Selectors\Xpath\Translator\FunctionalSelectorTranslator;
 use Souplette\Css\Selectors\Xpath\Translator\IdSelectorTranslator;
 use Souplette\Css\Selectors\Xpath\Translator\PseudoClassSelectorTranslator;
@@ -38,6 +46,10 @@ final class Translator
         PseudoClassSelector::class => PseudoClassSelectorTranslator::class,
         PseudoElementSelector::class => PseudoElementSelectorTranslator::class,
         FunctionalSelector::class => FunctionalSelectorTranslator::class,
+        NthChild::class => NthChildSelectorTranslator::class,
+        NthLastChild::class => NthLastChildSelectorTranslator::class,
+        NthOfType::class => NthOfTypeSelectorTranslator::class,
+        NthLastOfType::class => NthLastOfTypeSelectorTranslator::class,
     ];
 
     private array $translators = [];

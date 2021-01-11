@@ -7,13 +7,14 @@ use Souplette\Css\Syntax\Node\AnPlusB;
 
 final class NthLastOfType extends FunctionalSelector
 {
-    public function __construct(AnPlusB $anPlusB)
-    {
+    public function __construct(
+        public AnPlusB $anPlusB
+    ) {
         parent::__construct('nth-last-of-type', [$anPlusB]);
     }
 
     public function __toString()
     {
-        return ":nth-last-of-type({$this->arguments[0]})";
+        return ":nth-last-of-type({$this->anPlusB})";
     }
 }

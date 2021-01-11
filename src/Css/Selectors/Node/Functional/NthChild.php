@@ -10,8 +10,8 @@ use Souplette\Css\Syntax\Node\AnPlusB;
 final class NthChild extends FunctionalSelector
 {
     public function __construct(
-        private AnPlusB $anPlusB,
-        private ?SelectorList $selectorList = null
+        public AnPlusB $anPlusB,
+        public ?SelectorList $selectorList = null
     ) {
         $args = [$this->anPlusB];
         if ($this->selectorList) {

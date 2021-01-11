@@ -7,13 +7,14 @@ use Souplette\Css\Syntax\Node\AnPlusB;
 
 final class NthOfType extends FunctionalSelector
 {
-    public function __construct(AnPlusB $anPlusB)
-    {
+    public function __construct(
+        public AnPlusB $anPlusB
+    ) {
         parent::__construct('nth-of-type', [$anPlusB]);
     }
 
     public function __toString()
     {
-        return ":nth-of-type({$this->arguments[0]})";
+        return ":nth-of-type({$this->anPlusB})";
     }
 }
