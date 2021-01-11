@@ -11,7 +11,7 @@ final class Lang extends FunctionalSelector
         parent::__construct('lang', $languages);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         $languages = array_map(fn($l) => sprintf('"%s"', $l), $this->arguments);
         $languages = implode(', ', $languages);

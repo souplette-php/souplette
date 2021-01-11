@@ -13,7 +13,7 @@ final class Is extends FunctionalSelector
         parent::__construct('is', [$this->selectorList]);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return ":is({$this->selectorList})";
     }

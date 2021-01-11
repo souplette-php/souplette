@@ -12,7 +12,7 @@ final class NthCol extends FunctionalSelector
         parent::__construct('nth-col', [$anPlusB]);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return ":nth-col({$this->arguments[0]})";
     }

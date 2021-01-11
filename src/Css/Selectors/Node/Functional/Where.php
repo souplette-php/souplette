@@ -13,7 +13,7 @@ final class Where extends FunctionalSelector
         parent::__construct('where', [$selectors]);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return ":where({$this->arguments[0]})";
     }

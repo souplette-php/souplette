@@ -21,7 +21,7 @@ final class NthChild extends FunctionalSelector
         parent::__construct('nth-child', $args);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return sprintf(
             ':nth-child(%s%s)',

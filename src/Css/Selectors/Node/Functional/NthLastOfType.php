@@ -13,7 +13,7 @@ final class NthLastOfType extends FunctionalSelector
         parent::__construct('nth-last-of-type', [$anPlusB]);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return ":nth-last-of-type({$this->anPlusB})";
     }

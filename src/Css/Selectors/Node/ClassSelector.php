@@ -10,7 +10,7 @@ final class ClassSelector extends SimpleSelector
     {
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return ".{$this->class}";
     }

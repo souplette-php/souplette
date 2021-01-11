@@ -22,7 +22,7 @@ final class AttributeSelector extends SimpleSelector
     ) {
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         $qname = $this->namespace ? "{$this->namespace}|{$this->attribute}" : $this->attribute;
         if (!$this->operator) {

@@ -13,7 +13,7 @@ final class Not extends FunctionalSelector
         parent::__construct('not', [$this->selectorList]);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return ":not({$this->selectorList})";
     }

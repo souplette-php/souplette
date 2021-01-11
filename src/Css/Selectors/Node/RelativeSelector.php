@@ -15,7 +15,7 @@ final class RelativeSelector extends Selector
         $this->selector = $selector;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return "{$this->combinator} {$this->selector}";
     }

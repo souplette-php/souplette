@@ -14,7 +14,7 @@ final class Dir extends FunctionalSelector
         parent::__construct('dir', [$direction]);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return ":dir({$this->arguments[0]})";
     }
