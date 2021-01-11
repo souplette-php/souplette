@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Css\Selectors\Xpath\Translator\Functional;
+namespace Souplette\Css\Selectors\Xpath\Helper;
 
 final class NthTranslatorHelper
 {

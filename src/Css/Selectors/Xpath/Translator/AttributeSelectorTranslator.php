@@ -3,8 +3,8 @@
 namespace Souplette\Css\Selectors\Xpath\Translator;
 
 use Souplette\Css\Selectors\Node\AttributeSelector;
+use Souplette\Css\Selectors\Xpath\Helper\AttributeMatchHelper;
 use Souplette\Css\Selectors\Xpath\TranslationContext;
-use Souplette\Xml\XpathIdioms;
 
 final class AttributeSelectorTranslator
 {
@@ -15,17 +15,17 @@ final class AttributeSelectorTranslator
         $caseInsensitive = $selector->forceCase === 'i';
         $predicate = match($selector->operator) {
             AttributeSelector::OPERATOR_EQUALS =>
-                XpathIdioms::attributeEquals($selector->attribute, $selector->value, $caseInsensitive),
+                AttributeMatchHelper::attributeEquals($selector->attribute, $selector->value, $caseInsensitive),
             AttributeSelector::OPERATOR_PREFIX_MATCH =>
-                XpathIdioms::attributeStartsWith($selector->attribute, $selector->value, $caseInsensitive),
+                AttributeMatchHelper::attributeStartsWith($selector->attribute, $selector->value, $caseInsensitive),
             AttributeSelector::OPERATOR_SUFFIX_MATCH =>
-                XpathIdioms::attributeEndsWith($selector->attribute, $selector->value, $caseInsensitive),
+                AttributeMatchHelper::attributeEndsWith($selector->attribute, $selector->value, $caseInsensitive),
             AttributeSelector::OPERATOR_INCLUDES =>
-                XpathIdioms::attributeIncludes($selector->attribute, $selector->value, $caseInsensitive),
+                AttributeMatchHelper::attributeIncludes($selector->attribute, $selector->value, $caseInsensitive),
             AttributeSelector::OPERATOR_SUBSTRING_MATCH =>
-                XpathIdioms::attributeContains($selector->attribute, $selector->value, $caseInsensitive),
+                AttributeMatchHelper::attributeContains($selector->attribute, $selector->value, $caseInsensitive),
             AttributeSelector::OPERATOR_DASH_MATCH =>
-                XpathIdioms::attributeDashMatches($selector->attribute, $selector->value, $caseInsensitive),
+                AttributeMatchHelper::attributeDashMatches($selector->attribute, $selector->value, $caseInsensitive),
             default =>
                 "@{$selector->attribute}",
         };

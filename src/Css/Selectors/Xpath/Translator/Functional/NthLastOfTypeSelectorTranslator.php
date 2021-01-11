@@ -4,6 +4,7 @@ namespace Souplette\Css\Selectors\Xpath\Translator\Functional;
 
 use Souplette\Css\Selectors\Node\Functional\NthLastOfType;
 use Souplette\Css\Selectors\Xpath\Exception\UnsupportedSelector;
+use Souplette\Css\Selectors\Xpath\Helper\NthTranslatorHelper;
 use Souplette\Css\Selectors\Xpath\TranslationContext;
 
 final class NthLastOfTypeSelectorTranslator

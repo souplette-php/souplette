@@ -2,7 +2,7 @@
 
 namespace Souplette\Css\Selectors\Xpath;
 
-use Souplette\Xml\XpathIdioms;
+use Souplette\Css\Selectors\Xpath\Helper\StringHelper;
 
 final class Expression
 {
@@ -30,7 +30,7 @@ final class Expression
         if (!$this->namespace || $this->namespace === '*') {
             $element = '*';
             if ($this->localName !== '*') {
-                $namePred = sprintf('local-name() = %s', XpathIdioms::toStringLiteral($this->localName));
+                $namePred = sprintf('local-name() = %s', StringHelper::toStringLiteral($this->localName));
                 array_unshift($predicates, $namePred);
             }
         } else {

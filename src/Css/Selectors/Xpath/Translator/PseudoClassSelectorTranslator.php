@@ -4,8 +4,8 @@ namespace Souplette\Css\Selectors\Xpath\Translator;
 
 use Souplette\Css\Selectors\Node\PseudoClassSelector;
 use Souplette\Css\Selectors\Xpath\Exception\UnsupportedPseudoClass;
+use Souplette\Css\Selectors\Xpath\Helper\NthTranslatorHelper;
 use Souplette\Css\Selectors\Xpath\TranslationContext;
-use Souplette\Css\Selectors\Xpath\Translator\Functional\NthTranslatorHelper;
 
 /**
  * @see https://html.spec.whatwg.org/multipage/semantics-other.html#pseudo-classes
