@@ -2,6 +2,7 @@
 
 namespace Souplette\Html\Dom\Node;
 
+use DOMAttr;
 use DOMComment;
 use DOMElement;
 use DOMNodeList;
@@ -36,6 +37,7 @@ final class HtmlDocument extends \DOMDocument implements
         $this->registerNodeClass(DOMText::class, HtmlText::class);
         $this->registerNodeClass(DOMComment::class, HtmlComment::class);
         $this->registerNodeClass(DOMElement::class, HtmlElement::class);
+        $this->registerNodeClass(DOMAttr::class, HtmlAttribute::class);
     }
 
     public function __get($name)

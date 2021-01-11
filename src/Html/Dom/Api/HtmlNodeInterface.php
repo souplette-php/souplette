@@ -26,6 +26,18 @@ interface HtmlNodeInterface extends DomNodeInterface
     const NOTATION_NODE = 12; // historical
     const HTML_DOCUMENT_NODE = 13;
 
+    /**
+     * @see https://dom.spec.whatwg.org/#dom-node-comparedocumentposition
+     */
+    const DOCUMENT_POSITION_DISCONNECTED = 0x01;
+    const DOCUMENT_POSITION_PRECEDING = 0x02;
+    const DOCUMENT_POSITION_FOLLOWING = 0x04;
+    const DOCUMENT_POSITION_CONTAINS = 0x08;
+    const DOCUMENT_POSITION_CONTAINED_BY = 0x10;
+    const DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 0x20;
+
+    public function compareDocumentPosition(?DOMNode $other): int;
+
     public function contains(?DOMNode $other): bool;
 
     public function getParentElement(): ?DOMElement;

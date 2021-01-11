@@ -21,6 +21,32 @@ final class DomIdioms
         return $document;
     }
 
+    public static function getRoot(DOMNode $node): DOMNode
+    {
+        while ($node->parentNode) {
+            $node = $node->parentNode;
+        }
+        return $node;
+    }
+
+    public static function isInclusiveDescendant(DOMNode $parent, ?DOMNode $other = null): bool
+    {
+        if (!$other) return false;
+        for ($node = $other; $node; $node = $node->parentNode) {
+            if ($node === $parent) return true;
+        }
+        return false;
+    }
+
+    public static function isPrecedingSibling(DOMNode $reference, ?DOMNode $other = null): bool
+    {
+        if (!$other) return false;
+        for ($node = $reference->previousSibling; $node; $node = $node->previousSibling) {
+            if ($node === $other) return true;
+        }
+        return false;
+    }
+
     public static function getElementsByClassName(DOMDocument $doc, string $classNames, DOMNode $context): DOMNodeList
     {
         // TODO: match must be case-insensitive in quirks mode
