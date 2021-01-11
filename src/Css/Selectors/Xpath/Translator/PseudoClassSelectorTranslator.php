@@ -5,6 +5,7 @@ namespace Souplette\Css\Selectors\Xpath\Translator;
 use Souplette\Css\Selectors\Node\PseudoClassSelector;
 use Souplette\Css\Selectors\Xpath\Exception\UnsupportedPseudoClass;
 use Souplette\Css\Selectors\Xpath\TranslationContext;
+use Souplette\Css\Selectors\Xpath\Translator\Functional\NthTranslatorHelper;
 
 /**
  * @see https://html.spec.whatwg.org/multipage/semantics-other.html#pseudo-classes
@@ -19,10 +20,25 @@ final class PseudoClassSelectorTranslator
             'root' => 'not(parent::*)',
             'empty' => 'not(*) or normalize-space(.) = " "',
             // TODO: check if star prefix is needed
-            // FIXME: *-of-type are wrong !
-            'first-child', 'first-of-type' => 'position() = 1',
-            'last-child', 'last-of-type' => 'position() = last()',
-            'only-child', 'only-of-type' => 'last() = 1',
+            'first-child' => 'position() = 1',
+            'last-child' => 'position() = last()',
+            'only-child' => 'last() = 1',
+            'first-of-type' => match($localName) {
+                '*' => throw new UnsupportedPseudoClass($selector),
+                default => NthTranslatorHelper::translateNth(0, 1, $localName),
+            },
+            'last-of-type' => match($localName) {
+                '*' => throw new UnsupportedPseudoClass($selector),
+                default => NthTranslatorHelper::translateNth(0, 1, $localName, true),
+            },
+            'only-of-type' => match($localName) {
+                '*' => throw new UnsupportedPseudoClass($selector),
+                default => sprintf(
+                    '(%s) and (%s)',
+                    NthTranslatorHelper::translateNth(0, 1, $localName, false),
+                    NthTranslatorHelper::translateNth(0, 1, $localName, true),
+                ),
+            },
             'link', 'any-link' => match($localName) {
                 'a', 'link', 'area' => '@href',
                 '*' => "@href and (name(.) = 'a' or name(.) = 'link' or name(.) = 'area')",
