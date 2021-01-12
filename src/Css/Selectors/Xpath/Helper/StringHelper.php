@@ -43,8 +43,8 @@ final class StringHelper
         return sprintf(
             'translate(%s, %s, %s)',
             $what,
-            StringHelperStringHelper::toStringLiteral($upperChars),
-            StringHelperStringHelper::toStringLiteral($lowerChars),
+            StringHelper::toStringLiteral($upperChars),
+            StringHelper::toStringLiteral($lowerChars),
         );
     }
 }

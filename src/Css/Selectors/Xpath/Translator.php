@@ -17,6 +17,7 @@ use Souplette\Css\Selectors\Node\PseudoElementSelector;
 use Souplette\Css\Selectors\Node\Selector;
 use Souplette\Css\Selectors\Node\SelectorList;
 use Souplette\Css\Selectors\Node\TypeSelector;
+use Souplette\Css\Selectors\Node\UniversalSelector;
 use Souplette\Css\Selectors\Xpath\Exception\UnsupportedSelector;
 use Souplette\Css\Selectors\Xpath\Translator\AttributeSelectorTranslator;
 use Souplette\Css\Selectors\Xpath\Translator\ClassSelectorTranslator;
@@ -40,6 +41,7 @@ final class Translator
         ComplexSelector::class => ComplexSelectorTranslator::class,
         CompoundSelector::class => CompoundSelectorTranslator::class,
         TypeSelector::class => TypeSelectorTranslator::class,
+        UniversalSelector::class => TypeSelectorTranslator::class,
         IdSelector::class => IdSelectorTranslator::class,
         ClassSelector::class => ClassSelectorTranslator::class,
         AttributeSelector::class => AttributeSelectorTranslator::class,
@@ -72,7 +74,8 @@ final class Translator
     {
         $this->context = new TranslationContext($this, new ExpressionBuilder());
         $this->visit($node);
-        return $this->context->expr->build();
+        $expr = $this->context->expr->build();
+        return "//{$expr}";
     }
 
     public function visit(Selector $node)
