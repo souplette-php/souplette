@@ -22,7 +22,7 @@ final class PseudoClassSelectorTranslator
             // TODO: check if star prefix is needed
             'first-child' => 'position() = 1',
             'last-child' => 'position() = last()',
-            'only-child' => 'last() = 1',
+            'only-child' => 'position() = 1 and position() = last()',
             'first-of-type' => match($localName) {
                 '*' => throw new UnsupportedPseudoClass($selector),
                 default => NthTranslatorHelper::translateNth(0, 1, $localName),
