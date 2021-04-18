@@ -4,14 +4,10 @@ namespace Souplette\Css\Syntax\Node;
 
 final class AnPlusB extends CssValue
 {
-    public int $a;
-    public int $b;
-
-    public function __construct(int $a, int $b)
-    {
-        $this->a = $a;
-        $this->b = $b;
-    }
+    public function __construct(
+        public int $a,
+        public int $b,
+    ) {}
 
     /**
      * @see https://www.w3.org/TR/css-syntax-3/#serializing-anb

@@ -6,13 +6,14 @@ use Souplette\Html\Namespaces;
 
 final class TreeConstructionTestDTO
 {
-    public $id;
-    public $shouldFail = false;
-    public $scriptingEnabled = false;
-    public $contextElement;
-    public $input = '';
-    public $output = '';
-    public $errors = [];
+    public string $id;
+    public bool $shouldFail = false;
+    public bool $scriptingEnabled = false;
+    public ?array $contextElement = null;
+    public string $input = '';
+    public string $output = '';
+    // TODO: handle errors
+    public string $errors = '';
 
     public static function fromArray(array $data): self
     {

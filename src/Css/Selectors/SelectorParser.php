@@ -380,44 +380,34 @@ final class SelectorParser
     private function parseFunctionalSelector(): FunctionalSelector
     {
         $token = $this->tokenStream->expect(TokenTypes::FUNCTION);
-        $name = $token->value;
+        $name = strtolower($token->value);
         $this->tokenStream->consumeAndSkipWhitespace();
-        switch (strtolower($name)) {
-            // logical combinators
-            case 'is':
-            case 'matches':
-                return $this->parseMatchesAny();
-            case 'not':
-                return $this->parseMatchesNone();
-            case 'where':
-                return $this->parseWhere();
-            case 'has':
-                return $this->parseHas();
+        return match ($name) {
+            'is', 'matches' => $this->parseMatchesAny(),
+            'not' => $this->parseMatchesNone(),
+            'where' => $this->parseWhere(),
+            'has' => $this->parseHas(),
             // linguistic
-            case 'dir':
-                return $this->parseDir();
-            case 'lang':
-                return $this->parseLang();
+            'dir' => $this->parseDir(),
+            'lang' => $this->parseLang(),
             // child-indexed
-            case 'nth-child':
-                return $this->parseNthChild();
-            case 'nth-last-child':
-                return $this->parseNthChild(true);
+            'nth-child' => $this->parseNthChild(),
+            'nth-last-child' => $this->parseNthChild(true),
             // typed child-indexed
-            case 'nth-of-type':
-                return $this->parseNthOfType();
-            case 'nth-last-of-type':
-                return $this->parseNthOfType(true);
+            'nth-of-type' => $this->parseNthOfType(),
+            'nth-last-of-type' => $this->parseNthOfType(true),
             // grid structural
-            case 'nth-col':
-                return $this->parseNthCol();
-            case 'nth-last-col':
-                return $this->parseNthCol(true);
-            default:
-                $args = $this->tokenStream->consumeAnyValue(TokenTypes::RPAREN);
-                $this->tokenStream->eat(TokenTypes::RPAREN);
-                return new FunctionalSelector($name, $args);
-        }
+            'nth-col' => $this->parseNthCol(),
+            'nth-last-col' => $this->parseNthCol(true),
+            default => $this->parseUnknownFunctionalSelector($name),
+        };
+    }
+
+    private function parseUnknownFunctionalSelector(string $name): FunctionalSelector
+    {
+        $args = $this->tokenStream->consumeAnyValue(TokenTypes::RPAREN);
+        $this->tokenStream->eat(TokenTypes::RPAREN);
+        return new FunctionalSelector($name, $args);
     }
 
     /**

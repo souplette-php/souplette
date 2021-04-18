@@ -50,22 +50,21 @@ final class HtmlDocument extends \DOMDocument implements
         PropertyMaps::set($this, $name, $value);
     }
 
-    public function createElement($name, $value = null)
+    public function createElement($localName, $value = null): bool|HTMLElement
     {
-        return $this->createElementNS(Namespaces::HTML, $name, $value ?? '');
+        return $this->createElementNS(Namespaces::HTML, $localName, $value ?? '');
     }
 
-    public function createElementNS($namespaceURI, $qualifiedName, $value = null)
+    public function createElementNS($namespace, $qualifiedName, $value = null): bool|HtmlElement
     {
-        if (isset(HtmlElementClasses::ELEMENTS[$namespaceURI][$qualifiedName])) {
-            $class = HtmlElementClasses::ELEMENTS[$namespaceURI][$qualifiedName];
+        if ($class = HtmlElementClasses::ELEMENTS[$namespace][$qualifiedName] ?? null) {
             $this->registerNodeClass(DOMElement::class, $class);
-            $element = parent::createElementNS($namespaceURI, $qualifiedName, $value ?? '');
+            $element = parent::createElementNS($namespace, $qualifiedName, $value ?? '');
             $this->registerNodeClass(DOMElement::class, HtmlElement::class);
             return $element;
         }
 
-        return parent::createElementNS($namespaceURI, $qualifiedName, $value ?? '');
+        return parent::createElementNS($namespace, $qualifiedName, $value ?? '');
     }
 
     public function getHead(): ?DOMElement
