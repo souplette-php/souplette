@@ -2,7 +2,9 @@
 
 namespace Souplette\Html\Dom;
 
+use DOMAttr;
 use DOMDocument;
+use DOMElement;
 use DOMNode;
 use DOMNodeList;
 use DOMXPath;
@@ -121,5 +123,15 @@ final class DomIdioms
             $parent->removeChild($parent->firstChild);
         }
         $parent->appendChild($node);
+    }
+
+    public static function getAttributeNode(DOMElement $node, string $qualifiedName): ?DOMAttr
+    {
+        foreach ($node->attributes as $attribute) {
+            if (strcasecmp($qualifiedName, $attribute->nodeName) === 0) {
+                return $attribute;
+            }
+        }
+        return null;
     }
 }

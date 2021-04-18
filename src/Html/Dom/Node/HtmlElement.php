@@ -38,6 +38,23 @@ class HtmlElement extends \DOMElement implements
         PropertyMaps::set($this, $name, $value);
     }
 
+    public function hasAttribute($qualifiedName): bool
+    {
+        if (parent::hasAttribute($qualifiedName)) {
+            return true;
+        }
+        return DomIdioms::getAttributeNode($this, $qualifiedName) !== null;
+    }
+
+    public function getAttribute($qualifiedName): string
+    {
+        if (parent::hasAttribute($qualifiedName)) {
+            return parent::getAttribute($qualifiedName);
+        }
+        $node = DomIdioms::getAttributeNode($this, $qualifiedName);
+        return $node ? $node->nodeValue : '';
+    }
+
     public function getId(): string
     {
         return $this->getAttribute('id');

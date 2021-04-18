@@ -104,4 +104,22 @@ final class HtmlElementTest extends TestCase
         $html->setAttribute('class', 'bar');
         Assert::assertSame('bar', $html->className);
     }
+
+    public function testHasAttributeIsCaseInsensitive()
+    {
+        $doc = DomBuilder::create()
+            ->tag('foo')->attr('bar', 'baz')
+            ->getDocument();
+        $el = $doc->documentElement;
+        Assert::assertTrue($el->hasAttribute('BAR'));
+    }
+
+    public function testGetAttributeIsCaseInsensitive()
+    {
+        $doc = DomBuilder::create()
+            ->tag('foo')->attr('bar', 'baz')
+            ->getDocument();
+        $el = $doc->documentElement;
+        Assert::assertSame('baz', $el->getAttribute('BAR'));
+    }
 }
