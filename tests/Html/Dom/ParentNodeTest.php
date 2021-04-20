@@ -2,10 +2,10 @@
 
 namespace Souplette\Tests\Html\Dom;
 
-use Souplette\Html\Dom\Api\ParentNodeInterface;
-use Souplette\Tests\Html\DomBuilder;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
+use Souplette\Html\Dom\Api\ParentNodeInterface;
+use Souplette\Tests\Html\DomBuilder;
 
 final class ParentNodeTest extends TestCase
 {

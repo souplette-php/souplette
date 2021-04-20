@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Tests\Css\Selectors\Query\Evaluator;
+namespace Souplette\Tests\Css\Selectors\Query\Evaluator\Simple;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\Simple\TypeSelector;
-use Souplette\Css\Selectors\Query\Evaluator\Simple\TypeEvaluator;
+use Souplette\Css\Selectors\Query\Compiler;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Html\Namespaces;
 use Souplette\Tests\Html\DomBuilder;
@@ -15,9 +15,8 @@ final class TypeEvaluatorTest extends TestCase
     private static function assertMatches(\DOMElement $element, TypeSelector $selector, bool $expected)
     {
         $ctx = new QueryContext($element);
-        $ctx->selector = $selector;
-        $evaluator = new TypeEvaluator();
-        Assert::assertSame($expected, $evaluator->matches($ctx));
+        $evaluator = (new Compiler)->compile($selector);
+        Assert::assertSame($expected, $evaluator->matches($ctx, $element));
     }
 
     /**

@@ -2,10 +2,10 @@
 
 namespace Souplette\Tests\Xml;
 
-use Souplette\Html\Namespaces;
-use Souplette\Xml\XmlNameEscaper;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
+use Souplette\Html\Namespaces;
+use Souplette\Xml\XmlNameEscaper;
 
 final class XmlNameEscaperTest extends TestCase
 {

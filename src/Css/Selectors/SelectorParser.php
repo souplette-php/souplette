@@ -291,7 +291,10 @@ final class SelectorParser
         $token = $this->tokenStream->consumeAndSkipWhitespace();
         $forceCase = null;
         if ($token::TYPE === TokenTypes::IDENT) {
-            if (strcasecmp($token->value,'i') === 0 || strcasecmp($token->value, 's') === 0) {
+            if (
+                strcasecmp($token->value,AttributeSelector::CASE_FORCE_INSENSITIVE) === 0
+                || strcasecmp($token->value, AttributeSelector::CASE_FORCE_SENSITIVE) === 0
+            ) {
                 $forceCase = $token->value;
                 $this->tokenStream->consumeAndSkipWhitespace();
             }
@@ -304,16 +307,16 @@ final class SelectorParser
     private function parseAttributeMatcher(): string
     {
         $token = $this->tokenStream->expect(TokenTypes::DELIM);
-        if ($token->value === '=') {
+        if ($token->value === AttributeSelector::OPERATOR_EQUALS) {
             $this->tokenStream->consume();
             return AttributeSelector::OPERATOR_EQUALS;
         }
         $operator = self::ATTRIBUTE_MATCHERS[$token->value] ?? null;
         if (!$operator) {
-            throw UnexpectedValue::expectingOneOf($token->value, '=', ...self::ATTRIBUTE_MATCHERS);
+            throw UnexpectedValue::expectingOneOf($token->value, AttributeSelector::OPERATOR_EQUALS, ...self::ATTRIBUTE_MATCHERS);
         }
         $this->tokenStream->consume();
-        $this->tokenStream->eatValue(TokenTypes::DELIM, '=');
+        $this->tokenStream->eatValue(TokenTypes::DELIM, AttributeSelector::OPERATOR_EQUALS);
 
         return $operator;
     }

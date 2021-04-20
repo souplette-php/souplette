@@ -4,5 +4,5 @@ namespace Souplette\Css\Selectors\Query;
 
 interface EvaluatorInterface
 {
-    public function matches(QueryContext $context): bool;
+    public function matches(QueryContext $context, \DOMElement $element): bool;
 }

@@ -2,8 +2,8 @@
 
 namespace Souplette\Tests\Html\Parser\Tokenizer;
 
-use Souplette\Html\Parser\Tokenizer\Token;
 use PHPUnit\Framework\TestCase;
+use Souplette\Html\Parser\Tokenizer\Token;
 
 class EndTagTest extends TestCase
 {

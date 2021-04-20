@@ -2,8 +2,8 @@
 
 namespace Souplette\Tests\Html\Serializer;
 
-use Souplette\Html\Serializer\Serializer;
 use PHPUnit\Framework\Assert;
+use Souplette\Html\Serializer\Serializer;
 
 final class SerializerAssert
 {

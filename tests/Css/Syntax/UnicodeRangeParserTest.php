@@ -2,12 +2,12 @@
 
 namespace Souplette\Tests\Css\Syntax;
 
+use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\TestCase;
 use Souplette\Css\Syntax\Exception\ParseError;
 use Souplette\Css\Syntax\Tokenizer\Tokenizer;
 use Souplette\Css\Syntax\TokenStream\TokenStream;
 use Souplette\Css\Syntax\UnicodeRangeParser;
-use PHPUnit\Framework\Assert;
-use PHPUnit\Framework\TestCase;
 
 final class UnicodeRangeParserTest extends TestCase
 {

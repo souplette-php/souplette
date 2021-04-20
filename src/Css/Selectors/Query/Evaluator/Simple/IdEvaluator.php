@@ -8,15 +8,17 @@ use Souplette\Css\Selectors\Query\QueryContext;
 
 final class IdEvaluator implements EvaluatorInterface
 {
-    public function matches(QueryContext $context): bool
-    {
-        $selector = $context->selector;
-        assert($selector instanceof IdSelector);
+    public function __construct(
+        public string $id,
+    ) {
+    }
 
-        $id = $context->element->getAttribute('id');
+    public function matches(QueryContext $context, \DOMElement $element): bool
+    {
+        $id = $element->getAttribute('id');
         return match($context->caseInsensitiveIds) {
-            true => strcasecmp($id, $selector->id) === 0,
-            false => $selector->id === $id,
+            true => strcasecmp($id, $this->id) === 0,
+            false => $this->id === $id,
         };
     }
 }

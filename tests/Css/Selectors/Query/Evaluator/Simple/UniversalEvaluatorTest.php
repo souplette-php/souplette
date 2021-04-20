@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Tests\Css\Selectors\Query\Evaluator;
+namespace Souplette\Tests\Css\Selectors\Query\Evaluator\Simple;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
@@ -22,7 +22,7 @@ final class UniversalEvaluatorTest extends TestCase
         $evaluator = new UniversalEvaluator();
         foreach ($dom->children as $child) {
             $ctx = new QueryContext($child);
-            Assert::assertTrue($evaluator->matches($ctx));
+            Assert::assertTrue($evaluator->matches($ctx, $child));
         }
     }
 }

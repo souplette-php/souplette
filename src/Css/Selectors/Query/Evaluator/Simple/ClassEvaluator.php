@@ -9,15 +9,18 @@ use Souplette\Css\Selectors\Query\QueryContext;
 
 final class ClassEvaluator implements EvaluatorInterface
 {
-    public function matches(QueryContext $context): bool
+    public function __construct(
+        public string $class,
+    ) {
+    }
+
+    public function matches(QueryContext $context, \DOMElement $element): bool
     {
-        $selector = $context->selector;
-        assert($selector instanceof ClassSelector);
-        $className = $context->element->getAttribute('class');
+        $className = $element->getAttribute('class');
         if (!$className) {
             return false;
         }
 
-        return AttributeMatchHelper::includes($selector->class, $className, $context->caseInsensitiveClasses);
+        return AttributeMatchHelper::includes($this->class, $className, $context->caseInsensitiveClasses);
     }
 }

@@ -2,10 +2,10 @@
 
 namespace Souplette\Tests\Html\Parser\Tokenizer;
 
+use PHPUnit\Framework\Assert;
 use Souplette\Html\Parser\Tokenizer\Token;
 use Souplette\Html\Parser\Tokenizer\Tokenizer;
 use Souplette\Html\Parser\Tokenizer\TokenizerStates;
-use PHPUnit\Framework\Assert;
 
 final class TokenizerAssert
 {

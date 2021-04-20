@@ -2,10 +2,10 @@
 
 namespace Souplette\Tests\Html\Dom;
 
-use Souplette\Html\Dom\Api\HtmlNodeInterface;
-use Souplette\Tests\Html\DomBuilder;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
+use Souplette\Html\Dom\Api\HtmlNodeInterface;
+use Souplette\Tests\Html\DomBuilder;
 
 final class HtmlNodeTest extends TestCase
 {

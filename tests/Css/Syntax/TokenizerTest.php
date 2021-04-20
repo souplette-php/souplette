@@ -2,6 +2,8 @@
 
 namespace Souplette\Tests\Css\Syntax;
 
+use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\TestCase;
 use Souplette\Css\Syntax\Tokenizer\Token\AtKeyword;
 use Souplette\Css\Syntax\Tokenizer\Token\Comma;
 use Souplette\Css\Syntax\Tokenizer\Token\Delimiter;
@@ -13,8 +15,6 @@ use Souplette\Css\Syntax\Tokenizer\Token\Percentage;
 use Souplette\Css\Syntax\Tokenizer\Token\Str;
 use Souplette\Css\Syntax\Tokenizer\Token\Whitespace;
 use Souplette\Css\Syntax\Tokenizer\Tokenizer;
-use PHPUnit\Framework\Assert;
-use PHPUnit\Framework\TestCase;
 
 final class TokenizerTest extends TestCase
 {

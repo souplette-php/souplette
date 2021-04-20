@@ -2,9 +2,9 @@
 
 namespace Souplette\Tests\Html\Parser\TreeBuilder;
 
-use Souplette\Html\Parser\TreeBuilder\Stack;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
+use Souplette\Html\Parser\TreeBuilder\Stack;
 
 class StackTest extends TestCase
 {

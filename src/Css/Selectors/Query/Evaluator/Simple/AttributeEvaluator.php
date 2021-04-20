@@ -9,23 +9,28 @@ use Souplette\Css\Selectors\Query\QueryContext;
 
 final class AttributeEvaluator implements EvaluatorInterface
 {
-    public function matches(QueryContext $context): bool
-    {
-        $selector = $context->selector;
-        assert($selector instanceof AttributeSelector);
+    public function __construct(
+        public string $attribute,
+        public ?string $operator = null,
+        public ?string $value = null,
+        public ?string $namespace = null,
+        public ?string $forceCase = null,
+    ) {
+    }
 
-        $element = $context->element;
-        $attr = $selector->attribute;
-        $op = $selector->operator;
+    public function matches(QueryContext $context, \DOMElement $element): bool
+    {
+        $attr = $this->attribute;
+        $op = $this->operator;
         if (!$op) {
             return $element->hasAttribute($attr);
         }
 
-        $expected = $selector->value;
+        $expected = $this->value;
         $actual = $element->getAttribute($attr);
-        $caseInsensitive = match ($selector->forceCase) {
-            'i' => true,
-            's', null => false,
+        $caseInsensitive = match ($this->forceCase) {
+            AttributeSelector::CASE_FORCE_INSENSITIVE => true,
+            AttributeSelector::CASE_FORCE_SENSITIVE, null => false,
         };
 
         return match ($op) {

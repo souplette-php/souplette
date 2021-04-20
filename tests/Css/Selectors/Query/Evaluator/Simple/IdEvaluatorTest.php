@@ -1,10 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Tests\Css\Selectors\Query\Evaluator;
+namespace Souplette\Tests\Css\Selectors\Query\Evaluator\Simple;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Css\Selectors\Node\Simple\IdSelector;
 use Souplette\Css\Selectors\Query\Evaluator\Simple\IdEvaluator;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Tests\Html\DomBuilder;
@@ -16,11 +15,10 @@ final class IdEvaluatorTest extends TestCase
      */
     public function testItMatches(\DOMElement $element, string $id, bool $caseInsensitive, bool $expected)
     {
-        $evaluator = new IdEvaluator();
+        $evaluator = new IdEvaluator($id);
         $ctx = new QueryContext($element);
-        $ctx->selector = new IdSelector($id);
         $ctx->caseInsensitiveIds = $caseInsensitive;
-        Assert::assertSame($expected, $evaluator->matches($ctx));
+        Assert::assertSame($expected, $evaluator->matches($ctx, $element));
     }
 
     public function matchesProvider(): \Generator

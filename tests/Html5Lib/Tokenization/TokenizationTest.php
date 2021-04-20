@@ -2,6 +2,8 @@
 
 namespace Souplette\Tests\Html5Lib\Tokenization;
 
+use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\TestCase;
 use Souplette\Html\Parser\InputPreprocessor;
 use Souplette\Html\Parser\Tokenizer\Token;
 use Souplette\Html\Parser\Tokenizer\Tokenizer;
@@ -9,8 +11,6 @@ use Souplette\Html\Parser\Tokenizer\TokenizerStates;
 use Souplette\Html\Parser\Tokenizer\TokenTypes;
 use Souplette\Tests\Html5Lib\JsonFile;
 use Souplette\Tests\ResourceCollector;
-use PHPUnit\Framework\Assert;
-use PHPUnit\Framework\TestCase;
 
 class TokenizationTest extends TestCase
 {

@@ -2,11 +2,11 @@
 
 namespace Souplette\Tests\Html5Lib\Encoding;
 
+use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\TestCase;
 use Souplette\Html\Parser\EncodingSniffer;
 use Souplette\Tests\Html5Lib\DataFile;
 use Souplette\Tests\ResourceCollector;
-use PHPUnit\Framework\Assert;
-use PHPUnit\Framework\TestCase;
 
 final class EncodingSnifferTest extends TestCase
 {

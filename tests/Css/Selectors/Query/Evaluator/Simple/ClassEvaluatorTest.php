@@ -1,10 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Tests\Css\Selectors\Query\Evaluator;
+namespace Souplette\Tests\Css\Selectors\Query\Evaluator\Simple;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Css\Selectors\Node\Simple\ClassSelector;
 use Souplette\Css\Selectors\Query\Evaluator\Simple\ClassEvaluator;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Tests\Html\DomBuilder;
@@ -17,10 +16,9 @@ final class ClassEvaluatorTest extends TestCase
     public function testItMatches(\DOMElement $element, string $class, bool $caseInsensitive, bool $expected)
     {
         $ctx = new QueryContext($element);
-        $ctx->selector = new ClassSelector($class);
         $ctx->caseInsensitiveClasses = $caseInsensitive;
-        $evaluator = new ClassEvaluator();
-        Assert::assertSame($expected, $evaluator->matches($ctx));
+        $evaluator = new ClassEvaluator($class);
+        Assert::assertSame($expected, $evaluator->matches($ctx, $element));
     }
 
     public function matchesProvider(): \Generator

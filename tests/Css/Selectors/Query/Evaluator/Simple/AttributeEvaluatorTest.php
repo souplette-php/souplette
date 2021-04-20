@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Tests\Css\Selectors\Query\Evaluator;
+namespace Souplette\Tests\Css\Selectors\Query\Evaluator\Simple;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\Simple\AttributeSelector;
-use Souplette\Css\Selectors\Query\Evaluator\Simple\AttributeEvaluator;
+use Souplette\Css\Selectors\Query\Compiler;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Tests\Html\DomBuilder;
 
@@ -14,9 +14,8 @@ final class AttributeEvaluatorTest extends TestCase
     private static function assertMatches(\DOMElement $element, AttributeSelector $selector, bool $expected)
     {
         $ctx = new QueryContext($element);
-        $ctx->selector = $selector;
-        $evaluator = new AttributeEvaluator();
-        Assert::assertSame($expected, $evaluator->matches($ctx));
+        $evaluator = (new Compiler)->compile($selector);
+        Assert::assertSame($expected, $evaluator->matches($ctx, $element));
     }
 
     /**

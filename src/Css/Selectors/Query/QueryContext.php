@@ -3,20 +3,18 @@
 namespace Souplette\Css\Selectors\Query;
 
 use DOMElement;
+use DOMParentNode;
 use Souplette\Css\Selectors\Node\Selector;
+use Souplette\Html\Dom\Node\HtmlDocument;
+use Souplette\Html\Dom\Node\HtmlElement;
 
 final class QueryContext
 {
-    public Selector $selector;
-    public ?DOMElement $previousElement = null;
-    public bool $isSubSelector = false;
-    public bool $inRightmostCompound = true;
-    public bool $caseInsensitiveClasses = false;
-    public bool $caseInsensitiveIds = false;
-    public bool $caseInsensitiveTypes = true;
-
     public function __construct(
-        public DOMElement $element,
+        public HtmlElement|HtmlDocument $root,
+        public bool $caseInsensitiveClasses = false,
+        public bool $caseInsensitiveIds = false,
+        public bool $caseInsensitiveTypes = true,
     ) {
     }
 }

@@ -6,7 +6,7 @@ use Souplette\Css\Selectors\Query\QueryContext;
 
 trait AlwaysMatches
 {
-    public function matches(QueryContext $context): bool
+    public function matches(QueryContext $context, \DOMElement $element): bool
     {
         return true;
     }

@@ -2,14 +2,14 @@
 
 namespace Souplette\Tests\Css\Syntax;
 
+use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\TestCase;
 use Souplette\Css\Syntax\AnPlusBParser;
 use Souplette\Css\Syntax\AnPlusBStringParser;
 use Souplette\Css\Syntax\Exception\ParseError;
 use Souplette\Css\Syntax\Node\AnPlusB;
 use Souplette\Css\Syntax\Tokenizer\Tokenizer;
 use Souplette\Css\Syntax\TokenStream\TokenStream;
-use PHPUnit\Framework\Assert;
-use PHPUnit\Framework\TestCase;
 
 final class AnPlusBParserTest extends TestCase
 {

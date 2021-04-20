@@ -5,6 +5,7 @@ namespace Souplette\Tests\Css\Selectors\Query\Evaluator\Functional;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\Functional\NthChild;
+use Souplette\Css\Selectors\Query\Compiler;
 use Souplette\Css\Selectors\Query\Evaluator\Functional\NthChildEvaluator;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Syntax\Node\AnPlusB;
@@ -15,9 +16,8 @@ final class NthChildEvaluatorTest extends TestCase
     private static function assertMatches(\DOMElement $element, NthChild $selector, bool $expected)
     {
         $ctx = new QueryContext($element);
-        $ctx->selector = $selector;
-        $evaluator = new NthChildEvaluator();
-        Assert::assertSame($expected, $evaluator->matches($ctx));
+        $evaluator = (new Compiler)->compile($selector);
+        Assert::assertSame($expected, $evaluator->matches($ctx, $element));
     }
 
     /**

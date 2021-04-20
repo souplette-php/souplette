@@ -2,11 +2,11 @@
 
 namespace Souplette\Tests\Html\Dom;
 
+use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\TestCase;
 use Souplette\Html\Dom\Api\ChildNodeInterface;
 use Souplette\Html\Dom\Node\HtmlDocument;
 use Souplette\Tests\Html\DomBuilder;
-use PHPUnit\Framework\Assert;
-use PHPUnit\Framework\TestCase;
 
 final class ChildNodeTest extends TestCase
 {

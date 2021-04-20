@@ -2,12 +2,12 @@
 
 namespace Souplette\Tests\Html\Dom;
 
+use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\TestCase;
 use Souplette\Html\Dom\DocumentModes;
 use Souplette\Html\Dom\HtmlDomImplementation;
 use Souplette\Html\Dom\Node\HtmlDocument;
 use Souplette\Html\Dom\Node\HtmlElement;
-use PHPUnit\Framework\Assert;
-use PHPUnit\Framework\TestCase;
 
 final class HtmlDomImplementationTest extends TestCase
 {

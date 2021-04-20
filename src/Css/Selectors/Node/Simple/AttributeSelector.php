@@ -15,6 +15,9 @@ final class AttributeSelector extends SimpleSelector
     const OPERATOR_SUFFIX_MATCH = '$=';
     const OPERATOR_SUBSTRING_MATCH = '*=';
 
+    const CASE_FORCE_INSENSITIVE = 'i';
+    const CASE_FORCE_SENSITIVE = 's';
+
     #[Pure]
     public static function exists(string $attribute, ?string $namespace = null): self
     {

@@ -2,22 +2,23 @@
 
 namespace Souplette\Css\Selectors\Query\Evaluator\Simple;
 
-use Souplette\Css\Selectors\Node\Simple\TypeSelector;
 use Souplette\Css\Selectors\Query\EvaluatorInterface;
 use Souplette\Css\Selectors\Query\QueryContext;
 
 final class TypeEvaluator implements EvaluatorInterface
 {
-    public function matches(QueryContext $context): bool
-    {
-        $selector = $context->selector;
-        assert($selector instanceof TypeSelector);
-        $element = $context->element;
+    public function __construct(
+        public string $localName,
+        public ?string $namespace = null,
+    ) {
+    }
 
-        return match($selector->namespace) {
-            '*' => self::hasLocalName($element, $selector->tagName),
-            null => !$element->namespaceURI && self::hasLocalName($element, $selector->tagName),
-            default => self::hasLocalName($element, $selector->tagName) && $element->prefix === $selector->namespace,
+    public function matches(QueryContext $context, \DOMElement $element): bool
+    {
+        return match($this->namespace) {
+            '*' => self::hasLocalName($element, $this->localName),
+            null => !$element->namespaceURI && self::hasLocalName($element, $this->localName),
+            default => self::hasLocalName($element, $this->localName) && $element->prefix === $this->namespace,
         };
     }
 

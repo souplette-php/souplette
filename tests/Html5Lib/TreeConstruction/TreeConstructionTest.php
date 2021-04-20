@@ -2,9 +2,9 @@
 
 namespace Souplette\Tests\Html5Lib\TreeConstruction;
 
+use PHPUnit\Framework\TestCase;
 use Souplette\Tests\Html5Lib\DataFile;
 use Souplette\Tests\ResourceCollector;
-use PHPUnit\Framework\TestCase;
 
 class TreeConstructionTest extends TestCase
 {

@@ -22,6 +22,11 @@ final class NthChildMatchHelper
         bool $fromEnd = false
     ): bool {
         $index = self::nthChildIndex($element, $sameType, $fromEnd);
+        return self::indexMatchesAnPlusB($index, $a, $b);
+    }
+
+    public static function indexMatchesAnPlusB(int $index, int $a, int $b): bool
+    {
         if ($a === 0) {
             return $index === $b;
         }

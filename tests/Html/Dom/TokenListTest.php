@@ -2,13 +2,13 @@
 
 namespace Souplette\Tests\Html\Dom;
 
+use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\TestCase;
 use Souplette\Html\Dom\Exception\InvalidCharacter;
 use Souplette\Html\Dom\Exception\SyntaxError;
 use Souplette\Html\Dom\Node\HtmlElement;
 use Souplette\Html\Dom\TokenList;
 use Souplette\Tests\Html\DomBuilder;
-use PHPUnit\Framework\Assert;
-use PHPUnit\Framework\TestCase;
 
 final class TokenListTest extends TestCase
 {

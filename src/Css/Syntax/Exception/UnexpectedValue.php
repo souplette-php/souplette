@@ -2,9 +2,6 @@
 
 namespace Souplette\Css\Syntax\Exception;
 
-use Souplette\Css\Syntax\Tokenizer\Token;
-use Souplette\Css\Syntax\Tokenizer\TokenTypes;
-
 final class UnexpectedValue extends ParseError
 {
     public static function expecting(string $actual, string $expected): self

@@ -2,10 +2,10 @@
 
 namespace Souplette\Tests\Html\Parser\TreeBuilder;
 
-use Souplette\Html\Namespaces;
-use Souplette\Html\Parser\TreeBuilder\OpenElementsStack;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
+use Souplette\Html\Namespaces;
+use Souplette\Html\Parser\TreeBuilder\OpenElementsStack;
 
 class OpenElementsStackTest extends TestCase
 {

@@ -2,10 +2,10 @@
 
 namespace Souplette\Tests\Html\Parser\Tokenizer;
 
+use PHPUnit\Framework\TestCase;
 use Souplette\Html\Parser\Tokenizer\EntityLookup;
 use Souplette\Html\Parser\Tokenizer\ParseErrors;
 use Souplette\Html\Parser\Tokenizer\Token;
-use PHPUnit\Framework\TestCase;
 
 class EntitiesTest extends TestCase
 {

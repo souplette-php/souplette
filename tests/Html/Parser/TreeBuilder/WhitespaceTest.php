@@ -2,10 +2,10 @@
 
 namespace Souplette\Tests\Html\Parser\TreeBuilder;
 
+use PHPUnit\Framework\TestCase;
 use Souplette\Tests\Html5Lib\DataFile;
 use Souplette\Tests\Html5Lib\TreeConstruction\TreeConstructionAssert;
 use Souplette\Tests\Html5Lib\TreeConstruction\TreeConstructionTestDTO;
-use PHPUnit\Framework\TestCase;
 
 final class WhitespaceTest extends TestCase
 {
