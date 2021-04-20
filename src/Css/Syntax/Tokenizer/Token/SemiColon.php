@@ -6,7 +6,7 @@ use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 final class SemiColon extends SingleCharToken
 {
-    public int $type = TokenTypes::SEMICOLON;
+    const TYPE = TokenTypes::SEMICOLON;
     public string $value = ';';
     public string $representation = ';';
 }

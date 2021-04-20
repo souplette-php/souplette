@@ -63,45 +63,45 @@ REGEXP;
         $text = 'U';
         $this->tokenStream->consume();
         $token = $this->tokenStream->expectOneOf(TokenTypes::DELIM, TokenTypes::DIMENSION, TokenTypes::NUMBER);
-        if ($token->type === TokenTypes::DELIM && $token->representation === '+') {
+        if ($token::TYPE === TokenTypes::DELIM && $token->representation === '+') {
             $text .= '+';
             $token = $this->tokenStream->consume();
             $this->tokenStream->expectOneOf(TokenTypes::IDENT, TokenTypes::DELIM);
-            if ($token->type === TokenTypes::IDENT) {
+            if ($token::TYPE === TokenTypes::IDENT) {
                 $text .= $token->representation;
                 $token = $this->tokenStream->consume();
-            } elseif ($token->type === TokenTypes::DELIM && $token->representation === '?') {
+            } elseif ($token::TYPE === TokenTypes::DELIM && $token->representation === '?') {
                 $text .= '?';
                 $token = $this->tokenStream->consume();
             } else {
                 throw UnexpectedValue::expecting($token->representation, 'an identifier or "?"');
             }
-            while ($token->type === TokenTypes::DELIM && $token->representation === '?') {
+            while ($token::TYPE === TokenTypes::DELIM && $token->representation === '?') {
                 $text .= '?';
                 $token = $this->tokenStream->consume();
             }
             return $text;
         }
-        if ($token->type === TokenTypes::DIMENSION) {
+        if ($token::TYPE === TokenTypes::DIMENSION) {
             $text .= $token->representation;
             $token = $this->tokenStream->consume();
-            while ($token->type === TokenTypes::DELIM && $token->representation === '?') {
+            while ($token::TYPE === TokenTypes::DELIM && $token->representation === '?') {
                 $text .= '?';
                 $token = $this->tokenStream->consume();
             }
             return $text;
         }
-        if ($token->type === TokenTypes::NUMBER) {
+        if ($token::TYPE === TokenTypes::NUMBER) {
             $text .= $token->representation;
             $token = $this->tokenStream->consume();
-            if ($token->type === TokenTypes::DELIM && $token->representation === '?') {
+            if ($token::TYPE === TokenTypes::DELIM && $token->representation === '?') {
                 do {
                     $text .= '?';
                     $token = $this->tokenStream->consume();
-                } while ($token->type === TokenTypes::DELIM && $token->representation === '?');
+                } while ($token::TYPE === TokenTypes::DELIM && $token->representation === '?');
                 return $text;
             }
-            if ($token->type === TokenTypes::DIMENSION || $token->type === TokenTypes::NUMBER) {
+            if ($token::TYPE === TokenTypes::DIMENSION || $token::TYPE === TokenTypes::NUMBER) {
                 $text .= $token->representation;
                 $this->tokenStream->consume();
                 return $text;

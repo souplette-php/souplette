@@ -14,7 +14,7 @@ final class InSelectInTable extends RuleSet
 {
     public static function process(Token $token, TreeBuilder $tree)
     {
-        $type = $token->type;
+        $type = $token::TYPE;
         if ($type === TokenTypes::START_TAG && (
             $token->name === 'caption'
             || $token->name === 'table'

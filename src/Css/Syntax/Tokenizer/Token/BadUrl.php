@@ -6,5 +6,5 @@ use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 final class BadUrl extends CharacterToken
 {
-    public int $type = TokenTypes::BAD_URL;
+    const TYPE = TokenTypes::BAD_URL;
 }

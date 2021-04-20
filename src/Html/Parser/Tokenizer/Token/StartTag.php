@@ -6,5 +6,5 @@ use Souplette\Html\Parser\Tokenizer\TokenTypes;
 
 final class StartTag extends Tag
 {
-    public int $type = TokenTypes::START_TAG;
+    const TYPE = TokenTypes::START_TAG;
 }

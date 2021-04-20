@@ -15,7 +15,7 @@ final class InCaption extends RuleSet
 {
     public static function process(Token $token, TreeBuilder $tree)
     {
-        $type = $token->type;
+        $type = $token::TYPE;
         if ($type === TokenTypes::END_TAG && $token->name === 'caption') {
             // If the stack of open elements does not have a caption element in table scope,
             // this is a parse error; ignore the token. (fragment case)

@@ -7,7 +7,7 @@ use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 final class EOF extends Token
 {
-    public int $type = TokenTypes::EOF;
+    const TYPE = TokenTypes::EOF;
 
     public function __construct(int $position)
     {

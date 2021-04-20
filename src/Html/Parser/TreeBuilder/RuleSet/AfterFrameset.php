@@ -15,7 +15,7 @@ final class AfterFrameset extends RuleSet
 {
     public static function process(Token $token, TreeBuilder $tree)
     {
-        $type = $token->type;
+        $type = $token::TYPE;
         if ($type === TokenTypes::CHARACTER) {
             $data = preg_replace('/[^ \n\t\f]+/S', '', $token->data, -1, $count);
             if ($count > 0) {

@@ -6,7 +6,7 @@ use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 final class Dimension extends NumericToken
 {
-    public int $type = TokenTypes::DIMENSION;
+    const TYPE = TokenTypes::DIMENSION;
     public string $unit;
 
     public function __construct(string $value, string $unit, int $position)

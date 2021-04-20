@@ -7,7 +7,7 @@ use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 final class Whitespace extends Token
 {
-    public int $type = TokenTypes::WHITESPACE;
+    const TYPE = TokenTypes::WHITESPACE;
     public string $representation = ' ';
 
     public function __construct(int $position)

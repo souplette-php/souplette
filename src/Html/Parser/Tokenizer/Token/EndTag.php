@@ -6,5 +6,5 @@ use Souplette\Html\Parser\Tokenizer\TokenTypes;
 
 final class EndTag extends Tag
 {
-    public int $type = TokenTypes::END_TAG;
+    const TYPE = TokenTypes::END_TAG;
 }

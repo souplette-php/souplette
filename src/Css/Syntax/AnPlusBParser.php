@@ -32,7 +32,7 @@ final class AnPlusBParser
     public function parse(): AnPlusB
     {
         $token = $this->tokenStream->skipWhitespace();
-        $tt = $token->type;
+        $tt = $token::TYPE;
         if ($tt === TokenTypes::IDENT) {
             $expr = $this->handleIdentifier($token);
         } elseif ($tt === TokenTypes::DIMENSION) {
@@ -195,7 +195,7 @@ final class AnPlusBParser
 
     private function isSignedInteger($token)
     {
-        if ($token->type === TokenTypes::NUMBER && $token->isInteger) {
+        if ($token::TYPE === TokenTypes::NUMBER && $token->isInteger) {
             return $token->representation[0] === '+' || $token->representation[0] === '-';
         }
         return false;
@@ -203,7 +203,7 @@ final class AnPlusBParser
 
     private function isSignlessInteger($token)
     {
-        if ($token->type === TokenTypes::NUMBER && $token->isInteger) {
+        if ($token::TYPE === TokenTypes::NUMBER && $token->isInteger) {
             return ctype_digit($token->representation[0]);
         }
         return false;
@@ -211,6 +211,6 @@ final class AnPlusBParser
 
     private function isSign($token)
     {
-        return $token->type === TokenTypes::DELIM && ($token->value === '+' || $token->value === '-');
+        return $token::TYPE === TokenTypes::DELIM && ($token->value === '+' || $token->value === '-');
     }
 }

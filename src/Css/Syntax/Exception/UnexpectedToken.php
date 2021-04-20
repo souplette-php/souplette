@@ -11,7 +11,7 @@ final class UnexpectedToken extends ParseError
     {
         return new self(sprintf(
             '%s@%d, expected %s',
-            TokenTypes::nameOf($token->type),
+            TokenTypes::nameOf($token::TYPE),
             $token->position,
             TokenTypes::nameOf($expectedType),
         ));
@@ -22,7 +22,7 @@ final class UnexpectedToken extends ParseError
         $expectedNames = array_map(fn($tt) => TokenTypes::nameOf($tt), $expectedTypes);
         return new self(sprintf(
             '%s@%d, expected %s',
-            TokenTypes::nameOf($token->type),
+            TokenTypes::nameOf($token::TYPE),
             $token->position,
             implode(' | ', $expectedNames),
         ));

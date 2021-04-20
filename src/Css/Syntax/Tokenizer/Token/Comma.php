@@ -6,7 +6,7 @@ use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 final class Comma extends SingleCharToken
 {
-    public int $type = TokenTypes::COMMA;
+    const TYPE = TokenTypes::COMMA;
     public string $value = ',';
     public string $representation = ',';
 }

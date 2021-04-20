@@ -7,7 +7,7 @@ use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 final class CDO extends Token
 {
-    public int $type = TokenTypes::CDO;
+    const TYPE = TokenTypes::CDO;
     public string $representation = '<!--';
 
     public function __construct(int $pos)

@@ -6,7 +6,7 @@ use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 final class RightParen extends SingleCharToken
 {
-    public int $type = TokenTypes::RPAREN;
+    const TYPE = TokenTypes::RPAREN;
     public string $value = ')';
     public string $representation = ')';
 }

@@ -15,7 +15,7 @@ final class InTableBody extends RuleSet
 {
     public static function process(Token $token, TreeBuilder $tree)
     {
-        $type = $token->type;
+        $type = $token::TYPE;
         if ($type === TokenTypes::START_TAG && $token->name === 'tr') {
             // Clear the stack back to a table body context.
             self::clearTheStackBackToATableBodyContext($tree);

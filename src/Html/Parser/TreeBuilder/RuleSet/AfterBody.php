@@ -16,7 +16,7 @@ final class AfterBody extends RuleSet
 {
     public static function process(Token $token, TreeBuilder $tree)
     {
-        $type = $token->type;
+        $type = $token::TYPE;
         if ($type === TokenTypes::CHARACTER && ctype_space($token->data)) {
             // Process the token using the rules for the "in body" insertion mode.
             InBody::process($token, $tree);

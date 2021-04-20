@@ -7,7 +7,7 @@ use Souplette\Html\Parser\Tokenizer\TokenTypes;
 
 final class Character extends Token
 {
-    public int $type = TokenTypes::CHARACTER;
+    const TYPE = TokenTypes::CHARACTER;
     public string $data;
 
     public function __construct(string $data = '')

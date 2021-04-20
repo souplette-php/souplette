@@ -6,7 +6,7 @@ use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 final class LeftCurly extends SingleCharToken
 {
-    public int $type = TokenTypes::LCURLY;
+    const TYPE = TokenTypes::LCURLY;
     public string $value = '{';
     public string $representation = '{';
 }

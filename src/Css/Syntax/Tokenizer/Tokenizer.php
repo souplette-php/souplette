@@ -41,7 +41,7 @@ final class Tokenizer implements \IteratorAggregate
             /** @var Token $token */
             $token = $this->consumeToken();
             yield $token;
-        } while($token->type !== TokenTypes::EOF);
+        } while($token::TYPE !== TokenTypes::EOF);
     }
 
     public function consumeToken(): Token

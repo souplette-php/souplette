@@ -16,7 +16,7 @@ final class AfterAfterBody extends RuleSet
 {
     public static function process(Token $token, TreeBuilder $tree)
     {
-        $type = $token->type;
+        $type = $token::TYPE;
         if ($type === TokenTypes::COMMENT) {
             // Insert a comment as the last child of the Document object.
             $tree->insertComment($token, new InsertionLocation($tree->document));

@@ -6,7 +6,7 @@ use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 final class RightBracket extends SingleCharToken
 {
-    public int $type = TokenTypes::RBRACK;
+    const TYPE = TokenTypes::RBRACK;
     public string $value = ']';
     public string $representation = ']';
 }

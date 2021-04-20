@@ -6,7 +6,7 @@ use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 final class Hash extends CharacterToken
 {
-    public int $type = TokenTypes::HASH;
+    const TYPE = TokenTypes::HASH;
     public bool $isId;
 
     public function __construct(string $value, int $position, bool $isId = false)

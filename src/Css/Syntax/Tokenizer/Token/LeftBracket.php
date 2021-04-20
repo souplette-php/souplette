@@ -6,7 +6,7 @@ use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 final class LeftBracket extends SingleCharToken
 {
-    public int $type = TokenTypes::LBRACK;
+    const TYPE = TokenTypes::LBRACK;
     public string $value = '[';
     public string $representation = '[';
 }

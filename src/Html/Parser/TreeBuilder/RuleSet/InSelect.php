@@ -14,7 +14,7 @@ final class InSelect extends RuleSet
 {
     public static function process(Token $token, TreeBuilder $tree)
     {
-        $type = $token->type;
+        $type = $token::TYPE;
         if ($type === TokenTypes::CHARACTER) {
             if ($token->data === "\0") {
                 // TODO: Parse error.

@@ -6,7 +6,7 @@ use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 final class LeftParen extends SingleCharToken
 {
-    public int $type = TokenTypes::LPAREN;
+    const TYPE = TokenTypes::LPAREN;
     public string $value = '(';
     public string $representation = '(';
 }

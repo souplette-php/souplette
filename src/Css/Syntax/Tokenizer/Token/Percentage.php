@@ -6,5 +6,5 @@ use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 final class Percentage extends NumericToken
 {
-    public int $type = TokenTypes::PERCENTAGE;
+    const TYPE = TokenTypes::PERCENTAGE;
 }

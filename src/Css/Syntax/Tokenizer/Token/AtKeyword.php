@@ -6,7 +6,7 @@ use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 final class AtKeyword extends CharacterToken
 {
-    public int $type = TokenTypes::AT_KEYWORD;
+    const TYPE = TokenTypes::AT_KEYWORD;
 
     public function __construct(string $value, int $position)
     {

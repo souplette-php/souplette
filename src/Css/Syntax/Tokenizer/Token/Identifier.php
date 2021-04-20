@@ -6,5 +6,5 @@ use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 final class Identifier extends CharacterToken
 {
-    public int $type = TokenTypes::IDENT;
+    const TYPE = TokenTypes::IDENT;
 }

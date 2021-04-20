@@ -7,7 +7,7 @@ use Souplette\Html\Parser\Tokenizer\TokenTypes;
 
 final class Doctype extends Token
 {
-    public int $type = TokenTypes::DOCTYPE;
+    const TYPE = TokenTypes::DOCTYPE;
     public string $name = '';
     public ?string $publicIdentifier = null;
     public ?string $systemIdentifier = null;

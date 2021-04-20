@@ -7,7 +7,7 @@ use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 final class CDC extends Token
 {
-    public int $type = TokenTypes::CDC;
+    const TYPE = TokenTypes::CDC;
     public string $representation = '-->';
 
     public function __construct(int $pos)

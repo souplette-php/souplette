@@ -7,7 +7,7 @@ use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 final class Delimiter extends Token
 {
-    public int $type = TokenTypes::DELIM;
+    const TYPE = TokenTypes::DELIM;
     public string $value;
 
     public function __construct(string $value, int $position)

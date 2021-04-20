@@ -82,7 +82,7 @@ final class SelectorParser
         // <complex-selector-list> = <complex-selector>#
         $selectors = [];
         $selectors[] = $this->parseComplexSelector();
-        while ($this->tokenStream->current()->type === TokenTypes::COMMA) {
+        while ($this->tokenStream->current()::TYPE === TokenTypes::COMMA) {
             $this->tokenStream->consume();
             $selectors[] = $this->parseComplexSelector();
         }
@@ -95,7 +95,7 @@ final class SelectorParser
         // <relative-selector-list> = <relative-selector>#
         $selectors = [];
         $selectors[] = $this->parseRelativeSelector();
-        while ($this->tokenStream->current()->type === TokenTypes::COMMA) {
+        while ($this->tokenStream->current()::TYPE === TokenTypes::COMMA) {
             $this->tokenStream->consume();
             $selectors[] = $this->parseRelativeSelector();
         }
@@ -145,20 +145,20 @@ final class SelectorParser
         $selectors = [];
         $token = $this->tokenStream->current();
         if (
-            $token->type === TokenTypes::IDENT
-            || ($token->type === TokenTypes::DELIM && ($token->value === '*' || $token->value === '|'))
+            $token::TYPE === TokenTypes::IDENT
+            || ($token::TYPE === TokenTypes::DELIM && ($token->value === '*' || $token->value === '|'))
         ) {
             $selectors[] = $this->parseTypeSelector();
         }
 
         while (true) {
             $token = $this->tokenStream->current();
-            $tt = $token->type;
+            $tt = $token::TYPE;
             if (
                 $tt === TokenTypes::HASH
                 || $tt === TokenTypes::LBRACK
                 || ($tt === TokenTypes::DELIM && $token->value === '.')
-                || ($tt === TokenTypes::COLON && $this->tokenStream->lookahead()->type !== TokenTypes::COLON)
+                || ($tt === TokenTypes::COLON && $this->tokenStream->lookahead()::TYPE !== TokenTypes::COLON)
             ) {
                 $selectors[] = $this->parseSubclassSelector();
             } else {
@@ -168,12 +168,12 @@ final class SelectorParser
 
         while (true) {
             $token = $this->tokenStream->current();
-            if ($token->type !== TokenTypes::COLON) {
+            if ($token::TYPE !== TokenTypes::COLON) {
                 break;
             }
             $selectors[] = $this->parsePseudoElementSelector();
             $token = $this->tokenStream->current();
-            while ($token->type === TokenTypes::COLON) {
+            while ($token::TYPE === TokenTypes::COLON) {
                 $selectors[] = $this->parsePseudoClassSelector();
                 $token = $this->tokenStream->current();
             }
@@ -195,11 +195,11 @@ final class SelectorParser
         $token = $this->tokenStream->current();
 
         // handle the "|" <ident-or-star> case
-        if ($token->type === TokenTypes::DELIM && $token->value === '|') {
+        if ($token::TYPE === TokenTypes::DELIM && $token->value === '|') {
             $token = $this->tokenStream->consume();
             if (
-                $token->type === TokenTypes::IDENT
-                || ($allowStar && $token->type === TokenTypes::DELIM && $token->value === '*')
+                $token::TYPE === TokenTypes::IDENT
+                || ($allowStar && $token::TYPE === TokenTypes::DELIM && $token->value === '*')
             ) {
                 $this->tokenStream->consume();
                 return [null, $token->value];
@@ -209,15 +209,15 @@ final class SelectorParser
 
         // handle the <ns-prefix> "|" <ident-or-star> case
         $la = $this->tokenStream->lookahead();
-        if ($la->type === TokenTypes::DELIM && $la->value === '|') {
+        if ($la::TYPE === TokenTypes::DELIM && $la->value === '|') {
             $la2 = $this->tokenStream->lookahead(2);
             if (
-                $la2->type === TokenTypes::IDENT
-                || ($allowStar && $la2->type === TokenTypes::DELIM && $la2->value === '*')
+                $la2::TYPE === TokenTypes::IDENT
+                || ($allowStar && $la2::TYPE === TokenTypes::DELIM && $la2->value === '*')
             ) {
                 if (
-                    $token->type === TokenTypes::IDENT
-                    || ($token->type === TokenTypes::DELIM && $token->value === '*')
+                    $token::TYPE === TokenTypes::IDENT
+                    || ($token::TYPE === TokenTypes::DELIM && $token->value === '*')
                 ) {
                     $namespace = $token->value;
                     $localName = $la2->value;
@@ -231,8 +231,8 @@ final class SelectorParser
 
         // handle the <ident-or-star> case
         if (
-            $token->type === TokenTypes::IDENT
-            || ($allowStar && $token->type === TokenTypes::DELIM && $token->value === '*')
+            $token::TYPE === TokenTypes::IDENT
+            || ($allowStar && $token::TYPE === TokenTypes::DELIM && $token->value === '*')
         ) {
             $this->tokenStream->consume();
             return [$defaultNamespace, $token->value];
@@ -247,22 +247,22 @@ final class SelectorParser
         // <id-selector> = <hash-token>
         // <class-selector> = '.' <ident-token>
         $token = $this->tokenStream->current();
-        if ($token->type === TokenTypes::HASH) {
+        if ($token::TYPE === TokenTypes::HASH) {
             $this->tokenStream->consume();
             return new IdSelector($token->value);
         }
-        if ($token->type === TokenTypes::DELIM && $token->value === '.') {
+        if ($token::TYPE === TokenTypes::DELIM && $token->value === '.') {
             $nextToken = $this->tokenStream->lookahead();
-            if ($nextToken->type === TokenTypes::IDENT) {
+            if ($nextToken::TYPE === TokenTypes::IDENT) {
                 $this->tokenStream->consume(2);
                 return new ClassSelector($nextToken->value);
             }
             throw UnexpectedToken::expecting($nextToken, TokenTypes::IDENT);
         }
-        if ($token->type === TokenTypes::LBRACK) {
+        if ($token::TYPE === TokenTypes::LBRACK) {
             return $this->parseAttributeSelector();
         }
-        if ($token->type === TokenTypes::COLON) {
+        if ($token::TYPE === TokenTypes::COLON) {
             return $this->parsePseudoClassSelector();
         }
 
@@ -280,7 +280,7 @@ final class SelectorParser
         [$namespace, $localName] = $this->parseQualifiedName(false);
 
         $token = $this->tokenStream->skipWhitespace();
-        if ($token->type === TokenTypes::RBRACK) {
+        if ($token::TYPE === TokenTypes::RBRACK) {
             $this->tokenStream->consume();
             return new AttributeSelector($localName, $namespace);
         }
@@ -291,7 +291,7 @@ final class SelectorParser
         $value = $token->value;
         $token = $this->tokenStream->consumeAndSkipWhitespace();
         $forceCase = null;
-        if ($token->type === TokenTypes::IDENT) {
+        if ($token::TYPE === TokenTypes::IDENT) {
             if (strcasecmp($token->value,'i') === 0 || strcasecmp($token->value, 's') === 0) {
                 $forceCase = $token->value;
                 $this->tokenStream->consumeAndSkipWhitespace();
@@ -324,7 +324,7 @@ final class SelectorParser
         // <pseudo-class-selector> = ':' <ident-token> | ':' <function-token> <any-value> ')'
         $this->tokenStream->eat(TokenTypes::COLON);
         $token = $this->tokenStream->expectOneOf(TokenTypes::IDENT, TokenTypes::FUNCTION);
-        if ($token->type === TokenTypes::IDENT) {
+        if ($token::TYPE === TokenTypes::IDENT) {
             $this->tokenStream->consume();
             $pseudoClass = $token->value;
             if (isset(self::LEGACY_PSEUDO_ELEMENTS[$pseudoClass])) {
@@ -341,18 +341,18 @@ final class SelectorParser
         $seenWhitespace = false;
         $token = $this->tokenStream->current();
         while (true) {
-            if ($token->type === TokenTypes::WHITESPACE) {
+            if ($token::TYPE === TokenTypes::WHITESPACE) {
                 $seenWhitespace = true;
                 $token = $this->tokenStream->skipWhitespace();
                 continue;
-            } elseif ($token->type === TokenTypes::DELIM) {
+            } elseif ($token::TYPE === TokenTypes::DELIM) {
                 if (isset(self::SIMPLE_COMBINATORS[$token->value])) {
                     $this->tokenStream->consumeAndSkipWhitespace();
                     return self::SIMPLE_COMBINATORS[$token->value];
                 }
                 if ($token->value === '|') {
                     $nextToken = $this->tokenStream->lookahead();
-                    if ($nextToken->type === TokenTypes::DELIM && $nextToken->value === '|') {
+                    if ($nextToken::TYPE === TokenTypes::DELIM && $nextToken->value === '|') {
                         $this->tokenStream->consume(2);
                         $this->tokenStream->skipWhitespace();
                         return Combinators::COLUMN;
@@ -370,7 +370,7 @@ final class SelectorParser
         $this->tokenStream->eat(TokenTypes::COLON);
         $this->tokenStream->eat(TokenTypes::COLON);
         $token = $this->tokenStream->expectOneOf(TokenTypes::IDENT, TokenTypes::FUNCTION);
-        if ($token->type === TokenTypes::IDENT) {
+        if ($token::TYPE === TokenTypes::IDENT) {
             $this->tokenStream->consume();
             return new PseudoElementSelector($token->value);
         }
@@ -465,7 +465,7 @@ final class SelectorParser
         $token = $this->tokenStream->expectOneOf(TokenTypes::IDENT, TokenTypes::STRING);
         $languages[] = $token->value;
         $token = $this->tokenStream->consumeAndSkipWhitespace();
-        while ($token->type === TokenTypes::COMMA) {
+        while ($token::TYPE === TokenTypes::COMMA) {
             $token = $this->tokenStream->expectOneOf(TokenTypes::IDENT, TokenTypes::STRING);
             $languages[] = $token->value;
             $token = $this->tokenStream->consumeAndSkipWhitespace();
@@ -487,7 +487,7 @@ final class SelectorParser
         $anPlusB = $parser->parse();
         $selectors = null;
         $token = $this->tokenStream->current();
-        if ($token->type === TokenTypes::IDENT && strcasecmp($token->value, 'of') === 0) {
+        if ($token::TYPE === TokenTypes::IDENT && strcasecmp($token->value, 'of') === 0) {
             $token = $this->tokenStream->consumeAndSkipWhitespace();
             // TODO: create a new selector parser ?
             $selectors = $this->parseRelativeSelectorList();

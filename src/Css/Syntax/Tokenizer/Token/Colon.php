@@ -6,7 +6,7 @@ use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 final class Colon extends SingleCharToken
 {
-    public int $type = TokenTypes::COLON;
+    const TYPE = TokenTypes::COLON;
     public string $value = ':';
     public string $representation = ':';
 }

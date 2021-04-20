@@ -15,7 +15,7 @@ final class InCell extends RuleSet
 {
     public static function process(Token $token, TreeBuilder $tree)
     {
-        $type = $token->type;
+        $type = $token::TYPE;
         if ($type === TokenTypes::END_TAG && ($token->name === 'td' || $token->name === 'th')) {
             // If the stack of open elements does not have an element in table scope
             // that is an HTML element with the same tag name as that of the token,

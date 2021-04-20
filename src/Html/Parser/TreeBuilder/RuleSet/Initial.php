@@ -17,7 +17,7 @@ final class Initial extends RuleSet
 {
     public static function process(Token $token, TreeBuilder $tree)
     {
-        $type = $token->type;
+        $type = $token::TYPE;
         if ($type === TokenTypes::CHARACTER && ctype_space($token->data)) {
             // Ignore the token.
             return;

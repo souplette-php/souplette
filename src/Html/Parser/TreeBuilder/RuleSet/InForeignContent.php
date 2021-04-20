@@ -15,7 +15,7 @@ final class InForeignContent extends RuleSet
 {
     public static function process(Token $token, TreeBuilder $tree)
     {
-        $type = $token->type;
+        $type = $token::TYPE;
         $currentNode = $tree->openElements->top();
         if ($type === TokenTypes::CHARACTER && $token->data === "\0") {
             // TODO: Parse error. unexpected-null-character

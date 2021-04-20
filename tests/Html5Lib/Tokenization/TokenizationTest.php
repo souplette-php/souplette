@@ -124,7 +124,7 @@ class TokenizationTest extends TestCase
                 continue;
             }
             $last = $output->top();
-            if ($token->type === TokenTypes::CHARACTER && $last->type === $token->type) {
+            if ($token::TYPE === TokenTypes::CHARACTER && $last::TYPE === $token::TYPE) {
                 $last->data .= $token->data;
             } else {
                 $output->push($token);

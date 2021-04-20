@@ -7,7 +7,7 @@ use Souplette\Html\Parser\Tokenizer\TokenTypes;
 
 final class Comment extends Token
 {
-    public int $type = TokenTypes::COMMENT;
+    const TYPE = TokenTypes::COMMENT;
     public string $data = '';
 
     public function __construct(string $data = '')

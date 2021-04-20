@@ -15,7 +15,7 @@ final class InTable extends RuleSet
 {
     public static function process(Token $token, TreeBuilder $tree)
     {
-        $type = $token->type;
+        $type = $token::TYPE;
         $currentNode = $tree->openElements->top();
         if ($type === TokenTypes::EOF) {
             // Process the token using the rules for the "in body" insertion mode.

@@ -13,7 +13,7 @@ abstract class AbstractTokenStream implements TokenStreamInterface
     public function skipWhitespace(): Token
     {
         $token = $this->current();
-        while ($token->type === TokenTypes::WHITESPACE) {
+        while ($token::TYPE === TokenTypes::WHITESPACE) {
             $token = $this->consume();
         }
         return $token;
@@ -32,7 +32,7 @@ abstract class AbstractTokenStream implements TokenStreamInterface
         $tokens = [];
         while (true) {
             $token = $this->current();
-            $tt = $token->type;
+            $tt = $token::TYPE;
             if ($tt === TokenTypes::EOF) {
                 break;
             }
@@ -79,7 +79,7 @@ abstract class AbstractTokenStream implements TokenStreamInterface
     public function expect(int $tokenType): Token
     {
         $token = $this->current();
-        if ($token->type !== $tokenType) {
+        if ($token::TYPE !== $tokenType) {
             throw UnexpectedToken::expecting($token, $tokenType);
         }
         return $token;
@@ -88,7 +88,7 @@ abstract class AbstractTokenStream implements TokenStreamInterface
     public function expectOneOf(int ...$tokenTypes): Token
     {
         $token = $this->current();
-        if (!in_array($token->type, $tokenTypes, true)) {
+        if (!in_array($token::TYPE, $tokenTypes, true)) {
             throw UnexpectedToken::expectingOneOf($token, ...$tokenTypes);
         }
         return $token;
@@ -97,7 +97,7 @@ abstract class AbstractTokenStream implements TokenStreamInterface
     public function expectValue(int $tokenType, string $value)
     {
         $token = $this->current();
-        if ($token->type !== $tokenType) {
+        if ($token::TYPE !== $tokenType) {
             throw UnexpectedToken::expecting($token, $tokenType);
         }
         if ($token->value !== $value) {

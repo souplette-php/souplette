@@ -7,7 +7,7 @@ use Souplette\Css\Syntax\Utils;
 
 final class Str extends CharacterToken
 {
-    public int $type = TokenTypes::STRING;
+    const TYPE = TokenTypes::STRING;
 
     public function __construct(string $value, int $position)
     {

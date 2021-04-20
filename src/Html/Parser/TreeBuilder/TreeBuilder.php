@@ -230,7 +230,7 @@ final class TreeBuilder
         foreach ($this->tokenizer->tokenize($tokenizerState) as $token) {
             $this->shouldSkipNextNewLine = (
                 $previousToken
-                && $previousToken->type === TokenTypes::START_TAG
+                && $previousToken::TYPE === TokenTypes::START_TAG
                 && ($previousToken->name === 'pre' || $previousToken->name === 'listing' || $previousToken->name === 'textarea')
             );
             // Tree construction dispatcher
@@ -242,25 +242,25 @@ final class TreeBuilder
                 || (
                     Elements::isMathMlTextIntegrationPoint($adjustedCurrentNode) && (
                         (
-                            $token->type === TokenTypes::START_TAG
+                            $token::TYPE === TokenTypes::START_TAG
                             && $token->name !== 'mglyph'
                             && $token->name !== 'malignmark'
                         ) || (
-                            $token->type === TokenTypes::CHARACTER
+                            $token::TYPE === TokenTypes::CHARACTER
                         )
                     )
                 ) || (
                     $adjustedCurrentNode->localName === 'annotation-xml'
                     && $adjustedCurrentNode->namespaceURI === Namespaces::MATHML
-                    && $token->type === TokenTypes::START_TAG
+                    && $token::TYPE === TokenTypes::START_TAG
                     && $token->name === 'svg'
                 ) || (
                     Elements::isHtmlIntegrationPoint($adjustedCurrentNode) && (
-                        $token->type === TokenTypes::START_TAG
-                        || $token->type === TokenTypes::CHARACTER
+                        $token::TYPE === TokenTypes::START_TAG
+                        || $token::TYPE === TokenTypes::CHARACTER
                     )
                 )
-                || $token->type === TokenTypes::EOF
+                || $token::TYPE === TokenTypes::EOF
             ) {
                 (self::RULES[$this->insertionMode])::process($token, $this);
             } else {

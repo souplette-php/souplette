@@ -6,5 +6,5 @@ use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 final class Number extends NumericToken
 {
-    public int $type = TokenTypes::NUMBER;
+    const TYPE = TokenTypes::NUMBER;
 }

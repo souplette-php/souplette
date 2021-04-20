@@ -6,7 +6,7 @@ use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 final class Functional extends CharacterToken
 {
-    public int $type = TokenTypes::FUNCTION;
+    const TYPE = TokenTypes::FUNCTION;
 
     public function __construct(string $value, int $position)
     {

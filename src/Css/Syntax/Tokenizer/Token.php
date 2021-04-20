@@ -6,6 +6,7 @@ use Souplette\Css\Syntax\SyntaxNode;
 
 abstract class Token extends SyntaxNode
 {
+    const TYPE = -1;
     public int $type;
     public int $position;
     /**

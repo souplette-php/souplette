@@ -65,7 +65,7 @@ final class MetaCharsetParser
         $inHead = true;
         $charset = null;
         foreach ($this->tokenizer->tokenize() as $token) {
-            $tt = $token->type;
+            $tt = $token::TYPE;
             if ($tt === TokenTypes::START_TAG && $token->name === 'meta') {
                 if ($charset = self::encodingFromMetaAttributes($token->attributes ?? [])) {
                     return $charset;

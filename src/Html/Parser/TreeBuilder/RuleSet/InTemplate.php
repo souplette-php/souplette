@@ -15,7 +15,7 @@ final class InTemplate extends RuleSet
 {
     public static function process(Token $token, TreeBuilder $tree)
     {
-        $type = $token->type;
+        $type = $token::TYPE;
         if (
             $type === TokenTypes::CHARACTER
             || $type === TokenTypes::COMMENT

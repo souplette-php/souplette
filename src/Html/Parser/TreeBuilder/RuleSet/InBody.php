@@ -49,7 +49,7 @@ final class InBody extends RuleSet
 
     public static function process(Token $token, TreeBuilder $tree)
     {
-        $type = $token->type;
+        $type = $token::TYPE;
         if ($type === TokenTypes::EOF) {
             // If the stack of template insertion modes is not empty,
             // then process the token using the rules for the "in template" insertion mode.

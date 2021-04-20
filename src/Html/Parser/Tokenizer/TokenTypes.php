@@ -4,7 +4,8 @@ namespace Souplette\Html\Parser\Tokenizer;
 
 final class TokenTypes
 {
-    const EOF = -1;
+    const UNKNOWN = -1;
+    const EOF = 0;
     const DOCTYPE = 1;
     const START_TAG = 2;
     const END_TAG = 3;
@@ -28,7 +29,7 @@ final class TokenTypes
     public static function nameOf(Token|int $tokenOrType): string
     {
         if ($tokenOrType instanceof Token) {
-            $type = $tokenOrType->type;
+            $type = $tokenOrType::TYPE;
         } else {
             $type = (int)$tokenOrType;
         }

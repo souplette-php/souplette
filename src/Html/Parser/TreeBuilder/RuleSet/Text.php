@@ -14,7 +14,7 @@ final class Text extends RuleSet
 {
     public static function process(Token $token, TreeBuilder $tree)
     {
-        $type = $token->type;
+        $type = $token::TYPE;
         if ($type === TokenTypes::CHARACTER) {
             if ($tree->shouldSkipNextNewLine && $token->data[0] === "\n") {
                 // we're just after a "textarea" start tag token.

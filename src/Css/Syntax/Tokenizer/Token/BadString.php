@@ -6,5 +6,5 @@ use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 final class BadString extends CharacterToken
 {
-    public int $type = TokenTypes::BAD_STRING;
+    const TYPE = TokenTypes::BAD_STRING;
 }

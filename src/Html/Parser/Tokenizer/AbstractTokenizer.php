@@ -71,7 +71,7 @@ abstract class AbstractTokenizer
     final protected function emitCurrentToken(): void
     {
         $token = $this->currentToken;
-        if ($token->type === TokenTypes::START_TAG) {
+        if ($token::TYPE === TokenTypes::START_TAG) {
             /** @var StartTag $token */
             $this->appropriateEndTag = $token->name;
             if ($token->attributes) {
@@ -85,7 +85,7 @@ abstract class AbstractTokenizer
                 }
                 $token->attributes = $attrs;
             }
-        } elseif ($token->type === TokenTypes::END_TAG) {
+        } elseif ($token::TYPE === TokenTypes::END_TAG) {
             /** @var EndTag $token */
             if ($token->attributes) {
                 // This is an end-tag-with-attributes parse error.

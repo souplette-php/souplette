@@ -6,7 +6,7 @@ use Souplette\Css\Syntax\Tokenizer\TokenTypes;
 
 final class RightCurly extends SingleCharToken
 {
-    public int $type = TokenTypes::RCURLY;
+    const TYPE = TokenTypes::RCURLY;
     public string $value = '}';
     public string $representation = '}';
 }
