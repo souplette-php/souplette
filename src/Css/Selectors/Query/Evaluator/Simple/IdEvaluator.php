@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Css\Selectors\Query\Evaluator;
+namespace Souplette\Css\Selectors\Query\Evaluator\Simple;
 
-use Souplette\Css\Selectors\Node\IdSelector;
+use Souplette\Css\Selectors\Node\Simple\IdSelector;
 use Souplette\Css\Selectors\Query\EvaluatorInterface;
 use Souplette\Css\Selectors\Query\QueryContext;
 

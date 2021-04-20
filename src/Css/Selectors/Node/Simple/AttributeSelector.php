@@ -1,8 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Css\Selectors\Node;
+namespace Souplette\Css\Selectors\Node\Simple;
 
 use JetBrains\PhpStorm\Pure;
+use Souplette\Css\Selectors\Node\SimpleSelector;
 use Souplette\Css\Selectors\Specificity;
 
 final class AttributeSelector extends SimpleSelector

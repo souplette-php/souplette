@@ -4,8 +4,8 @@ namespace Souplette\Tests\Css\Selectors\Query\Evaluator;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Css\Selectors\Node\IdSelector;
-use Souplette\Css\Selectors\Query\Evaluator\IdEvaluator;
+use Souplette\Css\Selectors\Node\Simple\IdSelector;
+use Souplette\Css\Selectors\Query\Evaluator\Simple\IdEvaluator;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Tests\Html\DomBuilder;
 

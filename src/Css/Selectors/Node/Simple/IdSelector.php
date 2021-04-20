@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Css\Selectors\Node;
+namespace Souplette\Css\Selectors\Node\Simple;
 
+use Souplette\Css\Selectors\Node\SimpleSelector;
 use Souplette\Css\Selectors\Specificity;
 
 final class IdSelector extends SimpleSelector

@@ -2,8 +2,6 @@
 
 namespace Souplette\Css\Selectors;
 
-use Souplette\Css\Selectors\Node\AttributeSelector;
-use Souplette\Css\Selectors\Node\ClassSelector;
 use Souplette\Css\Selectors\Node\Combinators;
 use Souplette\Css\Selectors\Node\ComplexSelector;
 use Souplette\Css\Selectors\Node\CompoundSelector;
@@ -20,17 +18,18 @@ use Souplette\Css\Selectors\Node\Functional\NthLastOfType;
 use Souplette\Css\Selectors\Node\Functional\NthOfType;
 use Souplette\Css\Selectors\Node\Functional\Where;
 use Souplette\Css\Selectors\Node\FunctionalSelector;
-use Souplette\Css\Selectors\Node\IdSelector;
-use Souplette\Css\Selectors\Node\PseudoClassSelector;
-use Souplette\Css\Selectors\Node\PseudoElementSelector;
 use Souplette\Css\Selectors\Node\RelativeSelector;
 use Souplette\Css\Selectors\Node\Selector;
 use Souplette\Css\Selectors\Node\SelectorList;
+use Souplette\Css\Selectors\Node\Simple\AttributeSelector;
+use Souplette\Css\Selectors\Node\Simple\ClassSelector;
+use Souplette\Css\Selectors\Node\Simple\IdSelector;
+use Souplette\Css\Selectors\Node\Simple\PseudoClassSelector;
+use Souplette\Css\Selectors\Node\Simple\PseudoElementSelector;
+use Souplette\Css\Selectors\Node\Simple\TypeSelector;
+use Souplette\Css\Selectors\Node\Simple\UniversalSelector;
 use Souplette\Css\Selectors\Node\SimpleSelector;
-use Souplette\Css\Selectors\Node\TypeSelector;
-use Souplette\Css\Selectors\Node\UniversalSelector;
 use Souplette\Css\Syntax\AnPlusBParser;
-use Souplette\Css\Syntax\Exception\ParseError;
 use Souplette\Css\Syntax\Exception\UnexpectedToken;
 use Souplette\Css\Syntax\Exception\UnexpectedValue;
 use Souplette\Css\Syntax\Tokenizer\TokenTypes;

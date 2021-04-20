@@ -5,7 +5,7 @@ namespace Souplette\Tests\Css\Selectors\Query\Evaluator\Functional;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\Functional\NthChild;
-use Souplette\Css\Selectors\Query\Evaluator\NthChildEvaluator;
+use Souplette\Css\Selectors\Query\Evaluator\Functional\NthChildEvaluator;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Syntax\Node\AnPlusB;
 use Souplette\Tests\Html\DomBuilder;

@@ -2,6 +2,8 @@
 
 namespace Souplette\Css\Selectors\Node;
 
+use Souplette\Css\Selectors\Node\Simple\PseudoClassSelector;
+
 class FunctionalSelector extends PseudoClassSelector
 {
     public function __construct(

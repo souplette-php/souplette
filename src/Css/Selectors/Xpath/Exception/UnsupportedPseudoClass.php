@@ -2,7 +2,7 @@
 
 namespace Souplette\Css\Selectors\Xpath\Exception;
 
-use Souplette\Css\Selectors\Node\PseudoClassSelector;
+use Souplette\Css\Selectors\Node\Simple\PseudoClassSelector;
 
 final class UnsupportedPseudoClass extends TranslationException
 {

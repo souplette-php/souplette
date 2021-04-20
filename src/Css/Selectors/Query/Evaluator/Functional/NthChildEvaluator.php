@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Css\Selectors\Query\Evaluator;
+namespace Souplette\Css\Selectors\Query\Evaluator\Functional;
 
 use Souplette\Css\Selectors\Node\Functional\NthChild;
 use Souplette\Css\Selectors\Node\Functional\NthLastChild;

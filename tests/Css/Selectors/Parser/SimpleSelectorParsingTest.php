@@ -3,12 +3,12 @@
 namespace Souplette\Tests\Css\Selectors\Parser;
 
 use PHPUnit\Framework\Assert;
-use Souplette\Css\Selectors\Node\ClassSelector;
 use Souplette\Css\Selectors\Node\ComplexSelector;
 use Souplette\Css\Selectors\Node\CompoundSelector;
-use Souplette\Css\Selectors\Node\IdSelector;
-use Souplette\Css\Selectors\Node\PseudoClassSelector;
 use Souplette\Css\Selectors\Node\SelectorList;
+use Souplette\Css\Selectors\Node\Simple\ClassSelector;
+use Souplette\Css\Selectors\Node\Simple\IdSelector;
+use Souplette\Css\Selectors\Node\Simple\PseudoClassSelector;
 use Souplette\Tests\Css\Selectors\SelectorParserTestCase;
 
 final class SimpleSelectorParsingTest extends SelectorParserTestCase

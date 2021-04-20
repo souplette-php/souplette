@@ -1,18 +1,19 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Css\Selectors\Node;
+namespace Souplette\Css\Selectors\Node\Simple;
 
+use Souplette\Css\Selectors\Node\SimpleSelector;
 use Souplette\Css\Selectors\Specificity;
 
-class PseudoClassSelector extends SimpleSelector
+final class ClassSelector extends SimpleSelector
 {
-    public function __construct(public string $name)
+    public function __construct(public string $class)
     {
     }
 
     public function __toString(): string
     {
-        return ":{$this->name}";
+        return ".{$this->class}";
     }
 
     public function getSpecificity(): Specificity

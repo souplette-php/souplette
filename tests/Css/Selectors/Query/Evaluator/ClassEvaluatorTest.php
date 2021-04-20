@@ -4,8 +4,8 @@ namespace Souplette\Tests\Css\Selectors\Query\Evaluator;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Css\Selectors\Node\ClassSelector;
-use Souplette\Css\Selectors\Query\Evaluator\ClassEvaluator;
+use Souplette\Css\Selectors\Node\Simple\ClassSelector;
+use Souplette\Css\Selectors\Query\Evaluator\Simple\ClassEvaluator;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Tests\Html\DomBuilder;
 

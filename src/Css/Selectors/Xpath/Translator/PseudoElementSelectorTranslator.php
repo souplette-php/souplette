@@ -2,7 +2,7 @@
 
 namespace Souplette\Css\Selectors\Xpath\Translator;
 
-use Souplette\Css\Selectors\Node\PseudoElementSelector;
+use Souplette\Css\Selectors\Node\Simple\PseudoElementSelector;
 use Souplette\Css\Selectors\Xpath\Exception\UnsupportedSelector;
 use Souplette\Css\Selectors\Xpath\TranslationContext;
 

@@ -6,7 +6,7 @@ use PHPUnit\Framework\Assert;
 use Souplette\Css\Selectors\Node\ComplexSelector;
 use Souplette\Css\Selectors\Node\CompoundSelector;
 use Souplette\Css\Selectors\Node\SelectorList;
-use Souplette\Css\Selectors\Node\TypeSelector;
+use Souplette\Css\Selectors\Node\Simple\TypeSelector;
 use Souplette\Tests\Css\Selectors\SelectorParserTestCase;
 
 final class ComplexSelectorParsingTest extends SelectorParserTestCase

@@ -2,7 +2,7 @@
 
 namespace Souplette\Css\Selectors\Xpath\Translator;
 
-use Souplette\Css\Selectors\Node\TypeSelector;
+use Souplette\Css\Selectors\Node\Simple\TypeSelector;
 use Souplette\Css\Selectors\Xpath\TranslationContext;
 
 final class TypeSelectorTranslator

@@ -2,7 +2,6 @@
 
 namespace Souplette\Tests\Css\Selectors\Parser;
 
-use Souplette\Css\Selectors\Node\AttributeSelector;
 use Souplette\Css\Selectors\Node\Functional\NthChild;
 use Souplette\Css\Selectors\Node\Functional\NthCol;
 use Souplette\Css\Selectors\Node\Functional\NthLastChild;
@@ -10,8 +9,9 @@ use Souplette\Css\Selectors\Node\Functional\NthLastCol;
 use Souplette\Css\Selectors\Node\Functional\NthLastOfType;
 use Souplette\Css\Selectors\Node\Functional\NthOfType;
 use Souplette\Css\Selectors\Node\FunctionalSelector;
-use Souplette\Css\Selectors\Node\TypeSelector;
-use Souplette\Css\Selectors\Node\UniversalSelector;
+use Souplette\Css\Selectors\Node\Simple\AttributeSelector;
+use Souplette\Css\Selectors\Node\Simple\TypeSelector;
+use Souplette\Css\Selectors\Node\Simple\UniversalSelector;
 use Souplette\Css\Syntax\Node\AnPlusB;
 use Souplette\Css\Syntax\Tokenizer\Token\Functional;
 use Souplette\Css\Syntax\Tokenizer\Token\Number;

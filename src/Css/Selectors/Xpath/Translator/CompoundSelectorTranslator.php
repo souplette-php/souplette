@@ -3,8 +3,8 @@
 namespace Souplette\Css\Selectors\Xpath\Translator;
 
 use Souplette\Css\Selectors\Node\CompoundSelector;
-use Souplette\Css\Selectors\Node\TypeSelector;
-use Souplette\Css\Selectors\Node\UniversalSelector;
+use Souplette\Css\Selectors\Node\Simple\TypeSelector;
+use Souplette\Css\Selectors\Node\Simple\UniversalSelector;
 use Souplette\Css\Selectors\Xpath\TranslationContext;
 
 final class CompoundSelectorTranslator

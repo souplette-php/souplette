@@ -2,7 +2,7 @@
 
 namespace Souplette\Css\Selectors\Xpath\Translator;
 
-use Souplette\Css\Selectors\Node\AttributeSelector;
+use Souplette\Css\Selectors\Node\Simple\AttributeSelector;
 use Souplette\Css\Selectors\Xpath\Helper\AttributeMatchHelper;
 use Souplette\Css\Selectors\Xpath\TranslationContext;
 

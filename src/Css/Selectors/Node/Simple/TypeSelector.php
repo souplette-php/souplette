@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Css\Selectors\Node;
+namespace Souplette\Css\Selectors\Node\Simple;
 
+use Souplette\Css\Selectors\Node\SimpleSelector;
 use Souplette\Css\Selectors\Specificity;
 
 class TypeSelector extends SimpleSelector
@@ -12,10 +13,10 @@ class TypeSelector extends SimpleSelector
 
     public function __toString(): string
     {
-        if ($this->namespace === '*' || !$this->namespace) {
-            return $this->tagName;
-        }
-        return "{$this->namespace}|{$this->tagName}";
+        return match($this->namespace) {
+            '*', null => $this->tagName,
+            default => "{$this->namespace}|{$this->tagName}"
+        };
     }
 
     public function getSpecificity(): Specificity
