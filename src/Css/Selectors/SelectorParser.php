@@ -33,6 +33,7 @@ use Souplette\Css\Syntax\AnPlusBParser;
 use Souplette\Css\Syntax\Exception\UnexpectedToken;
 use Souplette\Css\Syntax\Exception\UnexpectedValue;
 use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\TokenStream\TokenRange;
 use Souplette\Css\Syntax\TokenStream\TokenStreamInterface;
 
 /**
@@ -417,7 +418,7 @@ final class SelectorParser
      */
     private function parseMatchesAny(): Is
     {
-        $selectors = $this->parseSelectorList();
+        $selectors = $this->parseForgivingSelectorList();
         return new Is($selectors);
     }
 
@@ -435,7 +436,7 @@ final class SelectorParser
      */
     private function parseWhere(): Where
     {
-        $selectors = $this->parseSelectorList();
+        $selectors = $this->parseForgivingSelectorList();
         return new Where($selectors);
     }
 
@@ -444,7 +445,7 @@ final class SelectorParser
      */
     private function parseHas(): Has
     {
-        $selectors = $this->parseRelativeSelectorList();
+        $selectors = $this->parseForgivingRelativeSelectorList();
         return new Has($selectors);
     }
 
@@ -518,9 +519,78 @@ final class SelectorParser
         return $last ? new NthLastCol($anPlusB) : new NthCol($anPlusB);
     }
 
+    /**
+     * @see https://drafts.csswg.org/selectors-4/#typedef-forgiving-selector-list
+     * @return SelectorList
+     */
+    private function parseForgivingSelectorList(): SelectorList
+    {
+        $tokenStream = $this->tokenStream;
+        $block = $this->consumeNestedBlock();
+
+        $selectors = [];
+        while (true) {
+            $token = $block->current();
+            if ($token::TYPE === TokenTypes::EOF) break;
+            try {
+                $this->tokenStream = $this->consumeNestedArgument($block);
+                $selectors[] = $this->parseComplexSelector();
+            } catch (\Throwable) {
+                // we forgive
+                continue;
+            }
+        }
+
+        $this->tokenStream = $tokenStream;
+        return new SelectorList($selectors);
+    }
+
+    /**
+     * @see https://drafts.csswg.org/selectors-4/#typedef-forgiving-relative-selector-list
+     * @return SelectorList
+     */
+    private function parseForgivingRelativeSelectorList(): SelectorList
+    {
+        $tokenStream = $this->tokenStream;
+        $block = $this->consumeNestedBlock();
+
+        $selectors = [];
+        while (true) {
+            $token = $block->current();
+            if ($token::TYPE === TokenTypes::EOF) break;
+            try {
+                $this->tokenStream = $this->consumeNestedArgument($block);
+                $selectors[] = $this->parseRelativeSelector();
+            } catch (\Throwable) {
+                // we forgive
+                continue;
+            }
+        }
+
+        $this->tokenStream = $tokenStream;
+        return new SelectorList($selectors);
+    }
+
     private function consumeToFunctionEnd()
     {
         $this->tokenStream->consumeAndSkipWhitespace();
         $this->tokenStream->eat(TokenTypes::RPAREN);
+    }
+
+    private function consumeNestedBlock(): TokenRange
+    {
+        $tokens = $this->tokenStream->consumeAnyValue(TokenTypes::RPAREN);
+        $this->tokenStream->eat(TokenTypes::RPAREN);
+
+        return new TokenRange($tokens);
+    }
+
+    private function consumeNestedArgument(TokenRange $range): TokenRange
+    {
+        $tokens = $range->consumeAnyValue(TokenTypes::COMMA);
+        if ($range->current()::TYPE === TokenTypes::COMMA) {
+            $range->consume();
+        }
+        return new TokenRange($tokens);
     }
 }

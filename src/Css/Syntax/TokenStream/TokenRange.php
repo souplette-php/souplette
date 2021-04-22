@@ -20,7 +20,7 @@ final class TokenRange extends AbstractTokenStream
             $tokens[] = new Token\EOF(-1);
         }
         $this->tokens = $tokens;
-        $this->lastIndex = count($this->tokens) - 1;
+        $this->lastIndex = (int)array_key_last($tokens);
     }
 
     public function consume(int $n = 1): Token
