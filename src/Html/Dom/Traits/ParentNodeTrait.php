@@ -4,7 +4,9 @@ namespace Souplette\Html\Dom\Traits;
 
 use DOMElement;
 use DOMNode;
+use Souplette\Css\Selectors\SelectorQuery;
 use Souplette\Html\Dom\DomIdioms;
+use Souplette\Html\Dom\Node\HtmlElement;
 
 trait ParentNodeTrait
 {
@@ -14,12 +16,11 @@ trait ParentNodeTrait
     public function getChildren(): array
     {
         $children = [];
-        foreach ($this->childNodes as $node) {
-            if ($node->nodeType === XML_ELEMENT_NODE) {
-                $children[] = $node;
-            }
+        $child = $this->firstElementChild;
+        while ($child) {
+            $children[] = $child;
+            $child = $child->nextElementSibling;
         }
-
         return $children;
     }
 
@@ -60,13 +61,13 @@ trait ParentNodeTrait
         DomIdioms::replaceAllWithNodeWithinParent($node, $this);
     }
 
-    public function querySelector(string $selector): ?DOMElement
+    public function querySelector(string $selector): ?HtmlElement
     {
-        throw new \LogicException('Not implemented');
+        return SelectorQuery::queryFirst($this, $selector);
     }
 
-    public function querySelectorAll(string $selector): iterable
+    public function querySelectorAll(string $selector): array
     {
-        throw new \LogicException('Not implemented');
+        return SelectorQuery::queryAll($this, $selector);
     }
 }

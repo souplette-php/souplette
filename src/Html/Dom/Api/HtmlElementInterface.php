@@ -3,6 +3,7 @@
 namespace Souplette\Html\Dom\Api;
 
 use DOMNodeList;
+use Souplette\Html\Dom\Node\HtmlElement;
 use Souplette\Html\Dom\TokenList;
 
 /**
@@ -23,5 +24,9 @@ interface HtmlElementInterface extends DomElementInterface
     public function getOuterHTML(): string;
     public function setOuterHTML(string $html): void;
     public function getClassList(): TokenList;
-    public function getElementsByClassName(string $classNames): DOMNodeList;
+    /**
+     * @param string $classNames
+     * @return HtmlElement[]
+     */
+    public function getElementsByClassName(string $classNames): array;
 }

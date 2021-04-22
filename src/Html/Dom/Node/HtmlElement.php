@@ -3,6 +3,7 @@
 namespace Souplette\Html\Dom\Node;
 
 use DOMNodeList;
+use Souplette\Css\Selectors\SelectorQuery;
 use Souplette\Html\Dom\Api\ChildNodeInterface;
 use Souplette\Html\Dom\Api\HtmlElementInterface;
 use Souplette\Html\Dom\Api\HtmlNodeInterface;
@@ -83,9 +84,9 @@ class HtmlElement extends \DOMElement implements
         return $this->internalClassList;
     }
 
-    public function getElementsByClassName(string $classNames): DOMNodeList
+    public function getElementsByClassName(string $classNames): array
     {
-        return DomIdioms::getElementsByClassName($this->ownerDocument, $classNames, $this);
+        return DomIdioms::getElementsByClassName($this, $classNames);
     }
 
     public function getInnerHTML(): string
@@ -115,5 +116,15 @@ class HtmlElement extends \DOMElement implements
         $parser = new Parser();
         $children = $parser->parseFragment($this, $html, $this->ownerDocument->encoding);
         $this->replaceWith(...$children);
+    }
+
+    public function matches(string $selector): bool
+    {
+        return SelectorQuery::matches($this, $selector);
+    }
+
+    public function closest(string $selector): ?HtmlElement
+    {
+        return SelectorQuery::closest($this, $selector);
     }
 }

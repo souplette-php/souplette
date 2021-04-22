@@ -9,6 +9,9 @@ use DOMNode;
 use DOMNodeList;
 use DOMXPath;
 use JetBrains\PhpStorm\Pure;
+use Souplette\Css\Selectors\Query\Evaluator\CompoundEvaluator;
+use Souplette\Css\Selectors\Query\Evaluator\Simple\ClassEvaluator;
+use Souplette\Css\Selectors\SelectorQuery;
 
 final class DomIdioms
 {
@@ -17,7 +20,7 @@ final class DomIdioms
     public static function getOwnerDocument(DOMNode $node): ?DOMDocument
     {
         $document = $node->ownerDocument;
-        if (!$document && ($node->nodeType === XML_HTML_DOCUMENT_NODE ||$node->nodeType === XML_DOCUMENT_NODE)) {
+        if (!$document && ($node->nodeType === XML_HTML_DOCUMENT_NODE || $node->nodeType === XML_DOCUMENT_NODE)) {
             /** @var DOMDocument $node */
             return $node;
         }
@@ -51,17 +54,14 @@ final class DomIdioms
         return false;
     }
 
-    public static function getElementsByClassName(DOMDocument $doc, string $classNames, DOMNode $context): DOMNodeList
+    public static function getElementsByClassName(\DOMParentNode $element, string $classNames): array
     {
-        // TODO: match must be case-insensitive in quirks mode
-        $classes = preg_split('/\s+/', $classNames, -1, PREG_SPLIT_NO_EMPTY);
-        $exprs = [];
-        foreach ($classes as $class) {
-            $exprs[] = sprintf("contains(concat(' ', normalize-space(@class), ' '), ' %s ')", $class);
+        $selectorText = '';
+        foreach (self::splitInputOnAsciiWhitespace($classNames) as $class) {
+            $selectorText .= ".${$class}";
         }
-        $expr = sprintf('descendant-or-self::*[@class and %s]', implode(' and ', $exprs));
 
-        return (new DOMXPath($doc))->query($expr, $context);
+        return SelectorQuery::queryAll($element, $selectorText);
     }
 
     /**

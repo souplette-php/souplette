@@ -4,6 +4,7 @@ namespace Souplette\Html\Dom\Api;
 
 use DOMElement;
 use DOMNodeList;
+use Souplette\Html\Dom\Node\HtmlElement;
 
 /**
  * @see https://dom.spec.whatwg.org/#document
@@ -22,5 +23,9 @@ interface HtmlDocumentInterface extends HtmlNodeInterface
     public function getBody(): ?DOMElement;
     public function getTitle(): string;
     public function setTitle(string $title): void;
-    public function getElementsByClassName(string $classNames): DOMNodeList;
+    /**
+     * @param string $classNames
+     * @return HtmlElement[]
+     */
+    public function getElementsByClassName(string $classNames): array;
 }

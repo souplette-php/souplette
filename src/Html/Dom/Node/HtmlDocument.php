@@ -4,6 +4,7 @@ namespace Souplette\Html\Dom\Node;
 
 use DOMAttr;
 use DOMComment;
+use DOMDocumentFragment;
 use DOMElement;
 use DOMNodeList;
 use DOMText;
@@ -34,6 +35,7 @@ final class HtmlDocument extends \DOMDocument implements
     public function __construct()
     {
         parent::__construct('', EncodingLookup::UTF_8);
+        $this->registerNodeClass(DOMDocumentFragment::class, HtmlDocumentFragment::class);
         $this->registerNodeClass(DOMText::class, HtmlText::class);
         $this->registerNodeClass(DOMComment::class, HtmlComment::class);
         $this->registerNodeClass(DOMElement::class, HtmlElement::class);
@@ -112,9 +114,13 @@ final class HtmlDocument extends \DOMDocument implements
         $this->internalMode = $mode;
     }
 
-    public function getElementsByClassName(string $classNames): DOMNodeList
+    /**
+     * @param string $classNames
+     * @return HtmlElement[]
+     */
+    public function getElementsByClassName(string $classNames): array
     {
-        return DomIdioms::getElementsByClassName($this, $classNames, $this);
+        return DomIdioms::getElementsByClassName($this, $classNames);
     }
 
     public function getElementById($elementId): ?DOMElement
