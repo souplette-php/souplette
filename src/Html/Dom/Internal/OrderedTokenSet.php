@@ -3,6 +3,7 @@
 namespace Souplette\Html\Dom\Internal;
 
 use JetBrains\PhpStorm\Pure;
+use Souplette\Html\Dom\DomIdioms;
 
 /**
  * This class backs up the implementation of DOMTokenList interface.
@@ -23,9 +24,10 @@ final class OrderedTokenSet implements \Countable, \IteratorAggregate, \ArrayAcc
 
     public function parse(string $value): void
     {
+        $this->tokens = [];
         $this->indices = [];
-        $this->tokens = preg_split('/\s+/', $value, -1, PREG_SPLIT_NO_EMPTY);
-        foreach ($this->tokens as $i => $token) {
+        foreach (DomIdioms::splitInputOnAsciiWhitespace($value) as $i => $token) {
+            $this->tokens[] = $token;
             $this->indices[$token] = $i;
         }
     }
