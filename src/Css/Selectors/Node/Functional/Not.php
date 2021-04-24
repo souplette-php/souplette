@@ -8,7 +8,7 @@ use Souplette\Css\Selectors\Specificity;
 
 final class Not extends FunctionalSelector
 {
-    public function __construct(private SelectorList $selectorList)
+    public function __construct(public SelectorList $selectorList)
     {
         parent::__construct('not', [$this->selectorList]);
     }

@@ -8,14 +8,14 @@ use Souplette\Css\Selectors\Specificity;
 
 final class Where extends FunctionalSelector
 {
-    public function __construct(SelectorList $selectors)
+    public function __construct(public SelectorList $selectorList)
     {
-        parent::__construct('where', [$selectors]);
+        parent::__construct('where', [$this->selectorList]);
     }
 
     public function __toString(): string
     {
-        return ":where({$this->arguments[0]})";
+        return ":where({$this->selectorList})";
     }
 
     public function getSpecificity(): Specificity

@@ -9,6 +9,7 @@ use Souplette\Css\Selectors\Query\EvaluatorInterface;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Syntax\Tokenizer\Tokenizer;
 use Souplette\Css\Syntax\TokenStream\TokenStream;
+use Souplette\Html\Dom\ElementIterator;
 use Souplette\Html\Dom\Node\HtmlElement;
 
 final class SelectorQuery
@@ -24,8 +25,7 @@ final class SelectorQuery
     {
         $eval = self::compile($selectorText);
         $ctx = new QueryContext($element);
-        foreach (self::descendantOrSelf($element) as $candidate) {
-            if ($candidate === $element) continue;
+        foreach (ElementIterator::descendants($element) as $candidate) {
             if ($eval->matches($ctx, $candidate)) {
                 return $candidate;
             }
@@ -38,8 +38,7 @@ final class SelectorQuery
         $eval = self::compile($selectorText);
         $ctx = new QueryContext($element);
         $results = [];
-        foreach (self::descendantOrSelf($element) as $candidate) {
-            if ($candidate === $element) continue;
+        foreach (ElementIterator::descendants($element) as $candidate) {
             if ($eval->matches($ctx, $candidate)) {
                 $results[] = $candidate;
             }
@@ -51,7 +50,7 @@ final class SelectorQuery
     {
         $eval = self::compile($selectorText);
         $ctx = new QueryContext($element);
-        foreach (self::ancestors($element) as $candidate) {
+        foreach (ElementIterator::ancestors($element) as $candidate) {
             if ($eval->matches($ctx, $candidate)) {
                 return $candidate;
             }
@@ -65,38 +64,5 @@ final class SelectorQuery
         $parser = new SelectorParser($tokens);
         $selector = $parser->parseSelectorList();
         return (new Compiler())->compile($selector);
-    }
-
-    /**
-     * @return \Generator & iterable<DOMElement>
-     */
-    private static function descendantOrSelf(DOMParentNode $root)
-    {
-        $node = $root;
-        while ($node) {
-            yield $node;
-            if ($node->firstElementChild) {
-                $node = $node->firstElementChild;
-                continue;
-            }
-            while ($node) {
-                if ($node === $root) {
-                    break 2;
-                }
-                if ($node->nextElementSibling) {
-                    $node = $node->nextElementSibling;
-                    continue 2;
-                }
-                $node = $node->parentNode;
-            }
-        }
-    }
-
-    private static function ancestors(DOMParentNode $root)
-    {
-        $node = $root;
-        while ($node = $node->parentNode) {
-            yield $node;
-        }
     }
 }
