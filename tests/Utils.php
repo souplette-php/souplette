@@ -25,4 +25,21 @@ final class Utils
 
         yield from $iterator($set);
     }
+
+    public static function elementPath(\DOMElement $element): string
+    {
+        $path = '';
+        $node = $element;
+        while ($node && $node->nodeType === XML_ELEMENT_NODE) {
+            $name = $node->localName;
+            $index = 0;
+            $sibling = $node;
+            while ($sibling = $sibling->previousElementSibling) {
+                $index++;
+            }
+            $path = "/{$name}[{$index}]" . $path;
+            $node = $node->parentNode;
+        }
+        return $path;
+    }
 }

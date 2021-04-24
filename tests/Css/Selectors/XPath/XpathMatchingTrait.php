@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Tests\Css\Selectors\Matching;
+namespace Souplette\Tests\Css\Selectors\XPath;
 
 use Souplette\Css\Selectors\SelectorParser;
 use Souplette\Css\Selectors\Xpath\Translator;

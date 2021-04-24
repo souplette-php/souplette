@@ -13,12 +13,31 @@ use Souplette\Css\Selectors\Node\SelectorList;
 use Souplette\Css\Selectors\Node\Simple\AttributeSelector;
 use Souplette\Css\Selectors\Node\Simple\ClassSelector;
 use Souplette\Css\Selectors\Node\Simple\IdSelector;
+use Souplette\Css\Selectors\Node\Simple\PseudoClassSelector;
 use Souplette\Css\Selectors\Node\Simple\TypeSelector;
 use Souplette\Css\Selectors\Node\Simple\UniversalSelector;
 use Souplette\Css\Selectors\Query\Evaluator\ComplexEvaluator;
 use Souplette\Css\Selectors\Query\Evaluator\CompoundEvaluator;
 use Souplette\Css\Selectors\Query\Evaluator\Functional\NthChildEvaluator;
 use Souplette\Css\Selectors\Query\Evaluator\ListEvaluator;
+use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\AnyLinkEvaluator;
+use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\CheckedEvaluator;
+use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\DefaultEvaluator;
+use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\DisabledEvaluator;
+use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\EmptyEvaluator;
+use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\FirstChildEvaluator;
+use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\FirstOfTypeEvaluator;
+use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\LastChildEvaluator;
+use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\LastOfTypeEvaluator;
+use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\OnlyChildEvaluator;
+use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\OnlyOfTypeEvaluator;
+use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\OptionalEvaluator;
+use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\ReadOnlyEvaluator;
+use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\ReadWriteEvaluator;
+use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\RequiredEvaluator;
+use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\RootEvaluator;
+use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\SelectedEvaluator;
+use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\UnsupportedPseudoClassEvaluator;
 use Souplette\Css\Selectors\Query\Evaluator\Simple\AttributeEvaluator;
 use Souplette\Css\Selectors\Query\Evaluator\Simple\ClassEvaluator;
 use Souplette\Css\Selectors\Query\Evaluator\Simple\IdEvaluator;
@@ -32,6 +51,32 @@ use Souplette\Css\Selectors\Query\Exception\UnsupportedSelector;
  */
 final class Compiler
 {
+    private const PSEUDO_CLASSES = [
+        'any-link' => AnyLinkEvaluator::class,
+        'checked' => CheckedEvaluator::class,
+        'default' => DefaultEvaluator::class,
+        'disabled' => DisabledEvaluator::class,
+        'empty' => EmptyEvaluator::class,
+        'first-child' => FirstChildEvaluator::class,
+        'first-of-type' => FirstOfTypeEvaluator::class,
+        'last-child' => LastChildEvaluator::class,
+        'last-of-type' => LastOfTypeEvaluator::class,
+        'link' => AnyLinkEvaluator::class,
+        'only-child' => OnlyChildEvaluator::class,
+        'only-of-type' => OnlyOfTypeEvaluator::class,
+        'optional' => OptionalEvaluator::class,
+        'read-only' => ReadOnlyEvaluator::class,
+        'read-write' => ReadWriteEvaluator::class,
+        'required' => RequiredEvaluator::class,
+        'root' => RootEvaluator::class,
+        'selected' => SelectedEvaluator::class,
+    ];
+
+    /**
+     * @var array<string, EvaluatorInterface>
+     */
+    private static array $EVALUATOR_CACHE = [];
+
     public function compile(Selector $selector): EvaluatorInterface
     {
         switch ($selector::class) {
@@ -55,8 +100,9 @@ final class Compiler
                     $selector->namespace,
                     $selector->forceCase
                 );
-            //case PseudoClassSelector::class:
-            //    return null;
+            case PseudoClassSelector::class:
+                /** @var PseudoClassSelector $selector */
+                return $this->compilePseudoClass($selector);
             case NthChild::class:
             case NthLastChild::class:
             case NthOfType::class:
@@ -87,5 +133,15 @@ final class Compiler
             $selector->combinator,
             $this->compile($selector->rhs),
         );
+    }
+
+    private function compilePseudoClass(PseudoClassSelector $selector): EvaluatorInterface
+    {
+        $class = self::PSEUDO_CLASSES[$selector->name] ?? UnsupportedPseudoClassEvaluator::class;
+        if (!isset(self::$EVALUATOR_CACHE[$class])) {
+            self::$EVALUATOR_CACHE[$class] = new $class();
+        }
+
+        return self::$EVALUATOR_CACHE[$class];
     }
 }

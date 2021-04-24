@@ -62,4 +62,13 @@ final class AttributeMatchHelper
             false => str_contains($actual, $expected),
         };
     }
+
+    public static function boolean(\DOMElement $element, string $attr): bool
+    {
+        if (!$element->hasAttribute($attr)) {
+            return false;
+        }
+        $value = $element->getAttribute($attr);
+        return !$value || strcasecmp($attr, $value) === 0;
+    }
 }
