@@ -13,6 +13,12 @@ final class Is extends FunctionalSelector
         parent::__construct('is', [$this->selectorList]);
     }
 
+    public function simpleSelectors(): \Generator
+    {
+        yield $this;
+        yield from $this->selectorList;
+    }
+
     public function __toString(): string
     {
         return ":is({$this->selectorList})";

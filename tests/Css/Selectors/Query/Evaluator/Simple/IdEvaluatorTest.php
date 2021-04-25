@@ -16,7 +16,7 @@ final class IdEvaluatorTest extends TestCase
     public function testItMatches(\DOMElement $element, string $id, bool $caseInsensitive, bool $expected)
     {
         $evaluator = new IdEvaluator($id);
-        $ctx = new QueryContext($element);
+        $ctx = QueryContext::of($element);
         $ctx->caseInsensitiveIds = $caseInsensitive;
         Assert::assertSame($expected, $evaluator->matches($ctx, $element));
     }

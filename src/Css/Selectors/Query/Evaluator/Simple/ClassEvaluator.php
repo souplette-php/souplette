@@ -2,7 +2,6 @@
 
 namespace Souplette\Css\Selectors\Query\Evaluator\Simple;
 
-use Souplette\Css\Selectors\Node\Simple\ClassSelector;
 use Souplette\Css\Selectors\Query\EvaluatorInterface;
 use Souplette\Css\Selectors\Query\Helper\AttributeMatchHelper;
 use Souplette\Css\Selectors\Query\QueryContext;

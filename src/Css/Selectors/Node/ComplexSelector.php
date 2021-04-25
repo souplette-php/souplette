@@ -13,6 +13,12 @@ final class ComplexSelector extends Selector
     ) {
     }
 
+    public function simpleSelectors(): \Generator
+    {
+        yield from $this->lhs;
+        yield from $this->rhs;
+    }
+
     public function __toString(): string
     {
         $combinator = $this->combinator === Combinators::DESCENDANT ? ' ' : " {$this->combinator} ";

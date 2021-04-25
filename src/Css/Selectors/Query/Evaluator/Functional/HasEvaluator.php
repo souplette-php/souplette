@@ -18,9 +18,9 @@ final class HasEvaluator implements EvaluatorInterface
 
     public function matches(QueryContext $context, \DOMElement $element): bool
     {
-        // @TODO create sub-context ?
+        $subContext = $context->withScope($element);
         foreach (ElementIterator::descendants($element) as $candidate) {
-            if ($this->evaluator->matches($context, $candidate)) {
+            if ($this->evaluator->matches($subContext, $candidate)) {
                 return true;
             }
         }

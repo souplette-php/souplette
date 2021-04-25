@@ -47,17 +47,13 @@ to retrieve the information. We should investigate that.
 
 # CSS
 
-- [ ] Syntax Module Level 3
-    - [ ] Tests
+- [x] Syntax Module Level 3
 - [ ] Selectors Module Level 4
-    - [ ] Parser
-    - [ ] Nodes
-    - [ ] XPath converter
-        - [ ] Functional translators
-    - [ ] Query executor ???
     - [ ] Correctly handle [namespaces](https://drafts.csswg.org/selectors/index.html#type-nmsp)
-- [ ] CSSOM
-- [ ] CSS Values and Units Module Level 4
-- [ ] Media Queries Module
-- [ ] Paged Media Module
-- [ ] CSS Typed OM
+    - [ ] Tests
+        * https://www.w3.org/Style/CSS/Test/
+        * http://test.csswg.org/harness/
+        * http://test.csswg.org/suites/selectors-4_dev/nightly-unstable/html/toc.htm
+        * http://test.csswg.org/suites/selectors-3_dev/nightly-unstable/xhtml1/toc.xht
+        * https://github.com/dperini/nwsapi/tree/master/test
+        * https://github.com/facelessuser/soupsieve/tree/master/tests

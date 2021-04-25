@@ -16,6 +16,11 @@ final class CompoundSelector extends Selector implements \IteratorAggregate, \Co
         $this->selectors = $selectors;
     }
 
+    public function simpleSelectors(): \Generator
+    {
+        yield from $this->selectors;
+    }
+
     /**
      * @return Selector[]
      */

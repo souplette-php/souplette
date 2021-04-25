@@ -13,7 +13,7 @@ final class AttributeEvaluatorTest extends TestCase
 {
     private static function assertMatches(\DOMElement $element, AttributeSelector $selector, bool $expected)
     {
-        $ctx = new QueryContext($element);
+        $ctx = QueryContext::of($element);
         $evaluator = (new Compiler)->compile($selector);
         Assert::assertSame($expected, $evaluator->matches($ctx, $element));
     }

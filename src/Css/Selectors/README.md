@@ -12,7 +12,7 @@ https://drafts.csswg.org/selectors-4/#logical-combination
 * [x] `:is()`
 * [x] `:not()`
 * [x] `:where()`
-* [ ] `:has()`
+* [x] `:has()`
 
 ### Elemental selectors
 
@@ -48,7 +48,7 @@ https://drafts.csswg.org/selectors-4/#attribute-selectors
 * [x] `:local-link`
 * [x] `:target` (never matches)
 * [x] `:target-within` (never matches)
-* [ ] `:scope`
+* [x] `:scope`
 
 ### User action pseudo-classes
 
@@ -98,16 +98,16 @@ https://drafts.csswg.org/selectors-4/#attribute-selectors
 
 * [x] `:root`
 * [x] `:empty`
-* [ ] `:nth-child()`
-* [ ] `:nth-last-child()`
+* [x] `:nth-child()`
+* [x] `:nth-last-child()`
 * [x] `:first-child`
 * [x] `:last-child`
 * [x] `:only-child`
-* [ ] `:nth-of-type()`
-* [ ] `:nth-last-of-type()`
-* [ ] `:first-of-type`
-* [ ] `:last-of-type`
-* [ ] `:only-of-type`
+* [x] `:nth-of-type()`
+* [x] `:nth-last-of-type()`
+* [x] `:first-of-type`
+* [x] `:last-of-type`
+* [x] `:only-of-type`
 
 ### Combinators
 

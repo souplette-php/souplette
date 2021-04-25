@@ -6,12 +6,12 @@ use Souplette\Css\Selectors\Query\EvaluatorInterface;
 use Souplette\Css\Selectors\Query\QueryContext;
 
 /**
- * @see https://drafts.csswg.org/selectors-4/#the-root-pseudo
+ * @see https://drafts.csswg.org/selectors-4/#the-scope-pseudo
  */
-final class RootEvaluator implements EvaluatorInterface
+final class ScopeEvaluator implements EvaluatorInterface
 {
     public function matches(QueryContext $context, \DOMElement $element): bool
     {
-        return $element === $context->document->documentElement;
+        return $element === $context->scopingRoot;
     }
 }

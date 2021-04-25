@@ -4,5 +4,8 @@ namespace Souplette\Css\Selectors\Node;
 
 abstract class SimpleSelector extends Selector
 {
-
+    public function simpleSelectors(): \Generator
+    {
+        yield $this;
+    }
 }

@@ -6,18 +6,23 @@ use Souplette\Css\Selectors\Specificity;
 
 final class RelativeSelector extends Selector
 {
-    private string $combinator;
-    private ComplexSelector $selector;
+    public function __construct(
+        public string $combinator,
+        public ComplexSelector $selector,
+    ) {
+    }
 
-    public function __construct(string $combinator, ComplexSelector $selector)
+    public function simpleSelectors(): \Generator
     {
-        $this->combinator = $combinator;
-        $this->selector = $selector;
+        yield from $this->selector;
     }
 
     public function __toString(): string
     {
-        return "{$this->combinator} {$this->selector}";
+        return match ($this->combinator) {
+            Combinators::DESCENDANT => " {$this->selector}",
+            default => "{$this->combinator} {$this->selector}",
+        };
     }
 
     public function getSpecificity(): Specificity

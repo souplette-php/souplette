@@ -15,7 +15,7 @@ final class ClassEvaluatorTest extends TestCase
      */
     public function testItMatches(\DOMElement $element, string $class, bool $caseInsensitive, bool $expected)
     {
-        $ctx = new QueryContext($element);
+        $ctx = QueryContext::of($element);
         $ctx->caseInsensitiveClasses = $caseInsensitive;
         $evaluator = new ClassEvaluator($class);
         Assert::assertSame($expected, $evaluator->matches($ctx, $element));

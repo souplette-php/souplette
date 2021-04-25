@@ -16,7 +16,7 @@ final class CompoundEvaluatorTest extends TestCase
 {
     private static function assertMatches(\DOMElement $element, Selector $selector, bool $expected)
     {
-        $ctx = new QueryContext($element);
+        $ctx = QueryContext::of($element);
         $eval = (new Compiler)->compile($selector);
         Assert::assertSame($expected, $eval->matches($ctx, $element));
     }

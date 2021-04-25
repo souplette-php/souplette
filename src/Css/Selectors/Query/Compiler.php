@@ -2,6 +2,7 @@
 
 namespace Souplette\Css\Selectors\Query;
 
+use Souplette\Css\Selectors\Node\Combinators;
 use Souplette\Css\Selectors\Node\ComplexSelector;
 use Souplette\Css\Selectors\Node\CompoundSelector;
 use Souplette\Css\Selectors\Node\Functional\Has;
@@ -12,6 +13,7 @@ use Souplette\Css\Selectors\Node\Functional\NthLastChild;
 use Souplette\Css\Selectors\Node\Functional\NthLastOfType;
 use Souplette\Css\Selectors\Node\Functional\NthOfType;
 use Souplette\Css\Selectors\Node\Functional\Where;
+use Souplette\Css\Selectors\Node\RelativeSelector;
 use Souplette\Css\Selectors\Node\Selector;
 use Souplette\Css\Selectors\Node\SelectorList;
 use Souplette\Css\Selectors\Node\Simple\AttributeSelector;
@@ -47,6 +49,7 @@ use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\ReadOnlyEvaluator;
 use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\ReadWriteEvaluator;
 use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\RequiredEvaluator;
 use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\RootEvaluator;
+use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\ScopeEvaluator;
 use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\SelectedEvaluator;
 use Souplette\Css\Selectors\Query\Evaluator\PseudoClass\UnsupportedPseudoClassEvaluator;
 use Souplette\Css\Selectors\Query\Evaluator\PseudoElementEvaluator;
@@ -81,6 +84,7 @@ final class Compiler
         'read-write' => ReadWriteEvaluator::class,
         'required' => RequiredEvaluator::class,
         'root' => RootEvaluator::class,
+        'scope' => ScopeEvaluator::class,
         'selected' => SelectedEvaluator::class,
     ];
 
@@ -119,6 +123,8 @@ final class Compiler
                     1 => $evaluators[0],
                     default => new CompoundEvaluator($evaluators),
                 };
+            case RelativeSelector::class:
+                return $this->compileRelativeSelector($selector);
             case UniversalSelector::class:
                 return new UniversalEvaluator();
             case TypeSelector::class:
@@ -200,5 +206,48 @@ final class Compiler
         }
 
         return self::$EVALUATOR_CACHE[$class];
+    }
+
+    /**
+     * @see https://drafts.csswg.org/selectors-4/#relative
+     * @see https://drafts.csswg.org/selectors-4/#absolutizing
+     */
+    private function compileRelativeSelector(RelativeSelector $selector): EvaluatorInterface
+    {
+        // 1. If the selector starts with a combinator other than the white space form of the descendant combinator,
+        // prepend :scope as the initial compound selector.
+        if ($selector->combinator !== Combinators::DESCENDANT) {
+            return $this->compileComplexSelector(
+                new ComplexSelector(
+                    new PseudoClassSelector('scope'),
+                    $selector->combinator,
+                    $selector->selector,
+                )
+            );
+        }
+        // 2. Otherwise, if the selector does not contain any instance of the :scope pseudo-class
+        // (either at the top-level or as an argument to a functional pseudo-class),
+        // prepend :scope followed by the white space form of the descendant combinator.
+        if (!self::containsScopePseudoClass($selector)) {
+            return $this->compileComplexSelector(
+                new ComplexSelector(
+                    new PseudoClassSelector('scope'),
+                    Combinators::DESCENDANT,
+                    $selector->selector,
+                )
+            );
+        }
+        // 3. Otherwise, the selector is already absolute.
+        return $this->doCompile($selector->selector);
+    }
+
+    private static function containsScopePseudoClass(Selector $selector): bool
+    {
+        foreach ($selector->simpleSelectors() as $selector) {
+            if ($selector instanceof PseudoClassSelector && $selector->name === 'scope') {
+                return true;
+            }
+        }
+        return false;
     }
 }

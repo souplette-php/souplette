@@ -21,7 +21,7 @@ final class UniversalEvaluatorTest extends TestCase
         ;
         $evaluator = new UniversalEvaluator();
         foreach ($dom->children as $child) {
-            $ctx = new QueryContext($child);
+            $ctx = QueryContext::of($child);
             Assert::assertTrue($evaluator->matches($ctx, $child));
         }
     }

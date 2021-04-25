@@ -491,14 +491,16 @@ final class SelectorParser
         $selectors = null;
         $token = $this->tokenStream->current();
         if ($token::TYPE === TokenTypes::IDENT && strcasecmp($token->value, 'of') === 0) {
-            $token = $this->tokenStream->consumeAndSkipWhitespace();
-            // TODO: create a new selector parser ?
+            $this->tokenStream->consumeAndSkipWhitespace();
             $selectors = $this->parseRelativeSelectorList();
             $this->tokenStream->skipWhitespace();
         }
         $this->tokenStream->eat(TokenTypes::RPAREN);
 
-        return $last ? new NthLastChild($anPlusB, $selectors) : new NthChild($anPlusB, $selectors);
+        return match ($last) {
+            true => new NthLastChild($anPlusB, $selectors),
+            false => new NthChild($anPlusB, $selectors),
+        };
     }
 
     private function parseNthOfType(bool $last = false): NthLastOfType|NthOfType
@@ -507,7 +509,10 @@ final class SelectorParser
         $anPlusB = $parser->parse();
         $this->tokenStream->eat(TokenTypes::RPAREN);
 
-        return $last ? new NthLastOfType($anPlusB) : new NthOfType($anPlusB);
+        return match ($last) {
+            true => new NthLastOfType($anPlusB),
+            false => new NthOfType($anPlusB),
+        };
     }
 
     private function parseNthCol(bool $last = false): NthLastCol|NthCol
@@ -516,12 +521,14 @@ final class SelectorParser
         $anPlusB = $parser->parse();
         $this->tokenStream->eat(TokenTypes::RPAREN);
 
-        return $last ? new NthLastCol($anPlusB) : new NthCol($anPlusB);
+        return match ($last) {
+            true => new NthLastCol($anPlusB),
+            false => new NthCol($anPlusB),
+        };
     }
 
     /**
      * @see https://drafts.csswg.org/selectors-4/#typedef-forgiving-selector-list
-     * @return SelectorList
      */
     private function parseForgivingSelectorList(): SelectorList
     {
@@ -547,7 +554,6 @@ final class SelectorParser
 
     /**
      * @see https://drafts.csswg.org/selectors-4/#typedef-forgiving-relative-selector-list
-     * @return SelectorList
      */
     private function parseForgivingRelativeSelectorList(): SelectorList
     {
