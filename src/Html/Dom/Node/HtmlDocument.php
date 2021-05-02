@@ -4,6 +4,7 @@ namespace Souplette\Html\Dom\Node;
 
 use DOMAttr;
 use DOMComment;
+use DOMDocument;
 use DOMDocumentFragment;
 use DOMElement;
 use DOMNodeList;
@@ -35,6 +36,7 @@ final class HtmlDocument extends \DOMDocument implements
     public function __construct()
     {
         parent::__construct('', EncodingLookup::UTF_8);
+        $this->registerNodeClass(DOMDocument::class, self::class);
         $this->registerNodeClass(DOMDocumentFragment::class, HtmlDocumentFragment::class);
         $this->registerNodeClass(DOMText::class, HtmlText::class);
         $this->registerNodeClass(DOMComment::class, HtmlComment::class);
