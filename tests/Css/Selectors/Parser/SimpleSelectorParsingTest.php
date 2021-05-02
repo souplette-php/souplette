@@ -3,6 +3,7 @@
 namespace Souplette\Tests\Css\Selectors\Parser;
 
 use PHPUnit\Framework\Assert;
+use Souplette\Css\Selectors\Exception\UndeclaredNamespacePrefix;
 use Souplette\Css\Selectors\Node\ComplexSelector;
 use Souplette\Css\Selectors\Node\CompoundSelector;
 use Souplette\Css\Selectors\Node\SelectorList;
@@ -15,12 +16,10 @@ final class SimpleSelectorParsingTest extends SelectorParserTestCase
 {
     /**
      * @dataProvider parseSelectorListWithSimpleSelectorsProvider
-     * @param string $input
-     * @param $expected
      */
-    public function testParseSelectorListWithSimpleSelectors(string $input, $expected)
+    public function testParseSelectorListWithSimpleSelectors(string $input, $expected, array $namespaces = [])
     {
-        $selector = self::parseSelectorList($input);
+        $selector = self::parseSelectorList($input, $namespaces);
         $expected = new SelectorList([new ComplexSelector(new CompoundSelector([$expected]))]);
         Assert::assertEquals($expected, $selector);
     }
@@ -29,6 +28,7 @@ final class SimpleSelectorParsingTest extends SelectorParserTestCase
     {
         // Type selectors
         yield from SimpleSelectorProvider::typeSelectors();
+        yield from SimpleSelectorProvider::namespacedTypeSelectors();
         // ID
         yield '#id' => ['#foo', new IdSelector('foo')];
         // class
@@ -41,5 +41,22 @@ final class SimpleSelectorParsingTest extends SelectorParserTestCase
         // functional pseudo-classes
         yield from SimpleSelectorProvider::simpleFunctionalPseudoClasses();
         // TODO: :is() :not() :has() :where()
+    }
+
+    /**
+     * @dataProvider undeclaredNamespacePrefixesProvider
+     */
+    public function testUndeclaredNamespacePrefixes(string $input)
+    {
+        $this->expectException(UndeclaredNamespacePrefix::class);
+        self::parseSelectorList($input);
+    }
+
+    public function undeclaredNamespacePrefixesProvider(): \Generator
+    {
+        foreach (SimpleSelectorProvider::namespacedTypeSelectors() as $key => [$input,]) {
+            yield $key => [$input];
+        }
+        yield 'undeclared attribute namespace' => ['[foo|bar="baz"]'];
     }
 }

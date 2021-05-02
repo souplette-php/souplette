@@ -15,10 +15,15 @@
   <testsuites>
     <testsuite name="html">
       <directory>tests</directory>
+      <exclude>tests/resources</exclude>
       <exclude>tests/Css</exclude>
     </testsuite>
-    <testsuite name="css">
-      <directory>tests/Css</directory>
+    <testsuite name="css-syntax">
+      <directory>tests/Css/Syntax</directory>
+    </testsuite>
+    <testsuite name="css-selectors">
+      <directory>tests/Css/Selectors/Parser</directory>
+      <directory>tests/Css/Selectors/Query</directory>
     </testsuite>
   </testsuites>
 </phpunit>

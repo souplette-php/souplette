@@ -13,10 +13,10 @@ use Souplette\Css\Syntax\TokenStream\TokenStream;
 
 class SelectorParserTestCase extends TestCase
 {
-    protected static function parseSelectorList(string $input): SelectorList
+    protected static function parseSelectorList(string $input, array $namespaces = []): SelectorList
     {
         $tokens = new TokenStream(new Tokenizer($input), 2);
-        $parser = new SelectorParser($tokens);
+        $parser = new SelectorParser($tokens, $namespaces);
         return $parser->parseSelectorList();
     }
 

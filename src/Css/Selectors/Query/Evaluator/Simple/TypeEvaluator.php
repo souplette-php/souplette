@@ -15,20 +15,18 @@ final class TypeEvaluator implements EvaluatorInterface
 
     public function matches(QueryContext $context, \DOMElement $element): bool
     {
-        return match($this->namespace) {
-            '*' => self::hasLocalName($element, $this->localName),
-            null => !$element->namespaceURI && self::hasLocalName($element, $this->localName),
-            default => self::hasLocalName($element, $this->localName) && $element->prefix === $this->namespace,
+        return match ($this->namespace) {
+            '*' => $this->matchesLocalName($element, $context),
+            null => !$element->namespaceURI && $this->matchesLocalName($element, $context),
+            default => $element->namespaceURI === $this->namespace && $this->matchesLocalName($element, $context),
         };
     }
 
-    public static function isSameType(\DOMElement $a, \DOMElement $b): bool
+    private function matchesLocalName(\DOMElement $element, QueryContext $ctx): bool
     {
-        return self::hasLocalName($a, $b->localName);
-    }
-
-    public static function hasLocalName(\DOMElement $element, string $name): bool
-    {
-        return strcasecmp($element->localName, $name) === 0;
+        return match ($ctx->caseInsensitiveTypes) {
+            true => strcasecmp($element->localName, $this->localName) === 0,
+            false => $element->localName === $this->localName,
+        };
     }
 }

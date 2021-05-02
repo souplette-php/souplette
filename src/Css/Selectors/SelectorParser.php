@@ -2,6 +2,7 @@
 
 namespace Souplette\Css\Selectors;
 
+use Souplette\Css\Selectors\Exception\UndeclaredNamespacePrefix;
 use Souplette\Css\Selectors\Node\Combinators;
 use Souplette\Css\Selectors\Node\ComplexSelector;
 use Souplette\Css\Selectors\Node\CompoundSelector;
@@ -65,15 +66,13 @@ final class SelectorParser
         '*' => AttributeSelector::OPERATOR_SUBSTRING_MATCH,
     ];
 
-    private string $defaultNamespace = '*';
+    private string $defaultNamespace;
 
-    public function __construct(private TokenStreamInterface $tokenStream)
-    {
-    }
-
-    public function setDefaultNamespace(string $namespace)
-    {
-        $this->defaultNamespace = $namespace;
+    public function __construct(
+        private TokenStreamInterface $tokenStream,
+        private array $namespaces = [],
+    ) {
+        $this->defaultNamespace = $namespaces[''] ?? '*';
     }
 
     public function parseSelectorList(): SelectorList
@@ -215,14 +214,19 @@ final class SelectorParser
                 $la2::TYPE === TokenTypes::IDENT
                 || ($allowStar && $la2::TYPE === TokenTypes::DELIM && $la2->value === '*')
             ) {
-                if (
-                    $token::TYPE === TokenTypes::IDENT
-                    || ($token::TYPE === TokenTypes::DELIM && $token->value === '*')
-                ) {
-                    $namespace = $token->value;
+                if ($token::TYPE === TokenTypes::IDENT) {
+                    $prefix = $token->value;
+                    if (!isset($this->namespaces[$prefix])) {
+                        throw new UndeclaredNamespacePrefix($prefix);
+                    }
                     $localName = $la2->value;
                     $this->tokenStream->consume(3);
-                    return [$namespace, $localName];
+                    return [$this->namespaces[$prefix], $localName];
+                }
+                if ($token::TYPE === TokenTypes::DELIM && $token->value === '*') {
+                    $localName = $la2->value;
+                    $this->tokenStream->consume(3);
+                    return ['*', $localName];
                 }
                 throw UnexpectedToken::expectingOneOf($token, TokenTypes::IDENT, TokenTypes::DELIM);
             }
