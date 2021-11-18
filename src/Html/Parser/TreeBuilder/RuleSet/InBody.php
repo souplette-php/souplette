@@ -5,7 +5,7 @@ namespace Souplette\Html\Parser\TreeBuilder\RuleSet;
 use Souplette\Html\Dom\DocumentModes;
 use Souplette\Html\Namespaces;
 use Souplette\Html\Parser\Tokenizer\Token;
-use Souplette\Html\Parser\Tokenizer\TokenizerStates;
+use Souplette\Html\Parser\Tokenizer\TokenizerState;
 use Souplette\Html\Parser\Tokenizer\TokenTypes;
 use Souplette\Html\Parser\TreeBuilder\Elements;
 use Souplette\Html\Parser\TreeBuilder\InsertionModes;
@@ -340,7 +340,7 @@ final class InBody extends RuleSet
                 // Insert an HTML element for the token.
                 $tree->insertElement($token);
                 // Switch the tokenizer to the PLAINTEXT state.
-                $tree->tokenizer->state = TokenizerStates::PLAINTEXT;
+                $tree->tokenizer->state = TokenizerState::PLAINTEXT;
                 // NOTE: Once a start tag with the tag name "plaintext" has been seen,
                 // that will be the last token ever seen other than character tokens (and the end-of-file token),
                 // because there is no way to switch out of the PLAINTEXT state.
@@ -523,7 +523,7 @@ final class InBody extends RuleSet
                 // (Newlines at the start of textarea elements are ignored as an authoring convenience.)
 
                 // 3. Switch the tokenizer to the RCDATA state.
-                $tree->tokenizer->state = TokenizerStates::RCDATA;
+                $tree->tokenizer->state = TokenizerState::RCDATA;
                 // 4. Let the original insertion mode be the current insertion mode.
                 $tree->originalInsertionMode = $tree->insertionMode;
                 // 5. Set the frameset-ok flag to "not ok".

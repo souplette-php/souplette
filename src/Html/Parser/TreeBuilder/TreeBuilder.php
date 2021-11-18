@@ -12,7 +12,7 @@ use Souplette\Html\Dom\DocumentModes;
 use Souplette\Html\Namespaces;
 use Souplette\Html\Parser\Tokenizer\Token;
 use Souplette\Html\Parser\Tokenizer\Tokenizer;
-use Souplette\Html\Parser\Tokenizer\TokenizerStates;
+use Souplette\Html\Parser\Tokenizer\TokenizerState;
 use Souplette\Html\Parser\Tokenizer\TokenTypes;
 use Souplette\Html\Parser\TreeBuilder\RuleSet\InForeignContent;
 use Souplette\Xml\XmlNameEscaper;
@@ -127,7 +127,7 @@ final class TreeBuilder
         $this->tokenizer = $tokenizer;
         $this->encoding = $encoding;
         $this->reset();
-        $this->run(TokenizerStates::DATA);
+        $this->run(TokenizerState::DATA);
         $this->document->normalize();
         return $this->document;
     }
@@ -155,17 +155,17 @@ final class TreeBuilder
         $contextTag = $this->contextElement->localName;
         $contextNS = $this->contextElement->namespaceURI;
         if (isset(Elements::CDATA_ELEMENTS[$contextNS][$contextTag])) {
-            $tokenizerState = TokenizerStates::RCDATA;
+            $tokenizerState = TokenizerState::RCDATA;
         } elseif (isset(Elements::RCDATA_ELEMENTS[$contextNS][$contextTag])) {
-            $tokenizerState = TokenizerStates::RAWTEXT;
+            $tokenizerState = TokenizerState::RAWTEXT;
         } elseif ($contextTag === 'script') {
-            $tokenizerState = TokenizerStates::SCRIPT_DATA;
+            $tokenizerState = TokenizerState::SCRIPT_DATA;
         } elseif ($this->scriptingEnabled && $contextTag === 'noscript') {
-            $tokenizerState = TokenizerStates::RAWTEXT;
+            $tokenizerState = TokenizerState::RAWTEXT;
         } elseif (isset(Elements::PLAINTEXT_ELEMENTS[$contextNS][$contextTag])) {
-            $tokenizerState = TokenizerStates::PLAINTEXT;
+            $tokenizerState = TokenizerState::PLAINTEXT;
         } else {
-            $tokenizerState = TokenizerStates::DATA;
+            $tokenizerState = TokenizerState::DATA;
         }
         // 5. Let root be a new html element with no attributes.
         $root = $this->document->createElementNS(Namespaces::HTML, 'html');
@@ -224,7 +224,7 @@ final class TreeBuilder
         $this->pendingTableCharacterTokens = [];
     }
 
-    private function run(int $tokenizerState)
+    private function run(TokenizerState $tokenizerState)
     {
         $previousToken = null;
         foreach ($this->tokenizer->tokenize($tokenizerState) as $token) {
@@ -673,7 +673,7 @@ final class TreeBuilder
     {
         // @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-elements-that-contain-only-text
         $this->insertElement($token);
-        $this->tokenizer->state = $rawtext ? TokenizerStates::RAWTEXT : TokenizerStates::RCDATA;
+        $this->tokenizer->state = $rawtext ? TokenizerState::RAWTEXT : TokenizerState::RCDATA;
         $this->originalInsertionMode = $this->insertionMode;
         $this->insertionMode = InsertionModes::TEXT;
     }

@@ -55,11 +55,11 @@ $this->position += \strspn($this->input, {{ bytes|repr_bytes }}, $this->position
 {% endmacro %}
 
 {% macro set_return_state(state_name) -%}
-$this->returnState = TokenizerStates::{{ state_name }};
+$this->returnState = TokenizerState::{{ state_name }};
 {%- endmacro %}
 
 {% macro is_attribute_return_state() -%}
-$this->returnState === TokenizerStates::ATTRIBUTE_VALUE_DOUBLE_QUOTED || $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_SINGLE_QUOTED || $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED
+$this->returnState === TokenizerState::ATTRIBUTE_VALUE_DOUBLE_QUOTED || $this->returnState === TokenizerState::ATTRIBUTE_VALUE_SINGLE_QUOTED || $this->returnState === TokenizerState::ATTRIBUTE_VALUE_UNQUOTED
 {%- endmacro %}
 
 {% macro is_appropriate_end_tag() -%}
@@ -108,7 +108,7 @@ goto {{ state_name }};
     We use this macro when the spec says "reconsume the current input character in the <mumble> state."
 #}
 {% macro reconsume_in(state_name) -%}
-$this->state = TokenizerStates::{{ state_name }};
+$this->state = TokenizerState::{{ state_name }};
 goto {{ state_name }};
 {%- endmacro reconsume_in %}
 
@@ -121,7 +121,7 @@ goto INITIAL;
     We use this macro when the spec says "consume the next input character ... and switch to the <mumble> state."
 #}
 {% macro advance_to(state_name) -%}
-$this->state = TokenizerStates::{{ state_name }};
+$this->state = TokenizerState::{{ state_name }};
 $cc = $this->input[++$this->position] ?? null;
 goto {{ state_name }};
 {%- endmacro advance_to %}
@@ -141,7 +141,7 @@ goto {{ state_name }};
     We handle those cases by advancing the source directly and using this macro to switch to the indicated state.
 #}
 {% macro switch_to(state_name) -%}
-$this->state = TokenizerStates::{{ state_name }};
+$this->state = TokenizerState::{{ state_name }};
 $cc = $this->input[++$this->position] ?? null;
 goto {{ state_name }};
 {%- endmacro switch_to %}
@@ -156,7 +156,7 @@ $this->tokenQueue->enqueue($this->currentToken);
 #}
 {% macro emit_and_resume_in(state_name) -%}
 $this->emitCurrentToken();
-$this->state = TokenizerStates::{{ state_name }};
+$this->state = TokenizerState::{{ state_name }};
 ++$this->position;
 return true;
 {%- endmacro emit_and_resume_in %}

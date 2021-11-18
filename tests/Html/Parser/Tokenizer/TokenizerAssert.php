@@ -5,7 +5,7 @@ namespace Souplette\Tests\Html\Parser\Tokenizer;
 use PHPUnit\Framework\Assert;
 use Souplette\Html\Parser\Tokenizer\Token;
 use Souplette\Html\Parser\Tokenizer\Tokenizer;
-use Souplette\Html\Parser\Tokenizer\TokenizerStates;
+use Souplette\Html\Parser\Tokenizer\TokenizerState;
 
 final class TokenizerAssert
 {
@@ -13,14 +13,14 @@ final class TokenizerAssert
      * @param string $input
      * @param Token[] $expectedTokens
      * @param array|null $expectedErrors
-     * @param int $startState
+     * @param TokenizerState $startState
      * @param bool $omitEOF
      */
     public static function tokensEquals(
         string $input,
         array $expectedTokens,
         ?array $expectedErrors = null,
-        int $startState = TokenizerStates::DATA,
+        TokenizerState $startState = TokenizerState::DATA,
         bool $omitEOF = true
     ) {
         $tokenizer = new Tokenizer($input);

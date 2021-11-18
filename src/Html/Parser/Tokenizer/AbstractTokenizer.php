@@ -10,10 +10,10 @@ use SplQueue;
 
 abstract class AbstractTokenizer
 {
-    public int $state = TokenizerStates::DATA;
+    public TokenizerState $state = TokenizerState::DATA;
     public bool $allowCdata = false;
     protected int $position = 0;
-    protected int $returnState = 0;
+    protected TokenizerState $returnState = TokenizerState::DATA;
     protected SplQueue $tokenQueue;
     protected Token $currentToken;
     protected array $parseErrors = [];
@@ -42,7 +42,7 @@ abstract class AbstractTokenizer
 
     abstract public function nextToken(): bool;
 
-    final public function tokenize(int $startState = TokenizerStates::DATA, ?string $appropriateEndTag = null)
+    final public function tokenize(TokenizerState $startState = TokenizerState::DATA, ?string $appropriateEndTag = null)
     {
         $this->reset();
         $this->state = $startState;
@@ -108,9 +108,9 @@ abstract class AbstractTokenizer
     {
         // https://html.spec.whatwg.org/multipage/parsing.html#charref-in-attribute
         $rs = $this->returnState;
-        $isForAttribute = $rs === TokenizerStates::ATTRIBUTE_VALUE_DOUBLE_QUOTED
-            || $rs === TokenizerStates::ATTRIBUTE_VALUE_SINGLE_QUOTED
-            || $rs === TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED;
+        $isForAttribute = $rs === TokenizerState::ATTRIBUTE_VALUE_DOUBLE_QUOTED
+            || $rs === TokenizerState::ATTRIBUTE_VALUE_SINGLE_QUOTED
+            || $rs === TokenizerState::ATTRIBUTE_VALUE_UNQUOTED;
         if ($isForAttribute) {
             $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= $this->temporaryBuffer;
             return;

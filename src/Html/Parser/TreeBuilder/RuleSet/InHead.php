@@ -6,7 +6,7 @@ use Souplette\Encoding\EncodingLookup;
 use Souplette\Html\Namespaces;
 use Souplette\Html\Parser\EncodingSniffer;
 use Souplette\Html\Parser\Tokenizer\Token;
-use Souplette\Html\Parser\Tokenizer\TokenizerStates;
+use Souplette\Html\Parser\Tokenizer\TokenizerState;
 use Souplette\Html\Parser\Tokenizer\TokenTypes;
 use Souplette\Html\Parser\TreeBuilder\InsertionModes;
 use Souplette\Html\Parser\TreeBuilder\RuleSet;
@@ -103,7 +103,7 @@ final class InHead extends RuleSet
                 $node = $tree->createElement($token, Namespaces::HTML, $location->parent);
                 $location->insert($node);
                 $tree->openElements->push($node);
-                $tree->tokenizer->state = TokenizerStates::SCRIPT_DATA;
+                $tree->tokenizer->state = TokenizerState::SCRIPT_DATA;
                 $tree->originalInsertionMode = $tree->insertionMode;
                 $tree->insertionMode = InsertionModes::TEXT;
                 return;

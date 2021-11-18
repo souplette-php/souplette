@@ -5,7 +5,7 @@ namespace Souplette\Html\Parser;
 use Souplette\Encoding\EncodingLookup;
 use Souplette\Html\Parser\Tokenizer\Token\StartTag;
 use Souplette\Html\Parser\Tokenizer\Tokenizer;
-use Souplette\Html\Parser\Tokenizer\TokenizerStates;
+use Souplette\Html\Parser\Tokenizer\TokenizerState;
 use Souplette\Html\Parser\Tokenizer\TokenTypes;
 
 final class MetaCharsetParser
@@ -165,24 +165,24 @@ final class MetaCharsetParser
         switch ($token->name) {
             case 'textarea':
             case 'title':
-                $this->tokenizer->state = TokenizerStates::RCDATA;
+                $this->tokenizer->state = TokenizerState::RCDATA;
                 break;
             case 'plaintext':
-                $this->tokenizer->state = TokenizerStates::PLAINTEXT;
+                $this->tokenizer->state = TokenizerState::PLAINTEXT;
                 break;
             case 'script':
-                $this->tokenizer->state = TokenizerStates::SCRIPT_DATA;
+                $this->tokenizer->state = TokenizerState::SCRIPT_DATA;
                 break;
             case 'style':
             case 'iframe':
             case 'xmp':
             case 'noembed':
             case 'noframes':
-                $this->tokenizer->state = TokenizerStates::RAWTEXT;
+                $this->tokenizer->state = TokenizerState::RAWTEXT;
                 break;
             case 'noscript':
                 if (true /* scripting enabled */) {
-                    $this->tokenizer->state = TokenizerStates::RAWTEXT;
+                    $this->tokenizer->state = TokenizerState::RAWTEXT;
                 }
                 break;
             default:

@@ -3,7 +3,7 @@
 namespace Souplette\Codegen;
 
 use Souplette\Codegen\Twig\TokenizerExtension;
-use Souplette\Html\Parser\Tokenizer\TokenizerStates;
+use Souplette\Html\Parser\Tokenizer\TokenizerState;
 use Twig\Environment;
 
 final class TokenizerGenerator extends AbstractCodeGenerator
@@ -32,9 +32,9 @@ final class TokenizerGenerator extends AbstractCodeGenerator
             'state_names' => [],
         ];
 
-        $ref = new \ReflectionClass(TokenizerStates::class);
-        foreach ($ref->getConstants() as $name => $constant) {
-            $context['state_names'][] = $name;
+        $ref = new \ReflectionEnum(TokenizerState::class);
+        foreach ($ref->getCases() as $case) {
+            $context['state_names'][] = $case->name;
         }
 
         return $context;

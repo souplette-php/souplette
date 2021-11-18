@@ -19,7 +19,7 @@ final class Tokenizer extends AbstractTokenizer
         $cc = $this->input[$this->position] ?? null;
         switch ($this->state) {
         {% for current_state in state_names ~%}
-            case TokenizerStates::{{ current_state }}:
+            case TokenizerState::{{ current_state }}:
             {{ current_state }}: {
                 {{~ include(["tokenizer/#{current_state|lower}.php.twig", 'tokenizer/_unknown_state.php.twig'])|indent(4) }}
             }

@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 use Souplette\Html\Parser\InputPreprocessor;
 use Souplette\Html\Parser\Tokenizer\Token;
 use Souplette\Html\Parser\Tokenizer\Tokenizer;
-use Souplette\Html\Parser\Tokenizer\TokenizerStates;
+use Souplette\Html\Parser\Tokenizer\TokenizerState;
 use Souplette\Html\Parser\Tokenizer\TokenTypes;
 use Souplette\Tests\Html5Lib\JsonFile;
 use Souplette\Tests\ResourceCollector;
@@ -154,12 +154,12 @@ class TokenizationTest extends TestCase
     private static function convertHtml5LibStates(array $stateNames): array
     {
         if (!$stateNames) {
-            return [TokenizerStates::DATA];
+            return [TokenizerState::DATA];
         }
         $states = [];
         foreach ($stateNames as $stateName) {
             $name = str_replace([' ', '_STATE'], ['_', ''], strtoupper($stateName));
-            $states[] = constant(sprintf('%s::%s', TokenizerStates::class, $name));
+            $states[] = constant(sprintf('%s::%s', TokenizerState::class, $name));
         }
         return $states;
     }

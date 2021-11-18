@@ -18,18 +18,18 @@ final class Tokenizer extends AbstractTokenizer
         INITIAL:
         $cc = $this->input[$this->position] ?? null;
         switch ($this->state) {
-            case TokenizerStates::DATA:
+            case TokenizerState::DATA:
             DATA: {
                 if ($cc === '&') {
                     // Set the return state to the data state.
-                    $this->returnState = TokenizerStates::DATA;
+                    $this->returnState = TokenizerState::DATA;
                     // Switch to the character reference state.
-                    $this->state = TokenizerStates::CHARACTER_REFERENCE;
+                    $this->state = TokenizerState::CHARACTER_REFERENCE;
                     $cc = $this->input[++$this->position] ?? null;
                     goto CHARACTER_REFERENCE;
                 } elseif ($cc === '<') {
                     // Switch to the tag open state.
-                    $this->state = TokenizerStates::TAG_OPEN;
+                    $this->state = TokenizerState::TAG_OPEN;
                     $cc = $this->input[++$this->position] ?? null;
                     goto TAG_OPEN;
                 } elseif ($cc === "\0") {
@@ -53,18 +53,18 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::RCDATA:
+            case TokenizerState::RCDATA:
             RCDATA: {
                 if ($cc === '&') {
                     // Set the return state to the RCDATA state.
-                    $this->returnState = TokenizerStates::RCDATA;
+                    $this->returnState = TokenizerState::RCDATA;
                     // Switch to the character reference state.
-                    $this->state = TokenizerStates::CHARACTER_REFERENCE;
+                    $this->state = TokenizerState::CHARACTER_REFERENCE;
                     $cc = $this->input[++$this->position] ?? null;
                     goto CHARACTER_REFERENCE;
                 } elseif ($cc === '<') {
                     // Switch to the RCDATA less-than sign state.
-                    $this->state = TokenizerStates::RCDATA_LESS_THAN_SIGN;
+                    $this->state = TokenizerState::RCDATA_LESS_THAN_SIGN;
                     $cc = $this->input[++$this->position] ?? null;
                     goto RCDATA_LESS_THAN_SIGN;
                 } elseif ($cc === "\0") {
@@ -88,11 +88,11 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::RAWTEXT:
+            case TokenizerState::RAWTEXT:
             RAWTEXT: {
                 if ($cc === '<') {
                     // Switch to the RAWTEXT less-than sign state.
-                    $this->state = TokenizerStates::RAWTEXT_LESS_THAN_SIGN;
+                    $this->state = TokenizerState::RAWTEXT_LESS_THAN_SIGN;
                     $cc = $this->input[++$this->position] ?? null;
                     goto RAWTEXT_LESS_THAN_SIGN;
                 } elseif ($cc === "\0") {
@@ -116,11 +116,11 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::SCRIPT_DATA:
+            case TokenizerState::SCRIPT_DATA:
             SCRIPT_DATA: {
                 if ($cc === '<') {
                     // Switch to the script data less-than sign state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_LESS_THAN_SIGN;
+                    $this->state = TokenizerState::SCRIPT_DATA_LESS_THAN_SIGN;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA_LESS_THAN_SIGN;
                 } elseif ($cc === "\0") {
@@ -144,7 +144,7 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::PLAINTEXT:
+            case TokenizerState::PLAINTEXT:
             PLAINTEXT: {
                 if ($cc === "\0") {
                     // This is an unexpected-null-character parse error.
@@ -167,23 +167,23 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::TAG_OPEN:
+            case TokenizerState::TAG_OPEN:
             TAG_OPEN: {
                 if ($cc === '!') {
                     // Switch to the markup declaration open state.
-                    $this->state = TokenizerStates::MARKUP_DECLARATION_OPEN;
+                    $this->state = TokenizerState::MARKUP_DECLARATION_OPEN;
                     $cc = $this->input[++$this->position] ?? null;
                     goto MARKUP_DECLARATION_OPEN;
                 } elseif ($cc === '/') {
                     // Switch to the end tag open state.
-                    $this->state = TokenizerStates::END_TAG_OPEN;
+                    $this->state = TokenizerState::END_TAG_OPEN;
                     $cc = $this->input[++$this->position] ?? null;
                     goto END_TAG_OPEN;
                 } elseif (\ctype_alpha($cc)) {
                     // Create a new start tag token, set its tag name to the empty string.
                     $this->currentToken = new StartTag();
                     // Reconsume in the tag name state.
-                    $this->state = TokenizerStates::TAG_NAME;
+                    $this->state = TokenizerState::TAG_NAME;
                     goto TAG_NAME;
                 } elseif ($cc === '?') {
                     // This is an unexpected-question-mark-instead-of-tag-name parse error.
@@ -191,7 +191,7 @@ final class Tokenizer extends AbstractTokenizer
                     // Create a comment token whose data is the empty string.
                     $this->currentToken = new Comment('');
                     // Reconsume in the bogus comment state.
-                    $this->state = TokenizerStates::BOGUS_COMMENT;
+                    $this->state = TokenizerState::BOGUS_COMMENT;
                     goto BOGUS_COMMENT;
                 } elseif ($cc === null) {
                     // This is an eof-before-tag-name parse error.
@@ -205,24 +205,24 @@ final class Tokenizer extends AbstractTokenizer
                     // Emit a U+003C LESS-THAN SIGN character token.
                     $this->tokenQueue->enqueue(new Character('<'));
                     // Reconsume in the data state.
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     goto DATA;
                 }
             }
             break;
-            case TokenizerStates::END_TAG_OPEN:
+            case TokenizerState::END_TAG_OPEN:
             END_TAG_OPEN: {
                 if (\ctype_alpha($cc)) {
                     // Create a new end tag token, set its tag name to the empty string.
                     $this->currentToken = new EndTag();
                     // Reconsume in the tag name state.
-                    $this->state = TokenizerStates::TAG_NAME;
+                    $this->state = TokenizerState::TAG_NAME;
                     goto TAG_NAME;
                 } elseif ($cc === '>') {
                     // This is a missing-end-tag-name parse error.
                     $this->parseErrors[] = [ParseErrors::MISSING_END_TAG_NAME, $this->position];
                     // Switch to the data state.
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     $cc = $this->input[++$this->position] ?? null;
                     goto DATA;
                 } elseif ($cc === null) {
@@ -236,27 +236,27 @@ final class Tokenizer extends AbstractTokenizer
                     // Create a comment token whose data is the empty string.
                     $this->currentToken = new Comment('');
                     // Reconsume in the bogus comment state.
-                    $this->state = TokenizerStates::BOGUS_COMMENT;
+                    $this->state = TokenizerState::BOGUS_COMMENT;
                     goto BOGUS_COMMENT;
                 }
             }
             break;
-            case TokenizerStates::TAG_NAME:
+            case TokenizerState::TAG_NAME:
             TAG_NAME: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Switch to the before attribute name state.
-                    $this->state = TokenizerStates::BEFORE_ATTRIBUTE_NAME;
+                    $this->state = TokenizerState::BEFORE_ATTRIBUTE_NAME;
                     $cc = $this->input[++$this->position] ?? null;
                     goto BEFORE_ATTRIBUTE_NAME;
                 } elseif ($cc === '/') {
                     // Switch to the self-closing start tag state.
-                    $this->state = TokenizerStates::SELF_CLOSING_START_TAG;
+                    $this->state = TokenizerState::SELF_CLOSING_START_TAG;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SELF_CLOSING_START_TAG;
                 } elseif ($cc === '>') {
                     // Switch to the data state. Emit the current tag token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } elseif ($cc === "\0") {
@@ -282,48 +282,48 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::RCDATA_LESS_THAN_SIGN:
+            case TokenizerState::RCDATA_LESS_THAN_SIGN:
             RCDATA_LESS_THAN_SIGN: {
                 if ($cc === '/') {
                     // Set the temporary buffer to the empty string.
                     $this->temporaryBuffer = '';
                     // Switch to the RCDATA end tag open state.
-                    $this->state = TokenizerStates::RCDATA_END_TAG_OPEN;
+                    $this->state = TokenizerState::RCDATA_END_TAG_OPEN;
                     $cc = $this->input[++$this->position] ?? null;
                     goto RCDATA_END_TAG_OPEN;
                 } else {
                     // Emit a U+003C LESS-THAN SIGN character token.
                     $this->tokenQueue->enqueue(new Character('<'));
                     // Reconsume in the RCDATA state.
-                    $this->state = TokenizerStates::RCDATA;
+                    $this->state = TokenizerState::RCDATA;
                     goto RCDATA;
                 }
             }
             break;
-            case TokenizerStates::RCDATA_END_TAG_OPEN:
+            case TokenizerState::RCDATA_END_TAG_OPEN:
             RCDATA_END_TAG_OPEN: {
                 if (\ctype_alpha($cc)) {
                     // Create a new end tag token, set its tag name to the empty string.
                     $this->currentToken = new EndTag();
                     // Reconsume in the RCDATA end tag name state.
-                    $this->state = TokenizerStates::RCDATA_END_TAG_NAME;
+                    $this->state = TokenizerState::RCDATA_END_TAG_NAME;
                     goto RCDATA_END_TAG_NAME;
                 } else {
                     // Emit a U+003C LESS-THAN SIGN character token and a U+002F SOLIDUS character token.
                     $this->tokenQueue->enqueue(new Character('</'));
                     // Reconsume in the RCDATA state.
-                    $this->state = TokenizerStates::RCDATA;
+                    $this->state = TokenizerState::RCDATA;
                     goto RCDATA;
                 }
             }
             break;
-            case TokenizerStates::RCDATA_END_TAG_NAME:
+            case TokenizerState::RCDATA_END_TAG_NAME:
             RCDATA_END_TAG_NAME: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // If the current end tag token is an appropriate end tag token,
                     if ($this->currentToken->name === $this->appropriateEndTag) {
                         // then switch to the before attribute name state.
-                        $this->state = TokenizerStates::BEFORE_ATTRIBUTE_NAME;
+                        $this->state = TokenizerState::BEFORE_ATTRIBUTE_NAME;
                         $cc = $this->input[++$this->position] ?? null;
                         goto BEFORE_ATTRIBUTE_NAME;
                     } else {
@@ -334,7 +334,7 @@ final class Tokenizer extends AbstractTokenizer
                     // If the current end tag token is an appropriate end tag token,
                     if ($this->currentToken->name === $this->appropriateEndTag) {
                         // then switch to the self-closing start tag state.
-                        $this->state = TokenizerStates::SELF_CLOSING_START_TAG;
+                        $this->state = TokenizerState::SELF_CLOSING_START_TAG;
                         $cc = $this->input[++$this->position] ?? null;
                         goto SELF_CLOSING_START_TAG;
                     } else {
@@ -346,7 +346,7 @@ final class Tokenizer extends AbstractTokenizer
                     if ($this->currentToken->name === $this->appropriateEndTag) {
                         // then switch to the data state and emit the current tag token.
                         $this->emitCurrentToken();
-                        $this->state = TokenizerStates::DATA;
+                        $this->state = TokenizerState::DATA;
                         $cc = $this->input[++$this->position] ?? null;
                         goto DATA;
                     } else {
@@ -369,53 +369,53 @@ final class Tokenizer extends AbstractTokenizer
                     // and a character token for each of the characters in the temporary buffer (in the order they were added to the buffer).
                     $this->tokenQueue->enqueue(new Character('</' . $this->temporaryBuffer));
                     // Reconsume in the RCDATA state.
-                    $this->state = TokenizerStates::RCDATA;
+                    $this->state = TokenizerState::RCDATA;
                     goto RCDATA;
                 }
             }
             break;
-            case TokenizerStates::RAWTEXT_LESS_THAN_SIGN:
+            case TokenizerState::RAWTEXT_LESS_THAN_SIGN:
             RAWTEXT_LESS_THAN_SIGN: {
                 if ($cc === '/') {
                     // Set the temporary buffer to the empty string.
                     $this->temporaryBuffer = '';
                     // Switch to the Switch to the RAWTEXT end tag open state.
-                    $this->state = TokenizerStates::RAWTEXT_END_TAG_OPEN;
+                    $this->state = TokenizerState::RAWTEXT_END_TAG_OPEN;
                     $cc = $this->input[++$this->position] ?? null;
                     goto RAWTEXT_END_TAG_OPEN;
                 } else {
                     // Emit a U+003C LESS-THAN SIGN character token.
                     $this->tokenQueue->enqueue(new Character('<'));
                     // Reconsume in the RAWTEXT state.
-                    $this->state = TokenizerStates::RAWTEXT;
+                    $this->state = TokenizerState::RAWTEXT;
                     goto RAWTEXT;
                 }
             }
             break;
-            case TokenizerStates::RAWTEXT_END_TAG_OPEN:
+            case TokenizerState::RAWTEXT_END_TAG_OPEN:
             RAWTEXT_END_TAG_OPEN: {
                 if (\ctype_alpha($cc)) {
                     // Create a new end tag token, set its tag name to the empty string.
                     $this->currentToken = new EndTag();
                     // Reconsume in the RAWTEXT end tag name state.
-                    $this->state = TokenizerStates::RAWTEXT_END_TAG_NAME;
+                    $this->state = TokenizerState::RAWTEXT_END_TAG_NAME;
                     goto RAWTEXT_END_TAG_NAME;
                 } else {
                     // Emit a U+003C LESS-THAN SIGN character token and a U+002F SOLIDUS character token.
                     $this->tokenQueue->enqueue(new Character('</'));
                     // Reconsume in the RAWTEXT state.
-                    $this->state = TokenizerStates::RAWTEXT;
+                    $this->state = TokenizerState::RAWTEXT;
                     goto RAWTEXT;
                 }
             }
             break;
-            case TokenizerStates::RAWTEXT_END_TAG_NAME:
+            case TokenizerState::RAWTEXT_END_TAG_NAME:
             RAWTEXT_END_TAG_NAME: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // If the current end tag token is an appropriate end tag token,
                     if ($this->currentToken->name === $this->appropriateEndTag) {
                         // then switch to the before attribute name state.
-                        $this->state = TokenizerStates::BEFORE_ATTRIBUTE_NAME;
+                        $this->state = TokenizerState::BEFORE_ATTRIBUTE_NAME;
                         $cc = $this->input[++$this->position] ?? null;
                         goto BEFORE_ATTRIBUTE_NAME;
                     } else {
@@ -426,7 +426,7 @@ final class Tokenizer extends AbstractTokenizer
                     // If the current end tag token is an appropriate end tag token,
                     if ($this->currentToken->name === $this->appropriateEndTag) {
                         // then switch to the self-closing start tag state.
-                        $this->state = TokenizerStates::SELF_CLOSING_START_TAG;
+                        $this->state = TokenizerState::SELF_CLOSING_START_TAG;
                         $cc = $this->input[++$this->position] ?? null;
                         goto SELF_CLOSING_START_TAG;
                     } else {
@@ -438,7 +438,7 @@ final class Tokenizer extends AbstractTokenizer
                     if ($this->currentToken->name === $this->appropriateEndTag) {
                         // then switch to the data state and emit the current tag token.
                         $this->emitCurrentToken();
-                        $this->state = TokenizerStates::DATA;
+                        $this->state = TokenizerState::DATA;
                         $cc = $this->input[++$this->position] ?? null;
                         goto DATA;
                     } else {
@@ -461,60 +461,60 @@ final class Tokenizer extends AbstractTokenizer
                     // and a character token for each of the characters in the temporary buffer (in the order they were added to the buffer).
                     $this->tokenQueue->enqueue(new Character('</' . $this->temporaryBuffer));
                     // Reconsume in the RAWTEXT state.
-                    $this->state = TokenizerStates::RAWTEXT;
+                    $this->state = TokenizerState::RAWTEXT;
                     goto RAWTEXT;
                 }
             }
             break;
-            case TokenizerStates::SCRIPT_DATA_LESS_THAN_SIGN:
+            case TokenizerState::SCRIPT_DATA_LESS_THAN_SIGN:
             SCRIPT_DATA_LESS_THAN_SIGN: {
                 if ($cc === '/') {
                     // Set the temporary buffer to the empty string.
                     $this->temporaryBuffer = '';
                     // Switch to the script data end tag open state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_END_TAG_OPEN;
+                    $this->state = TokenizerState::SCRIPT_DATA_END_TAG_OPEN;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA_END_TAG_OPEN;
                 } elseif ($cc === '!') {
                     // Emit a U+003C LESS-THAN SIGN character token and a U+0021 EXCLAMATION MARK character token.
                     $this->tokenQueue->enqueue(new Character('<!'));
                     // Switch to the script data escape start state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPE_START;
+                    $this->state = TokenizerState::SCRIPT_DATA_ESCAPE_START;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA_ESCAPE_START;
                 } else {
                     // Emit a U+003C LESS-THAN SIGN character token.
                     $this->tokenQueue->enqueue(new Character('<'));
                     // Reconsume in the script data state.
-                    $this->state = TokenizerStates::SCRIPT_DATA;
+                    $this->state = TokenizerState::SCRIPT_DATA;
                     goto SCRIPT_DATA;
                 }
             }
             break;
-            case TokenizerStates::SCRIPT_DATA_END_TAG_OPEN:
+            case TokenizerState::SCRIPT_DATA_END_TAG_OPEN:
             SCRIPT_DATA_END_TAG_OPEN: {
                 if (\ctype_alpha($cc)) {
                     // Create a new end tag token, set its tag name to the empty string.
                     $this->currentToken = new EndTag();
                     // Reconsume in the script data end tag name state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_END_TAG_NAME;
+                    $this->state = TokenizerState::SCRIPT_DATA_END_TAG_NAME;
                     goto SCRIPT_DATA_END_TAG_NAME;
                 } else {
                     // Emit a U+003C LESS-THAN SIGN character token and a U+002F SOLIDUS character token.
                     $this->tokenQueue->enqueue(new Character('</'));
                     // Reconsume in the script data state.
-                    $this->state = TokenizerStates::SCRIPT_DATA;
+                    $this->state = TokenizerState::SCRIPT_DATA;
                     goto SCRIPT_DATA;
                 }
             }
             break;
-            case TokenizerStates::SCRIPT_DATA_END_TAG_NAME:
+            case TokenizerState::SCRIPT_DATA_END_TAG_NAME:
             SCRIPT_DATA_END_TAG_NAME: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // If the current end tag token is an appropriate end tag token, then switch to the before attribute name state.
                     // Otherwise, treat it as per the "anything else" entry below.
                     if ($this->currentToken->name === $this->appropriateEndTag) {
-                        $this->state = TokenizerStates::BEFORE_ATTRIBUTE_NAME;
+                        $this->state = TokenizerState::BEFORE_ATTRIBUTE_NAME;
                         $cc = $this->input[++$this->position] ?? null;
                         goto BEFORE_ATTRIBUTE_NAME;
                     } else {
@@ -524,7 +524,7 @@ final class Tokenizer extends AbstractTokenizer
                     // If the current end tag token is an appropriate end tag token, then switch to the self-closing start tag state.
                     // Otherwise, treat it as per the "anything else" entry below.
                     if ($this->currentToken->name === $this->appropriateEndTag) {
-                        $this->state = TokenizerStates::SELF_CLOSING_START_TAG;
+                        $this->state = TokenizerState::SELF_CLOSING_START_TAG;
                         $cc = $this->input[++$this->position] ?? null;
                         goto SELF_CLOSING_START_TAG;
                     } else {
@@ -536,7 +536,7 @@ final class Tokenizer extends AbstractTokenizer
                     // Otherwise, treat it as per the "anything else" entry below.
                     if ($this->currentToken->name === $this->appropriateEndTag) {
                         $this->emitCurrentToken();
-                        $this->state = TokenizerStates::DATA;
+                        $this->state = TokenizerState::DATA;
                         ++$this->position;
                         return true;
                     } else {
@@ -558,55 +558,55 @@ final class Tokenizer extends AbstractTokenizer
                     // and a character token for each of the characters in the temporary buffer (in the order they were added to the buffer).
                     $this->tokenQueue->enqueue(new Character('</' . $this->temporaryBuffer));
                     // Reconsume in the script data state.
-                    $this->state = TokenizerStates::SCRIPT_DATA;
+                    $this->state = TokenizerState::SCRIPT_DATA;
                     goto SCRIPT_DATA;
                 }
             }
             break;
-            case TokenizerStates::SCRIPT_DATA_ESCAPE_START:
+            case TokenizerState::SCRIPT_DATA_ESCAPE_START:
             SCRIPT_DATA_ESCAPE_START: {
                 if ($cc === '-') {
                     // Emit a U+002D HYPHEN-MINUS character token.
                     $this->tokenQueue->enqueue(new Character('-'));
                     // Switch to the script data escape start dash state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPE_START_DASH;
+                    $this->state = TokenizerState::SCRIPT_DATA_ESCAPE_START_DASH;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA_ESCAPE_START_DASH;
                 } else {
                     // Reconsume in the script data state.
-                    $this->state = TokenizerStates::SCRIPT_DATA;
+                    $this->state = TokenizerState::SCRIPT_DATA;
                     goto SCRIPT_DATA;
                 }
             }
             break;
-            case TokenizerStates::SCRIPT_DATA_ESCAPE_START_DASH:
+            case TokenizerState::SCRIPT_DATA_ESCAPE_START_DASH:
             SCRIPT_DATA_ESCAPE_START_DASH: {
                 if ($cc === '-') {
                     // Emit a U+002D HYPHEN-MINUS character token.
                     $this->tokenQueue->enqueue(new Character('-'));
                     // Switch to the script data escaped dash dash state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED_DASH_DASH;
+                    $this->state = TokenizerState::SCRIPT_DATA_ESCAPED_DASH_DASH;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA_ESCAPED_DASH_DASH;
                 } else {
                     // Reconsume in the script data state.
-                    $this->state = TokenizerStates::SCRIPT_DATA;
+                    $this->state = TokenizerState::SCRIPT_DATA;
                     goto SCRIPT_DATA;
                 }
             }
             break;
-            case TokenizerStates::SCRIPT_DATA_ESCAPED:
+            case TokenizerState::SCRIPT_DATA_ESCAPED:
             SCRIPT_DATA_ESCAPED: {
                 if ($cc === '-') {
                     // Emit a U+002D HYPHEN-MINUS character token.
                     $this->tokenQueue->enqueue(new Character('-'));
                     // Switch to the script data escaped dash state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED_DASH;
+                    $this->state = TokenizerState::SCRIPT_DATA_ESCAPED_DASH;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA_ESCAPED_DASH;
                 } elseif ($cc === '<') {
                     // Switch to the script data escaped less-than sign state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN;
+                    $this->state = TokenizerState::SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN;
                 } elseif ($cc === "\0") {
@@ -632,18 +632,18 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::SCRIPT_DATA_ESCAPED_DASH:
+            case TokenizerState::SCRIPT_DATA_ESCAPED_DASH:
             SCRIPT_DATA_ESCAPED_DASH: {
                 if ($cc === '-') {
                     // Emit a U+002D HYPHEN-MINUS character token.
                     $this->tokenQueue->enqueue(new Character('-'));
                     // Switch to the script data escaped dash dash state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED_DASH_DASH;
+                    $this->state = TokenizerState::SCRIPT_DATA_ESCAPED_DASH_DASH;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA_ESCAPED_DASH_DASH;
                 } elseif ($cc === '<') {
                     // Switch to the script data escaped less-than sign state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN;
+                    $this->state = TokenizerState::SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN;
                 } elseif ($cc === "\0") {
@@ -652,7 +652,7 @@ final class Tokenizer extends AbstractTokenizer
                     // Emit a U+FFFD REPLACEMENT CHARACTER character token.
                     $this->tokenQueue->enqueue(new Character("\u{FFFD}"));
                     // Switch to the script data escaped state
-                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED;
+                    $this->state = TokenizerState::SCRIPT_DATA_ESCAPED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA_ESCAPED;
                 } elseif ($cc === null) {
@@ -667,12 +667,12 @@ final class Tokenizer extends AbstractTokenizer
                     $this->position += $l;
                     $this->tokenQueue->enqueue(new Character($chars));
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED;
+                    $this->state = TokenizerState::SCRIPT_DATA_ESCAPED;
                     goto SCRIPT_DATA_ESCAPED;
                 }
             }
             break;
-            case TokenizerStates::SCRIPT_DATA_ESCAPED_DASH_DASH:
+            case TokenizerState::SCRIPT_DATA_ESCAPED_DASH_DASH:
             SCRIPT_DATA_ESCAPED_DASH_DASH: {
                 if ($cc === '-') {
                     // Emit a U+002D HYPHEN-MINUS character token.
@@ -681,14 +681,14 @@ final class Tokenizer extends AbstractTokenizer
                     goto SCRIPT_DATA_ESCAPED_DASH_DASH;
                 } elseif ($cc === '<') {
                     // Switch to the script data escaped less-than sign state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN;
+                    $this->state = TokenizerState::SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN;
                 } elseif ($cc === '>') {
                     // Emit a U+003E GREATER-THAN SIGN character token.
                     $this->tokenQueue->enqueue(new Character('>'));
                     // Switch to the script data state.
-                    $this->state = TokenizerStates::SCRIPT_DATA;
+                    $this->state = TokenizerState::SCRIPT_DATA;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA;
                 } elseif ($cc === "\0") {
@@ -697,7 +697,7 @@ final class Tokenizer extends AbstractTokenizer
                     // Emit a U+FFFD REPLACEMENT CHARACTER character token.
                     $this->tokenQueue->enqueue(new Character("\u{FFFD}"));
                     // Switch to the script data escaped state
-                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED;
+                    $this->state = TokenizerState::SCRIPT_DATA_ESCAPED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA_ESCAPED;
                 } elseif ($cc === null) {
@@ -712,18 +712,18 @@ final class Tokenizer extends AbstractTokenizer
                     $this->position += $l;
                     $this->tokenQueue->enqueue(new Character($chars));
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED;
+                    $this->state = TokenizerState::SCRIPT_DATA_ESCAPED;
                     goto SCRIPT_DATA_ESCAPED;
                 }
             }
             break;
-            case TokenizerStates::SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN:
+            case TokenizerState::SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN:
             SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN: {
                 if ($cc === '/') {
                     // Set the temporary buffer to the empty string.
                     $this->temporaryBuffer = '';
                     //  Switch to the script data escaped end tag open state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED_END_TAG_OPEN;
+                    $this->state = TokenizerState::SCRIPT_DATA_ESCAPED_END_TAG_OPEN;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA_ESCAPED_END_TAG_OPEN;
                 } elseif (\ctype_alpha($cc)) {
@@ -732,41 +732,41 @@ final class Tokenizer extends AbstractTokenizer
                     // Emit a U+003C LESS-THAN SIGN character token.
                     $this->tokenQueue->enqueue(new Character('<'));
                     // Reconsume in the script data double escape start state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPE_START;
+                    $this->state = TokenizerState::SCRIPT_DATA_DOUBLE_ESCAPE_START;
                     goto SCRIPT_DATA_DOUBLE_ESCAPE_START;
                 } else {
                     // Emit a U+003C LESS-THAN SIGN character token.
                     $this->tokenQueue->enqueue(new Character('<'));
                     // Reconsume in the script data escaped state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED;
+                    $this->state = TokenizerState::SCRIPT_DATA_ESCAPED;
                     goto SCRIPT_DATA_ESCAPED;
                 }
             }
             break;
-            case TokenizerStates::SCRIPT_DATA_ESCAPED_END_TAG_OPEN:
+            case TokenizerState::SCRIPT_DATA_ESCAPED_END_TAG_OPEN:
             SCRIPT_DATA_ESCAPED_END_TAG_OPEN: {
                 if (\ctype_alpha($cc)) {
                     // Create a new end tag token, set its tag name to the empty string.
                     $this->currentToken = new EndTag();
                     // Reconsume in the script data escaped end tag name state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED_END_TAG_NAME;
+                    $this->state = TokenizerState::SCRIPT_DATA_ESCAPED_END_TAG_NAME;
                     goto SCRIPT_DATA_ESCAPED_END_TAG_NAME;
                 } else {
                     // Emit a U+003C LESS-THAN SIGN character token and a U+002F SOLIDUS character token.
                     $this->tokenQueue->enqueue(new Character('</'));
                     // Reconsume in the script data escaped state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED;
+                    $this->state = TokenizerState::SCRIPT_DATA_ESCAPED;
                     goto SCRIPT_DATA_ESCAPED;
                 }
             }
             break;
-            case TokenizerStates::SCRIPT_DATA_ESCAPED_END_TAG_NAME:
+            case TokenizerState::SCRIPT_DATA_ESCAPED_END_TAG_NAME:
             SCRIPT_DATA_ESCAPED_END_TAG_NAME: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // If the current end tag token is an appropriate end tag token, then switch to the before attribute name state.
                     // Otherwise, treat it as per the "anything else" entry below.
                     if ($this->currentToken->name === $this->appropriateEndTag) {
-                        $this->state = TokenizerStates::BEFORE_ATTRIBUTE_NAME;
+                        $this->state = TokenizerState::BEFORE_ATTRIBUTE_NAME;
                         $cc = $this->input[++$this->position] ?? null;
                         goto BEFORE_ATTRIBUTE_NAME;
                     } else {
@@ -776,7 +776,7 @@ final class Tokenizer extends AbstractTokenizer
                     // If the current end tag token is an appropriate end tag token, then switch to the self-closing start tag state.
                     // Otherwise, treat it as per the "anything else" entry below.
                     if ($this->currentToken->name === $this->appropriateEndTag) {
-                        $this->state = TokenizerStates::SELF_CLOSING_START_TAG;
+                        $this->state = TokenizerState::SELF_CLOSING_START_TAG;
                         $cc = $this->input[++$this->position] ?? null;
                         goto SELF_CLOSING_START_TAG;
                     } else {
@@ -788,7 +788,7 @@ final class Tokenizer extends AbstractTokenizer
                     // Otherwise, treat it as per the "anything else" entry below.
                     if ($this->currentToken->name === $this->appropriateEndTag) {
                         $this->emitCurrentToken();
-                        $this->state = TokenizerStates::DATA;
+                        $this->state = TokenizerState::DATA;
                         ++$this->position;
                         return true;
                     } else {
@@ -810,24 +810,24 @@ final class Tokenizer extends AbstractTokenizer
                     // and a character token for each of the characters in the temporary buffer (in the order they were added to the buffer).
                     $this->tokenQueue->enqueue(new Character('</' . $this->temporaryBuffer));
                     // Reconsume in the script data escaped state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED;
+                    $this->state = TokenizerState::SCRIPT_DATA_ESCAPED;
                     goto SCRIPT_DATA_ESCAPED;
                 }
             }
             break;
-            case TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPE_START:
+            case TokenizerState::SCRIPT_DATA_DOUBLE_ESCAPE_START:
             SCRIPT_DATA_DOUBLE_ESCAPE_START: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C" || $cc === '/' || $cc === '>') {
                     // Emit the current input character as a character token.
                     $this->tokenQueue->enqueue(new Character($cc));
                     // If the temporary buffer is the string "script", then switch to the script data double escaped state.
                     if ($this->temporaryBuffer === 'script') {
-                        $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED;
+                        $this->state = TokenizerState::SCRIPT_DATA_DOUBLE_ESCAPED;
                         $cc = $this->input[++$this->position] ?? null;
                         goto SCRIPT_DATA_DOUBLE_ESCAPED;
                     } else {
                         // Otherwise, switch to the script data escaped state.
-                        $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED;
+                        $this->state = TokenizerState::SCRIPT_DATA_ESCAPED;
                         $cc = $this->input[++$this->position] ?? null;
                         goto SCRIPT_DATA_ESCAPED;
                     }
@@ -843,25 +843,25 @@ final class Tokenizer extends AbstractTokenizer
                     goto SCRIPT_DATA_DOUBLE_ESCAPE_START;
                 } else {
                     // Reconsume in the script data escaped state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED;
+                    $this->state = TokenizerState::SCRIPT_DATA_ESCAPED;
                     goto SCRIPT_DATA_ESCAPED;
                 }
             }
             break;
-            case TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED:
+            case TokenizerState::SCRIPT_DATA_DOUBLE_ESCAPED:
             SCRIPT_DATA_DOUBLE_ESCAPED: {
                 if ($cc === '-') {
                     // Emit a U+002D HYPHEN-MINUS character token.
                     $this->tokenQueue->enqueue(new Character('-'));
                     // Switch to the script data double escaped dash state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED_DASH;
+                    $this->state = TokenizerState::SCRIPT_DATA_DOUBLE_ESCAPED_DASH;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA_DOUBLE_ESCAPED_DASH;
                 } elseif ($cc === '<') {
                     // Emit a U+003C LESS-THAN SIGN character token.
                     $this->tokenQueue->enqueue(new Character('<'));
                     // Switch to the script data double escaped less-than sign state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN;
+                    $this->state = TokenizerState::SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN;
                 } elseif ($cc === "\0") {
@@ -887,20 +887,20 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED_DASH:
+            case TokenizerState::SCRIPT_DATA_DOUBLE_ESCAPED_DASH:
             SCRIPT_DATA_DOUBLE_ESCAPED_DASH: {
                 if ($cc === '-') {
                     // Emit a U+002D HYPHEN-MINUS character token.
                     $this->tokenQueue->enqueue(new Character('-'));
                     // Switch to the script data double escaped dash dash state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED_DASH_DASH;
+                    $this->state = TokenizerState::SCRIPT_DATA_DOUBLE_ESCAPED_DASH_DASH;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA_DOUBLE_ESCAPED_DASH_DASH;
                 } elseif ($cc === '<') {
                     // Emit a U+003C LESS-THAN SIGN character token.
                     $this->tokenQueue->enqueue(new Character('<'));
                     // Switch to the script data double escaped less-than sign state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN;
+                    $this->state = TokenizerState::SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN;
                 } elseif ($cc === "\0") {
@@ -909,7 +909,7 @@ final class Tokenizer extends AbstractTokenizer
                     // Emit a U+FFFD REPLACEMENT CHARACTER character token.
                     $this->tokenQueue->enqueue(new Character("\u{FFFD}"));
                     // Switch to the script data double escaped state
-                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED;
+                    $this->state = TokenizerState::SCRIPT_DATA_DOUBLE_ESCAPED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA_DOUBLE_ESCAPED;
                 } elseif ($cc === null) {
@@ -924,12 +924,12 @@ final class Tokenizer extends AbstractTokenizer
                     $this->position += $l;
                     $this->tokenQueue->enqueue(new Character($chars));
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED;
+                    $this->state = TokenizerState::SCRIPT_DATA_DOUBLE_ESCAPED;
                     goto SCRIPT_DATA_DOUBLE_ESCAPED;
                 }
             }
             break;
-            case TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED_DASH_DASH:
+            case TokenizerState::SCRIPT_DATA_DOUBLE_ESCAPED_DASH_DASH:
             SCRIPT_DATA_DOUBLE_ESCAPED_DASH_DASH: {
                 if ($cc === '-') {
                     // Emit a U+002D HYPHEN-MINUS character token.
@@ -940,14 +940,14 @@ final class Tokenizer extends AbstractTokenizer
                     // Emit a U+003C LESS-THAN SIGN character token.
                     $this->tokenQueue->enqueue(new Character('<'));
                     // Switch to the script data double escaped less-than sign state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN;
+                    $this->state = TokenizerState::SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN;
                 } elseif ($cc === '>') {
                     // Emit a U+003E GREATER-THAN SIGN character token.
                     $this->tokenQueue->enqueue(new Character('>'));
                     // Switch to the script data state.
-                    $this->state = TokenizerStates::SCRIPT_DATA;
+                    $this->state = TokenizerState::SCRIPT_DATA;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA;
                 } elseif ($cc === "\0") {
@@ -956,7 +956,7 @@ final class Tokenizer extends AbstractTokenizer
                     // Emit a U+FFFD REPLACEMENT CHARACTER character token.
                     $this->tokenQueue->enqueue(new Character("\u{FFFD}"));
                     // Switch to the script data double escaped state
-                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED;
+                    $this->state = TokenizerState::SCRIPT_DATA_DOUBLE_ESCAPED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA_DOUBLE_ESCAPED;
                 } elseif ($cc === null) {
@@ -972,12 +972,12 @@ final class Tokenizer extends AbstractTokenizer
                     $this->tokenQueue->enqueue(new Character($chars));
                     // Switch to the script data double escaped state.
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED;
+                    $this->state = TokenizerState::SCRIPT_DATA_DOUBLE_ESCAPED;
                     goto SCRIPT_DATA_DOUBLE_ESCAPED;
                 }
             }
             break;
-            case TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN:
+            case TokenizerState::SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN:
             SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN: {
                 if ($cc === '/') {
                     // Set the temporary buffer to the empty string.
@@ -985,29 +985,29 @@ final class Tokenizer extends AbstractTokenizer
                     // Emit a U+002F SOLIDUS character token.
                     $this->tokenQueue->enqueue(new Character('/'));
                     // Switch to the script data double escape end state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPE_END;
+                    $this->state = TokenizerState::SCRIPT_DATA_DOUBLE_ESCAPE_END;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SCRIPT_DATA_DOUBLE_ESCAPE_END;
                 } else {
                     // Reconsume in the script data double escaped state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED;
+                    $this->state = TokenizerState::SCRIPT_DATA_DOUBLE_ESCAPED;
                     goto SCRIPT_DATA_DOUBLE_ESCAPED;
                 }
             }
             break;
-            case TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPE_END:
+            case TokenizerState::SCRIPT_DATA_DOUBLE_ESCAPE_END:
             SCRIPT_DATA_DOUBLE_ESCAPE_END: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C" || $cc === '/' || $cc === '>') {
                     // Emit the current input character as a character token.
                     $this->tokenQueue->enqueue(new Character($cc));
                     // If the temporary buffer is the string "script", then switch to the script data escaped state.
                     if ($this->temporaryBuffer === 'script') {
-                        $this->state = TokenizerStates::SCRIPT_DATA_ESCAPED;
+                        $this->state = TokenizerState::SCRIPT_DATA_ESCAPED;
                         $cc = $this->input[++$this->position] ?? null;
                         goto SCRIPT_DATA_ESCAPED;
                     } else {
                         // Otherwise, switch to the script data double escaped state.
-                        $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED;
+                        $this->state = TokenizerState::SCRIPT_DATA_DOUBLE_ESCAPED;
                         $cc = $this->input[++$this->position] ?? null;
                         goto SCRIPT_DATA_DOUBLE_ESCAPED;
                     }
@@ -1023,12 +1023,12 @@ final class Tokenizer extends AbstractTokenizer
                     goto SCRIPT_DATA_DOUBLE_ESCAPE_END;
                 } else {
                     // Reconsume in the script data double escaped state.
-                    $this->state = TokenizerStates::SCRIPT_DATA_DOUBLE_ESCAPED;
+                    $this->state = TokenizerState::SCRIPT_DATA_DOUBLE_ESCAPED;
                     goto SCRIPT_DATA_DOUBLE_ESCAPED;
                 }
             }
             break;
-            case TokenizerStates::BEFORE_ATTRIBUTE_NAME:
+            case TokenizerState::BEFORE_ATTRIBUTE_NAME:
             BEFORE_ATTRIBUTE_NAME: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Ignore the character.
@@ -1037,7 +1037,7 @@ final class Tokenizer extends AbstractTokenizer
                     goto BEFORE_ATTRIBUTE_NAME;
                 } elseif ($cc === '/' || $cc === '>' || $cc === null) {
                     // Reconsume in the after attribute name state.
-                    $this->state = TokenizerStates::AFTER_ATTRIBUTE_NAME;
+                    $this->state = TokenizerState::AFTER_ATTRIBUTE_NAME;
                     goto AFTER_ATTRIBUTE_NAME;
                 } elseif ($cc === '=') {
                     // This is an unexpected-equals-sign-before-attribute-name parse error.
@@ -1045,27 +1045,27 @@ final class Tokenizer extends AbstractTokenizer
                     // Start a new attribute in the current tag token. Set that attribute's name to the current input character, and its value to the empty string.
                     $this->currentToken->attributes[] = [$cc, ''];
                     // Switch to the attribute name state.
-                    $this->state = TokenizerStates::ATTRIBUTE_NAME;
+                    $this->state = TokenizerState::ATTRIBUTE_NAME;
                     $cc = $this->input[++$this->position] ?? null;
                     goto ATTRIBUTE_NAME;
                 } else {
                     // Start a new attribute in the current tag token. Set that attribute name and value to the empty string.
                     $this->currentToken->attributes[] = ['', ''];
                     // Reconsume in the attribute name state.
-                    $this->state = TokenizerStates::ATTRIBUTE_NAME;
+                    $this->state = TokenizerState::ATTRIBUTE_NAME;
                     goto ATTRIBUTE_NAME;
                 }
             }
             break;
-            case TokenizerStates::ATTRIBUTE_NAME:
+            case TokenizerState::ATTRIBUTE_NAME:
             ATTRIBUTE_NAME: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C" || $cc === '/' || $cc === '>' || $cc === null) {
                     // Reconsume in the after attribute name state.
-                    $this->state = TokenizerStates::AFTER_ATTRIBUTE_NAME;
+                    $this->state = TokenizerState::AFTER_ATTRIBUTE_NAME;
                     goto AFTER_ATTRIBUTE_NAME;
                 } elseif ($cc === '=') {
                     // Switch to the before attribute value state.
-                    $this->state = TokenizerStates::BEFORE_ATTRIBUTE_VALUE;
+                    $this->state = TokenizerState::BEFORE_ATTRIBUTE_VALUE;
                     $cc = $this->input[++$this->position] ?? null;
                     goto BEFORE_ATTRIBUTE_VALUE;
                 } elseif ($cc === "\0") {
@@ -1093,7 +1093,7 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::AFTER_ATTRIBUTE_NAME:
+            case TokenizerState::AFTER_ATTRIBUTE_NAME:
             AFTER_ATTRIBUTE_NAME: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Ignore the character.
@@ -1101,18 +1101,18 @@ final class Tokenizer extends AbstractTokenizer
                     goto AFTER_ATTRIBUTE_NAME;
                 } elseif ($cc === '/') {
                     // Switch to the self-closing start tag state.
-                    $this->state = TokenizerStates::SELF_CLOSING_START_TAG;
+                    $this->state = TokenizerState::SELF_CLOSING_START_TAG;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SELF_CLOSING_START_TAG;
                 } elseif ($cc === '=') {
                     // Switch to the before attribute value state.
-                    $this->state = TokenizerStates::BEFORE_ATTRIBUTE_VALUE;
+                    $this->state = TokenizerState::BEFORE_ATTRIBUTE_VALUE;
                     $cc = $this->input[++$this->position] ?? null;
                     goto BEFORE_ATTRIBUTE_VALUE;
                 } elseif ($cc === '>') {
                     // Switch to the data state. Emit the current tag token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } elseif ($cc === null) {
@@ -1124,12 +1124,12 @@ final class Tokenizer extends AbstractTokenizer
                     // Start a new attribute in the current tag token. Set that attribute name and value to the empty string.
                     $this->currentToken->attributes[] = ['', ''];
                     // Reconsume in the attribute name state.
-                    $this->state = TokenizerStates::ATTRIBUTE_NAME;
+                    $this->state = TokenizerState::ATTRIBUTE_NAME;
                     goto ATTRIBUTE_NAME;
                 }
             }
             break;
-            case TokenizerStates::BEFORE_ATTRIBUTE_VALUE:
+            case TokenizerState::BEFORE_ATTRIBUTE_VALUE:
             BEFORE_ATTRIBUTE_VALUE: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Ignore the character.
@@ -1137,12 +1137,12 @@ final class Tokenizer extends AbstractTokenizer
                     goto BEFORE_ATTRIBUTE_VALUE;
                 } elseif ($cc === '"') {
                     // Switch to the attribute value (double-quoted) state.
-                    $this->state = TokenizerStates::ATTRIBUTE_VALUE_DOUBLE_QUOTED;
+                    $this->state = TokenizerState::ATTRIBUTE_VALUE_DOUBLE_QUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto ATTRIBUTE_VALUE_DOUBLE_QUOTED;
                 } elseif ($cc === "'") {
                     // Switch to the attribute value (single-quoted) state.
-                    $this->state = TokenizerStates::ATTRIBUTE_VALUE_SINGLE_QUOTED;
+                    $this->state = TokenizerState::ATTRIBUTE_VALUE_SINGLE_QUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto ATTRIBUTE_VALUE_SINGLE_QUOTED;
                 } elseif ($cc === '>') {
@@ -1150,28 +1150,28 @@ final class Tokenizer extends AbstractTokenizer
                     $this->parseErrors[] = [ParseErrors::MISSING_ATTRIBUTE_VALUE, $this->position];
                     // Switch to the data state. Emit the current tag token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } else {
                     // Reconsume in the attribute value (unquoted) state.
-                    $this->state = TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED;
+                    $this->state = TokenizerState::ATTRIBUTE_VALUE_UNQUOTED;
                     goto ATTRIBUTE_VALUE_UNQUOTED;
                 }
             }
             break;
-            case TokenizerStates::ATTRIBUTE_VALUE_DOUBLE_QUOTED:
+            case TokenizerState::ATTRIBUTE_VALUE_DOUBLE_QUOTED:
             ATTRIBUTE_VALUE_DOUBLE_QUOTED: {
                 if ($cc === '"') {
                     // Switch to the after attribute value (quoted) state.
-                    $this->state = TokenizerStates::AFTER_ATTRIBUTE_VALUE_QUOTED;
+                    $this->state = TokenizerState::AFTER_ATTRIBUTE_VALUE_QUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto AFTER_ATTRIBUTE_VALUE_QUOTED;
                 } elseif ($cc === '&') {
                     // Set the return state to the attribute value (double-quoted) state.
-                    $this->returnState = TokenizerStates::ATTRIBUTE_VALUE_DOUBLE_QUOTED;
+                    $this->returnState = TokenizerState::ATTRIBUTE_VALUE_DOUBLE_QUOTED;
                     // Switch to the character reference state.
-                    $this->state = TokenizerStates::CHARACTER_REFERENCE;
+                    $this->state = TokenizerState::CHARACTER_REFERENCE;
                     $cc = $this->input[++$this->position] ?? null;
                     goto CHARACTER_REFERENCE;
                 } elseif ($cc === "\0") {
@@ -1197,18 +1197,18 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::ATTRIBUTE_VALUE_SINGLE_QUOTED:
+            case TokenizerState::ATTRIBUTE_VALUE_SINGLE_QUOTED:
             ATTRIBUTE_VALUE_SINGLE_QUOTED: {
                 if ($cc === "'") {
                     // Switch to the after attribute value (quoted) state.
-                    $this->state = TokenizerStates::AFTER_ATTRIBUTE_VALUE_QUOTED;
+                    $this->state = TokenizerState::AFTER_ATTRIBUTE_VALUE_QUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto AFTER_ATTRIBUTE_VALUE_QUOTED;
                 } elseif ($cc === '&') {
                     // Set the return state to the attribute value (single-quoted) state.
-                    $this->returnState = TokenizerStates::ATTRIBUTE_VALUE_SINGLE_QUOTED;
+                    $this->returnState = TokenizerState::ATTRIBUTE_VALUE_SINGLE_QUOTED;
                     // Switch to the character reference state.
-                    $this->state = TokenizerStates::CHARACTER_REFERENCE;
+                    $this->state = TokenizerState::CHARACTER_REFERENCE;
                     $cc = $this->input[++$this->position] ?? null;
                     goto CHARACTER_REFERENCE;
                 } elseif ($cc === "\0") {
@@ -1234,24 +1234,24 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED:
+            case TokenizerState::ATTRIBUTE_VALUE_UNQUOTED:
             ATTRIBUTE_VALUE_UNQUOTED: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Switch to the before attribute name state.
-                    $this->state = TokenizerStates::BEFORE_ATTRIBUTE_NAME;
+                    $this->state = TokenizerState::BEFORE_ATTRIBUTE_NAME;
                     $cc = $this->input[++$this->position] ?? null;
                     goto BEFORE_ATTRIBUTE_NAME;
                 } elseif ($cc === '&') {
                     // Set the return state to the attribute value (unquoted) state.
-                    $this->returnState = TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED;
+                    $this->returnState = TokenizerState::ATTRIBUTE_VALUE_UNQUOTED;
                     // Switch to the character reference state.
-                    $this->state = TokenizerStates::CHARACTER_REFERENCE;
+                    $this->state = TokenizerState::CHARACTER_REFERENCE;
                     $cc = $this->input[++$this->position] ?? null;
                     goto CHARACTER_REFERENCE;
                 } elseif ($cc === '>') {
                     // Switch to the data state. Emit the current tag token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } elseif ($cc === "\0") {
@@ -1284,22 +1284,22 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::AFTER_ATTRIBUTE_VALUE_QUOTED:
+            case TokenizerState::AFTER_ATTRIBUTE_VALUE_QUOTED:
             AFTER_ATTRIBUTE_VALUE_QUOTED: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Switch to the before attribute name state.
-                    $this->state = TokenizerStates::BEFORE_ATTRIBUTE_NAME;
+                    $this->state = TokenizerState::BEFORE_ATTRIBUTE_NAME;
                     $cc = $this->input[++$this->position] ?? null;
                     goto BEFORE_ATTRIBUTE_NAME;
                 } elseif ($cc === '/') {
                     // Switch to the self-closing start tag state.
-                    $this->state = TokenizerStates::SELF_CLOSING_START_TAG;
+                    $this->state = TokenizerState::SELF_CLOSING_START_TAG;
                     $cc = $this->input[++$this->position] ?? null;
                     goto SELF_CLOSING_START_TAG;
                 } elseif ($cc === '>') {
                     // Switch to the data state. Emit the current tag token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } elseif ($cc === null) {
@@ -1311,19 +1311,19 @@ final class Tokenizer extends AbstractTokenizer
                     // This is a missing-whitespace-between-attributes parse error.
                     $this->parseErrors[] = [ParseErrors::MISSING_WHITESPACE_BETWEEN_ATTRIBUTES, $this->position];
                     // Reconsume in the before attribute name state.
-                    $this->state = TokenizerStates::BEFORE_ATTRIBUTE_NAME;
+                    $this->state = TokenizerState::BEFORE_ATTRIBUTE_NAME;
                     goto BEFORE_ATTRIBUTE_NAME;
                 }
             }
             break;
-            case TokenizerStates::SELF_CLOSING_START_TAG:
+            case TokenizerState::SELF_CLOSING_START_TAG:
             SELF_CLOSING_START_TAG: {
                 if ($cc === '>') {
                     // Set the self-closing flag of the current tag token.
                     $this->currentToken->selfClosing = true;
                     // Switch to the data state. Emit the current tag token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } elseif ($cc === null) {
@@ -1335,17 +1335,17 @@ final class Tokenizer extends AbstractTokenizer
                     // This is an unexpected-solidus-in-tag parse error.
                     $this->parseErrors[] = [ParseErrors::UNEXPECTED_SOLIDUS_IN_TAG, $this->position];
                     // Reconsume in the before attribute name state.
-                    $this->state = TokenizerStates::BEFORE_ATTRIBUTE_NAME;
+                    $this->state = TokenizerState::BEFORE_ATTRIBUTE_NAME;
                     goto BEFORE_ATTRIBUTE_NAME;
                 }
             }
             break;
-            case TokenizerStates::BOGUS_COMMENT:
+            case TokenizerState::BOGUS_COMMENT:
             BOGUS_COMMENT: {
                 if ($cc === '>') {
                     // Switch to the data state. Emit the comment token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } elseif ($cc === null) {
@@ -1370,7 +1370,7 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::MARKUP_DECLARATION_OPEN:
+            case TokenizerState::MARKUP_DECLARATION_OPEN:
             MARKUP_DECLARATION_OPEN: {
                 if (0 === \substr_compare($this->input, '--', $this->position, 2)) {
                     // Consume those two characters
@@ -1379,14 +1379,14 @@ final class Tokenizer extends AbstractTokenizer
                     $this->currentToken = new Comment('');
                     // and switch to the comment start state.
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::COMMENT_START;
+                    $this->state = TokenizerState::COMMENT_START;
                     goto COMMENT_START;
                 } elseif (0 === \substr_compare($this->input, 'DOCTYPE', $this->position, 7, true)) {
                     // Consume those characters
                     $this->position += 7;
                     // and switch to the DOCTYPE state.
                     $cc = $this->input[$this->position] ?? null;
-                    $this->state = TokenizerStates::DOCTYPE;
+                    $this->state = TokenizerState::DOCTYPE;
                     goto DOCTYPE;
                 } elseif (0 === \substr_compare($this->input, '[CDATA[', $this->position, 7, true)) {
                     // Consume those characters.
@@ -1395,7 +1395,7 @@ final class Tokenizer extends AbstractTokenizer
                     if ($this->allowCdata) {
                         // If there is an adjusted current node and it is not an element in the HTML namespace,
                         // then switch to the CDATA section state.
-                        $this->state = TokenizerStates::CDATA_SECTION;
+                        $this->state = TokenizerState::CDATA_SECTION;
                         goto CDATA_SECTION;
                     } else {
                         // this is a cdata-in-html-content parse error.
@@ -1403,7 +1403,7 @@ final class Tokenizer extends AbstractTokenizer
                         // Create a comment token whose data is the "[CDATA[" string.
                         $this->currentToken = new Comment('[CDATA[');
                         // Switch to the bogus comment state.
-                        $this->state = TokenizerStates::BOGUS_COMMENT;
+                        $this->state = TokenizerState::BOGUS_COMMENT;
                         goto BOGUS_COMMENT;
                     }
                 } else {
@@ -1412,16 +1412,16 @@ final class Tokenizer extends AbstractTokenizer
                     // Create a comment token whose data is the empty string.
                     $this->currentToken = new Comment('');
                     // Switch to the bogus comment state (don't consume anything in the current state).
-                    $this->state = TokenizerStates::BOGUS_COMMENT;
+                    $this->state = TokenizerState::BOGUS_COMMENT;
                     goto BOGUS_COMMENT;
                 }
             }
             break;
-            case TokenizerStates::COMMENT_START:
+            case TokenizerState::COMMENT_START:
             COMMENT_START: {
                 if ($cc === '-') {
                     // Switch to the comment start dash state.
-                    $this->state = TokenizerStates::COMMENT_START_DASH;
+                    $this->state = TokenizerState::COMMENT_START_DASH;
                     $cc = $this->input[++$this->position] ?? null;
                     goto COMMENT_START_DASH;
                 } elseif ($cc === '>') {
@@ -1429,21 +1429,21 @@ final class Tokenizer extends AbstractTokenizer
                     $this->parseErrors[] = [ParseErrors::ABRUPT_CLOSING_OF_EMPTY_COMMENT, $this->position];
                     // Switch to the data state. Emit the comment token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } else {
                     // Reconsume in the comment state.
-                    $this->state = TokenizerStates::COMMENT;
+                    $this->state = TokenizerState::COMMENT;
                     goto COMMENT;
                 }
             }
             break;
-            case TokenizerStates::COMMENT_START_DASH:
+            case TokenizerState::COMMENT_START_DASH:
             COMMENT_START_DASH: {
                 if ($cc === '-') {
                     // Switch to the comment end state.
-                    $this->state = TokenizerStates::COMMENT_END;
+                    $this->state = TokenizerState::COMMENT_END;
                     $cc = $this->input[++$this->position] ?? null;
                     goto COMMENT_END;
                 } elseif ($cc === '>') {
@@ -1451,7 +1451,7 @@ final class Tokenizer extends AbstractTokenizer
                     $this->parseErrors[] = [ParseErrors::ABRUPT_CLOSING_OF_EMPTY_COMMENT, $this->position];
                     // Switch to the data state. Emit the comment token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } elseif ($cc === null) {
@@ -1465,23 +1465,23 @@ final class Tokenizer extends AbstractTokenizer
                     // Append a U+002D HYPHEN-MINUS character (-) to the comment token's data.
                     $this->currentToken->data .= '-';
                     // Reconsume in the comment state.
-                    $this->state = TokenizerStates::COMMENT;
+                    $this->state = TokenizerState::COMMENT;
                     goto COMMENT;
                 }
             }
             break;
-            case TokenizerStates::COMMENT:
+            case TokenizerState::COMMENT:
             COMMENT: {
                 if ($cc === '<') {
                     // Append the current input character to the comment token's data.
                     $this->currentToken->data .= $cc;
                     // Switch to the comment less-than sign state.
-                    $this->state = TokenizerStates::COMMENT_LESS_THAN_SIGN;
+                    $this->state = TokenizerState::COMMENT_LESS_THAN_SIGN;
                     $cc = $this->input[++$this->position] ?? null;
                     goto COMMENT_LESS_THAN_SIGN;
                 } elseif ($cc === '-') {
                     // Switch to the comment end dash state.
-                    $this->state = TokenizerStates::COMMENT_END_DASH;
+                    $this->state = TokenizerState::COMMENT_END_DASH;
                     $cc = $this->input[++$this->position] ?? null;
                     goto COMMENT_END_DASH;
                 } elseif ($cc === "\0") {
@@ -1508,13 +1508,13 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::COMMENT_LESS_THAN_SIGN:
+            case TokenizerState::COMMENT_LESS_THAN_SIGN:
             COMMENT_LESS_THAN_SIGN: {
                 if ($cc === '!') {
                     // Append the current input character to the comment token's data.
                     $this->currentToken->data .= $cc;
                     // Switch to the comment less-than sign bang state.
-                    $this->state = TokenizerStates::COMMENT_LESS_THAN_SIGN_BANG;
+                    $this->state = TokenizerState::COMMENT_LESS_THAN_SIGN_BANG;
                     $cc = $this->input[++$this->position] ?? null;
                     goto COMMENT_LESS_THAN_SIGN_BANG;
                 } elseif ($cc === '<') {
@@ -1524,59 +1524,59 @@ final class Tokenizer extends AbstractTokenizer
                     goto COMMENT_LESS_THAN_SIGN;
                 } else {
                     // Reconsume in the comment state.
-                    $this->state = TokenizerStates::COMMENT;
+                    $this->state = TokenizerState::COMMENT;
                     goto COMMENT;
                 }
             }
             break;
-            case TokenizerStates::COMMENT_LESS_THAN_SIGN_BANG:
+            case TokenizerState::COMMENT_LESS_THAN_SIGN_BANG:
             COMMENT_LESS_THAN_SIGN_BANG: {
                 if ($cc === '-') {
                     // Switch to the comment less-than sign bang dash state.
-                    $this->state = TokenizerStates::COMMENT_LESS_THAN_SIGN_BANG_DASH;
+                    $this->state = TokenizerState::COMMENT_LESS_THAN_SIGN_BANG_DASH;
                     $cc = $this->input[++$this->position] ?? null;
                     goto COMMENT_LESS_THAN_SIGN_BANG_DASH;
                 } else {
                     // Reconsume in the comment state.
-                    $this->state = TokenizerStates::COMMENT;
+                    $this->state = TokenizerState::COMMENT;
                     goto COMMENT;
                 }
             }
             break;
-            case TokenizerStates::COMMENT_LESS_THAN_SIGN_BANG_DASH:
+            case TokenizerState::COMMENT_LESS_THAN_SIGN_BANG_DASH:
             COMMENT_LESS_THAN_SIGN_BANG_DASH: {
                 if ($cc === '-') {
                     // Switch to the comment less-than sign bang dash dash state.
-                    $this->state = TokenizerStates::COMMENT_LESS_THAN_SIGN_BANG_DASH_DASH;
+                    $this->state = TokenizerState::COMMENT_LESS_THAN_SIGN_BANG_DASH_DASH;
                     $cc = $this->input[++$this->position] ?? null;
                     goto COMMENT_LESS_THAN_SIGN_BANG_DASH_DASH;
                 } else {
                     // Reconsume in the comment end dash state.
-                    $this->state = TokenizerStates::COMMENT_END_DASH;
+                    $this->state = TokenizerState::COMMENT_END_DASH;
                     goto COMMENT_END_DASH;
                 }
             }
             break;
-            case TokenizerStates::COMMENT_LESS_THAN_SIGN_BANG_DASH_DASH:
+            case TokenizerState::COMMENT_LESS_THAN_SIGN_BANG_DASH_DASH:
             COMMENT_LESS_THAN_SIGN_BANG_DASH_DASH: {
                 if ($cc === '>' || $cc === null) {
                     // Reconsume in the comment end state.
-                    $this->state = TokenizerStates::COMMENT_END;
+                    $this->state = TokenizerState::COMMENT_END;
                     goto COMMENT_END;
                 } else {
                     // This is a nested-comment parse error.
                     $this->parseErrors[] = [ParseErrors::NESTED_COMMENT, $this->position];
                     // Reconsume in the comment end state.
-                    $this->state = TokenizerStates::COMMENT_END;
+                    $this->state = TokenizerState::COMMENT_END;
                     goto COMMENT_END;
                 }
             }
             break;
-            case TokenizerStates::COMMENT_END_DASH:
+            case TokenizerState::COMMENT_END_DASH:
             COMMENT_END_DASH: {
                 if ($cc === '-') {
                     // Switch to the comment end state
-                    $this->state = TokenizerStates::COMMENT_END;
+                    $this->state = TokenizerState::COMMENT_END;
                     $cc = $this->input[++$this->position] ?? null;
                     goto COMMENT_END;
                 } elseif ($cc === null) {
@@ -1589,21 +1589,21 @@ final class Tokenizer extends AbstractTokenizer
                     // Append a U+002D HYPHEN-MINUS character (-) to the comment token's data.
                     $this->currentToken->data .= '-';
                     // Reconsume in the comment state.
-                    $this->state = TokenizerStates::COMMENT;
+                    $this->state = TokenizerState::COMMENT;
                     goto COMMENT;
                 }
             }
             break;
-            case TokenizerStates::COMMENT_END:
+            case TokenizerState::COMMENT_END:
             COMMENT_END: {
                 if ($cc === '>') {
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } elseif ($cc === '!') {
                     // Switch to the comment end bang state.
-                    $this->state = TokenizerStates::COMMENT_END_BANG;
+                    $this->state = TokenizerState::COMMENT_END_BANG;
                     $cc = $this->input[++$this->position] ?? null;
                     goto COMMENT_END_BANG;
                 } elseif ($cc === '-') {
@@ -1621,18 +1621,18 @@ final class Tokenizer extends AbstractTokenizer
                     // Append two U+002D HYPHEN-MINUS characters (-) to the comment token's data.
                     $this->currentToken->data .= '--';
                     // Reconsume in the comment state.
-                    $this->state = TokenizerStates::COMMENT;
+                    $this->state = TokenizerState::COMMENT;
                     goto COMMENT;
                 }
             }
             break;
-            case TokenizerStates::COMMENT_END_BANG:
+            case TokenizerState::COMMENT_END_BANG:
             COMMENT_END_BANG: {
                 if ($cc === '-') {
                     // Append two U+002D HYPHEN-MINUS characters (-) and a U+0021 EXCLAMATION MARK character (!) to the comment token's data.
                     $this->currentToken->data .= '--!';
                     // Switch to the comment end dash state.
-                    $this->state = TokenizerStates::COMMENT_END_DASH;
+                    $this->state = TokenizerState::COMMENT_END_DASH;
                     $cc = $this->input[++$this->position] ?? null;
                     goto COMMENT_END_DASH;
                 } elseif ($cc === '>') {
@@ -1640,7 +1640,7 @@ final class Tokenizer extends AbstractTokenizer
                     $this->parseErrors[] = [ParseErrors::INCORRECTLY_CLOSED_COMMENT, $this->position];
                     // Switch to the data state. Emit the comment token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } elseif ($cc === null) {
@@ -1653,21 +1653,21 @@ final class Tokenizer extends AbstractTokenizer
                     // Append two U+002D HYPHEN-MINUS characters (-) and a U+0021 EXCLAMATION MARK character (!) to the comment token's data.
                     $this->currentToken->data .= '--!';
                     // Reconsume in the comment state.
-                    $this->state = TokenizerStates::COMMENT;
+                    $this->state = TokenizerState::COMMENT;
                     goto COMMENT;
                 }
             }
             break;
-            case TokenizerStates::DOCTYPE:
+            case TokenizerState::DOCTYPE:
             DOCTYPE: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Switch to the before DOCTYPE name state.
-                    $this->state = TokenizerStates::BEFORE_DOCTYPE_NAME;
+                    $this->state = TokenizerState::BEFORE_DOCTYPE_NAME;
                     $cc = $this->input[++$this->position] ?? null;
                     goto BEFORE_DOCTYPE_NAME;
                 } elseif ($cc === '>') {
                     // Reconsume in the before DOCTYPE name state.
-                    $this->state = TokenizerStates::BEFORE_DOCTYPE_NAME;
+                    $this->state = TokenizerState::BEFORE_DOCTYPE_NAME;
                     goto BEFORE_DOCTYPE_NAME;
                 } elseif ($cc === null) {
                     // This is an eof-in-doctype parse error.
@@ -1683,12 +1683,12 @@ final class Tokenizer extends AbstractTokenizer
                     // This is a missing-whitespace-before-doctype-name parse error.
                     $this->parseErrors[] = [ParseErrors::MISSING_WHITESPACE_BEFORE_DOCTYPE_NAME, $this->position];
                     // Reconsume in the before DOCTYPE name state.
-                    $this->state = TokenizerStates::BEFORE_DOCTYPE_NAME;
+                    $this->state = TokenizerState::BEFORE_DOCTYPE_NAME;
                     goto BEFORE_DOCTYPE_NAME;
                 }
             }
             break;
-            case TokenizerStates::BEFORE_DOCTYPE_NAME:
+            case TokenizerState::BEFORE_DOCTYPE_NAME:
             BEFORE_DOCTYPE_NAME: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Ignore the character.
@@ -1702,7 +1702,7 @@ final class Tokenizer extends AbstractTokenizer
                     // Set the token's name to a U+FFFD REPLACEMENT CHARACTER character.
                     $this->currentToken->name = "\u{FFFD}";
                     // Switch to the DOCTYPE name state.
-                    $this->state = TokenizerStates::DOCTYPE_NAME;
+                    $this->state = TokenizerState::DOCTYPE_NAME;
                     $cc = $this->input[++$this->position] ?? null;
                     goto DOCTYPE_NAME;
                 } elseif ($cc === '>') {
@@ -1714,7 +1714,7 @@ final class Tokenizer extends AbstractTokenizer
                     $this->currentToken->forceQuirks = true;
                     // Switch to the data state. Emit the token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } elseif ($cc === null) {
@@ -1733,23 +1733,23 @@ final class Tokenizer extends AbstractTokenizer
                     // Set the token's name to the current input character.
                     $this->currentToken->name = strtolower($cc);
                     // Switch to the DOCTYPE name state.
-                    $this->state = TokenizerStates::DOCTYPE_NAME;
+                    $this->state = TokenizerState::DOCTYPE_NAME;
                     $cc = $this->input[++$this->position] ?? null;
                     goto DOCTYPE_NAME;
                 }
             }
             break;
-            case TokenizerStates::DOCTYPE_NAME:
+            case TokenizerState::DOCTYPE_NAME:
             DOCTYPE_NAME: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Switch to the after DOCTYPE name state.
-                    $this->state = TokenizerStates::AFTER_DOCTYPE_NAME;
+                    $this->state = TokenizerState::AFTER_DOCTYPE_NAME;
                     $cc = $this->input[++$this->position] ?? null;
                     goto AFTER_DOCTYPE_NAME;
                 } elseif ($cc === '>') {
                     // Switch to the data state. Emit the current DOCTYPE token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } elseif ($cc === "\0") {
@@ -1778,7 +1778,7 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::AFTER_DOCTYPE_NAME:
+            case TokenizerState::AFTER_DOCTYPE_NAME:
             AFTER_DOCTYPE_NAME: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Ignore the character.
@@ -1787,7 +1787,7 @@ final class Tokenizer extends AbstractTokenizer
                 } elseif ($cc === '>') {
                     // Switch to the data state. Emit the current DOCTYPE token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } elseif ($cc === null) {
@@ -1803,13 +1803,13 @@ final class Tokenizer extends AbstractTokenizer
                         // consume those characters and switch to the after DOCTYPE public keyword state.
                         $this->position += 6;
                         $cc = $this->input[$this->position] ?? null;
-                        $this->state = TokenizerStates::AFTER_DOCTYPE_PUBLIC_KEYWORD;
+                        $this->state = TokenizerState::AFTER_DOCTYPE_PUBLIC_KEYWORD;
                         goto AFTER_DOCTYPE_PUBLIC_KEYWORD;
                     } elseif (0 === \substr_compare($this->input, 'SYSTEM', $this->position, 6, true)) {
                         // consume those characters and switch to the after DOCTYPE system keyword state.
                         $this->position += 6;
                         $cc = $this->input[$this->position] ?? null;
-                        $this->state = TokenizerStates::AFTER_DOCTYPE_SYSTEM_KEYWORD;
+                        $this->state = TokenizerState::AFTER_DOCTYPE_SYSTEM_KEYWORD;
                         goto AFTER_DOCTYPE_SYSTEM_KEYWORD;
                     } else {
                         // This is an invalid-character-sequence-after-doctype-name parse error.
@@ -1817,17 +1817,17 @@ final class Tokenizer extends AbstractTokenizer
                         // Set the DOCTYPE token's force-quirks flag to on.
                         $this->currentToken->forceQuirks = true;
                         // Reconsume in the bogus DOCTYPE state.
-                        $this->state = TokenizerStates::BOGUS_DOCTYPE;
+                        $this->state = TokenizerState::BOGUS_DOCTYPE;
                         goto BOGUS_DOCTYPE;
                     }
                 }
             }
             break;
-            case TokenizerStates::AFTER_DOCTYPE_PUBLIC_KEYWORD:
+            case TokenizerState::AFTER_DOCTYPE_PUBLIC_KEYWORD:
             AFTER_DOCTYPE_PUBLIC_KEYWORD: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Switch to the before DOCTYPE public identifier state.
-                    $this->state = TokenizerStates::BEFORE_DOCTYPE_PUBLIC_IDENTIFIER;
+                    $this->state = TokenizerState::BEFORE_DOCTYPE_PUBLIC_IDENTIFIER;
                     $cc = $this->input[++$this->position] ?? null;
                     goto BEFORE_DOCTYPE_PUBLIC_IDENTIFIER;
                 } elseif ($cc === '"') {
@@ -1836,7 +1836,7 @@ final class Tokenizer extends AbstractTokenizer
                     // Set the DOCTYPE token's public identifier to the empty string (not missing)
                     $this->currentToken->publicIdentifier = '';
                     // switch to the DOCTYPE public identifier (double-quoted) state.
-                    $this->state = TokenizerStates::DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED;
+                    $this->state = TokenizerState::DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED;
                 } elseif ($cc === "'") {
@@ -1845,7 +1845,7 @@ final class Tokenizer extends AbstractTokenizer
                     // Set the DOCTYPE token's public identifier to the empty string (not missing)
                     $this->currentToken->publicIdentifier = '';
                     // switch to the DOCTYPE public identifier (single-quoted) state.
-                    $this->state = TokenizerStates::DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED;
+                    $this->state = TokenizerState::DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED;
                 } elseif ($cc === '>') {
@@ -1855,7 +1855,7 @@ final class Tokenizer extends AbstractTokenizer
                     $this->currentToken->forceQuirks = true;
                     // Switch to the data state. Emit that DOCTYPE token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } elseif ($cc === null) {
@@ -1872,12 +1872,12 @@ final class Tokenizer extends AbstractTokenizer
                     // Set the DOCTYPE token's force-quirks flag to on.
                     $this->currentToken->forceQuirks = true;
                     // Reconsume in the bogus DOCTYPE state.
-                    $this->state = TokenizerStates::BOGUS_DOCTYPE;
+                    $this->state = TokenizerState::BOGUS_DOCTYPE;
                     goto BOGUS_DOCTYPE;
                 }
             }
             break;
-            case TokenizerStates::BEFORE_DOCTYPE_PUBLIC_IDENTIFIER:
+            case TokenizerState::BEFORE_DOCTYPE_PUBLIC_IDENTIFIER:
             BEFORE_DOCTYPE_PUBLIC_IDENTIFIER: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Ignore the character.
@@ -1887,14 +1887,14 @@ final class Tokenizer extends AbstractTokenizer
                     // Set the DOCTYPE token's public identifier to the empty string (not missing)
                     $this->currentToken->publicIdentifier = '';
                     // switch to the DOCTYPE public identifier (double-quoted) state.
-                    $this->state = TokenizerStates::DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED;
+                    $this->state = TokenizerState::DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED;
                 } elseif ($cc === "'") {
                     // Set the DOCTYPE token's public identifier to the empty string (not missing)
                     $this->currentToken->publicIdentifier = '';
                     // switch to the DOCTYPE public identifier (single-quoted) state.
-                    $this->state = TokenizerStates::DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED;
+                    $this->state = TokenizerState::DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED;
                 } elseif ($cc === '>') {
@@ -1904,7 +1904,7 @@ final class Tokenizer extends AbstractTokenizer
                     $this->currentToken->forceQuirks = true;
                     // Switch to the data state. Emit that DOCTYPE token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } elseif ($cc === null) {
@@ -1921,16 +1921,16 @@ final class Tokenizer extends AbstractTokenizer
                     // Set the DOCTYPE token's force-quirks flag to on.
                     $this->currentToken->forceQuirks = true;
                     // Reconsume in the bogus DOCTYPE state.
-                    $this->state = TokenizerStates::BOGUS_DOCTYPE;
+                    $this->state = TokenizerState::BOGUS_DOCTYPE;
                     goto BOGUS_DOCTYPE;
                 }
             }
             break;
-            case TokenizerStates::DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED:
+            case TokenizerState::DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED:
             DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED: {
                 if ($cc === '"') {
                     // Switch to the after DOCTYPE public identifier state.
-                    $this->state = TokenizerStates::AFTER_DOCTYPE_PUBLIC_IDENTIFIER;
+                    $this->state = TokenizerState::AFTER_DOCTYPE_PUBLIC_IDENTIFIER;
                     $cc = $this->input[++$this->position] ?? null;
                     goto AFTER_DOCTYPE_PUBLIC_IDENTIFIER;
                 } elseif ($cc === '>') {
@@ -1940,7 +1940,7 @@ final class Tokenizer extends AbstractTokenizer
                     $this->currentToken->forceQuirks = true;
                     // Switch to the data state. Emit that DOCTYPE token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } elseif ($cc === "\0") {
@@ -1969,11 +1969,11 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED:
+            case TokenizerState::DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED:
             DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED: {
                 if ($cc === "'") {
                     // Switch to the after DOCTYPE public identifier state.
-                    $this->state = TokenizerStates::AFTER_DOCTYPE_PUBLIC_IDENTIFIER;
+                    $this->state = TokenizerState::AFTER_DOCTYPE_PUBLIC_IDENTIFIER;
                     $cc = $this->input[++$this->position] ?? null;
                     goto AFTER_DOCTYPE_PUBLIC_IDENTIFIER;
                 } elseif ($cc === '>') {
@@ -1983,7 +1983,7 @@ final class Tokenizer extends AbstractTokenizer
                     $this->currentToken->forceQuirks = true;
                     // Switch to the data state. Emit that DOCTYPE token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } elseif ($cc === "\0") {
@@ -2012,17 +2012,17 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::AFTER_DOCTYPE_PUBLIC_IDENTIFIER:
+            case TokenizerState::AFTER_DOCTYPE_PUBLIC_IDENTIFIER:
             AFTER_DOCTYPE_PUBLIC_IDENTIFIER: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Switch to the between DOCTYPE public and system identifiers state.
-                    $this->state = TokenizerStates::BETWEEN_DOCTYPE_PUBLIC_AND_SYSTEM_IDENTIFIERS;
+                    $this->state = TokenizerState::BETWEEN_DOCTYPE_PUBLIC_AND_SYSTEM_IDENTIFIERS;
                     $cc = $this->input[++$this->position] ?? null;
                     goto BETWEEN_DOCTYPE_PUBLIC_AND_SYSTEM_IDENTIFIERS;
                 } elseif ($cc === '>') {
                     // Switch to the data state. Emit the current DOCTYPE token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } elseif ($cc === '"') {
@@ -2031,7 +2031,7 @@ final class Tokenizer extends AbstractTokenizer
                     // Set the DOCTYPE token's system identifier to the empty string (not missing)
                     $this->currentToken->systemIdentifier = '';
                     // switch to the DOCTYPE system identifier (double-quoted) state.
-                    $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
+                    $this->state = TokenizerState::DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
                 } elseif ($cc === "'") {
@@ -2040,7 +2040,7 @@ final class Tokenizer extends AbstractTokenizer
                     // Set the DOCTYPE token's system identifier to the empty string (not missing)
                     $this->currentToken->systemIdentifier = '';
                     // switch to the DOCTYPE system identifier (single-quoted) state.
-                    $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
+                    $this->state = TokenizerState::DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
                 } elseif ($cc === null) {
@@ -2057,12 +2057,12 @@ final class Tokenizer extends AbstractTokenizer
                     // Set the DOCTYPE token's force-quirks flag to on.
                     $this->currentToken->forceQuirks = true;
                     // Reconsume in the bogus DOCTYPE state.
-                    $this->state = TokenizerStates::BOGUS_DOCTYPE;
+                    $this->state = TokenizerState::BOGUS_DOCTYPE;
                     goto BOGUS_DOCTYPE;
                 }
             }
             break;
-            case TokenizerStates::BETWEEN_DOCTYPE_PUBLIC_AND_SYSTEM_IDENTIFIERS:
+            case TokenizerState::BETWEEN_DOCTYPE_PUBLIC_AND_SYSTEM_IDENTIFIERS:
             BETWEEN_DOCTYPE_PUBLIC_AND_SYSTEM_IDENTIFIERS: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Ignore the character
@@ -2071,21 +2071,21 @@ final class Tokenizer extends AbstractTokenizer
                 } elseif ($cc === '>') {
                     // Switch to the data state. Emit the current DOCTYPE token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } elseif ($cc === '"') {
                     // Set the DOCTYPE token's system identifier to the empty string (not missing)
                     $this->currentToken->systemIdentifier = '';
                     // switch to the DOCTYPE system identifier (double-quoted) state.
-                    $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
+                    $this->state = TokenizerState::DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
                 } elseif ($cc === "'") {
                     // Set the DOCTYPE token's system identifier to the empty string (not missing)
                     $this->currentToken->systemIdentifier = '';
                     // switch to the DOCTYPE system identifier (single-quoted) state.
-                    $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
+                    $this->state = TokenizerState::DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
                 } elseif ($cc === null) {
@@ -2102,16 +2102,16 @@ final class Tokenizer extends AbstractTokenizer
                     // Set the DOCTYPE token's force-quirks flag to on.
                     $this->currentToken->forceQuirks = true;
                     // Reconsume in the bogus DOCTYPE state.
-                    $this->state = TokenizerStates::BOGUS_DOCTYPE;
+                    $this->state = TokenizerState::BOGUS_DOCTYPE;
                     goto BOGUS_DOCTYPE;
                 }
             }
             break;
-            case TokenizerStates::AFTER_DOCTYPE_SYSTEM_KEYWORD:
+            case TokenizerState::AFTER_DOCTYPE_SYSTEM_KEYWORD:
             AFTER_DOCTYPE_SYSTEM_KEYWORD: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Switch to the before DOCTYPE system identifier state.
-                    $this->state = TokenizerStates::BEFORE_DOCTYPE_SYSTEM_IDENTIFIER;
+                    $this->state = TokenizerState::BEFORE_DOCTYPE_SYSTEM_IDENTIFIER;
                     $cc = $this->input[++$this->position] ?? null;
                     goto BEFORE_DOCTYPE_SYSTEM_IDENTIFIER;
                 } elseif ($cc === '"') {
@@ -2120,7 +2120,7 @@ final class Tokenizer extends AbstractTokenizer
                     // Set the DOCTYPE token's system identifier to the empty string (not missing)
                     $this->currentToken->systemIdentifier = '';
                     // switch to the DOCTYPE system identifier (double-quoted) state.
-                    $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
+                    $this->state = TokenizerState::DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
                 } elseif ($cc === "'") {
@@ -2129,7 +2129,7 @@ final class Tokenizer extends AbstractTokenizer
                     // Set the DOCTYPE token's system identifier to the empty string (not missing)
                     $this->currentToken->systemIdentifier = '';
                     // switch to the DOCTYPE system identifier (single-quoted) state.
-                    $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
+                    $this->state = TokenizerState::DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
                 } elseif ($cc === '>') {
@@ -2139,7 +2139,7 @@ final class Tokenizer extends AbstractTokenizer
                     $this->currentToken->forceQuirks = true;
                     // Switch to the data state. Emit that DOCTYPE token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } elseif ($cc === null) {
@@ -2156,12 +2156,12 @@ final class Tokenizer extends AbstractTokenizer
                     // Set the DOCTYPE token's force-quirks flag to on.
                     $this->currentToken->forceQuirks = true;
                     // Reconsume in the bogus DOCTYPE state.
-                    $this->state = TokenizerStates::BOGUS_DOCTYPE;
+                    $this->state = TokenizerState::BOGUS_DOCTYPE;
                     goto BOGUS_DOCTYPE;
                 }
             }
             break;
-            case TokenizerStates::BEFORE_DOCTYPE_SYSTEM_IDENTIFIER:
+            case TokenizerState::BEFORE_DOCTYPE_SYSTEM_IDENTIFIER:
             BEFORE_DOCTYPE_SYSTEM_IDENTIFIER: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Ignore the character
@@ -2171,14 +2171,14 @@ final class Tokenizer extends AbstractTokenizer
                     // Set the DOCTYPE token's system identifier to the empty string (not missing)
                     $this->currentToken->systemIdentifier = '';
                     // switch to the DOCTYPE system identifier (double-quoted) state.
-                    $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
+                    $this->state = TokenizerState::DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
                 } elseif ($cc === "'") {
                     // Set the DOCTYPE token's system identifier to the empty string (not missing)
                     $this->currentToken->systemIdentifier = '';
                     // switch to the DOCTYPE system identifier (single-quoted) state.
-                    $this->state = TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
+                    $this->state = TokenizerState::DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
                     $cc = $this->input[++$this->position] ?? null;
                     goto DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
                 } elseif ($cc === '>') {
@@ -2187,7 +2187,7 @@ final class Tokenizer extends AbstractTokenizer
                     // Set the DOCTYPE token's force-quirks flag to on.
                     // Switch to the data state. Emit that DOCTYPE token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } elseif ($cc === null) {
@@ -2204,16 +2204,16 @@ final class Tokenizer extends AbstractTokenizer
                     // Set the DOCTYPE token's force-quirks flag to on.
                     $this->currentToken->forceQuirks = true;
                     // Reconsume in the bogus DOCTYPE state.
-                    $this->state = TokenizerStates::BOGUS_DOCTYPE;
+                    $this->state = TokenizerState::BOGUS_DOCTYPE;
                     goto BOGUS_DOCTYPE;
                 }
             }
             break;
-            case TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED:
+            case TokenizerState::DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED:
             DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED: {
                 if ($cc === '"') {
                     // Switch to the after DOCTYPE system identifier state.
-                    $this->state = TokenizerStates::AFTER_DOCTYPE_SYSTEM_IDENTIFIER;
+                    $this->state = TokenizerState::AFTER_DOCTYPE_SYSTEM_IDENTIFIER;
                     $cc = $this->input[++$this->position] ?? null;
                     goto AFTER_DOCTYPE_SYSTEM_IDENTIFIER;
                 } elseif ($cc === '>') {
@@ -2223,7 +2223,7 @@ final class Tokenizer extends AbstractTokenizer
                     $this->currentToken->forceQuirks = true;
                     // Switch to the data state. Emit that DOCTYPE token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } elseif ($cc === "\0") {
@@ -2252,11 +2252,11 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED:
+            case TokenizerState::DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED:
             DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED: {
                 if ($cc === "'") {
                     // Switch to the after DOCTYPE system identifier state.
-                    $this->state = TokenizerStates::AFTER_DOCTYPE_SYSTEM_IDENTIFIER;
+                    $this->state = TokenizerState::AFTER_DOCTYPE_SYSTEM_IDENTIFIER;
                     $cc = $this->input[++$this->position] ?? null;
                     goto AFTER_DOCTYPE_SYSTEM_IDENTIFIER;
                 } elseif ($cc === '>') {
@@ -2266,7 +2266,7 @@ final class Tokenizer extends AbstractTokenizer
                     $this->currentToken->forceQuirks = true;
                     // Switch to the data state. Emit that DOCTYPE token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } elseif ($cc === "\0") {
@@ -2295,7 +2295,7 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::AFTER_DOCTYPE_SYSTEM_IDENTIFIER:
+            case TokenizerState::AFTER_DOCTYPE_SYSTEM_IDENTIFIER:
             AFTER_DOCTYPE_SYSTEM_IDENTIFIER: {
                 if ($cc === ' ' || $cc === "\x0A" || $cc === "\x09" || $cc === "\x0C") {
                     // Ignore the character.
@@ -2304,7 +2304,7 @@ final class Tokenizer extends AbstractTokenizer
                 } elseif ($cc === '>') {
                     // Switch to the data state. Emit the current DOCTYPE token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } elseif ($cc === null) {
@@ -2319,17 +2319,17 @@ final class Tokenizer extends AbstractTokenizer
                     // This is an unexpected-character-after-doctype-system-identifier parse error.
                     $this->parseErrors[] = [ParseErrors::UNEXPECTED_CHARACTER_AFTER_DOCTYPE_SYSTEM_IDENTIFIER, $this->position];
                     // Reconsume in the bogus DOCTYPE state. (This does not set the DOCTYPE token's force-quirks flag to on.)
-                    $this->state = TokenizerStates::BOGUS_DOCTYPE;
+                    $this->state = TokenizerState::BOGUS_DOCTYPE;
                     goto BOGUS_DOCTYPE;
                 }
             }
             break;
-            case TokenizerStates::BOGUS_DOCTYPE:
+            case TokenizerState::BOGUS_DOCTYPE:
             BOGUS_DOCTYPE: {
                 if ($cc === '>') {
                     // Switch to the data state. Emit the DOCTYPE token.
                     $this->emitCurrentToken();
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     ++$this->position;
                     return true;
                 } elseif ($cc === "\0") {
@@ -2350,11 +2350,11 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::CDATA_SECTION:
+            case TokenizerState::CDATA_SECTION:
             CDATA_SECTION: {
                 if ($cc === ']') {
                     // Switch to the CDATA section bracket state.
-                    $this->state = TokenizerStates::CDATA_SECTION_BRACKET;
+                    $this->state = TokenizerState::CDATA_SECTION_BRACKET;
                     $cc = $this->input[++$this->position] ?? null;
                     goto CDATA_SECTION_BRACKET;
                 } elseif ($cc === "\0") {
@@ -2379,23 +2379,23 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::CDATA_SECTION_BRACKET:
+            case TokenizerState::CDATA_SECTION_BRACKET:
             CDATA_SECTION_BRACKET: {
                 if ($cc === ']') {
                     // Switch to the CDATA section end state.
-                    $this->state = TokenizerStates::CDATA_SECTION_END;
+                    $this->state = TokenizerState::CDATA_SECTION_END;
                     $cc = $this->input[++$this->position] ?? null;
                     goto CDATA_SECTION_END;
                 } else {
                     // Emit a U+005D RIGHT SQUARE BRACKET character token.
                     $this->tokenQueue->enqueue(new Character(']'));
                     // Reconsume in the CDATA section state.
-                    $this->state = TokenizerStates::CDATA_SECTION;
+                    $this->state = TokenizerState::CDATA_SECTION;
                     goto CDATA_SECTION;
                 }
             }
             break;
-            case TokenizerStates::CDATA_SECTION_END:
+            case TokenizerState::CDATA_SECTION_END:
             CDATA_SECTION_END: {
                 if ($cc === ']') {
                     // Emit a U+005D RIGHT SQUARE BRACKET character token.
@@ -2404,31 +2404,31 @@ final class Tokenizer extends AbstractTokenizer
                     goto CDATA_SECTION_END;
                 } elseif ($cc === '>') {
                     // Switch to the data state.
-                    $this->state = TokenizerStates::DATA;
+                    $this->state = TokenizerState::DATA;
                     $cc = $this->input[++$this->position] ?? null;
                     goto DATA;
                 } else {
                     // Emit two U+005D RIGHT SQUARE BRACKET character tokens.
                     $this->tokenQueue->enqueue(new Character(']]'));
                     // Reconsume in the CDATA section state.
-                    $this->state = TokenizerStates::CDATA_SECTION;
+                    $this->state = TokenizerState::CDATA_SECTION;
                     goto CDATA_SECTION;
                 }
             }
             break;
-            case TokenizerStates::CHARACTER_REFERENCE:
+            case TokenizerState::CHARACTER_REFERENCE:
             CHARACTER_REFERENCE: {
                 // Set the temporary buffer to the empty string. Append a U+0026 AMPERSAND (&) character to the temporary buffer.
                 $this->temporaryBuffer = '&';
                 if (\ctype_alnum($cc)) {
                     // Reconsume in the named character reference state.
-                    $this->state = TokenizerStates::NAMED_CHARACTER_REFERENCE;
+                    $this->state = TokenizerState::NAMED_CHARACTER_REFERENCE;
                     goto NAMED_CHARACTER_REFERENCE;
                 } elseif ($cc === '#') {
                     // Append the current input character to the temporary buffer.
                     $this->temporaryBuffer .= $cc;
                     // Switch to the numeric character reference state.
-                    $this->state = TokenizerStates::NUMERIC_CHARACTER_REFERENCE;
+                    $this->state = TokenizerState::NUMERIC_CHARACTER_REFERENCE;
                     $cc = $this->input[++$this->position] ?? null;
                     goto NUMERIC_CHARACTER_REFERENCE;
                 } else {
@@ -2440,7 +2440,7 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::NAMED_CHARACTER_REFERENCE:
+            case TokenizerState::NAMED_CHARACTER_REFERENCE:
             NAMED_CHARACTER_REFERENCE: {
                 // Consume the maximum number of characters possible,
                 // with the consumed characters matching one of the identifiers of the named character references table (in a case-sensitive manner).
@@ -2466,7 +2466,7 @@ final class Tokenizer extends AbstractTokenizer
                     $this->position += $lastTerminalIndex + 1;
                     if (
                         // If the character reference was consumed as part of an attribute,
-                        ($this->returnState === TokenizerStates::ATTRIBUTE_VALUE_DOUBLE_QUOTED || $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_SINGLE_QUOTED || $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED)
+                        ($this->returnState === TokenizerState::ATTRIBUTE_VALUE_DOUBLE_QUOTED || $this->returnState === TokenizerState::ATTRIBUTE_VALUE_SINGLE_QUOTED || $this->returnState === TokenizerState::ATTRIBUTE_VALUE_UNQUOTED)
                         // and the last character matched is not a U+003B SEMICOLON character (;),
                         && $buffer[-1] !== ';'
                         // and the next input character is either a U+003D EQUALS SIGN character (=) or an ASCII alphanumeric,
@@ -2498,12 +2498,12 @@ final class Tokenizer extends AbstractTokenizer
                     // Flush code points consumed as a character reference.
                     $this->flushCodePointsConsumedAsACharacterReference();
                     // Switch to the ambiguous ampersand state.
-                    $this->state = TokenizerStates::AMBIGUOUS_AMPERSAND;
+                    $this->state = TokenizerState::AMBIGUOUS_AMPERSAND;
                     goto AMBIGUOUS_AMPERSAND;
                 }
             }
             break;
-            case TokenizerStates::NUMERIC_CHARACTER_REFERENCE:
+            case TokenizerState::NUMERIC_CHARACTER_REFERENCE:
             NUMERIC_CHARACTER_REFERENCE: {
                 // Set the character reference code to zero (0).
                 $this->characterReferenceCode = 0;
@@ -2511,21 +2511,21 @@ final class Tokenizer extends AbstractTokenizer
                     // Append the current input character to the temporary buffer.
                     $this->temporaryBuffer .= $cc;
                     // Switch to the hexadecimal character reference start state.
-                    $this->state = TokenizerStates::HEXADECIMAL_CHARACTER_REFERENCE_START;
+                    $this->state = TokenizerState::HEXADECIMAL_CHARACTER_REFERENCE_START;
                     $cc = $this->input[++$this->position] ?? null;
                     goto HEXADECIMAL_CHARACTER_REFERENCE_START;
                 } else {
                     // Reconsume in the decimal character reference start state.
-                    $this->state = TokenizerStates::DECIMAL_CHARACTER_REFERENCE_START;
+                    $this->state = TokenizerState::DECIMAL_CHARACTER_REFERENCE_START;
                     goto DECIMAL_CHARACTER_REFERENCE_START;
                 }
             }
             break;
-            case TokenizerStates::HEXADECIMAL_CHARACTER_REFERENCE_START:
+            case TokenizerState::HEXADECIMAL_CHARACTER_REFERENCE_START:
             HEXADECIMAL_CHARACTER_REFERENCE_START: {
                 if (\ctype_xdigit($cc)) {
                     // Reconsume in the hexadecimal character reference state.
-                    $this->state = TokenizerStates::HEXADECIMAL_CHARACTER_REFERENCE;
+                    $this->state = TokenizerState::HEXADECIMAL_CHARACTER_REFERENCE;
                     goto HEXADECIMAL_CHARACTER_REFERENCE;
                 } else {
                     // This is an absence-of-digits-in-numeric-character-reference parse error.
@@ -2538,11 +2538,11 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::DECIMAL_CHARACTER_REFERENCE_START:
+            case TokenizerState::DECIMAL_CHARACTER_REFERENCE_START:
             DECIMAL_CHARACTER_REFERENCE_START: {
                 if (\ctype_digit($cc)) {
                     // Reconsume in the decimal character reference state.
-                    $this->state = TokenizerStates::DECIMAL_CHARACTER_REFERENCE;
+                    $this->state = TokenizerState::DECIMAL_CHARACTER_REFERENCE;
                     goto DECIMAL_CHARACTER_REFERENCE;
                 } else {
                     // This is an absence-of-digits-in-numeric-character-reference parse error.
@@ -2555,7 +2555,7 @@ final class Tokenizer extends AbstractTokenizer
                 }
             }
             break;
-            case TokenizerStates::HEXADECIMAL_CHARACTER_REFERENCE:
+            case TokenizerState::HEXADECIMAL_CHARACTER_REFERENCE:
             HEXADECIMAL_CHARACTER_REFERENCE: {
                 $l = \strspn($this->input, 'abcdefABCDEF0123456789', $this->position);
                 $chars = \substr($this->input, $this->position, $l);
@@ -2564,19 +2564,19 @@ final class Tokenizer extends AbstractTokenizer
                 $cc = $this->input[$this->position] ?? null;
                 if ($cc === ';') {
                     // Switch to the numeric character reference end state.
-                    $this->state = TokenizerStates::NUMERIC_CHARACTER_REFERENCE_END;
+                    $this->state = TokenizerState::NUMERIC_CHARACTER_REFERENCE_END;
                     $cc = $this->input[++$this->position] ?? null;
                     goto NUMERIC_CHARACTER_REFERENCE_END;
                 } else {
                     // This is a missing-semicolon-after-character-reference parse error.
                     $this->parseErrors[] = [ParseErrors::MISSING_SEMICOLON_AFTER_CHARACTER_REFERENCE, $this->position];
                     // Reconsume in the numeric character reference end state.
-                    $this->state = TokenizerStates::NUMERIC_CHARACTER_REFERENCE_END;
+                    $this->state = TokenizerState::NUMERIC_CHARACTER_REFERENCE_END;
                     goto NUMERIC_CHARACTER_REFERENCE_END;
                 }
             }
             break;
-            case TokenizerStates::DECIMAL_CHARACTER_REFERENCE:
+            case TokenizerState::DECIMAL_CHARACTER_REFERENCE:
             DECIMAL_CHARACTER_REFERENCE: {
                 $l = \strspn($this->input, '0123456789', $this->position);
                 $chars = \substr($this->input, $this->position, $l);
@@ -2585,19 +2585,19 @@ final class Tokenizer extends AbstractTokenizer
                 $cc = $this->input[$this->position] ?? null;
                 if ($cc === ';') {
                     // Switch to the numeric character reference end state.
-                    $this->state = TokenizerStates::NUMERIC_CHARACTER_REFERENCE_END;
+                    $this->state = TokenizerState::NUMERIC_CHARACTER_REFERENCE_END;
                     $cc = $this->input[++$this->position] ?? null;
                     goto NUMERIC_CHARACTER_REFERENCE_END;
                 } else {
                     // This is a missing-semicolon-after-character-reference parse error.
                     $this->parseErrors[] = [ParseErrors::MISSING_SEMICOLON_AFTER_CHARACTER_REFERENCE, $this->position];
                     // Reconsume in the numeric character reference end state.
-                    $this->state = TokenizerStates::NUMERIC_CHARACTER_REFERENCE_END;
+                    $this->state = TokenizerState::NUMERIC_CHARACTER_REFERENCE_END;
                     goto NUMERIC_CHARACTER_REFERENCE_END;
                 }
             }
             break;
-            case TokenizerStates::NUMERIC_CHARACTER_REFERENCE_END:
+            case TokenizerState::NUMERIC_CHARACTER_REFERENCE_END:
             NUMERIC_CHARACTER_REFERENCE_END: {
                 $refCode = $this->characterReferenceCode;
                 if ($refCode === 0x00) {
@@ -2666,14 +2666,14 @@ final class Tokenizer extends AbstractTokenizer
                 goto INITIAL;
             }
             break;
-            case TokenizerStates::AMBIGUOUS_AMPERSAND:
+            case TokenizerState::AMBIGUOUS_AMPERSAND:
             AMBIGUOUS_AMPERSAND: {
                 if (\ctype_alnum($cc)) {
                     $l = \strspn($this->input, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', $this->position);
                     $chars = \substr($this->input, $this->position, $l);
                     $this->position += $l;
                     // If the character reference was consumed as part of an attribute
-                    if ($this->returnState === TokenizerStates::ATTRIBUTE_VALUE_DOUBLE_QUOTED || $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_SINGLE_QUOTED || $this->returnState === TokenizerStates::ATTRIBUTE_VALUE_UNQUOTED) {
+                    if ($this->returnState === TokenizerState::ATTRIBUTE_VALUE_DOUBLE_QUOTED || $this->returnState === TokenizerState::ATTRIBUTE_VALUE_SINGLE_QUOTED || $this->returnState === TokenizerState::ATTRIBUTE_VALUE_UNQUOTED) {
                         // then append the current input character to the current attribute's value.
                         $this->currentToken->attributes[\count($this->currentToken->attributes) - 1][1] .= $chars;
                     } else {
