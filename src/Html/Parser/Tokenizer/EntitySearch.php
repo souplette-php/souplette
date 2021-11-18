@@ -23,7 +23,7 @@ final class EntitySearch extends EntitySearchNode
     public function add(string $key, string $value): void
     {
         $node = $this;
-        for ($i = 0; $i < strlen($key); $i++) {
+        for ($i = 0; $i < \strlen($key); $i++) {
             $char = $key[$i];
             if (!isset($node->children[$char])) {
                 $node->children[$char] = new EntitySearchNode();

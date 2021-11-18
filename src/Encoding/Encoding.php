@@ -4,16 +4,12 @@ namespace Souplette\Encoding;
 
 use Souplette\Encoding\Exception\UnsupportedEncoding;
 
-final class Encoding
+final class Encoding implements \Stringable
 {
-    const CONFIDENCE_IRRELEVANT = 0;
-    const CONFIDENCE_TENTATIVE = 1;
-    const CONFIDENCE_CERTAIN = 2;
-
     public string $encoding;
-    public int $confidence;
+    public Confidence $confidence;
 
-    public function __construct(string $encoding, int $confidence)
+    public function __construct(string $encoding, Confidence $confidence)
     {
         $encoding = strtolower($encoding);
         if (!isset(EncodingLookup::LABELS[$encoding])) {
@@ -25,22 +21,22 @@ final class Encoding
 
     public static function default(): self
     {
-        return new self(EncodingLookup::WINDOWS_1252, self::CONFIDENCE_TENTATIVE);
+        return new self(EncodingLookup::WINDOWS_1252, Confidence::TENTATIVE);
     }
 
     public static function irrelevant(string $encoding): self
     {
-        return new self($encoding, self::CONFIDENCE_IRRELEVANT);
+        return new self($encoding, Confidence::IRRELEVANT);
     }
 
     public static function tentative(string $encoding): self
     {
-        return new self($encoding, self::CONFIDENCE_TENTATIVE);
+        return new self($encoding, Confidence::TENTATIVE);
     }
 
     public static function certain(string $encoding): self
     {
-        return new self($encoding, self::CONFIDENCE_CERTAIN);
+        return new self($encoding, Confidence::CERTAIN);
     }
 
     public function getName(): string
@@ -50,32 +46,32 @@ final class Encoding
 
     public function isIrrelevant(): bool
     {
-        return $this->confidence === self::CONFIDENCE_IRRELEVANT;
+        return $this->confidence === Confidence::IRRELEVANT;
     }
 
     public function isTentative(): bool
     {
-        return $this->confidence === self::CONFIDENCE_TENTATIVE;
+        return $this->confidence === Confidence::TENTATIVE;
     }
 
     public function isCertain(): bool
     {
-        return $this->confidence === self::CONFIDENCE_CERTAIN;
+        return $this->confidence === Confidence::CERTAIN;
     }
 
     public function makeIrrelevant(): void
     {
-        $this->confidence = self::CONFIDENCE_IRRELEVANT;
+        $this->confidence = Confidence::IRRELEVANT;
     }
 
     public function makeTentative(): void
     {
-        $this->confidence = self::CONFIDENCE_TENTATIVE;
+        $this->confidence = Confidence::TENTATIVE;
     }
 
     public function makeCertain(): void
     {
-        $this->confidence = self::CONFIDENCE_CERTAIN;
+        $this->confidence = Confidence::CERTAIN;
     }
 
     public function __toString()
