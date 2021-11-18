@@ -2,11 +2,11 @@
 
 namespace Souplette\Css\Syntax\Tokenizer\Token;
 
-use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\Tokenizer\TokenType;
 
 final class LeftParen extends SingleCharToken
 {
-    const TYPE = TokenTypes::LPAREN;
+    const TYPE = TokenType::LPAREN;
     public string $value = '(';
     public string $representation = '(';
 }

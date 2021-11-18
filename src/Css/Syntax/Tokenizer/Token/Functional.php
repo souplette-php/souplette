@@ -2,11 +2,11 @@
 
 namespace Souplette\Css\Syntax\Tokenizer\Token;
 
-use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\Tokenizer\TokenType;
 
 final class Functional extends CharacterToken
 {
-    const TYPE = TokenTypes::FUNCTION;
+    const TYPE = TokenType::FUNCTION;
 
     public function __construct(string $value, int $position)
     {

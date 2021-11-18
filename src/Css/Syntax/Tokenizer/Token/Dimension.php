@@ -2,11 +2,11 @@
 
 namespace Souplette\Css\Syntax\Tokenizer\Token;
 
-use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\Tokenizer\TokenType;
 
 final class Dimension extends NumericToken
 {
-    const TYPE = TokenTypes::DIMENSION;
+    const TYPE = TokenType::DIMENSION;
     public string $unit;
 
     public function __construct(string $value, string $unit, int $position)

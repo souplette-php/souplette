@@ -2,11 +2,11 @@
 
 namespace Souplette\Css\Syntax\Tokenizer\Token;
 
-use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\Tokenizer\TokenType;
 
 final class LeftBracket extends SingleCharToken
 {
-    const TYPE = TokenTypes::LBRACK;
+    const TYPE = TokenType::LBRACK;
     public string $value = '[';
     public string $representation = '[';
 }

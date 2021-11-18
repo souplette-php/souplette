@@ -3,6 +3,7 @@
 namespace Souplette\Css\Syntax\TokenStream;
 
 use Souplette\Css\Syntax\Tokenizer\Token;
+use Souplette\Css\Syntax\Tokenizer\TokenType;
 
 interface TokenStreamInterface
 {
@@ -43,60 +44,60 @@ interface TokenStreamInterface
 
     /**
      * @see https://www.w3.org/TR/css-syntax-3/#typedef-any-value
-     * @param int $endTokenType
+     * @param TokenType $endTokenType
      * @return Token[]
      */
-    public function consumeAnyValue(int $endTokenType);
+    public function consumeAnyValue(TokenType $endTokenType): array;
 
     /**
      * Ensures the current token is of the given type, then consumes the next token and return it.
      *
-     * @param int $tokenType
+     * @param TokenType $tokenType
      * @return Token
      */
-    public function eat(int $tokenType): Token;
+    public function eat(TokenType $tokenType): Token;
 
     /**
      * Ensures the current token is one of the given types, then consumes the next token and return it.
      *
-     * @param int ...$tokenTypes
+     * @param TokenType ...$tokenTypes
      * @return Token
      */
-    public function eatOneOf(int ...$tokenTypes): Token;
+    public function eatOneOf(TokenType ...$tokenTypes): Token;
 
     /**
      * Ensures the current token is of the given type and has the given value,
      * then consumes the next token and return it.
      *
-     * @param int $tokenType
+     * @param TokenType $tokenType
      * @param string $value
      * @return Token
      */
-    public function eatValue(int $tokenType, string $value): Token;
+    public function eatValue(TokenType $tokenType, string $value): Token;
 
     /**
      * Ensures the current token is of the given type, then returns the current token.
      *
-     * @param int $tokenType
+     * @param TokenType $tokenType
      * @return Token
      */
-    public function expect(int $tokenType): Token;
+    public function expect(TokenType $tokenType): Token;
 
     /**
      * Ensures the current token is one of the given types, then returns the current token.
      *
-     * @param int ...$tokenTypes
+     * @param TokenType ...$tokenTypes
      * @return Token
      */
-    public function expectOneOf(int ...$tokenTypes): Token;
+    public function expectOneOf(TokenType ...$tokenTypes): Token;
 
     /**
      * Ensures the current token is of the given type and has the given value,
      * then returns the current token.
      *
-     * @param int $tokenType
+     * @param TokenType $tokenType
      * @param string $value
      * @return mixed
      */
-    public function expectValue(int $tokenType, string $value);
+    public function expectValue(TokenType $tokenType, string $value);
 }

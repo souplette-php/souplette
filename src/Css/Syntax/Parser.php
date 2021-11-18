@@ -11,7 +11,7 @@ use Souplette\Css\Syntax\Node\CssSimpleBlock;
 use Souplette\Css\Syntax\Node\CssStylesheet;
 use Souplette\Css\Syntax\Tokenizer\Token;
 use Souplette\Css\Syntax\Tokenizer\Tokenizer;
-use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\Tokenizer\TokenType;
 use Souplette\Css\Syntax\TokenStream\TokenStream;
 
 final class Parser
@@ -52,13 +52,13 @@ final class Parser
         // 1. While the next input token is a <whitespace-token>, consume the next input token.
         $token = $this->tokenStream->skipWhitespace();
         // 2. If the next input token is an <EOF-token>, return a syntax error.
-        if ($token::TYPE === TokenTypes::EOF) {
+        if ($token::TYPE === TokenType::EOF) {
             // TODO: syntax error;
             return null;
         }
         // Otherwise, if the next input token is an <at-keyword-token>,
         // consume an at-rule, and let rule be the return value.
-        if ($token::TYPE === TokenTypes::AT_KEYWORD) {
+        if ($token::TYPE === TokenType::AT_KEYWORD) {
             $rule = $this->consumeAtRule();
         } else {
             // Otherwise, consume a qualified rule and let rule be the return value.
@@ -72,7 +72,7 @@ final class Parser
         // 3. While the next input token is a <whitespace-token>, consume the next input token.
         $token = $this->tokenStream->skipWhitespace();
         // 4. If the next input token is an <EOF-token>, return rule.
-        if ($token::TYPE === TokenTypes::EOF) {
+        if ($token::TYPE === TokenType::EOF) {
             return $rule;
         }
         // Otherwise, return a syntax error.
@@ -86,7 +86,7 @@ final class Parser
         // 1. While the next input token is a <whitespace-token>, consume the next input token.
         $token = $this->tokenStream->skipWhitespace();
         // 2. If the next input token is not an <ident-token>, return a syntax error.
-        if ($token::TYPE !== TokenTypes::IDENT) {
+        if ($token::TYPE !== TokenType::IDENT) {
             // TODO: syntax error
             return null;
         }
@@ -115,7 +115,7 @@ final class Parser
         // 1. While the next input token is a <whitespace-token>, consume the next input token.
         $token = $this->tokenStream->skipWhitespace();
         // 2. If the next input token is an <EOF-token>, return a syntax error.
-        if ($token::TYPE === TokenTypes::EOF) {
+        if ($token::TYPE === TokenType::EOF) {
             // TODO: syntax error;
             return null;
         }
@@ -124,7 +124,7 @@ final class Parser
         // 4. While the next input token is a <whitespace-token>, consume the next input token.
         $token = $this->tokenStream->skipWhitespace();
         // 5. If the next input token is an <EOF-token>, return value. Otherwise, return a syntax error.
-        if ($token::TYPE === TokenTypes::EOF) {
+        if ($token::TYPE === TokenType::EOF) {
             return $value;
         }
         // TODO: syntax error
@@ -139,7 +139,7 @@ final class Parser
         do {
             $list[] = $this->consumeComponentValue();
             $token = $this->tokenStream->current();
-        } while ($token::TYPE !== TokenTypes::EOF);
+        } while ($token::TYPE !== TokenType::EOF);
         // Return the list.
         return $list;
     }
@@ -182,16 +182,16 @@ final class Parser
         while (true) {
             $token = $this->tokenStream->current();
             $tt = $token::TYPE;
-            if ($tt === TokenTypes::WHITESPACE) {
+            if ($tt === TokenType::WHITESPACE) {
                 // Do nothing.
                 $this->tokenStream->consume();
                 continue;
             }
-            if ($tt === TokenTypes::EOF) {
+            if ($tt === TokenType::EOF) {
                 // Return the list of rules.
                 return $rules;
             }
-            if ($tt === TokenTypes::CDO || $tt === TokenTypes::CDC) {
+            if ($tt === TokenType::CDO || $tt === TokenType::CDC) {
                 if ($this->topLevel) {
                     // If the top-level flag is set, do nothing.
                     $this->tokenStream->consume();
@@ -202,7 +202,7 @@ final class Parser
                 if ($rule = $this->consumeQualifiedRule()) {
                     $rules[] = $rule;
                 }
-            } elseif ($tt === TokenTypes::AT_KEYWORD) {
+            } elseif ($tt === TokenType::AT_KEYWORD) {
                 // Reconsume the current input token.
                 // Consume an at-rule, and append the returned value to the list of rules.
                 $rules[] = $this->consumeAtRule();
@@ -232,17 +232,17 @@ final class Parser
         while (true) {
             $token = $this->tokenStream->current();
             $tt = $token::TYPE;
-            if ($tt === TokenTypes::SEMICOLON) {
+            if ($tt === TokenType::SEMICOLON) {
                 // Return the at-rule.
                 $this->tokenStream->consume();
                 return $rule;
             }
-            if ($tt === TokenTypes::EOF) {
+            if ($tt === TokenType::EOF) {
                 // TODO: This is a parse error.
                 // Return the at-rule.
                 return $rule;
             }
-            if ($tt === TokenTypes::LCURLY) {
+            if ($tt === TokenType::LCURLY) {
                 // Consume a simple block and assign it to the at-rule’s block. Return the at-rule.
                 $rule->body = $this->consumeSimpleBlock();
                 return $rule;
@@ -271,12 +271,12 @@ final class Parser
         while (true) {
             $token = $this->tokenStream->current();
             $tt = $token::TYPE;
-            if ($tt === TokenTypes::EOF) {
+            if ($tt === TokenType::EOF) {
                 // TODO: This is a parse error.
                 // Return nothing.
                 return null;
             }
-            if ($tt === TokenTypes::LCURLY) {
+            if ($tt === TokenType::LCURLY) {
                 // Consume a simple block and assign it to the qualified rule’s block.
                 // Return the qualified rule.
                 $rule->body = $this->consumeSimpleBlock();
@@ -309,21 +309,21 @@ final class Parser
         while (true) {
             $token = $this->tokenStream->current();
             $tt = $token::TYPE;
-            if ($tt === TokenTypes::WHITESPACE || $tt === TokenTypes::SEMICOLON) {
+            if ($tt === TokenType::WHITESPACE || $tt === TokenType::SEMICOLON) {
                 // Do nothing.
                 $this->tokenStream->consume();
                 continue;
             }
-            if ($tt === TokenTypes::EOF) {
+            if ($tt === TokenType::EOF) {
                 // Return the list of declarations.
                 return $declarations;
             }
-            if ($tt === TokenTypes::AT_KEYWORD) {
+            if ($tt === TokenType::AT_KEYWORD) {
                 // Reconsume the current input token.
                 // Consume an at-rule.
                 // Append the returned rule to the list of declarations.
                 $declarations[] = $this->consumeAtRule();
-            } elseif ($tt === TokenTypes::IDENT) {
+            } elseif ($tt === TokenType::IDENT) {
                 // Initialize a temporary list initially filled with the current input token.
                 // As long as the next input token is anything other than a <semicolon-token> or <EOF-token>,
                 // consume a component value and append it to the temporary list.
@@ -335,7 +335,7 @@ final class Parser
                 // As long as the next input token is anything other than a <semicolon-token> or <EOF-token>,
                 // consume a component value and throw away the returned value.
                 while (true) {
-                    if ($tt === TokenTypes::SEMICOLON || $tt === TokenTypes::EOF) {
+                    if ($tt === TokenType::SEMICOLON || $tt === TokenType::EOF) {
                         $this->tokenStream->consume();
                         break;
                     }
@@ -360,7 +360,7 @@ final class Parser
         $token = $this->tokenStream->skipWhitespace();
         // 2. If the next input token is anything other than a <colon-token>, this is a parse error. Return nothing.
         //    Otherwise, consume the next input token.
-        if ($token::TYPE !== TokenTypes::COLON) {
+        if ($token::TYPE !== TokenType::COLON) {
             // TODO: parse error
             return null;
         }
@@ -368,7 +368,7 @@ final class Parser
         $token = $this->tokenStream->skipWhitespace();
         // 4. As long as the next input token is anything other than an <EOF-token>,
         //    consume a component value and append it to the declaration’s value.
-        while ($token::TYPE !== TokenTypes::EOF) {
+        while ($token::TYPE !== TokenType::EOF) {
             $value = $this->consumeComponentValue();
             $declaration->body[] = $value;
         }
@@ -391,11 +391,11 @@ final class Parser
         $token = $this->tokenStream->current();
         $tt = $token::TYPE;
         // If the current input token is a <{-token>, <[-token>, or <(-token>, consume a simple block and return it.
-        if ($tt === TokenTypes::LCURLY || $tt === TokenTypes::LBRACK || $tt === TokenTypes::LPAREN) {
+        if ($tt === TokenType::LCURLY || $tt === TokenType::LBRACK || $tt === TokenType::LPAREN) {
             return $this->consumeSimpleBlock();
         }
         // Otherwise, if the current input token is a <function-token>, consume a function and return it.
-        if ($tt === TokenTypes::FUNCTION) {
+        if ($tt === TokenType::FUNCTION) {
             return $this->consumeFunction();
         }
         // Otherwise, return the current input token.
@@ -413,14 +413,14 @@ final class Parser
         // This algorithm assumes that the current input token has already been checked to be an {, [, or ( token.
         $token = $this->tokenStream->current();
         switch ($token::TYPE) {
-            case TokenTypes::LCURLY:
-                $endToken = TokenTypes::RCURLY;
+            case TokenType::LCURLY:
+                $endToken = TokenType::RCURLY;
                 break;
-            case TokenTypes::LPAREN:
-                $endToken = TokenTypes::RPAREN;
+            case TokenType::LPAREN:
+                $endToken = TokenType::RPAREN;
                 break;
-            case TokenTypes::LBRACK:
-                $endToken = TokenTypes::RBRACK;
+            case TokenType::LBRACK:
+                $endToken = TokenType::RBRACK;
                 break;
             default:
                 break;
@@ -436,7 +436,7 @@ final class Parser
                 $this->tokenStream->consume();
                 return $block;
             }
-            if ($token::TYPE === TokenTypes::EOF) {
+            if ($token::TYPE === TokenType::EOF) {
                 // TODO: parse error
                 return $block;
             }
@@ -462,11 +462,11 @@ final class Parser
         $this->tokenStream->consume();
         while (true) {
             $token = $this->tokenStream->current();
-            if ($token::TYPE === TokenTypes::RPAREN) {
+            if ($token::TYPE === TokenType::RPAREN) {
                 $this->tokenStream->consume();
                 return $fn;
             }
-            if ($token::TYPE === TokenTypes::EOF) {
+            if ($token::TYPE === TokenType::EOF) {
                 // TODO: parse error
                 return $fn;
             }

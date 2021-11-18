@@ -2,9 +2,9 @@
 
 namespace Souplette\Css\Syntax\Tokenizer\Token;
 
-use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\Tokenizer\TokenType;
 
 final class Identifier extends CharacterToken
 {
-    const TYPE = TokenTypes::IDENT;
+    const TYPE = TokenType::IDENT;
 }

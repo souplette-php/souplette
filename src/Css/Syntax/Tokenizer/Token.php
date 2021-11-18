@@ -6,8 +6,7 @@ use Souplette\Css\Syntax\SyntaxNode;
 
 abstract class Token extends SyntaxNode
 {
-    const TYPE = -1;
-    public int $type;
+    const TYPE = TokenType::INVALID;
     public int $position;
     /**
      * @see https://www.w3.org/TR/css-syntax-3/#representation

@@ -9,7 +9,7 @@ use Souplette\Css\Syntax\Tokenizer\Token\Delimiter;
 use Souplette\Css\Syntax\Tokenizer\Token\Dimension;
 use Souplette\Css\Syntax\Tokenizer\Token\Identifier;
 use Souplette\Css\Syntax\Tokenizer\Token\Number;
-use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\Tokenizer\TokenType;
 use Souplette\Css\Syntax\TokenStream\TokenStreamInterface;
 
 /**
@@ -23,7 +23,7 @@ final class AnPlusBParser
      */
     private array $endTokenTypes;
 
-    public function __construct(TokenStreamInterface $tokenStream, array $endTokenTypes = [TokenTypes::EOF])
+    public function __construct(TokenStreamInterface $tokenStream, array $endTokenTypes = [TokenType::EOF])
     {
         $this->tokenStream = $tokenStream;
         $this->endTokenTypes = $endTokenTypes;
@@ -33,16 +33,16 @@ final class AnPlusBParser
     {
         $token = $this->tokenStream->skipWhitespace();
         $tt = $token::TYPE;
-        if ($tt === TokenTypes::IDENT) {
+        if ($tt === TokenType::IDENT) {
             $expr = $this->handleIdentifier($token);
-        } elseif ($tt === TokenTypes::DIMENSION) {
+        } elseif ($tt === TokenType::DIMENSION) {
             $expr = $this->handleDimension($token);
-        } elseif ($tt === TokenTypes::NUMBER) {
+        } elseif ($tt === TokenType::NUMBER) {
             $expr = $this->handleNumber($token);
-        } elseif ($tt === TokenTypes::DELIM) {
+        } elseif ($tt === TokenType::DELIM) {
             $expr = $this->handleDelimiter($token);
         } else {
-            throw UnexpectedToken::expectingOneOf($token, TokenTypes::NUMBER, TokenTypes::IDENT, TokenTypes::DIMENSION);
+            throw UnexpectedToken::expectingOneOf($token, TokenType::NUMBER, TokenType::IDENT, TokenType::DIMENSION);
         }
 
         $this->tokenStream->consumeAndSkipWhitespace();
@@ -76,7 +76,7 @@ final class AnPlusBParser
                 if ($this->isSignlessInteger($token)) {
                     return new AnPlusB(1, $token->value * $sign);
                 }
-                throw UnexpectedToken::expecting($token, TokenTypes::NUMBER);
+                throw UnexpectedToken::expecting($token, TokenType::NUMBER);
             }
             // '+'?† n -> { a: 1, b: 0 }
             return new AnPlusB(1, 0);
@@ -87,7 +87,7 @@ final class AnPlusBParser
             if ($this->isSignlessInteger($token)) {
                 return new AnPlusB(1, $token->value * -1);
             }
-            throw UnexpectedToken::expecting($token, TokenTypes::NUMBER);
+            throw UnexpectedToken::expecting($token, TokenType::NUMBER);
         }
         // '+'?† <ndashdigit-ident> -> { a: 1, b: <identifier.value>}
         // with the first code point removed and the remainder interpreted as a base-10 number.
@@ -110,7 +110,7 @@ final class AnPlusBParser
                 if ($this->isSignlessInteger($token)) {
                     return new AnPlusB(-1, $token->value * $sign);
                 }
-                throw UnexpectedToken::expecting($token, TokenTypes::NUMBER);
+                throw UnexpectedToken::expecting($token, TokenType::NUMBER);
             }
             // -n -> { a: -1: b: 0 }
             return new AnPlusB(-1, 0);
@@ -121,7 +121,7 @@ final class AnPlusBParser
             if ($this->isSignlessInteger($token)) {
                 return new AnPlusB(-1, $token->value * -1);
             }
-            throw UnexpectedToken::expecting($token, TokenTypes::NUMBER);
+            throw UnexpectedToken::expecting($token, TokenType::NUMBER);
         }
         // <dashndashdigit-ident> -> { a: 1, b: identifier.value }
         // with the first two code points removed and the remainder interpreted as a base-10 number.
@@ -148,7 +148,7 @@ final class AnPlusBParser
                 if ($this->isSignlessInteger($nextToken)) {
                     return new AnPlusB($token->value, $nextToken->value * $sign);
                 }
-                throw UnexpectedToken::expecting($token, TokenTypes::DELIM);
+                throw UnexpectedToken::expecting($token, TokenType::DELIM);
             }
             // <n-dimension> -> { a: dimension.value, b: 0 }
             return new AnPlusB($token->value, 0);
@@ -159,7 +159,7 @@ final class AnPlusBParser
             if ($this->isSignlessInteger($nextToken)) {
                 return new AnPlusB($token->value, $nextToken->value * -1);
             }
-            throw UnexpectedToken::expecting($nextToken, TokenTypes::NUMBER);
+            throw UnexpectedToken::expecting($nextToken, TokenType::NUMBER);
         }
         // <ndashdigit-dimension> -> { a: dimension.value, b: dimension.unit }
         // with the first code point removed and the remainder interpreted as a base-10 number.
@@ -189,13 +189,13 @@ final class AnPlusBParser
             throw UnexpectedValue::expecting($token->value, 'a "+" delimiter.');
         }
         $token = $this->tokenStream->consume();
-        $this->tokenStream->expect(TokenTypes::IDENT);
+        $this->tokenStream->expect(TokenType::IDENT);
         return $this->handleIdentifier($token);
     }
 
     private function isSignedInteger($token)
     {
-        if ($token::TYPE === TokenTypes::NUMBER && $token->isInteger) {
+        if ($token::TYPE === TokenType::NUMBER && $token->isInteger) {
             return $token->representation[0] === '+' || $token->representation[0] === '-';
         }
         return false;
@@ -203,7 +203,7 @@ final class AnPlusBParser
 
     private function isSignlessInteger($token)
     {
-        if ($token::TYPE === TokenTypes::NUMBER && $token->isInteger) {
+        if ($token::TYPE === TokenType::NUMBER && $token->isInteger) {
             return ctype_digit($token->representation[0]);
         }
         return false;
@@ -211,6 +211,6 @@ final class AnPlusBParser
 
     private function isSign($token)
     {
-        return $token::TYPE === TokenTypes::DELIM && ($token->value === '+' || $token->value === '-');
+        return $token::TYPE === TokenType::DELIM && ($token->value === '+' || $token->value === '-');
     }
 }

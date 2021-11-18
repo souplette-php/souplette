@@ -2,7 +2,7 @@
 
 namespace Souplette\Css\Selectors\Xpath\Translator;
 
-use Souplette\Css\Selectors\Node\Combinators;
+use Souplette\Css\Selectors\Node\Combinator;
 use Souplette\Css\Selectors\Node\ComplexSelector;
 use Souplette\Css\Selectors\Xpath\Exception\UnsupportedCombinator;
 use Souplette\Css\Selectors\Xpath\TranslationContext;
@@ -20,15 +20,15 @@ final class ComplexSelectorTranslator
         // Therefore the current context expression is guaranteed to be correct.
         $context->visit($selector->rhs);
         switch ($selector->combinator) {
-            case Combinators::CHILD:
+            case Combinator::CHILD:
                 break;
-            case Combinators::DESCENDANT:
+            case Combinator::DESCENDANT:
                 $context->expr->axis('descendant-or-self::*/');
                 break;
-            case Combinators::NEXT_SIBLING:
+            case Combinator::NEXT_SIBLING:
                 $context->expr->axis('following-sibling::')->predicate('position() = 1');
                 break;
-            case Combinators::SUBSEQUENT_SIBLING:
+            case Combinator::SUBSEQUENT_SIBLING:
                 $context->expr->axis('following-sibling::');
                 break;
             default:

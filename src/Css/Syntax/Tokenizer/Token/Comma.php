@@ -2,11 +2,11 @@
 
 namespace Souplette\Css\Syntax\Tokenizer\Token;
 
-use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\Tokenizer\TokenType;
 
 final class Comma extends SingleCharToken
 {
-    const TYPE = TokenTypes::COMMA;
+    const TYPE = TokenType::COMMA;
     public string $value = ',';
     public string $representation = ',';
 }

@@ -2,11 +2,11 @@
 
 namespace Souplette\Css\Syntax\Tokenizer\Token;
 
-use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\Tokenizer\TokenType;
 
 final class Colon extends SingleCharToken
 {
-    const TYPE = TokenTypes::COLON;
+    const TYPE = TokenType::COLON;
     public string $value = ':';
     public string $representation = ':';
 }

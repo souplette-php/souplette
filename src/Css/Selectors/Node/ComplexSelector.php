@@ -8,7 +8,7 @@ final class ComplexSelector extends Selector
 {
     public function __construct(
         public Selector $lhs,
-        public ?string $combinator = null,
+        public ?Combinator $combinator = null,
         public ?Selector $rhs = null
     ) {
     }
@@ -21,7 +21,10 @@ final class ComplexSelector extends Selector
 
     public function __toString(): string
     {
-        $combinator = $this->combinator === Combinators::DESCENDANT ? ' ' : " {$this->combinator} ";
+        $combinator = match ($this->combinator) {
+            Combinator::DESCENDANT => ' ',
+            default => " {$this->combinator->value} ",
+        };
         return "{$this->lhs}{$combinator}{$this->rhs}";
     }
 

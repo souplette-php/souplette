@@ -3,11 +3,11 @@
 namespace Souplette\Css\Syntax\Tokenizer\Token;
 
 use Souplette\Css\Syntax\Tokenizer\Token;
-use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\Tokenizer\TokenType;
 
 final class Delimiter extends Token
 {
-    const TYPE = TokenTypes::DELIM;
+    const TYPE = TokenType::DELIM;
     public string $value;
 
     public function __construct(string $value, int $position)

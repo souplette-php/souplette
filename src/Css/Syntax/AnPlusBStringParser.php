@@ -4,7 +4,7 @@ namespace Souplette\Css\Syntax;
 
 use Souplette\Css\Syntax\Exception\ParseError;
 use Souplette\Css\Syntax\Node\AnPlusB;
-use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\Tokenizer\TokenType;
 use Souplette\Css\Syntax\TokenStream\TokenStreamInterface;
 
 final class AnPlusBStringParser
@@ -28,7 +28,7 @@ final class AnPlusBStringParser
     /xi
     REGEXP;
 
-    public function __construct(TokenStreamInterface $tokenStream, array $endTokenTypes = [TokenTypes::EOF])
+    public function __construct(TokenStreamInterface $tokenStream, array $endTokenTypes = [TokenType::EOF])
     {
         $this->tokenStream = $tokenStream;
         $this->endTokenTypes = $endTokenTypes;

@@ -3,6 +3,7 @@
 namespace Souplette\Tests\Css\Selectors\Parser;
 
 use PHPUnit\Framework\Assert;
+use Souplette\Css\Selectors\Node\Combinator;
 use Souplette\Css\Selectors\Node\ComplexSelector;
 use Souplette\Css\Selectors\Node\CompoundSelector;
 use Souplette\Css\Selectors\Node\SelectorList;
@@ -25,10 +26,10 @@ final class ComplexSelectorParsingTest extends SelectorParserTestCase
 
     public function parseSelectorListWithComplexSelectorsProvider(): \Generator
     {
-        foreach (['>', ' ', '+', '~', '||'] as $combinator) {
+        foreach (Combinator::cases() as $combinator) {
             $inputs = [
-                sprintf('foo%sbar', $combinator),
-                sprintf('foo %s bar', $combinator),
+                sprintf('foo%sbar', $combinator->value),
+                sprintf('foo %s bar', $combinator->value),
             ];
             foreach ($inputs as $input) {
                 yield $input => [$input, new ComplexSelector(

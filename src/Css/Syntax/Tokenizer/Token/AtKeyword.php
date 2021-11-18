@@ -2,11 +2,11 @@
 
 namespace Souplette\Css\Syntax\Tokenizer\Token;
 
-use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\Tokenizer\TokenType;
 
 final class AtKeyword extends CharacterToken
 {
-    const TYPE = TokenTypes::AT_KEYWORD;
+    const TYPE = TokenType::AT_KEYWORD;
 
     public function __construct(string $value, int $position)
     {

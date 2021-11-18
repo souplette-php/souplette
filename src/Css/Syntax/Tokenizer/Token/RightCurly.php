@@ -2,11 +2,11 @@
 
 namespace Souplette\Css\Syntax\Tokenizer\Token;
 
-use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\Tokenizer\TokenType;
 
 final class RightCurly extends SingleCharToken
 {
-    const TYPE = TokenTypes::RCURLY;
+    const TYPE = TokenType::RCURLY;
     public string $value = '}';
     public string $representation = '}';
 }

@@ -2,7 +2,7 @@
 
 namespace Souplette\Css\Selectors\Query;
 
-use Souplette\Css\Selectors\Node\Combinators;
+use Souplette\Css\Selectors\Node\Combinator;
 use Souplette\Css\Selectors\Node\ComplexSelector;
 use Souplette\Css\Selectors\Node\CompoundSelector;
 use Souplette\Css\Selectors\Node\Functional\Has;
@@ -216,7 +216,7 @@ final class Compiler
     {
         // 1. If the selector starts with a combinator other than the white space form of the descendant combinator,
         // prepend :scope as the initial compound selector.
-        if ($selector->combinator !== Combinators::DESCENDANT) {
+        if ($selector->combinator !== Combinator::DESCENDANT) {
             return $this->compileComplexSelector(
                 new ComplexSelector(
                     new PseudoClassSelector('scope'),
@@ -232,7 +232,7 @@ final class Compiler
             return $this->compileComplexSelector(
                 new ComplexSelector(
                     new PseudoClassSelector('scope'),
-                    Combinators::DESCENDANT,
+                    Combinator::DESCENDANT,
                     $selector->selector,
                 )
             );

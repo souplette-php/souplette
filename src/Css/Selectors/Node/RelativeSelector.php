@@ -7,7 +7,7 @@ use Souplette\Css\Selectors\Specificity;
 final class RelativeSelector extends Selector
 {
     public function __construct(
-        public string $combinator,
+        public Combinator $combinator,
         public ComplexSelector $selector,
     ) {
     }
@@ -20,8 +20,8 @@ final class RelativeSelector extends Selector
     public function __toString(): string
     {
         return match ($this->combinator) {
-            Combinators::DESCENDANT => " {$this->selector}",
-            default => "{$this->combinator} {$this->selector}",
+            Combinator::DESCENDANT => " {$this->selector}",
+            default => "{$this->combinator->value} {$this->selector}",
         };
     }
 

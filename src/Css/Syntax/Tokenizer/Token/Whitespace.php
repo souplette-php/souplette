@@ -3,11 +3,11 @@
 namespace Souplette\Css\Syntax\Tokenizer\Token;
 
 use Souplette\Css\Syntax\Tokenizer\Token;
-use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\Tokenizer\TokenType;
 
 final class Whitespace extends Token
 {
-    const TYPE = TokenTypes::WHITESPACE;
+    const TYPE = TokenType::WHITESPACE;
     public string $representation = ' ';
 
     public function __construct(int $position)

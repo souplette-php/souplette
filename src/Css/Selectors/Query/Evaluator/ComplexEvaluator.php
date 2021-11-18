@@ -2,7 +2,7 @@
 
 namespace Souplette\Css\Selectors\Query\Evaluator;
 
-use Souplette\Css\Selectors\Node\Combinators;
+use Souplette\Css\Selectors\Node\Combinator;
 use Souplette\Css\Selectors\Query\EvaluatorInterface;
 use Souplette\Css\Selectors\Query\Exception\UnsupportedCombinator;
 use Souplette\Css\Selectors\Query\QueryContext;
@@ -26,22 +26,22 @@ final class ComplexEvaluator implements EvaluatorInterface
         }
 
         switch ($this->combinator) {
-            case Combinators::CHILD:
+            case Combinator::CHILD:
                 $parent = $element->parentNode;
                 if (!$parent) return false;
                 return $this->lhs->matches($context, $parent);
-            case Combinators::DESCENDANT:
+            case Combinator::DESCENDANT:
                 $parent = $element->parentNode;
                 while ($parent) {
                     if ($this->lhs->matches($context, $parent)) return true;
                     $parent = $parent->parentNode;
                 }
                 return false;
-            case Combinators::NEXT_SIBLING:
+            case Combinator::NEXT_SIBLING:
                 $previous = $element->previousElementSibling;
                 if (!$previous) return false;
                 return $this->lhs->matches($context, $previous);
-            case Combinators::SUBSEQUENT_SIBLING:
+            case Combinator::SUBSEQUENT_SIBLING:
                 $previous = $element->previousElementSibling;
                 while ($previous) {
                     if ($this->lhs->matches($context, $previous)) return true;

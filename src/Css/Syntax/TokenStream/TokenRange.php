@@ -3,7 +3,7 @@
 namespace Souplette\Css\Syntax\TokenStream;
 
 use Souplette\Css\Syntax\Tokenizer\Token;
-use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\Tokenizer\TokenType;
 
 final class TokenRange extends AbstractTokenStream
 {
@@ -16,7 +16,7 @@ final class TokenRange extends AbstractTokenStream
 
     public function __construct(array $tokens)
     {
-        if (end($tokens)::TYPE !== TokenTypes::EOF) {
+        if (end($tokens)::TYPE !== TokenType::EOF) {
             $tokens[] = new Token\EOF(-1);
         }
         $this->tokens = $tokens;

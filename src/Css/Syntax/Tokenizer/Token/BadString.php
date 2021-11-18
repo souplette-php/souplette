@@ -2,9 +2,9 @@
 
 namespace Souplette\Css\Syntax\Tokenizer\Token;
 
-use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\Tokenizer\TokenType;
 
 final class BadString extends CharacterToken
 {
-    const TYPE = TokenTypes::BAD_STRING;
+    const TYPE = TokenType::BAD_STRING;
 }

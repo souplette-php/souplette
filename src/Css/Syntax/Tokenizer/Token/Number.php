@@ -2,9 +2,9 @@
 
 namespace Souplette\Css\Syntax\Tokenizer\Token;
 
-use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\Tokenizer\TokenType;
 
 final class Number extends NumericToken
 {
-    const TYPE = TokenTypes::NUMBER;
+    const TYPE = TokenType::NUMBER;
 }

@@ -3,11 +3,11 @@
 namespace Souplette\Css\Syntax\Tokenizer\Token;
 
 use Souplette\Css\Syntax\Tokenizer\Token;
-use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\Tokenizer\TokenType;
 
 final class CDC extends Token
 {
-    const TYPE = TokenTypes::CDC;
+    const TYPE = TokenType::CDC;
     public string $representation = '-->';
 
     public function __construct(int $pos)

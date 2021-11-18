@@ -4,16 +4,21 @@ namespace Souplette\Css\Syntax\Tokenizer;
 
 final class BalancedPairs
 {
-    const START_TOKENS = [
-        TokenTypes::LCURLY => TokenTypes::RCURLY,
-        TokenTypes::LBRACK => TokenTypes::RBRACK,
-        TokenTypes::LPAREN => TokenTypes::RPAREN,
-        TokenTypes::FUNCTION => TokenTypes::RPAREN,
-        TokenTypes::URL => TokenTypes::RPAREN,
-    ];
-    const END_TOKENS = [
-        TokenTypes::RCURLY => true,
-        TokenTypes::RBRACK => true,
-        TokenTypes::RPAREN => true,
-    ];
+    public static function getEndTokenType(TokenType $tt): ?TokenType
+    {
+        return match ($tt) {
+            TokenType::LCURLY => TokenType::RCURLY,
+            TokenType::LBRACK => TokenType::RBRACK,
+            TokenType::LPAREN, TokenType::URL, TokenType::FUNCTION => TokenType::RPAREN,
+            default => null,
+        };
+    }
+
+    public static function isEndToken(TokenType $tt): bool
+    {
+        return match($tt) {
+            TokenType::RCURLY, TokenType::RBRACK, TokenType::RPAREN => true,
+            default => false,
+        };
+    }
 }

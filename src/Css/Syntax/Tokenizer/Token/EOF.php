@@ -3,11 +3,11 @@
 namespace Souplette\Css\Syntax\Tokenizer\Token;
 
 use Souplette\Css\Syntax\Tokenizer\Token;
-use Souplette\Css\Syntax\Tokenizer\TokenTypes;
+use Souplette\Css\Syntax\Tokenizer\TokenType;
 
 final class EOF extends Token
 {
-    const TYPE = TokenTypes::EOF;
+    const TYPE = TokenType::EOF;
 
     public function __construct(int $position)
     {
