@@ -2,6 +2,7 @@
 
 namespace Souplette\Css\Selectors\Query\Evaluator\Simple;
 
+use Souplette\Css\Selectors\Namespaces;
 use Souplette\Css\Selectors\Node\Simple\AttributeSelector;
 use Souplette\Css\Selectors\Query\EvaluatorInterface;
 use Souplette\Css\Selectors\Query\Helper\AttributeMatchHelper;
@@ -21,19 +22,27 @@ final class AttributeEvaluator implements EvaluatorInterface
     public function matches(QueryContext $context, \DOMElement $element): bool
     {
         $attr = $this->attribute;
-        $op = $this->operator;
-        if (!$op) {
-            return $element->hasAttribute($attr);
-        }
+        $hasAttribute = match ($this->namespace) {
+            Namespaces::NONE, Namespaces::DEFAULT => $element->hasAttributeNS(null, $attr),
+            Namespaces::ANY => $element->hasAttribute($attr) || self::hasAttributeInAnyNamespace($element, $attr),
+            default => $element->hasAttributeNS($this->namespace, $attr),
+        };
+
+        if (!$this->operator) return $hasAttribute;
+        if (!$hasAttribute || !$this->value) return false;
 
         $expected = $this->value;
-        $actual = $element->getAttribute($attr);
+        $actual = match ($this->namespace) {
+            Namespaces::NONE, Namespaces::DEFAULT => $element->getAttributeNS(null, $attr),
+            Namespaces::ANY => self::getAttributeInAnyNamespace($element, $attr),
+            default => $element->getAttributeNS($this->namespace, $attr),
+        };
         $caseInsensitive = match ($this->forceCase) {
             AttributeSelector::CASE_FORCE_INSENSITIVE => true,
             AttributeSelector::CASE_FORCE_SENSITIVE, null => false,
         };
 
-        return match ($op) {
+        return match ($this->operator) {
             AttributeSelector::OPERATOR_EQUALS
                 => AttributeMatchHelper::equals($expected, $actual, $caseInsensitive),
             AttributeSelector::OPERATOR_DASH_MATCH
@@ -47,5 +56,21 @@ final class AttributeEvaluator implements EvaluatorInterface
             AttributeSelector::OPERATOR_SUBSTRING_MATCH
                 => AttributeMatchHelper::substring($expected, $actual, $caseInsensitive),
         };
+    }
+
+    private static function hasAttributeInAnyNamespace(\DOMElement $element, string $localName): bool
+    {
+        foreach ($element->attributes as $attribute) {
+            if ($attribute->localName === $localName) return true;
+        }
+        return false;
+    }
+
+    private static function getAttributeInAnyNamespace(\DOMElement $element, string $localName): ?string
+    {
+        foreach ($element->attributes as $attribute) {
+            if ($attribute->localName === $localName) return $attribute->value;
+        }
+        return null;
     }
 }

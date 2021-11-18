@@ -10,8 +10,9 @@ use Souplette\Html\Dom\Node\HtmlDocument;
 
 final class QueryContext
 {
-    public static function of(DOMElement|DOMDocument|DOMDocumentFragment $scopingRoot): self
-    {
+    public static function of(
+        DOMElement|DOMDocument|DOMDocumentFragment $scopingRoot,
+    ): self {
         $document = DomIdioms::getOwnerDocument($scopingRoot);
         if ($document === null) {
             throw new \RuntimeException('HierarchyRequestError');

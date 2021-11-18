@@ -189,13 +189,16 @@ final class Compiler
         }
     }
 
-    private function compileComplexSelector(ComplexSelector $selector): ComplexEvaluator
+    private function compileComplexSelector(ComplexSelector $selector): EvaluatorInterface
     {
-        return new ComplexEvaluator(
-            $this->doCompile($selector->lhs),
-            $selector->combinator,
-            $this->doCompile($selector->rhs),
-        );
+        return match ($selector->combinator) {
+            null => $this->doCompile($selector->lhs),
+            default => new ComplexEvaluator(
+                $this->doCompile($selector->lhs),
+                $selector->combinator,
+                $this->doCompile($selector->rhs),
+            ),
+        };
     }
 
     private function compilePseudoClass(PseudoClassSelector $selector): EvaluatorInterface

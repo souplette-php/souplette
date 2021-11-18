@@ -3,6 +3,7 @@
 namespace Souplette\Css\Selectors\Node\Simple;
 
 use JetBrains\PhpStorm\Pure;
+use Souplette\Css\Selectors\Namespaces;
 use Souplette\Css\Selectors\Node\SimpleSelector;
 use Souplette\Css\Selectors\Specificity;
 
@@ -72,7 +73,10 @@ final class AttributeSelector extends SimpleSelector
 
     public function __toString(): string
     {
-        $qname = $this->namespace ? "{$this->namespace}|{$this->attribute}" : $this->attribute;
+        $qname = match ($this->namespace) {
+            Namespaces::NONE, Namespaces::DEFAULT => $this->attribute,
+            default => "{$this->namespace}|{$this->attribute}",
+        };
         if (!$this->operator) {
             return "[{$qname}]";
         }

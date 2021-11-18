@@ -66,7 +66,7 @@ final class SelectorParser
         private TokenStreamInterface $tokenStream,
         private array $namespaces = [],
     ) {
-        $this->defaultNamespace = $namespaces[''] ?? '*';
+        $this->defaultNamespace = $namespaces[Namespaces::DEFAULT] ?? Namespaces::ANY;
     }
 
     public function parseSelectorList(): SelectorList
@@ -195,7 +195,7 @@ final class SelectorParser
                 || ($allowStar && $token::TYPE === TokenType::DELIM && $token->value === '*')
             ) {
                 $this->tokenStream->consume();
-                return [null, $token->value];
+                return [Namespaces::NONE, $token->value];
             }
             throw UnexpectedToken::expectingOneOf($token, TokenType::IDENT, TokenType::DELIM);
         }

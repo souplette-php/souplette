@@ -14,7 +14,7 @@ final class ComplexEvaluator implements EvaluatorInterface
 {
     public function __construct(
         public EvaluatorInterface $lhs,
-        public string $combinator,
+        public Combinator $combinator,
         public EvaluatorInterface $rhs,
     ) {
     }

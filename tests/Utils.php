@@ -31,13 +31,25 @@ final class Utils
         $path = '';
         $node = $element;
         while ($node && $node->nodeType === XML_ELEMENT_NODE) {
-            $name = $node->localName;
-            $index = 0;
+            $name = $node->tagName;
+            $index = 1;
+            $showIndex = false;
             $sibling = $node;
             while ($sibling = $sibling->previousElementSibling) {
-                $index++;
+                if ($sibling->tagName === $name) $index++;
             }
-            $path = "/{$name}[{$index}]" . $path;
+            if ($index === 1) {
+                $sibling = $node;
+                while ($sibling = $sibling->nextElementSibling) {
+                    if ($sibling->tagName === $name) {
+                        $showIndex = true;
+                        break;
+                    }
+                }
+            } else {
+                $showIndex = true;
+            }
+            $path = $showIndex ? "/{$name}[{$index}]{$path}" : "/{$name}{$path}";
             $node = $node->parentNode;
         }
         return $path;

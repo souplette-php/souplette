@@ -7,15 +7,13 @@ use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\SelectorQuery;
 use Souplette\Tests\Utils;
 
-final class SelectorQueryTestCase extends TestCase
+class SelectorQueryTestCase extends TestCase
 {
     protected static function assertMatches(
         \DOMDocument $doc,
         string $selectorText,
         array $matchingPaths,
-        ?\DOMElement $root = null,
     ) {
-        if (!$root) $root = $doc;
         foreach (self::elements($doc) as $element) {
             $path = Utils::elementPath($element);
             $mustMatch = in_array($path, $matchingPaths);
@@ -62,7 +60,17 @@ final class SelectorQueryTestCase extends TestCase
         Assert::assertSame($expectedPath, $result ? Utils::elementPath($result) : null);
     }
 
-    private static function elements(\DOMDocument $doc)
+    protected static function loadXml(string $xml): \DOMDocument
+    {
+        $doc = new \DOMDocument();
+        $doc->loadXML($xml);
+        return $doc;
+    }
+
+    /**
+     * @return iterable<\DOMElement>
+     */
+    private static function elements(\DOMDocument $doc): iterable
     {
         $xpath = new \DOMXPath($doc);
         yield from $xpath->query('//*');
