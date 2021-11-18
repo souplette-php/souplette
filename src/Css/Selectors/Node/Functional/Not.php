@@ -13,7 +13,7 @@ final class Not extends FunctionalSelector
         parent::__construct('not', [$this->selectorList]);
     }
 
-    public function simpleSelectors(): \Generator
+    public function simpleSelectors(): iterable
     {
         yield $this;
         yield from $this->selectorList;

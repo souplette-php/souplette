@@ -16,7 +16,7 @@ final class SelectorList extends Selector implements \IteratorAggregate, \Counta
         $this->selectors = $selectors;
     }
 
-    public function simpleSelectors(): \Generator
+    public function simpleSelectors(): iterable
     {
         yield from $this->selectors;
     }

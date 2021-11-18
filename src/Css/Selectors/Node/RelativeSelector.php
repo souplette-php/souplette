@@ -12,7 +12,7 @@ final class RelativeSelector extends Selector
     ) {
     }
 
-    public function simpleSelectors(): \Generator
+    public function simpleSelectors(): iterable
     {
         yield from $this->selector;
     }

@@ -13,7 +13,7 @@ final class Is extends FunctionalSelector
         parent::__construct('is', [$this->selectorList]);
     }
 
-    public function simpleSelectors(): \Generator
+    public function simpleSelectors(): iterable
     {
         yield $this;
         yield from $this->selectorList;

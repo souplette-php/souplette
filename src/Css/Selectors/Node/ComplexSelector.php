@@ -13,7 +13,7 @@ final class ComplexSelector extends Selector
     ) {
     }
 
-    public function simpleSelectors(): \Generator
+    public function simpleSelectors(): iterable
     {
         yield from $this->lhs;
         yield from $this->rhs;
