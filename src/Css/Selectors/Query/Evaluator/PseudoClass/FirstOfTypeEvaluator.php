@@ -14,12 +14,10 @@ final class FirstOfTypeEvaluator implements EvaluatorInterface
     public function matches(QueryContext $context, \DOMElement $element): bool
     {
         $type = $element->localName;
-        $previous = $element->previousElementSibling;
-        while ($previous) {
+        while ($previous = $element->previousElementSibling) {
             if (TypeMatchHelper::isOfType($previous, $type, $context->caseInsensitiveTypes)) {
                 return false;
             }
-            $previous = $previous->previousElementSibling;
         }
         return true;
     }

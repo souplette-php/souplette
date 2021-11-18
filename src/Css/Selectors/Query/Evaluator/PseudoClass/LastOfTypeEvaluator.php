@@ -14,12 +14,10 @@ final class LastOfTypeEvaluator implements EvaluatorInterface
     public function matches(QueryContext $context, \DOMElement $element): bool
     {
         $type = $element->localName;
-        $next = $element->nextElementSibling;
-        while ($next) {
+        while ($next = $element->nextElementSibling) {
             if (TypeMatchHelper::isOfType($next, $type, $context->caseInsensitiveTypes)) {
                 return false;
             }
-            $next = $next->nextElementSibling;
         }
         return true;
     }

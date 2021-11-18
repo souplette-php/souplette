@@ -27,6 +27,14 @@ abstract class AbstractNthEvaluator implements EvaluatorInterface
 
     private static function indexMatchesAnPlusB(int $index, int $a, int $b): bool
     {
+        // servo implementation:
+        // Is there a non-negative integer n such that An+B=index?
+        //$an = $index - $b;
+        //if ($a === 0) return $an === 0;
+        //$n = intval($an / $a);
+        //return $n >= 0 && $a * $n === $an;
+
+        // chromium implementation:
         if ($a === 0) {
             return $index === $b;
         }
