@@ -3,7 +3,7 @@
 namespace Souplette\Html\Parser\TreeBuilder\RuleSet;
 
 use Souplette\Html\Parser\Tokenizer\Token;
-use Souplette\Html\Parser\Tokenizer\TokenTypes;
+use Souplette\Html\Parser\Tokenizer\TokenType;
 use Souplette\Html\Parser\TreeBuilder\InsertionModes;
 use Souplette\Html\Parser\TreeBuilder\RuleSet;
 use Souplette\Html\Parser\TreeBuilder\TreeBuilder;
@@ -16,7 +16,7 @@ final class InFrameset extends RuleSet
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token::TYPE;
-        if ($type === TokenTypes::CHARACTER) {
+        if ($type === TokenType::CHARACTER) {
             $data = preg_replace('/[^ \n\t\f]+/S', '', $token->data, -1, $count);
             if ($count > 0) {
                 // TODO: Parse error. Ignore the character tokens.
@@ -25,19 +25,19 @@ final class InFrameset extends RuleSet
             }
             // Insert the character.
             $tree->insertCharacter($token);
-        } elseif ($type === TokenTypes::COMMENT) {
+        } elseif ($type === TokenType::COMMENT) {
             // Insert a comment.
             $tree->insertComment($token);
-        } elseif ($type === TokenTypes::DOCTYPE) {
+        } elseif ($type === TokenType::DOCTYPE) {
             // TODO: Parse error. Ignore the token.
             return;
-        } elseif ($type === TokenTypes::START_TAG && $token->name === 'html') {
+        } elseif ($type === TokenType::START_TAG && $token->name === 'html') {
             // Process the token using the rules for the "in body" insertion mode.
             InBody::process($token, $tree);
-        } elseif ($type === TokenTypes::START_TAG && $token->name === 'frameset') {
+        } elseif ($type === TokenType::START_TAG && $token->name === 'frameset') {
             // Insert an HTML element for the token.
             $tree->insertElement($token);
-        } elseif ($type === TokenTypes::END_TAG && $token->name === 'frameset') {
+        } elseif ($type === TokenType::END_TAG && $token->name === 'frameset') {
             // If the current node is the root html element, then this is a parse error; ignore the token. (fragment case)
             if ($tree->openElements->top() === $tree->document->documentElement) {
                 // TODO: Parse error.
@@ -51,16 +51,16 @@ final class InFrameset extends RuleSet
             if (!$tree->isBuildingFragment && $tree->openElements->top()->localName !== 'frameset') {
                 $tree->insertionMode = InsertionModes::AFTER_FRAMESET;
             }
-        } elseif ($type === TokenTypes::START_TAG && $token->name === 'frame') {
+        } elseif ($type === TokenType::START_TAG && $token->name === 'frame') {
             // Insert an HTML element for the token. Immediately pop the current node off the stack of open elements.
             $tree->insertElement($token);
             $tree->openElements->pop();
             // Acknowledge the token's self-closing flag, if it is set.
             $tree->acknowledgeSelfClosingFlag($token);
-        } elseif ($type === TokenTypes::START_TAG && $token->name === 'noframes') {
+        } elseif ($type === TokenType::START_TAG && $token->name === 'noframes') {
             // Process the token using the rules for the "in head" insertion mode.
             InHead::process($token, $tree);
-        } elseif ($type === TokenTypes::EOF) {
+        } elseif ($type === TokenType::EOF) {
             // If the current node is not the root html element, then this is a parse error.
             if ($tree->openElements->top() === $tree->document->documentElement) {
                 // TODO: Parse error.

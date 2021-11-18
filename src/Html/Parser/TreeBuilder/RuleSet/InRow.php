@@ -3,7 +3,7 @@
 namespace Souplette\Html\Parser\TreeBuilder\RuleSet;
 
 use Souplette\Html\Parser\Tokenizer\Token;
-use Souplette\Html\Parser\Tokenizer\TokenTypes;
+use Souplette\Html\Parser\Tokenizer\TokenType;
 use Souplette\Html\Parser\TreeBuilder\InsertionModes;
 use Souplette\Html\Parser\TreeBuilder\RuleSet;
 use Souplette\Html\Parser\TreeBuilder\TreeBuilder;
@@ -16,7 +16,7 @@ final class InRow extends RuleSet
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token::TYPE;
-        if ($type === TokenTypes::START_TAG && ($token->name === 'th' || $token->name === 'td')) {
+        if ($type === TokenType::START_TAG && ($token->name === 'th' || $token->name === 'td')) {
             // Clear the stack back to a table body context.
             self::clearTheStackBackToATableRowContext($tree);
             // Insert an HTML element for the token, then switch the insertion mode to "in cell".
@@ -24,7 +24,7 @@ final class InRow extends RuleSet
             $tree->insertionMode = InsertionModes::IN_CELL;
             // Insert a marker at the end of the list of active formatting elements.
             $tree->activeFormattingElements->push(null);
-        } elseif ($type === TokenTypes::END_TAG && $token->name === 'tr') {
+        } elseif ($type === TokenType::END_TAG && $token->name === 'tr') {
             // If the stack of open elements does not have a tr element in table scope,
             // this is a parse error; ignore the token.
             if (!$tree->openElements->hasTagInScope('tr')) {
@@ -39,7 +39,7 @@ final class InRow extends RuleSet
             // Switch the insertion mode to "in table body".
             $tree->insertionMode = InsertionModes::IN_TABLE_BODY;
         } elseif (
-            ($type === TokenTypes::START_TAG && (
+            ($type === TokenType::START_TAG && (
                 $token->name === 'caption'
                 || $token->name === 'col'
                 || $token->name === 'colgroup'
@@ -48,7 +48,7 @@ final class InRow extends RuleSet
                 || $token->name === 'thead'
                 || $token->name === 'tr'
             )) || (
-                $type === TokenTypes::END_TAG && $token->name === 'table'
+                $type === TokenType::END_TAG && $token->name === 'table'
             )
         ) {
             // If the stack of open elements does not have a tr element in table scope,
@@ -66,7 +66,7 @@ final class InRow extends RuleSet
             $tree->insertionMode = InsertionModes::IN_TABLE_BODY;
             // Reprocess the token.
             $tree->processToken($token);
-        }  elseif ($type === TokenTypes::END_TAG && (
+        }  elseif ($type === TokenType::END_TAG && (
             $token->name === 'tbody'
             || $token->name === 'tfoot'
             || $token->name === 'thead'
@@ -90,7 +90,7 @@ final class InRow extends RuleSet
             $tree->insertionMode = InsertionModes::IN_TABLE_BODY;
             // Reprocess the token.
             $tree->processToken($token);
-        } elseif ($type === TokenTypes::END_TAG && (
+        } elseif ($type === TokenType::END_TAG && (
             $token->name === 'body'
             || $token->name === 'caption'
             || $token->name === 'col'

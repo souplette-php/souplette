@@ -3,7 +3,7 @@
 namespace Souplette\Html\Parser\TreeBuilder\RuleSet;
 
 use Souplette\Html\Parser\Tokenizer\Token;
-use Souplette\Html\Parser\Tokenizer\TokenTypes;
+use Souplette\Html\Parser\Tokenizer\TokenType;
 use Souplette\Html\Parser\TreeBuilder\InsertionLocation;
 use Souplette\Html\Parser\TreeBuilder\InsertionModes;
 use Souplette\Html\Parser\TreeBuilder\RuleSet;
@@ -17,20 +17,20 @@ final class AfterBody extends RuleSet
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token::TYPE;
-        if ($type === TokenTypes::CHARACTER && ctype_space($token->data)) {
+        if ($type === TokenType::CHARACTER && ctype_space($token->data)) {
             // Process the token using the rules for the "in body" insertion mode.
             InBody::process($token, $tree);
-        } elseif ($type === TokenTypes::COMMENT) {
+        } elseif ($type === TokenType::COMMENT) {
             // Insert a comment as the last child of the first element in the stack of open elements (the html element).
             $tree->insertComment($token, new InsertionLocation($tree->openElements->bottom()));
-        } elseif ($type === TokenTypes::DOCTYPE) {
+        } elseif ($type === TokenType::DOCTYPE) {
             // TODO: Parse error.
             // Ignore the token.
             return;
-        } elseif ($type === TokenTypes::START_TAG && $token->name === 'html') {
+        } elseif ($type === TokenType::START_TAG && $token->name === 'html') {
             // Process the token using the rules for the "in body" insertion mode.
             InBody::process($token, $tree);
-        } elseif ($type === TokenTypes::END_TAG && $token->name === 'html') {
+        } elseif ($type === TokenType::END_TAG && $token->name === 'html') {
             // If the parser was created as part of the HTML fragment parsing algorithm,
             // this is a parse error; ignore the token. (fragment case)
             if ($tree->isBuildingFragment) {
@@ -39,7 +39,7 @@ final class AfterBody extends RuleSet
             }
             // Otherwise, switch the insertion mode to "after after body".
             $tree->insertionMode = InsertionModes::AFTER_AFTER_BODY;
-        } elseif ($type === TokenTypes::EOF) {
+        } elseif ($type === TokenType::EOF) {
             // TODO: stop parsing.
             return;
         } else {

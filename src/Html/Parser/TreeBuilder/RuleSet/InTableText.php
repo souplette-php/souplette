@@ -3,7 +3,7 @@
 namespace Souplette\Html\Parser\TreeBuilder\RuleSet;
 
 use Souplette\Html\Parser\Tokenizer\Token;
-use Souplette\Html\Parser\Tokenizer\TokenTypes;
+use Souplette\Html\Parser\Tokenizer\TokenType;
 use Souplette\Html\Parser\TreeBuilder\RuleSet;
 use Souplette\Html\Parser\TreeBuilder\TreeBuilder;
 
@@ -15,7 +15,7 @@ final class InTableText extends RuleSet
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token::TYPE;
-        if ($type === TokenTypes::CHARACTER) {
+        if ($type === TokenType::CHARACTER) {
             if ($token->data === "\0") {
                 // TODO: Parse error.
                 // Ignore the token.

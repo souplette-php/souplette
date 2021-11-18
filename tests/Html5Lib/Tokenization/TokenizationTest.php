@@ -8,7 +8,7 @@ use Souplette\Html\Parser\InputPreprocessor;
 use Souplette\Html\Parser\Tokenizer\Token;
 use Souplette\Html\Parser\Tokenizer\Tokenizer;
 use Souplette\Html\Parser\Tokenizer\TokenizerState;
-use Souplette\Html\Parser\Tokenizer\TokenTypes;
+use Souplette\Html\Parser\Tokenizer\TokenType;
 use Souplette\Tests\Html5Lib\JsonFile;
 use Souplette\Tests\ResourceCollector;
 
@@ -124,7 +124,7 @@ class TokenizationTest extends TestCase
                 continue;
             }
             $last = $output->top();
-            if ($token::TYPE === TokenTypes::CHARACTER && $last::TYPE === $token::TYPE) {
+            if ($token::TYPE === TokenType::CHARACTER && $last::TYPE === $token::TYPE) {
                 $last->data .= $token->data;
             } else {
                 $output->push($token);

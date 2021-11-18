@@ -13,7 +13,7 @@ use Souplette\Html\Namespaces;
 use Souplette\Html\Parser\Tokenizer\Token;
 use Souplette\Html\Parser\Tokenizer\Tokenizer;
 use Souplette\Html\Parser\Tokenizer\TokenizerState;
-use Souplette\Html\Parser\Tokenizer\TokenTypes;
+use Souplette\Html\Parser\Tokenizer\TokenType;
 use Souplette\Html\Parser\TreeBuilder\RuleSet\InForeignContent;
 use Souplette\Xml\XmlNameEscaper;
 use SplStack;
@@ -230,7 +230,7 @@ final class TreeBuilder
         foreach ($this->tokenizer->tokenize($tokenizerState) as $token) {
             $this->shouldSkipNextNewLine = (
                 $previousToken
-                && $previousToken::TYPE === TokenTypes::START_TAG
+                && $previousToken::TYPE === TokenType::START_TAG
                 && ($previousToken->name === 'pre' || $previousToken->name === 'listing' || $previousToken->name === 'textarea')
             );
             // Tree construction dispatcher
@@ -242,25 +242,25 @@ final class TreeBuilder
                 || (
                     Elements::isMathMlTextIntegrationPoint($adjustedCurrentNode) && (
                         (
-                            $token::TYPE === TokenTypes::START_TAG
+                            $token::TYPE === TokenType::START_TAG
                             && $token->name !== 'mglyph'
                             && $token->name !== 'malignmark'
                         ) || (
-                            $token::TYPE === TokenTypes::CHARACTER
+                            $token::TYPE === TokenType::CHARACTER
                         )
                     )
                 ) || (
                     $adjustedCurrentNode->localName === 'annotation-xml'
                     && $adjustedCurrentNode->namespaceURI === Namespaces::MATHML
-                    && $token::TYPE === TokenTypes::START_TAG
+                    && $token::TYPE === TokenType::START_TAG
                     && $token->name === 'svg'
                 ) || (
                     Elements::isHtmlIntegrationPoint($adjustedCurrentNode) && (
-                        $token::TYPE === TokenTypes::START_TAG
-                        || $token::TYPE === TokenTypes::CHARACTER
+                        $token::TYPE === TokenType::START_TAG
+                        || $token::TYPE === TokenType::CHARACTER
                     )
                 )
-                || $token::TYPE === TokenTypes::EOF
+                || $token::TYPE === TokenType::EOF
             ) {
                 (self::RULES[$this->insertionMode])::process($token, $this);
             } else {

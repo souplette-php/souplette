@@ -4,7 +4,7 @@ namespace Souplette\Html\Parser\TreeBuilder\RuleSet;
 
 use Souplette\Html\Namespaces;
 use Souplette\Html\Parser\Tokenizer\Token;
-use Souplette\Html\Parser\Tokenizer\TokenTypes;
+use Souplette\Html\Parser\Tokenizer\TokenType;
 use Souplette\Html\Parser\TreeBuilder\InsertionLocation;
 use Souplette\Html\Parser\TreeBuilder\InsertionModes;
 use Souplette\Html\Parser\TreeBuilder\RuleSet;
@@ -18,13 +18,13 @@ final class BeforeHtml extends RuleSet
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token::TYPE;
-        if ($type === TokenTypes::DOCTYPE) {
+        if ($type === TokenType::DOCTYPE) {
             // TODO: Parse error. Ignore the token.
             return;
-        } elseif ($type === TokenTypes::COMMENT) {
+        } elseif ($type === TokenType::COMMENT) {
             $tree->insertComment($token, new InsertionLocation($tree->document));
             return;
-        } elseif ($type === TokenTypes::CHARACTER) {
+        } elseif ($type === TokenType::CHARACTER) {
             if (ctype_space($token->data)) {
                 // Ignore the token.
                 return;
@@ -32,7 +32,7 @@ final class BeforeHtml extends RuleSet
                 $token->data = ltrim($token->data, " \n\t\f");
                 goto ANYTHING_ELSE;
             }
-        } elseif ($type === TokenTypes::START_TAG && $token->name === 'html') {
+        } elseif ($type === TokenType::START_TAG && $token->name === 'html') {
             // Create an element for the token in the HTML namespace, with the Document as the intended parent.
             $element = $tree->createElement($token, Namespaces::HTML, $tree->document);
             // Append it to the Document object.
@@ -42,7 +42,7 @@ final class BeforeHtml extends RuleSet
             // Switch the insertion mode to "before head".
             $tree->insertionMode = InsertionModes::BEFORE_HEAD;
             return;
-        } elseif ($type === TokenTypes::END_TAG) {
+        } elseif ($type === TokenType::END_TAG) {
             if ($token->name === 'head' || $token->name === 'body' || $token->name === 'html' || $token->name === 'br') {
                 // Act as described in the "anything else" entry below.
                 goto ANYTHING_ELSE;

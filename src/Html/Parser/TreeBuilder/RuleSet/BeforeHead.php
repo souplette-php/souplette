@@ -3,7 +3,7 @@
 namespace Souplette\Html\Parser\TreeBuilder\RuleSet;
 
 use Souplette\Html\Parser\Tokenizer\Token;
-use Souplette\Html\Parser\Tokenizer\TokenTypes;
+use Souplette\Html\Parser\Tokenizer\TokenType;
 use Souplette\Html\Parser\TreeBuilder\InsertionModes;
 use Souplette\Html\Parser\TreeBuilder\RuleSet;
 use Souplette\Html\Parser\TreeBuilder\TreeBuilder;
@@ -13,7 +13,7 @@ final class BeforeHead extends RuleSet
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token::TYPE;
-        if ($type === TokenTypes::CHARACTER) {
+        if ($type === TokenType::CHARACTER) {
             if (ctype_space($token->data)) {
                 // Ignore the token.
                 return;
@@ -21,21 +21,21 @@ final class BeforeHead extends RuleSet
             if ($l = strspn($token->data, " \n\t\f")) {
                 $token->data = substr($token->data, $l);
             }
-        } elseif ($type === TokenTypes::COMMENT) {
+        } elseif ($type === TokenType::COMMENT) {
             $tree->insertComment($token);
             return;
-        } elseif ($type === TokenTypes::DOCTYPE) {
+        } elseif ($type === TokenType::DOCTYPE) {
             // TODO: Parse error. Ignore the token.
             return;
-        } elseif ($type === TokenTypes::START_TAG && $token->name === 'html') {
+        } elseif ($type === TokenType::START_TAG && $token->name === 'html') {
             InBody::process($token, $tree);
             return;
-        } elseif ($type === TokenTypes::START_TAG && $token->name === 'head') {
+        } elseif ($type === TokenType::START_TAG && $token->name === 'head') {
             $head = $tree->insertElement($token);
             $tree->headElement = $head;
             $tree->insertionMode = InsertionModes::IN_HEAD;
             return;
-        } elseif ($type === TokenTypes::END_TAG) {
+        } elseif ($type === TokenType::END_TAG) {
             if ($token->name === 'head' || $token->name === 'body' || $token->name === 'html' || $token->name === 'br') {
                 // Act as described in the "anything else" entry below.
             } else {

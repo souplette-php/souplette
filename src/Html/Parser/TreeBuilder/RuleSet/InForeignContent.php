@@ -4,7 +4,7 @@ namespace Souplette\Html\Parser\TreeBuilder\RuleSet;
 
 use Souplette\Html\Namespaces;
 use Souplette\Html\Parser\Tokenizer\Token;
-use Souplette\Html\Parser\Tokenizer\TokenTypes;
+use Souplette\Html\Parser\Tokenizer\TokenType;
 use Souplette\Html\Parser\TreeBuilder\RuleSet;
 use Souplette\Html\Parser\TreeBuilder\TreeBuilder;
 
@@ -17,26 +17,26 @@ final class InForeignContent extends RuleSet
     {
         $type = $token::TYPE;
         $currentNode = $tree->openElements->top();
-        if ($type === TokenTypes::CHARACTER && $token->data === "\0") {
+        if ($type === TokenType::CHARACTER && $token->data === "\0") {
             // TODO: Parse error. unexpected-null-character
             // Insert a U+FFFD REPLACEMENT CHARACTER character.
             $tree->insertCharacter(new Token\Character("\u{FFFD}"));
-        } elseif ($type === TokenTypes::CHARACTER && ctype_space($token->data)) {
+        } elseif ($type === TokenType::CHARACTER && ctype_space($token->data)) {
             // Insert the token's character.
             $tree->insertCharacter($token);
-        } elseif ($type === TokenTypes::CHARACTER) {
+        } elseif ($type === TokenType::CHARACTER) {
             // Insert the token's character.
             $tree->insertCharacter($token);
             // Set the frameset-ok flag to "not ok".
             $tree->framesetOK = false;
-        } elseif ($type === TokenTypes::COMMENT) {
+        } elseif ($type === TokenType::COMMENT) {
             // Insert a comment.
             $tree->insertComment($token);
-        } elseif ($type === TokenTypes::DOCTYPE) {
+        } elseif ($type === TokenType::DOCTYPE) {
             // TODO: Parse error.
             // Ignore the token.
             return;
-        } elseif ($type === TokenTypes::START_TAG && (
+        } elseif ($type === TokenType::START_TAG && (
             isset(self::BREAKOUT_TAGS[$token->name])
             || ($token->name === 'font' && (
                 isset($token->attributes['color'])
@@ -56,7 +56,7 @@ final class InForeignContent extends RuleSet
             $tree->openElements->popUntilForeignContentScopeMarker();
             // Then, reprocess the token.
             $tree->processToken($token);
-        } elseif ($type === TokenTypes::START_TAG) {
+        } elseif ($type === TokenType::START_TAG) {
             ANY_OTHER_START_TAG:
             $adjustedCurrentNode = $tree->getAdjustedCurrentNode();
             // If the adjusted current node is an element in the MathML namespace, adjust MathML attributes for the token.
@@ -95,11 +95,11 @@ final class InForeignContent extends RuleSet
                     $tree->acknowledgeSelfClosingFlag($token);
                 }
             }
-        } elseif ($type === TokenTypes::END_TAG && $token->name === 'script' && $currentNode->namespaceURI === Namespaces::SVG) {
+        } elseif ($type === TokenType::END_TAG && $token->name === 'script' && $currentNode->namespaceURI === Namespaces::SVG) {
             // Pop the current node off the stack of open elements.
             $tree->openElements->pop();
             // NOTE: The rest of the spec is skipped since we don't execute scripts
-        } elseif ($type === TokenTypes::END_TAG) {
+        } elseif ($type === TokenType::END_TAG) {
             // Initialize node to be the current node (the bottommost node of the stack).
             $tree->openElements->rewind();
             $node = $tree->openElements->current();

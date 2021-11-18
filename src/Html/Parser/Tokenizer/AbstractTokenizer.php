@@ -71,7 +71,7 @@ abstract class AbstractTokenizer
     final protected function emitCurrentToken(): void
     {
         $token = $this->currentToken;
-        if ($token::TYPE === TokenTypes::START_TAG) {
+        if ($token::TYPE === TokenType::START_TAG) {
             /** @var StartTag $token */
             $this->appropriateEndTag = $token->name;
             if ($token->attributes) {
@@ -85,7 +85,7 @@ abstract class AbstractTokenizer
                 }
                 $token->attributes = $attrs;
             }
-        } elseif ($token::TYPE === TokenTypes::END_TAG) {
+        } elseif ($token::TYPE === TokenType::END_TAG) {
             /** @var EndTag $token */
             if ($token->attributes) {
                 // This is an end-tag-with-attributes parse error.
@@ -108,11 +108,15 @@ abstract class AbstractTokenizer
     {
         // https://html.spec.whatwg.org/multipage/parsing.html#charref-in-attribute
         $rs = $this->returnState;
-        $isForAttribute = $rs === TokenizerState::ATTRIBUTE_VALUE_DOUBLE_QUOTED
-            || $rs === TokenizerState::ATTRIBUTE_VALUE_SINGLE_QUOTED
-            || $rs === TokenizerState::ATTRIBUTE_VALUE_UNQUOTED;
+        $isForAttribute = match($rs) {
+            TokenizerState::ATTRIBUTE_VALUE_DOUBLE_QUOTED,
+            TokenizerState::ATTRIBUTE_VALUE_SINGLE_QUOTED,
+            TokenizerState::ATTRIBUTE_VALUE_UNQUOTED,
+                => true,
+            default => false,
+        };
         if ($isForAttribute) {
-            $this->currentToken->attributes[count($this->currentToken->attributes) - 1][1] .= $this->temporaryBuffer;
+            $this->currentToken->attributes[\array_key_last($this->currentToken->attributes)][1] .= $this->temporaryBuffer;
             return;
         }
         $this->tokenQueue->enqueue(new Character($this->temporaryBuffer));

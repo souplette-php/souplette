@@ -3,7 +3,7 @@
 namespace Souplette\Html\Parser\TreeBuilder\RuleSet;
 
 use Souplette\Html\Parser\Tokenizer\Token;
-use Souplette\Html\Parser\Tokenizer\TokenTypes;
+use Souplette\Html\Parser\Tokenizer\TokenType;
 use Souplette\Html\Parser\TreeBuilder\RuleSet;
 use Souplette\Html\Parser\TreeBuilder\TreeBuilder;
 
@@ -15,7 +15,7 @@ final class InSelectInTable extends RuleSet
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token::TYPE;
-        if ($type === TokenTypes::START_TAG && (
+        if ($type === TokenType::START_TAG && (
             $token->name === 'caption'
             || $token->name === 'table'
             || $token->name === 'tbody'
@@ -32,7 +32,7 @@ final class InSelectInTable extends RuleSet
             $tree->resetInsertionModeAppropriately();
             // Reprocess the token.
             $tree->processToken($token);
-        } elseif ($type === TokenTypes::END_TAG && (
+        } elseif ($type === TokenType::END_TAG && (
             $token->name === 'caption'
             || $token->name === 'table'
             || $token->name === 'tbody'

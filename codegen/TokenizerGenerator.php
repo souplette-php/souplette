@@ -32,8 +32,7 @@ final class TokenizerGenerator extends AbstractCodeGenerator
             'state_names' => [],
         ];
 
-        $ref = new \ReflectionEnum(TokenizerState::class);
-        foreach ($ref->getCases() as $case) {
+        foreach (TokenizerState::cases() as $case) {
             $context['state_names'][] = $case->name;
         }
 

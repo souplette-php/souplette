@@ -15,7 +15,7 @@ use Souplette\Html\Parser\Tokenizer\Token\StartTag;
  */
 abstract class Token
 {
-    const TYPE = TokenTypes::UNKNOWN;
+    const TYPE = TokenType::UNKNOWN;
 
     public static function doctype(string $name, ?string $publicId = null, ?string $systemId = null, bool $forceQuirks = false): Doctype
     {

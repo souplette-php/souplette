@@ -3,11 +3,11 @@
 namespace Souplette\Html\Parser\Tokenizer\Token;
 
 use Souplette\Html\Parser\Tokenizer\Token;
-use Souplette\Html\Parser\Tokenizer\TokenTypes;
+use Souplette\Html\Parser\Tokenizer\TokenType;
 
 final class Character extends Token
 {
-    const TYPE = TokenTypes::CHARACTER;
+    const TYPE = TokenType::CHARACTER;
     public string $data;
 
     public function __construct(string $data = '')

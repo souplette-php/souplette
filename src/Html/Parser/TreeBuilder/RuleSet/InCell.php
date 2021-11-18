@@ -3,7 +3,7 @@
 namespace Souplette\Html\Parser\TreeBuilder\RuleSet;
 
 use Souplette\Html\Parser\Tokenizer\Token;
-use Souplette\Html\Parser\Tokenizer\TokenTypes;
+use Souplette\Html\Parser\Tokenizer\TokenType;
 use Souplette\Html\Parser\TreeBuilder\InsertionModes;
 use Souplette\Html\Parser\TreeBuilder\RuleSet;
 use Souplette\Html\Parser\TreeBuilder\TreeBuilder;
@@ -16,7 +16,7 @@ final class InCell extends RuleSet
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token::TYPE;
-        if ($type === TokenTypes::END_TAG && ($token->name === 'td' || $token->name === 'th')) {
+        if ($type === TokenType::END_TAG && ($token->name === 'td' || $token->name === 'th')) {
             // If the stack of open elements does not have an element in table scope
             // that is an HTML element with the same tag name as that of the token,
             // then this is a parse error; ignore the token.
@@ -37,7 +37,7 @@ final class InCell extends RuleSet
             $tree->activeFormattingElements->clearUpToLastMarker();
             // Switch the insertion mode to "in row".
             $tree->insertionMode = InsertionModes::IN_ROW;
-        } elseif ($type === TokenTypes::START_TAG && (
+        } elseif ($type === TokenType::START_TAG && (
             $token->name === 'caption'
             || $token->name === 'col'
             || $token->name === 'colgroup'
@@ -57,7 +57,7 @@ final class InCell extends RuleSet
             // Otherwise, close the cell (see below) and reprocess the token.
             self::closeTheCell($tree);
             $tree->processToken($token);
-        } elseif ($type === TokenTypes::END_TAG && (
+        } elseif ($type === TokenType::END_TAG && (
             $token->name === 'body'
             || $token->name === 'caption'
             || $token->name === 'col'
@@ -67,7 +67,7 @@ final class InCell extends RuleSet
             // TODO: Parse error.
             // Ignore the token.
             return;
-        } elseif ($type === TokenTypes::END_TAG && (
+        } elseif ($type === TokenType::END_TAG && (
             $token->name === 'table'
             || $token->name === 'tbody'
             || $token->name === 'tfoot'

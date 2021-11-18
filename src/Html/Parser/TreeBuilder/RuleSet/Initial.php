@@ -4,7 +4,7 @@ namespace Souplette\Html\Parser\TreeBuilder\RuleSet;
 
 use Souplette\Html\Dom\DocumentModes;
 use Souplette\Html\Parser\Tokenizer\Token;
-use Souplette\Html\Parser\Tokenizer\TokenTypes;
+use Souplette\Html\Parser\Tokenizer\TokenType;
 use Souplette\Html\Parser\TreeBuilder\InsertionLocation;
 use Souplette\Html\Parser\TreeBuilder\InsertionModes;
 use Souplette\Html\Parser\TreeBuilder\RuleSet;
@@ -18,12 +18,12 @@ final class Initial extends RuleSet
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token::TYPE;
-        if ($type === TokenTypes::CHARACTER && ctype_space($token->data)) {
+        if ($type === TokenType::CHARACTER && ctype_space($token->data)) {
             // Ignore the token.
             return;
-        } elseif ($type === TokenTypes::COMMENT) {
+        } elseif ($type === TokenType::COMMENT) {
             $tree->insertComment($token, new InsertionLocation($tree->document));
-        } elseif ($type === TokenTypes::DOCTYPE) {
+        } elseif ($type === TokenType::DOCTYPE) {
             // TODO: If the DOCTYPE token's name is not a case-sensitive match for the string "html",
             // or the token's public identifier is not missing,
             // or the token's system identifier is neither missing nor a case-sensitive match for the string "about:legacy-compat",

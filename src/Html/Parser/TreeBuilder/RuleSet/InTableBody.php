@@ -3,7 +3,7 @@
 namespace Souplette\Html\Parser\TreeBuilder\RuleSet;
 
 use Souplette\Html\Parser\Tokenizer\Token;
-use Souplette\Html\Parser\Tokenizer\TokenTypes;
+use Souplette\Html\Parser\Tokenizer\TokenType;
 use Souplette\Html\Parser\TreeBuilder\InsertionModes;
 use Souplette\Html\Parser\TreeBuilder\RuleSet;
 use Souplette\Html\Parser\TreeBuilder\TreeBuilder;
@@ -16,13 +16,13 @@ final class InTableBody extends RuleSet
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token::TYPE;
-        if ($type === TokenTypes::START_TAG && $token->name === 'tr') {
+        if ($type === TokenType::START_TAG && $token->name === 'tr') {
             // Clear the stack back to a table body context.
             self::clearTheStackBackToATableBodyContext($tree);
             // Insert an HTML element for the token, then switch the insertion mode to "in row".
             $tree->insertElement($token);
             $tree->insertionMode = InsertionModes::IN_ROW;
-        } elseif ($type === TokenTypes::START_TAG && ($token->name === 'th' || $token->name === 'td')) {
+        } elseif ($type === TokenType::START_TAG && ($token->name === 'th' || $token->name === 'td')) {
             // TODO: Parse error.
             // Clear the stack back to a table body context.
             self::clearTheStackBackToATableBodyContext($tree);
@@ -32,7 +32,7 @@ final class InTableBody extends RuleSet
             $tree->insertionMode = InsertionModes::IN_ROW;
             // Reprocess the current token.
             $tree->processToken($token);
-        } elseif ($type === TokenTypes::END_TAG && (
+        } elseif ($type === TokenType::END_TAG && (
             $token->name === 'tbody'
             || $token->name === 'tfoot'
             || $token->name === 'thead'
@@ -50,7 +50,7 @@ final class InTableBody extends RuleSet
             $tree->openElements->pop();
             $tree->insertionMode = InsertionModes::IN_TABLE;
         } elseif (
-            ($type === TokenTypes::START_TAG && (
+            ($type === TokenType::START_TAG && (
                 $token->name === 'caption'
                 || $token->name === 'col'
                 || $token->name === 'colgroup'
@@ -58,7 +58,7 @@ final class InTableBody extends RuleSet
                 || $token->name === 'tfoot'
                 || $token->name === 'thead'
             )) || (
-                $type === TokenTypes::END_TAG && $token->name === 'table'
+                $type === TokenType::END_TAG && $token->name === 'table'
             )
         ) {
             // If the stack of open elements does not have a tbody, thead, or tfoot element in table scope,
@@ -75,7 +75,7 @@ final class InTableBody extends RuleSet
             $tree->insertionMode = InsertionModes::IN_TABLE;
             // Reprocess the token.
             $tree->processToken($token);
-        } elseif ($type === TokenTypes::END_TAG && (
+        } elseif ($type === TokenType::END_TAG && (
             $token->name === 'body'
             || $token->name === 'caption'
             || $token->name === 'col'

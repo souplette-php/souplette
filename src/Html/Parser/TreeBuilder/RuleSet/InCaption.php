@@ -3,7 +3,7 @@
 namespace Souplette\Html\Parser\TreeBuilder\RuleSet;
 
 use Souplette\Html\Parser\Tokenizer\Token;
-use Souplette\Html\Parser\Tokenizer\TokenTypes;
+use Souplette\Html\Parser\Tokenizer\TokenType;
 use Souplette\Html\Parser\TreeBuilder\InsertionModes;
 use Souplette\Html\Parser\TreeBuilder\RuleSet;
 use Souplette\Html\Parser\TreeBuilder\TreeBuilder;
@@ -16,7 +16,7 @@ final class InCaption extends RuleSet
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token::TYPE;
-        if ($type === TokenTypes::END_TAG && $token->name === 'caption') {
+        if ($type === TokenType::END_TAG && $token->name === 'caption') {
             // If the stack of open elements does not have a caption element in table scope,
             // this is a parse error; ignore the token. (fragment case)
             if (!$tree->openElements->hasTagInTableScope('caption')) {
@@ -37,8 +37,8 @@ final class InCaption extends RuleSet
             // Switch the insertion mode to "in table".
             $tree->insertionMode = InsertionModes::IN_TABLE;
         } elseif (
-            ($type === TokenTypes::END_TAG && $token->name === 'table')
-            || ($type === TokenTypes::START_TAG && (
+            ($type === TokenType::END_TAG && $token->name === 'table')
+            || ($type === TokenType::START_TAG && (
                 $token->name === 'caption'
                 || $token->name === 'col'
                 || $token->name === 'colgroup'
@@ -71,7 +71,7 @@ final class InCaption extends RuleSet
             $tree->insertionMode = InsertionModes::IN_TABLE;
             // Reprocess the token.
             $tree->processToken($token);
-        } elseif ($type === TokenTypes::END_TAG && (
+        } elseif ($type === TokenType::END_TAG && (
                 $token->name === 'body'
                 || $token->name === 'col'
                 || $token->name === 'colgroup'
