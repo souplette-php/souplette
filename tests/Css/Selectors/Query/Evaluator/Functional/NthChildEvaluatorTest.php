@@ -2,30 +2,20 @@
 
 namespace Souplette\Tests\Css\Selectors\Query\Evaluator\Functional;
 
-use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\Functional\NthChild;
-use Souplette\Css\Selectors\Query\Compiler;
-use Souplette\Css\Selectors\Query\Evaluator\Functional\NthChildEvaluator;
-use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Syntax\Node\AnPlusB;
+use Souplette\Tests\Css\Selectors\Query\QueryAssert;
 use Souplette\Tests\Html\DomBuilder;
 
 final class NthChildEvaluatorTest extends TestCase
 {
-    private static function assertMatches(\DOMElement $element, NthChild $selector, bool $expected)
-    {
-        $ctx = QueryContext::of($element);
-        $evaluator = (new Compiler)->compile($selector);
-        Assert::assertSame($expected, $evaluator->matches($ctx, $element));
-    }
-
     /**
      * @dataProvider simpleAnPlusBProvider
      */
     public function testSimpleAnPlusB(\DOMElement $element, NthChild $selector, bool $expected)
     {
-        self::assertMatches($element, $selector, $expected);
+        QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
     public function simpleAnPlusBProvider(): \Generator
@@ -50,7 +40,7 @@ final class NthChildEvaluatorTest extends TestCase
      */
     public function testAnPlusB(\DOMElement $element, NthChild $selector, bool $expected)
     {
-        self::assertMatches($element, $selector, $expected);
+        QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
     public function aNPlusBProvider(): \Generator
@@ -64,7 +54,7 @@ final class NthChildEvaluatorTest extends TestCase
             ->tag('a')->close()
             ->getDocument();
 
-        $provider = function(int $a, int $b, array $indices) use($dom) {
+        $provider = function(int $a, int $b, array $indices) use ($dom) {
             $selector = new NthChild(new AnPlusB($a, $b));
             foreach ($dom->childNodes as $index => $node) {
                 $mustMatch = in_array($index, $indices, true);

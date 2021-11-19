@@ -2,28 +2,19 @@
 
 namespace Souplette\Tests\Css\Selectors\Query\Evaluator\Simple;
 
-use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\Simple\AttributeSelector;
-use Souplette\Css\Selectors\Query\Compiler;
-use Souplette\Css\Selectors\Query\QueryContext;
+use Souplette\Tests\Css\Selectors\Query\QueryAssert;
 use Souplette\Tests\Html\DomBuilder;
 
 final class AttributeEvaluatorTest extends TestCase
 {
-    private static function assertMatches(\DOMElement $element, AttributeSelector $selector, bool $expected)
-    {
-        $ctx = QueryContext::of($element);
-        $evaluator = (new Compiler)->compile($selector);
-        Assert::assertSame($expected, $evaluator->matches($ctx, $element));
-    }
-
     /**
      * @dataProvider existsProvider
      */
     public function testExists(\DOMElement $element, AttributeSelector $selector, bool $expected)
     {
-        self::assertMatches($element, $selector, $expected);
+        QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
     public function existsProvider(): \Generator
@@ -49,7 +40,7 @@ final class AttributeEvaluatorTest extends TestCase
      */
     public function testEquals(\DOMElement $element, AttributeSelector $selector, bool $expected)
     {
-        self::assertMatches($element, $selector, $expected);
+        QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
     public function equalsProvider(): \Generator
@@ -85,7 +76,7 @@ final class AttributeEvaluatorTest extends TestCase
      */
     public function testDashMatch(\DOMElement $element, AttributeSelector $selector, bool $expected)
     {
-        self::assertMatches($element, $selector, $expected);
+        QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
     public function dashMatchProvider(): \Generator
@@ -122,7 +113,7 @@ final class AttributeEvaluatorTest extends TestCase
      */
     public function testIncludes(\DOMElement $element, AttributeSelector $selector, bool $expected)
     {
-        self::assertMatches($element, $selector, $expected);
+        QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
     public function includesProvider(): \Generator
@@ -163,7 +154,7 @@ final class AttributeEvaluatorTest extends TestCase
      */
     public function testPrefix(\DOMElement $element, AttributeSelector $selector, bool $expected)
     {
-        self::assertMatches($element, $selector, $expected);
+        QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
     public function prefixProvider(): \Generator
@@ -194,7 +185,7 @@ final class AttributeEvaluatorTest extends TestCase
      */
     public function testSuffix(\DOMElement $element, AttributeSelector $selector, bool $expected)
     {
-        self::assertMatches($element, $selector, $expected);
+        QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
     public function suffixProvider(): \Generator
@@ -225,7 +216,7 @@ final class AttributeEvaluatorTest extends TestCase
      */
     public function testSubstring(\DOMElement $element, AttributeSelector $selector, bool $expected)
     {
-        self::assertMatches($element, $selector, $expected);
+        QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
     public function substringProvider(): \Generator

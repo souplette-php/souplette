@@ -2,30 +2,20 @@
 
 namespace Souplette\Tests\Css\Selectors\Query\Evaluator\Functional;
 
-use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\Functional\NthLastOfType;
-use Souplette\Css\Selectors\Node\Functional\NthOfType;
-use Souplette\Css\Selectors\Query\Compiler;
-use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Syntax\Node\AnPlusB;
+use Souplette\Tests\Css\Selectors\Query\QueryAssert;
 use Souplette\Tests\Html\DomBuilder;
 
 final class NthLastOfTypeEvaluatorTest extends TestCase
 {
-    private static function assertMatches(\DOMElement $element, NthLastOfType $selector, bool $expected)
-    {
-        $ctx = QueryContext::of($element);
-        $evaluator = (new Compiler)->compile($selector);
-        Assert::assertSame($expected, $evaluator->matches($ctx, $element));
-    }
-
     /**
      * @dataProvider simpleAnPlusBProvider
      */
     public function testSimpleAnPlusB(\DOMElement $element, NthLastOfType $selector, bool $expected)
     {
-        self::assertMatches($element, $selector, $expected);
+        QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
     public function simpleAnPlusBProvider(): \Generator
@@ -57,7 +47,7 @@ final class NthLastOfTypeEvaluatorTest extends TestCase
      */
     public function testAnPlusB(\DOMElement $element, NthLastOfType $selector, bool $expected)
     {
-        self::assertMatches($element, $selector, $expected);
+        QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
     public function aNPlusBProvider(): \Generator

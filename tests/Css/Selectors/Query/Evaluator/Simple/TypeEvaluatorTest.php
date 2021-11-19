@@ -2,29 +2,20 @@
 
 namespace Souplette\Tests\Css\Selectors\Query\Evaluator\Simple;
 
-use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\Simple\TypeSelector;
-use Souplette\Css\Selectors\Query\Compiler;
-use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Html\Namespaces;
+use Souplette\Tests\Css\Selectors\Query\QueryAssert;
 use Souplette\Tests\Html\DomBuilder;
 
 final class TypeEvaluatorTest extends TestCase
 {
-    private static function assertMatches(\DOMElement $element, TypeSelector $selector, bool $expected)
-    {
-        $ctx = QueryContext::of($element);
-        $evaluator = (new Compiler)->compile($selector);
-        Assert::assertSame($expected, $evaluator->matches($ctx, $element));
-    }
-
     /**
      * @dataProvider anyNamespaceProvider
      */
     public function testAnyNamespace(\DOMElement $element, TypeSelector $selector, bool $expected)
     {
-        self::assertMatches($element, $selector, $expected);
+        QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
     public function anyNamespaceProvider(): \Generator
@@ -56,7 +47,7 @@ final class TypeEvaluatorTest extends TestCase
     public function testExplicitNamespace(\DOMElement $element, TypeSelector $selector, bool $expected)
     {
         $this->markTestSkipped('Namespaces in CSS are a lie.');
-        self::assertMatches($element, $selector, $expected);
+        QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
     public function explicitNamespaceProvider(): \Generator
@@ -87,7 +78,7 @@ final class TypeEvaluatorTest extends TestCase
      */
     public function testNullNamespace(\DOMElement $element, TypeSelector $selector, bool $expected)
     {
-        self::assertMatches($element, $selector, $expected);
+        QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
     public function nullNamespaceProvider(): \Generator

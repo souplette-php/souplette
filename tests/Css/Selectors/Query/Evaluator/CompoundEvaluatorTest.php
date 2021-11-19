@@ -2,31 +2,22 @@
 
 namespace Souplette\Tests\Css\Selectors\Query\Evaluator;
 
-use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\CompoundSelector;
 use Souplette\Css\Selectors\Node\Selector;
 use Souplette\Css\Selectors\Node\Simple\ClassSelector;
 use Souplette\Css\Selectors\Node\Simple\TypeSelector;
-use Souplette\Css\Selectors\Query\Compiler;
-use Souplette\Css\Selectors\Query\QueryContext;
+use Souplette\Tests\Css\Selectors\Query\QueryAssert;
 use Souplette\Tests\Html\DomBuilder;
 
 final class CompoundEvaluatorTest extends TestCase
 {
-    private static function assertMatches(\DOMElement $element, Selector $selector, bool $expected)
-    {
-        $ctx = QueryContext::of($element);
-        $eval = (new Compiler)->compile($selector);
-        Assert::assertSame($expected, $eval->matches($ctx, $element));
-    }
-
     /**
      * @dataProvider itMatchesClassesProvider
      */
     public function testItMatchesClasses(\DOMElement $element, Selector $selector, bool $expected)
     {
-        self::assertMatches($element, $selector, $expected);
+        QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
     public function itMatchesClassesProvider()
