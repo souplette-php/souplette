@@ -26,7 +26,8 @@
     "ext-dom": "*",
     "ext-mbstring": "*",
     "ext-ctype": "*",
-    "ext-intl": "*"
+    "ext-intl": "*",
+    "ext-libxml": "*"
   },
   "require-dev": {
     "ext-json": "*",

@@ -10,7 +10,7 @@ use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Syntax\Tokenizer\Tokenizer;
 use Souplette\Css\Syntax\TokenStream\TokenStream;
 use Souplette\Html\Dom\ElementIterator;
-use Souplette\Html\Dom\Node\HtmlElement;
+use Souplette\Html\Dom\Node\Element;
 
 final class SelectorQuery
 {
@@ -31,7 +31,7 @@ final class SelectorQuery
     /**
      * @see https://dom.spec.whatwg.org/#dom-element-closest
      */
-    public static function closest(DOMElement $element, string $selectorText): DOMElement|HtmlElement|null
+    public static function closest(DOMElement $element, string $selectorText): DOMElement|Element|null
     {
         // 1. Let `s` be the result of parse a selector from selectors.
         // 2. If `s` is failure, then throw a "SyntaxError" DOMException.
@@ -54,7 +54,7 @@ final class SelectorQuery
      * {@link https://dom.spec.whatwg.org/#scope-match-a-selectors-string scope-match a selectors string}
      *  selectors against this, if the result is not an empty list; otherwise null.
      */
-    public static function queryFirst(DOMParentNode $node, string $selectorText): DOMElement|HtmlElement|null
+    public static function queryFirst(DOMParentNode $node, string $selectorText): DOMElement|Element|null
     {
         $eval = self::compile($selectorText);
         $ctx = QueryContext::of($node);

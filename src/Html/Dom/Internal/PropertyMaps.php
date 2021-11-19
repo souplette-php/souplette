@@ -1,44 +1,53 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Html\Dom;
+namespace Souplette\Html\Dom\Internal;
 
-use Souplette\Html\Dom\Api\HtmlDocumentInterface;
+use Souplette\Html\Dom\Api\ElementInterface;
+use Souplette\Html\Dom\Api\DocumentInterface;
 use Souplette\Html\Dom\Api\HtmlElementInterface;
-use Souplette\Html\Dom\Api\HtmlNodeInterface;
+use Souplette\Html\Dom\Api\HtmlTemplateElementInterface;
+use Souplette\Html\Dom\Api\NodeInterface;
 use Souplette\Html\Dom\Api\ParentNodeInterface;
 
 final class PropertyMaps
 {
     private const PROPERTIES = [
         'GET' => [
-            HtmlNodeInterface::class => [
+            NodeInterface::class => [
                 'parentElement' => 'getParentElement',
             ],
             ParentNodeInterface::class => [
                 'children' => 'getChildren',
             ],
-            HtmlDocumentInterface::class => [
+            DocumentInterface::class => [
                 'mode' => 'getMode',
                 'compatMode' => 'getCompatMode',
                 'head' => 'getHead',
                 'body' => 'getBody',
                 'title' => 'getTitle',
             ],
-            HtmlElementInterface::class => [
+            ElementInterface::class => [
                 'id' => 'getId',
                 'className' => 'getClassName',
+                'classList' => 'getClassList',
+            ],
+            HtmlElementInterface::class => [
                 'innerHTML' => 'getInnerHTML',
                 'outerHTML' => 'getOuterHTML',
-                'classList' => 'getClassList',
+            ],
+            HtmlTemplateElementInterface::class => [
+                'content' => 'getContent',
             ],
         ],
         'SET' => [
-            HtmlDocumentInterface::class => [
+            DocumentInterface::class => [
                 'title' => 'setTitle',
             ],
-            HtmlElementInterface::class => [
+            ElementInterface::class => [
                 'id' => 'setId',
                 'className' => 'setClassName',
+            ],
+            HtmlElementInterface::class => [
                 'innerHTML' => 'setInnerHTML',
                 'outerHTML' => 'setOuterHTML',
             ],
@@ -71,9 +80,9 @@ final class PropertyMaps
     private static function populateCache(string $mode, string $class)
     {
         $props = [];
-        foreach (class_implements($class) as $interface) {
+        foreach (\class_implements($class) as $interface) {
             if (isset(self::PROPERTIES[$mode][$interface])) {
-                $props = array_merge($props, self::PROPERTIES[$mode][$interface]);
+                $props = \array_merge($props, self::PROPERTIES[$mode][$interface]);
             }
         }
         if (!$props) {

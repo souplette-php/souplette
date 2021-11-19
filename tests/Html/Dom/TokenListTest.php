@@ -6,7 +6,7 @@ use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Html\Dom\Exception\InvalidCharacter;
 use Souplette\Html\Dom\Exception\SyntaxError;
-use Souplette\Html\Dom\Node\HtmlElement;
+use Souplette\Html\Dom\Node\Element;
 use Souplette\Html\Dom\TokenList;
 use Souplette\Tests\Html\DomBuilder;
 
@@ -19,7 +19,7 @@ final class TokenListTest extends TestCase
                 ->attr('class', 'foo bar baz')
             ->getDocument();
         $node = $doc->documentElement;
-        /** @var HtmlElement $node */
+        /** @var Element $node */
         $classList = $node->classList;
         Assert::assertInstanceOf(TokenList::class, $classList);
         Assert::assertCount(3, $classList);
@@ -35,7 +35,7 @@ final class TokenListTest extends TestCase
             ->tag('html')
                 ->attr('class', 'foo bar baz')
             ->getDocument();
-        /** @var HtmlElement $node */
+        /** @var Element $node */
         $node = $doc->documentElement;
         foreach (['foo', 'bar', 'baz'] as $token) {
             Assert::assertTrue($node->classList->contains($token));
@@ -49,7 +49,7 @@ final class TokenListTest extends TestCase
             ->tag('html')
                 ->attr('class', 'foo')
             ->getDocument();
-        /** @var HtmlElement $node */
+        /** @var Element $node */
         $node = $doc->documentElement;
         //
         $node->classList->add('bar', 'baz');
@@ -65,7 +65,7 @@ final class TokenListTest extends TestCase
             ->tag('html')
                 ->attr('class', 'foo bar baz qux')
             ->getDocument();
-        /** @var HtmlElement $node */
+        /** @var Element $node */
         $node = $doc->documentElement;
         $node->classList->remove('baz', 'bar');
         Assert::assertSame('foo qux', $node->getAttribute('class'));
@@ -77,7 +77,7 @@ final class TokenListTest extends TestCase
             ->tag('html')
                 ->attr('class', 'foo bar baz')
             ->getDocument();
-        /** @var HtmlElement $node */
+        /** @var Element $node */
         $node = $doc->documentElement;
         $node->classList->remove('bar');
         $node->classList->add('qux');
@@ -90,7 +90,7 @@ final class TokenListTest extends TestCase
             ->tag('html')
                 ->attr('class', 'foo bar baz')
             ->getDocument();
-        /** @var HtmlElement $node */
+        /** @var Element $node */
         $node = $doc->documentElement;
         $node->classList->replace('bar', 'qux');
         Assert::assertSame('foo qux baz', $node->getAttribute('class'));
@@ -102,7 +102,7 @@ final class TokenListTest extends TestCase
             ->tag('html')
                 ->attr('class', 'foo bar baz')
             ->getDocument();
-        /** @var HtmlElement $node */
+        /** @var Element $node */
         $node = $doc->documentElement;
 
         $isActive = $node->classList->toggle('bar');
@@ -120,7 +120,7 @@ final class TokenListTest extends TestCase
             ->tag('html')
                 ->attr('class', 'foo bar baz')
             ->getDocument();
-        /** @var HtmlElement $node */
+        /** @var Element $node */
         $node = $doc->documentElement;
 
         $isActive = $node->classList->toggle('bar', true);
@@ -135,7 +135,7 @@ final class TokenListTest extends TestCase
     public function testValueReflectsAttributeChanges()
     {
         $doc = DomBuilder::create()->tag('html')->getDocument();
-        /** @var HtmlElement $node */
+        /** @var Element $node */
         $node = $doc->documentElement;
         $classList = $node->classList;
         Assert::assertSame('', $classList->value);
@@ -149,7 +149,7 @@ final class TokenListTest extends TestCase
     {
         $this->expectException(InvalidCharacter::class);
         $doc = DomBuilder::create()->tag('html')->getDocument();
-        /** @var HtmlElement $node */
+        /** @var Element $node */
         $node = $doc->documentElement;
         $node->classList->add('foo bar');
     }
@@ -158,7 +158,7 @@ final class TokenListTest extends TestCase
     {
         $this->expectException(SyntaxError::class);
         $doc = DomBuilder::create()->tag('html')->getDocument();
-        /** @var HtmlElement $node */
+        /** @var Element $node */
         $node = $doc->documentElement;
         $node->classList->add('');
     }

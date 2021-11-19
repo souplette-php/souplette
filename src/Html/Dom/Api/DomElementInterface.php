@@ -12,8 +12,8 @@ interface DomElementInterface extends DomNodeInterface
 {
     public function hasAttribute(string $qualifiedName);
     public function getAttribute(string $qualifiedName);
-    public function setAttribute(string $qualifiedName, string $value);
-    public function removeAttribute(string $qualifiedName);
+    public function setAttribute(string $qualifiedName, string $value): DOMAttr|false;
+    public function removeAttribute(string $qualifiedName): bool;
     public function getAttributeNode(string $qualifiedName);
     public function setAttributeNode(DOMAttr $attr);
     // FIXME: waiting for https://bugs.php.net/bug.php?id=80537 to be fixed

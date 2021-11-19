@@ -5,8 +5,8 @@ namespace Souplette\Html\Dom\Traits;
 use DOMElement;
 use DOMNode;
 use Souplette\Css\Selectors\SelectorQuery;
-use Souplette\Html\Dom\DomIdioms;
-use Souplette\Html\Dom\Node\HtmlElement;
+use Souplette\Html\Dom\Internal\DomIdioms;
+use Souplette\Html\Dom\Node\Element;
 
 trait ParentNodeTrait
 {
@@ -61,7 +61,7 @@ trait ParentNodeTrait
         DomIdioms::replaceAllWithNodeWithinParent($node, $this);
     }
 
-    public function querySelector(string $selector): ?HtmlElement
+    public function querySelector(string $selector): ?Element
     {
         return SelectorQuery::queryFirst($this, $selector);
     }

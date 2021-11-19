@@ -9,6 +9,7 @@ use Souplette\Encoding\Encoding;
 use Souplette\Encoding\EncodingLookup;
 use Souplette\Encoding\Exception\EncodingChanged;
 use Souplette\Html\Dom\DocumentModes;
+use Souplette\Html\Dom\Node\Element;
 use Souplette\Html\Namespaces;
 use Souplette\Html\Parser\Tokenizer\Token;
 use Souplette\Html\Parser\Tokenizer\Tokenizer;
@@ -503,7 +504,7 @@ final class TreeBuilder
     {
         $doc = $this->dom->createDocument();
         // This seems to be the only way to create a doctype with an empty name...
-        @$doc->loadHTML('<!DOCTYPE>');
+        $doc->loadHTML('<!DOCTYPE>', \LIBXML_NOERROR);
         $this->blankDoctype = $doc->removeChild($doc->doctype);
         if ($doc === null) {
             throw new \LogicException('Document is null');
@@ -512,7 +513,7 @@ final class TreeBuilder
         return $doc;
     }
 
-    public function createDoctype(Token\Doctype $token)
+    public function createDoctype(Token\Doctype $token): \DOMDocumentType
     {
         if ($token->name === '') {
             return $this->blankDoctype;
@@ -527,11 +528,10 @@ final class TreeBuilder
         bool $inForeignContent = false
     ): DOMElement {
         // 1. Let document be intended parent's node document.
-        if ($intendedParent->nodeType === XML_HTML_DOCUMENT_NODE || $intendedParent->nodeType === XML_DOCUMENT_NODE) {
-            $doc = $intendedParent;
-        } else {
-            $doc = $intendedParent->ownerDocument;
-        }
+        $doc = match ($intendedParent->nodeType) {
+            XML_HTML_DOCUMENT_NODE, XML_DOCUMENT_NODE => $intendedParent,
+            default => $intendedParent->ownerDocument,
+        };
         // 2. Let local name be the tag name of the token.
         $localName = $token->name;
         // 7. Let element be the result of creating an element given document, localName, given namespace, null, and is.
@@ -549,16 +549,23 @@ final class TreeBuilder
                 } else {
                     $name = (string)$name;
                     try {
-                        $element->setAttribute($name, $value);
+                        $this->setAttribute($element, $name, $value);
                     } catch (\DOMException $err) {
-                        $name = XmlNameEscaper::escape($name);
-                        $element->setAttribute($name, $value);
+                        $this->setAttribute($element, XmlNameEscaper::escape($name), $value);
                     }
                 }
             }
         }
 
         return $element;
+    }
+
+    private function setAttribute(DOMElement $element, string $name, string $value): void
+    {
+        // don't use setAttribute here to avoid lower-casing the name.
+        $attr = $element->ownerDocument->createAttribute($name);
+        $attr->value = htmlspecialchars($value, ENT_NOQUOTES|ENT_HTML5, $this->encoding->getName(), false);
+        $element->appendChild($attr);
     }
 
     public function insertCharacter(Token\Character $token, ?string $data = null)
@@ -646,11 +653,11 @@ final class TreeBuilder
             $name = (string)$name;
             try {
                 if (!$toElement->hasAttribute($name)) {
-                    $toElement->setAttribute($name, $value);
+                    $this->setAttribute($toElement, $name, $value);
                 }
             } catch (\DOMException $err) {
                 if (!$toElement->hasAttribute($name)) {
-                    $toElement->setAttribute(XmlNameEscaper::escape($name), $value);
+                    $this->setAttribute($toElement, XmlNameEscaper::escape($name), $value);
                 }
             }
         }
@@ -658,7 +665,6 @@ final class TreeBuilder
 
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#acknowledge-self-closing-flag
-     * @param Token\StartTag $token
      */
     public function acknowledgeSelfClosingFlag(Token\StartTag $token)
     {
@@ -669,9 +675,11 @@ final class TreeBuilder
         }
     }
 
+    /**
+     * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-elements-that-contain-only-text
+     */
     public function followTheGenericTextElementParsingAlgorithm(Token\StartTag $token, bool $rawtext = false)
     {
-        // @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-elements-that-contain-only-text
         $this->insertElement($token);
         $this->tokenizer->state = $rawtext ? TokenizerState::RAWTEXT : TokenizerState::RCDATA;
         $this->originalInsertionMode = $this->insertionMode;

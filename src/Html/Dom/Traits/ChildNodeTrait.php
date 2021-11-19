@@ -3,7 +3,7 @@
 namespace Souplette\Html\Dom\Traits;
 
 use DOMNode;
-use Souplette\Html\Dom\DomIdioms;
+use Souplette\Html\Dom\Internal\DomIdioms;
 
 trait ChildNodeTrait
 {

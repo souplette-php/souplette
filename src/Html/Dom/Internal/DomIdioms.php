@@ -1,17 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Html\Dom;
+namespace Souplette\Html\Dom\Internal;
 
 use DOMAttr;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
-use DOMNodeList;
-use DOMXPath;
 use JetBrains\PhpStorm\Pure;
-use Souplette\Css\Selectors\Query\Evaluator\CompoundEvaluator;
-use Souplette\Css\Selectors\Query\Evaluator\Simple\ClassEvaluator;
 use Souplette\Css\Selectors\SelectorQuery;
+use Souplette\Html\Dom\Node\HtmlDocument;
+use Souplette\Html\Namespaces;
 
 final class DomIdioms
 {
@@ -127,10 +125,20 @@ final class DomIdioms
         $parent->appendChild($node);
     }
 
-    public static function getAttributeNode(DOMElement $node, string $qualifiedName): ?DOMAttr
+    /**
+     * @see https://dom.spec.whatwg.org/#concept-element-attributes-get-by-name
+     */
+    public static function getAttributeByName(DOMElement $node, string $qualifiedName): ?DOMAttr
     {
+        // 1. If element is in the HTML namespace and its node document is an HTML document,
+        // then set qualifiedName to qualifiedName in ASCII lowercase.
+        if ($node->namespaceURI === Namespaces::HTML && $node->ownerDocument->nodeType === XML_HTML_DOCUMENT_NODE) {
+            $qualifiedName = \strtolower($qualifiedName);
+        }
+        // 2. Return the first attribute in element’s attribute list whose qualified name is qualifiedName;
+        // otherwise null.
         foreach ($node->attributes as $attribute) {
-            if (strcasecmp($qualifiedName, $attribute->nodeName) === 0) {
+            if ($attribute->nodeName === $qualifiedName) {
                 return $attribute;
             }
         }
@@ -139,11 +147,11 @@ final class DomIdioms
 
     public static function splitInputOnAsciiWhitespace(string $input): iterable
     {
-        $token = strtok($input, self::ASCII_WHITESPACE);
+        $token = \strtok($input, self::ASCII_WHITESPACE);
         $i = 0;
         while ($token) {
             yield $i++ => $token;
-            $token = strtok(self::ASCII_WHITESPACE);
+            $token = \strtok(self::ASCII_WHITESPACE);
         }
     }
 }

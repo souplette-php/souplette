@@ -4,7 +4,7 @@ namespace Souplette\Tests\Html\Dom;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Html\Dom\Api\HtmlNodeInterface;
+use Souplette\Html\Dom\Api\NodeInterface;
 use Souplette\Tests\Html\DomBuilder;
 
 final class HtmlNodeTest extends TestCase
@@ -15,7 +15,7 @@ final class HtmlNodeTest extends TestCase
      * @param $target
      * @param $expected
      */
-    public function testContains(HtmlNodeInterface $parent, $target, $expected)
+    public function testContains(NodeInterface $parent, $target, $expected)
     {
         Assert::assertSame($expected, $parent->contains($target));
     }
@@ -69,7 +69,7 @@ final class HtmlNodeTest extends TestCase
      * @param $node
      * @param $expected
      */
-    public function testParentElement(HtmlNodeInterface $node, $expected)
+    public function testParentElement(NodeInterface $node, $expected)
     {
         Assert::assertSame($expected, $node->parentElement);
     }

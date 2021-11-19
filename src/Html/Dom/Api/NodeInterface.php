@@ -10,7 +10,7 @@ use DOMNode;
  *
  * @property-read DOMElement|null $parentElement
  */
-interface HtmlNodeInterface extends DomNodeInterface
+interface NodeInterface extends DomNodeInterface
 {
     const ELEMENT_NODE = 1;
     const ATTRIBUTE_NODE = 2;

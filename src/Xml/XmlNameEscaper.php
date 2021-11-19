@@ -27,9 +27,6 @@ final class XmlNameEscaper
 
     /**
      * @see https://www.w3.org/TR/xml/#NT-Name
-     *
-     * @param string $name
-     * @return string
      */
     public static function escape(string $name): string
     {

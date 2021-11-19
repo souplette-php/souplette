@@ -7,7 +7,7 @@
   cacheResultFile="tools/.phpunit.result.cache"
   colors="true"
 >
-  <coverage>
+  <coverage cacheDirectory="tmp/coverage-cache" processUncoveredFiles="true">
     <include>
       <directory suffix=".php">src</directory>
     </include>

@@ -4,9 +4,9 @@ namespace Souplette\Tests\Html\Dom;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Html\Dom\Node\HtmlComment;
+use Souplette\Html\Dom\Node\Comment;
 use Souplette\Html\Dom\Node\HtmlElement;
-use Souplette\Html\Dom\Node\HtmlText;
+use Souplette\Html\Dom\Node\Text;
 use Souplette\Tests\Html\DomBuilder;
 
 final class HtmlElementTest extends TestCase
@@ -30,7 +30,7 @@ final class HtmlElementTest extends TestCase
         $body->innerHTML = '<!-- foo --><p>bar</p>baz';
         //
         $comment = $body->firstChild;
-        Assert::assertInstanceOf(HtmlComment::class, $comment);
+        Assert::assertInstanceOf(Comment::class, $comment);
         Assert::assertSame(' foo ', $comment->data);
         //
         $p = $comment->nextSibling;
@@ -38,7 +38,7 @@ final class HtmlElementTest extends TestCase
         Assert::assertSame('bar', $p->nodeValue);
         //
         $text = $p->nextSibling;
-        Assert::assertInstanceOf(HtmlText::class, $text);
+        Assert::assertInstanceOf(Text::class, $text);
         Assert::assertSame('baz', $text->data);
     }
 
@@ -69,7 +69,7 @@ final class HtmlElementTest extends TestCase
         Assert::assertSame('article', $article->tagName);
         //
         $comment = $article->firstChild;
-        Assert::assertInstanceOf(HtmlComment::class, $comment);
+        Assert::assertInstanceOf(Comment::class, $comment);
         Assert::assertSame(' outer html! ', $comment->data);
         //
         $p = $comment->nextSibling;
@@ -77,7 +77,7 @@ final class HtmlElementTest extends TestCase
         Assert::assertSame('foo', $p->nodeValue);
         //
         $text = $p->nextSibling;
-        Assert::assertInstanceOf(HtmlText::class, $text);
+        Assert::assertInstanceOf(Text::class, $text);
         Assert::assertSame('bar', $text->data);
     }
 

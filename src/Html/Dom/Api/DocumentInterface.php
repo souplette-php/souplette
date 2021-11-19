@@ -4,7 +4,7 @@ namespace Souplette\Html\Dom\Api;
 
 use DOMElement;
 use DOMNodeList;
-use Souplette\Html\Dom\Node\HtmlElement;
+use Souplette\Html\Dom\Node\Element;
 
 /**
  * @see https://dom.spec.whatwg.org/#document
@@ -15,7 +15,7 @@ use Souplette\Html\Dom\Node\HtmlElement;
  * @property-read DOMElement $body
  * @property string $title
  */
-interface HtmlDocumentInterface extends HtmlNodeInterface
+interface DocumentInterface extends NodeInterface
 {
     public function getMode(): string;
     public function getCompatMode(): string;
@@ -25,7 +25,7 @@ interface HtmlDocumentInterface extends HtmlNodeInterface
     public function setTitle(string $title): void;
     /**
      * @param string $classNames
-     * @return HtmlElement[]
+     * @return Element[]
      */
     public function getElementsByClassName(string $classNames): array;
 }

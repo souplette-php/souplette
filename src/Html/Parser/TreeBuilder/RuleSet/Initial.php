@@ -48,7 +48,8 @@ final class Initial extends RuleSet
                 $pub && preg_match(self::PUBLIC_ID_LIMITED_QUIRKS_PATTERN, $pub)
                 || $sys && $pub && preg_match(self::MISSING_SYSTEM_PUBLIC_PATTERN, $pub)
             ) {
-                // Otherwise, if the document is not an iframe srcdoc document,
+                // Otherwise,
+                // TODO: if the document is not an iframe srcdoc document,
                 // and the DOCTYPE token matches one of the conditions in the following list, then set the Document to limited-quirks mode:
                 $tree->compatMode = DocumentModes::LIMITED_QUIRKS;
             }
@@ -63,89 +64,89 @@ final class Initial extends RuleSet
         }
     }
 
-    private const PUBLIC_ID_QUIRKS_PATTERN = <<<REGEXP
-~
-    ^(?:
-        \Q-//W3O//DTD W3 HTML Strict 3.0//EN//\E
-        | \Q-/W3C/DTD HTML 4.0 Transitional/EN\E
-        | HTML
-    )$
-    | ^(?:
-        \Q+//Silmaril//dtd html Pro v0r11 19970101//\E
-        | \Q-//AS//DTD HTML 3.0 asWedit + extensions//\E
-        | \Q-//AdvaSoft Ltd//DTD HTML 3.0 asWedit + extensions//\E
-        | \Q-//IETF//DTD HTML 2.0 Level 1//\E
-        | \Q-//IETF//DTD HTML 2.0 Level 2//\E
-        | \Q-//IETF//DTD HTML 2.0 Strict Level 1//\E
-        | \Q-//IETF//DTD HTML 2.0 Strict Level 2//\E
-        | \Q-//IETF//DTD HTML 2.0 Strict//\E
-        | \Q-//IETF//DTD HTML 2.0//\E
-        | \Q-//IETF//DTD HTML 2.1E//\E
-        | \Q-//IETF//DTD HTML 3.0//\E
-        | \Q-//IETF//DTD HTML 3.2 Final//\E
-        | \Q-//IETF//DTD HTML 3.2//\E
-        | \Q-//IETF//DTD HTML 3//\E
-        | \Q-//IETF//DTD HTML Level 0//\E
-        | \Q-//IETF//DTD HTML Level 1//\E
-        | \Q-//IETF//DTD HTML Level 2//\E
-        | \Q-//IETF//DTD HTML Level 3//\E
-        | \Q-//IETF//DTD HTML Strict Level 0//\E
-        | \Q-//IETF//DTD HTML Strict Level 1//\E
-        | \Q-//IETF//DTD HTML Strict Level 2//\E
-        | \Q-//IETF//DTD HTML Strict Level 3//\E
-        | \Q-//IETF//DTD HTML Strict//\E
-        | \Q-//IETF//DTD HTML//\E
-        | \Q-//Metrius//DTD Metrius Presentational//\E
-        | \Q-//Microsoft//DTD Internet Explorer 2.0 HTML Strict//\E
-        | \Q-//Microsoft//DTD Internet Explorer 2.0 HTML//\E
-        | \Q-//Microsoft//DTD Internet Explorer 2.0 Tables//\E
-        | \Q-//Microsoft//DTD Internet Explorer 3.0 HTML Strict//\E
-        | \Q-//Microsoft//DTD Internet Explorer 3.0 HTML//\E
-        | \Q-//Microsoft//DTD Internet Explorer 3.0 Tables//\E
-        | \Q-//Netscape Comm. Corp.//DTD HTML//\E
-        | \Q-//Netscape Comm. Corp.//DTD Strict HTML//\E
-        | \Q-//O'Reilly and Associates//DTD HTML 2.0//\E
-        | \Q-//O'Reilly and Associates//DTD HTML Extended 1.0//\E
-        | \Q-//O'Reilly and Associates//DTD HTML Extended Relaxed 1.0//\E
-        | \Q-//SQ//DTD HTML 2.0 HoTMetaL + extensions//\E
-        | \Q-//SoftQuad Software//DTD HoTMetaL PRO 6.0::19990601::extensions to HTML 4.0//\E
-        | \Q-//SoftQuad//DTD HoTMetaL PRO 4.0::19971010::extensions to HTML 4.0//\E
-        | \Q-//Spyglass//DTD HTML 2.0 Extended//\E
-        | \Q-//Sun Microsystems Corp.//DTD HotJava HTML//\E
-        | \Q-//Sun Microsystems Corp.//DTD HotJava Strict HTML//\E
-        | \Q-//W3C//DTD HTML 3 1995-03-24//\E
-        | \Q-//W3C//DTD HTML 3.2 Draft//\E
-        | \Q-//W3C//DTD HTML 3.2 Final//\E
-        | \Q-//W3C//DTD HTML 3.2//\E
-        | \Q-//W3C//DTD HTML 3.2S Draft//\E
-        | \Q-//W3C//DTD HTML 4.0 Frameset//\E
-        | \Q-//W3C//DTD HTML 4.0 Transitional//\E
-        | \Q-//W3C//DTD HTML Experimental 19960712//\E
-        | \Q-//W3C//DTD HTML Experimental 970421//\E
-        | \Q-//W3C//DTD W3 HTML//\E
-        | \Q-//W3O//DTD W3 HTML 3.0//\E
-        | \Q-//WebTechs//DTD Mozilla HTML 2.0//\E
-        | \Q-//WebTechs//DTD Mozilla HTML//\E
-    )
-~xi
-REGEXP;
+    private const PUBLIC_ID_QUIRKS_PATTERN = <<<'REGEXP'
+    ~
+        ^(?:
+            \Q-//W3O//DTD W3 HTML Strict 3.0//EN//\E
+            | \Q-/W3C/DTD HTML 4.0 Transitional/EN\E
+            | HTML
+        )$
+        | ^(?:
+            \Q+//Silmaril//dtd html Pro v0r11 19970101//\E
+            | \Q-//AS//DTD HTML 3.0 asWedit + extensions//\E
+            | \Q-//AdvaSoft Ltd//DTD HTML 3.0 asWedit + extensions//\E
+            | \Q-//IETF//DTD HTML 2.0 Level 1//\E
+            | \Q-//IETF//DTD HTML 2.0 Level 2//\E
+            | \Q-//IETF//DTD HTML 2.0 Strict Level 1//\E
+            | \Q-//IETF//DTD HTML 2.0 Strict Level 2//\E
+            | \Q-//IETF//DTD HTML 2.0 Strict//\E
+            | \Q-//IETF//DTD HTML 2.0//\E
+            | \Q-//IETF//DTD HTML 2.1E//\E
+            | \Q-//IETF//DTD HTML 3.0//\E
+            | \Q-//IETF//DTD HTML 3.2 Final//\E
+            | \Q-//IETF//DTD HTML 3.2//\E
+            | \Q-//IETF//DTD HTML 3//\E
+            | \Q-//IETF//DTD HTML Level 0//\E
+            | \Q-//IETF//DTD HTML Level 1//\E
+            | \Q-//IETF//DTD HTML Level 2//\E
+            | \Q-//IETF//DTD HTML Level 3//\E
+            | \Q-//IETF//DTD HTML Strict Level 0//\E
+            | \Q-//IETF//DTD HTML Strict Level 1//\E
+            | \Q-//IETF//DTD HTML Strict Level 2//\E
+            | \Q-//IETF//DTD HTML Strict Level 3//\E
+            | \Q-//IETF//DTD HTML Strict//\E
+            | \Q-//IETF//DTD HTML//\E
+            | \Q-//Metrius//DTD Metrius Presentational//\E
+            | \Q-//Microsoft//DTD Internet Explorer 2.0 HTML Strict//\E
+            | \Q-//Microsoft//DTD Internet Explorer 2.0 HTML//\E
+            | \Q-//Microsoft//DTD Internet Explorer 2.0 Tables//\E
+            | \Q-//Microsoft//DTD Internet Explorer 3.0 HTML Strict//\E
+            | \Q-//Microsoft//DTD Internet Explorer 3.0 HTML//\E
+            | \Q-//Microsoft//DTD Internet Explorer 3.0 Tables//\E
+            | \Q-//Netscape Comm. Corp.//DTD HTML//\E
+            | \Q-//Netscape Comm. Corp.//DTD Strict HTML//\E
+            | \Q-//O'Reilly and Associates//DTD HTML 2.0//\E
+            | \Q-//O'Reilly and Associates//DTD HTML Extended 1.0//\E
+            | \Q-//O'Reilly and Associates//DTD HTML Extended Relaxed 1.0//\E
+            | \Q-//SQ//DTD HTML 2.0 HoTMetaL + extensions//\E
+            | \Q-//SoftQuad Software//DTD HoTMetaL PRO 6.0::19990601::extensions to HTML 4.0//\E
+            | \Q-//SoftQuad//DTD HoTMetaL PRO 4.0::19971010::extensions to HTML 4.0//\E
+            | \Q-//Spyglass//DTD HTML 2.0 Extended//\E
+            | \Q-//Sun Microsystems Corp.//DTD HotJava HTML//\E
+            | \Q-//Sun Microsystems Corp.//DTD HotJava Strict HTML//\E
+            | \Q-//W3C//DTD HTML 3 1995-03-24//\E
+            | \Q-//W3C//DTD HTML 3.2 Draft//\E
+            | \Q-//W3C//DTD HTML 3.2 Final//\E
+            | \Q-//W3C//DTD HTML 3.2//\E
+            | \Q-//W3C//DTD HTML 3.2S Draft//\E
+            | \Q-//W3C//DTD HTML 4.0 Frameset//\E
+            | \Q-//W3C//DTD HTML 4.0 Transitional//\E
+            | \Q-//W3C//DTD HTML Experimental 19960712//\E
+            | \Q-//W3C//DTD HTML Experimental 970421//\E
+            | \Q-//W3C//DTD W3 HTML//\E
+            | \Q-//W3O//DTD W3 HTML 3.0//\E
+            | \Q-//WebTechs//DTD Mozilla HTML 2.0//\E
+            | \Q-//WebTechs//DTD Mozilla HTML//\E
+        )
+    ~xi
+    REGEXP;
 
-    private const MISSING_SYSTEM_PUBLIC_PATTERN = <<<REGEXP
-~
-    ^(?:
-        \Q-//W3C//DTD HTML 4.01 Frameset//\E
-        | \Q-//W3C//DTD HTML 4.01 Transitional//\E
-    )
-~xi
-REGEXP;
+    private const MISSING_SYSTEM_PUBLIC_PATTERN = <<<'REGEXP'
+    ~
+        ^(?:
+            \Q-//W3C//DTD HTML 4.01 Frameset//\E
+            | \Q-//W3C//DTD HTML 4.01 Transitional//\E
+        )
+    ~xi
+    REGEXP;
 
-    private const PUBLIC_ID_LIMITED_QUIRKS_PATTERN = <<<REGEXP
-~
-    ^(?:
-        \Q-//W3C//DTD XHTML 1.0 Frameset//\E
-        |\Q -//W3C//DTD XHTML 1.0 Transitional//\E
-    )
-~xi
-REGEXP;
+    private const PUBLIC_ID_LIMITED_QUIRKS_PATTERN = <<<'REGEXP'
+    ~
+        ^(?:
+            \Q-//W3C//DTD XHTML 1.0 Frameset//\E
+            |\Q -//W3C//DTD XHTML 1.0 Transitional//\E
+        )
+    ~xi
+    REGEXP;
 
 }

@@ -17,7 +17,7 @@ class TreeConstructionTest extends TestCase
         TreeConstructionAssert::assertTestPasses($test);
     }
 
-    public function dataFileProvider()
+    public function dataFileProvider(): iterable
     {
         $xfails = require __DIR__ . '/../../resources/html5lib-xfails.php';
         foreach ($this->collectDataFiles() as $relPath => $dataFile) {
@@ -33,9 +33,9 @@ class TreeConstructionTest extends TestCase
     }
 
     /**
-     * @return \Generator|DataFile[]
+     * @return iterable<DataFile>
      */
-    private function collectDataFiles()
+    private function collectDataFiles(): iterable
     {
         $rootPath = __DIR__ . '/../../resources/html5lib-tests/tree-construction';
         foreach (ResourceCollector::collect($rootPath, 'dat') as $relPath => $fileInfo) {

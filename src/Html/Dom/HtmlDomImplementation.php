@@ -7,12 +7,6 @@ use Souplette\Html\Dom\Node\HtmlDocument;
 
 final class HtmlDomImplementation extends \DOMImplementation
 {
-    /**
-     * @param null $namespace
-     * @param null $qualifiedName
-     * @param DOMDocumentType|null $doctype
-     * @return HtmlDocument
-     */
     public function createDocument($namespace = null, $qualifiedName = null, DOMDocumentType $doctype = null): HtmlDocument
     {
         return new HtmlDocument();

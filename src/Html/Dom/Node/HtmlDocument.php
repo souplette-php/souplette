@@ -7,25 +7,24 @@ use DOMComment;
 use DOMDocument;
 use DOMDocumentFragment;
 use DOMElement;
-use DOMNodeList;
 use DOMText;
 use Souplette\Encoding\EncodingLookup;
-use Souplette\Html\Dom\Api\HtmlDocumentInterface;
+use Souplette\Html\Dom\Api\DocumentInterface;
 use Souplette\Html\Dom\Api\ParentNodeInterface;
 use Souplette\Html\Dom\DocumentModes;
-use Souplette\Html\Dom\DomIdioms;
-use Souplette\Html\Dom\HtmlElementClasses;
-use Souplette\Html\Dom\PropertyMaps;
-use Souplette\Html\Dom\Traits\HtmlNodeTrait;
+use Souplette\Html\Dom\Internal\DomIdioms;
+use Souplette\Html\Dom\Internal\ElementClasses;
+use Souplette\Html\Dom\Internal\PropertyMaps;
+use Souplette\Html\Dom\Traits\NodeTrait;
 use Souplette\Html\Dom\Traits\ParentNodeTrait;
 use Souplette\Html\Namespaces;
 
 final class HtmlDocument extends \DOMDocument implements
-    HtmlDocumentInterface,
+    DocumentInterface,
     ParentNodeInterface
     //NonElementParentNodeInterface
 {
-    use HtmlNodeTrait;
+    use NodeTrait;
     use ParentNodeTrait;
 
     const COMPAT_MODE_BACK = 'BackCompat';
@@ -38,10 +37,14 @@ final class HtmlDocument extends \DOMDocument implements
         parent::__construct('', EncodingLookup::UTF_8);
         $this->registerNodeClass(DOMDocument::class, self::class);
         $this->registerNodeClass(DOMDocumentFragment::class, HtmlDocumentFragment::class);
-        $this->registerNodeClass(DOMText::class, HtmlText::class);
-        $this->registerNodeClass(DOMComment::class, HtmlComment::class);
+        $this->registerNodeClass(DOMText::class, Text::class);
+        $this->registerNodeClass(DOMComment::class, Comment::class);
         $this->registerNodeClass(DOMElement::class, HtmlElement::class);
-        $this->registerNodeClass(DOMAttr::class, HtmlAttribute::class);
+        $this->registerNodeClass(DOMAttr::class, Attr::class);
+
+        // Force $this->nodeType to XML_HTML_DOCUMENT_NODE
+        parent::loadHTML('<!doctype html>');
+        $this->removeChild($this->doctype);
     }
 
     public function __get($name)
@@ -54,20 +57,18 @@ final class HtmlDocument extends \DOMDocument implements
         PropertyMaps::set($this, $name, $value);
     }
 
-    public function createElement($localName, $value = null): bool|HTMLElement
+    public function createElement($localName, $value = null): bool|Element
     {
         return $this->createElementNS(Namespaces::HTML, $localName, $value ?? '');
     }
 
-    public function createElementNS($namespace, $qualifiedName, $value = null): bool|HtmlElement
+    public function createElementNS($namespace, $qualifiedName, $value = null): bool|Element
     {
-        if ($class = HtmlElementClasses::ELEMENTS[$namespace][$qualifiedName] ?? null) {
-            $this->registerNodeClass(DOMElement::class, $class);
-            $element = parent::createElementNS($namespace, $qualifiedName, $value ?? '');
-            $this->registerNodeClass(DOMElement::class, HtmlElement::class);
-            return $element;
+        $class = ElementClasses::ELEMENTS[$namespace][$qualifiedName] ?? null;
+        if (!$class) {
+            $class = ElementClasses::BASES[$namespace] ?? Element::class;
         }
-
+        $this->registerNodeClass(DOMElement::class, $class);
         return parent::createElementNS($namespace, $qualifiedName, $value ?? '');
     }
 
@@ -109,7 +110,6 @@ final class HtmlDocument extends \DOMDocument implements
 
     /**
      * @internal
-     * @param string $mode
      */
     public function internalSetMode(string $mode): void
     {
@@ -117,8 +117,7 @@ final class HtmlDocument extends \DOMDocument implements
     }
 
     /**
-     * @param string $classNames
-     * @return HtmlElement[]
+     * @return Element[]
      */
     public function getElementsByClassName(string $classNames): array
     {

@@ -5,7 +5,7 @@ namespace Souplette\Html\Dom;
 use Souplette\Html\Dom\Exception\InvalidCharacter;
 use Souplette\Html\Dom\Exception\SyntaxError;
 use Souplette\Html\Dom\Internal\OrderedTokenSet;
-use Souplette\Html\Dom\Node\HtmlElement;
+use Souplette\Html\Dom\Node\Element;
 use WeakReference;
 
 /**
@@ -18,13 +18,13 @@ final class TokenList implements \Countable, \IteratorAggregate
 {
     private OrderedTokenSet $tokenSet;
     /**
-     * @var WeakReference<HtmlElement>
+     * @var WeakReference<Element>
      */
     private WeakReference $elementRef;
     private string $attributeName;
     private string $previousValue;
 
-    public function __construct(HtmlElement $element, string $attributeName)
+    public function __construct(Element $element, string $attributeName)
     {
         $this->tokenSet = new OrderedTokenSet();
         $this->elementRef = WeakReference::create($element);
@@ -131,7 +131,7 @@ final class TokenList implements \Countable, \IteratorAggregate
         foreach ($tokens as $token) {
             if ($token === '') {
                 throw new SyntaxError('Empty token.');
-            } elseif (strcspn($token, " \n\t\f") !== strlen($token)) {
+            } elseif (\strcspn($token, " \n\t\f") !== \strlen($token)) {
                 throw new InvalidCharacter('Token contains whitespace.');
             }
         }
@@ -139,7 +139,7 @@ final class TokenList implements \Countable, \IteratorAggregate
 
     private function getAttributeValue(): string
     {
-        /** @var HtmlElement $element */
+        /** @var Element $element */
         $element = $this->elementRef->get();
         return $element->getAttribute($this->attributeName);
     }
@@ -156,7 +156,7 @@ final class TokenList implements \Countable, \IteratorAggregate
 
     private function updateAttribute()
     {
-        /** @var HtmlElement $element */
+        /** @var Element $element */
         $element = $this->elementRef->get();
         // 1. If the associated element does not have an associated attribute and token set is empty, then return.
         if (!$element->hasAttribute($this->attributeName) && $this->tokenSet->isEmpty()) {

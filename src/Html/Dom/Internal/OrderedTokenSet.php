@@ -3,7 +3,6 @@
 namespace Souplette\Html\Dom\Internal;
 
 use JetBrains\PhpStorm\Pure;
-use Souplette\Html\Dom\DomIdioms;
 
 /**
  * This class backs up the implementation of DOMTokenList interface.

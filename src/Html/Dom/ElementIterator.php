@@ -2,12 +2,15 @@
 
 namespace Souplette\Html\Dom;
 
+use DOMElement;
+use DOMParentNode;
+
 final class ElementIterator
 {
     /**
-     * @return \Generator & iterable<\DOMElement>
+     * @return iterable<DOMElement>
      */
-    public static function descendants(\DOMParentNode $root): \Generator
+    public static function descendants(DOMParentNode $root): iterable
     {
         $node = $root->firstElementChild;
         while ($node) {
@@ -29,7 +32,10 @@ final class ElementIterator
         }
     }
 
-    public static function ancestors(\DOMParentNode $root): \Generator
+    /**
+     * @return iterable<DOMElement>
+     */
+    public static function ancestors(DOMParentNode $root): iterable
     {
         $node = $root;
         while (($node = $node->parentNode) && $node->nodeType === XML_ELEMENT_NODE) {
@@ -37,14 +43,20 @@ final class ElementIterator
         }
     }
 
-    public static function following(\DOMElement $node): \Generator
+    /**
+     * @return iterable<DOMElement>
+     */
+    public static function following(DOMElement $node): iterable
     {
         while ($node = $node->nextElementSibling) {
             yield $node;
         }
     }
 
-    public static function preceding(\DOMElement $node): \Generator
+    /**
+     * @return iterable<DOMElement>
+     */
+    public static function preceding(DOMElement $node): iterable
     {
         while ($node = $node->previousElementSibling) {
             yield $node;

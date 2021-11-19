@@ -5,13 +5,13 @@ namespace Souplette\Css\Selectors\Query;
 use DOMDocument;
 use DOMDocumentFragment;
 use DOMElement;
-use Souplette\Html\Dom\DomIdioms;
+use Souplette\Html\Dom\Internal\DomIdioms;
 use Souplette\Html\Dom\Node\HtmlDocument;
 
 final class QueryContext
 {
     public static function of(
-        DOMElement|DOMDocument|DOMDocumentFragment $scopingRoot,
+        \DOMParentNode $scopingRoot,
     ): self {
         $document = DomIdioms::getOwnerDocument($scopingRoot);
         if ($document === null) {
@@ -31,7 +31,7 @@ final class QueryContext
 
     private function __construct(
         public DOMDocument $document,
-        public DOMElement|DOMDocument|DOMDocumentFragment $scopingRoot,
+        public \DOMParentNode $scopingRoot,
         public bool $caseInsensitiveClasses = false,
         public bool $caseInsensitiveIds = false,
         public bool $caseInsensitiveTypes = true,
@@ -62,8 +62,8 @@ final class QueryContext
             return true;
         }
         return match ($document->nodeType) {
-            XML_DOCUMENT_NODE => false,
             XML_HTML_DOCUMENT_NODE => true,
+            XML_DOCUMENT_NODE => false,
         };
     }
 }

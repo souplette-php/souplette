@@ -4,10 +4,10 @@ namespace Souplette\Html\Dom\Traits;
 
 use DOMElement;
 use DOMNode;
-use Souplette\Html\Dom\Api\HtmlNodeInterface;
-use Souplette\Html\Dom\DomIdioms;
+use Souplette\Html\Dom\Api\NodeInterface;
+use Souplette\Html\Dom\Internal\DomIdioms;
 
-trait HtmlNodeTrait
+trait NodeTrait
 {
     /**
      * @see https://dom.spec.whatwg.org/#dom-node-comparedocumentposition
@@ -38,11 +38,11 @@ trait HtmlNodeTrait
                 foreach ($node2->attributes as $attr) {
                     // 1. If attr equals attr1, then return the result of adding DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC and DOCUMENT_POSITION_PRECEDING.
                     if ($attr === $attr1) {
-                       return HtmlNodeInterface::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC + HtmlNodeInterface::DOCUMENT_POSITION_PRECEDING;
+                       return NodeInterface::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC + NodeInterface::DOCUMENT_POSITION_PRECEDING;
                     }
                     // 2. If attr equals attr2, then return the result of adding DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC and DOCUMENT_POSITION_FOLLOWING.
                     if ($attr === $attr2) {
-                        return HtmlNodeInterface::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC + HtmlNodeInterface::DOCUMENT_POSITION_FOLLOWING;
+                        return NodeInterface::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC + NodeInterface::DOCUMENT_POSITION_FOLLOWING;
                     }
                 }
             }
@@ -53,9 +53,9 @@ trait HtmlNodeTrait
         // with the constraint that this is to be consistent, together.
         if (!$node1 || !$node2 || DomIdioms::getRoot($node1) !== DomIdioms::getRoot($node2)) {
             return (
-                HtmlNodeInterface::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
-                + HtmlNodeInterface::DOCUMENT_POSITION_DISCONNECTED
-                + HtmlNodeInterface::DOCUMENT_POSITION_PRECEDING
+                NodeInterface::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+                + NodeInterface::DOCUMENT_POSITION_DISCONNECTED
+                + NodeInterface::DOCUMENT_POSITION_PRECEDING
             );
         }
         // 7. If node1 is an ancestor of node2 and attr1 is null, or node1 is node2 and attr2 is non-null,
@@ -64,7 +64,7 @@ trait HtmlNodeTrait
             (!$attr1 && DomIdioms::isInclusiveDescendant($node1, $node2))
             || ($attr2 && $node1 === $node2)
         ) {
-            return HtmlNodeInterface::DOCUMENT_POSITION_CONTAINS + HtmlNodeInterface::DOCUMENT_POSITION_PRECEDING;
+            return NodeInterface::DOCUMENT_POSITION_CONTAINS + NodeInterface::DOCUMENT_POSITION_PRECEDING;
         }
         // 8. If node1 is a descendant of node2 and attr2 is null, or node1 is node2 and attr1 is non-null,
         // then return the result of adding DOCUMENT_POSITION_CONTAINED_BY to DOCUMENT_POSITION_FOLLOWING.
@@ -72,14 +72,14 @@ trait HtmlNodeTrait
             (!$attr2 && DomIdioms::isInclusiveDescendant($node2, $node1))
             || ($attr1 && $node1 === $node2)
         ) {
-            return HtmlNodeInterface::DOCUMENT_POSITION_CONTAINED_BY + HtmlNodeInterface::DOCUMENT_POSITION_FOLLOWING;
+            return NodeInterface::DOCUMENT_POSITION_CONTAINED_BY + NodeInterface::DOCUMENT_POSITION_FOLLOWING;
         }
         // 9. If node1 is preceding node2, then return DOCUMENT_POSITION_PRECEDING.
         if (DomIdioms::isPrecedingSibling($node2, $node1)) {
-            return HtmlNodeInterface::DOCUMENT_POSITION_PRECEDING;
+            return NodeInterface::DOCUMENT_POSITION_PRECEDING;
         }
         // 10. Return DOCUMENT_POSITION_FOLLOWING.
-        return HtmlNodeInterface::DOCUMENT_POSITION_FOLLOWING;
+        return NodeInterface::DOCUMENT_POSITION_FOLLOWING;
     }
 
     public function contains(?DOMNode $other): bool
@@ -90,7 +90,7 @@ trait HtmlNodeTrait
     public function getParentElement(): ?DOMElement
     {
         $parent = $this->parentNode;
-        if (!$parent || $parent->nodeType !== HtmlNodeInterface::ELEMENT_NODE) {
+        if (!$parent || $parent->nodeType !== NodeInterface::ELEMENT_NODE) {
             return null;
         }
 
