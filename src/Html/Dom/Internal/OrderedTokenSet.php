@@ -116,7 +116,7 @@ final class OrderedTokenSet implements \Countable, \IteratorAggregate, \ArrayAcc
         return count($this->tokens);
     }
 
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return new \ArrayIterator(array_values($this->tokens));
     }
@@ -126,17 +126,17 @@ final class OrderedTokenSet implements \Countable, \IteratorAggregate, \ArrayAcc
         return isset($this->tokens[$offset]);
     }
 
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return $this->tokens[$offset];
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         // does nothing...
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         // does nothing...
     }

@@ -21,7 +21,7 @@ final class ChildNodeTest extends TestCase
         Assert::assertCount(0, $doc->childNodes);
     }
 
-    public function removeProvider()
+    public function removeProvider(): iterable
     {
         yield 'works on text nodes' => [
             $doc = DomBuilder::create()->text('foo')->getDocument(),
@@ -39,10 +39,8 @@ final class ChildNodeTest extends TestCase
 
     /**
      * @dataProvider beforeProvider
-     * @param \DOMChildNode $target
-     * @param $nodes
      */
-    public function testBefore($target, $nodes)
+    public function testBefore(\DOMChildNode $target, array $nodes)
     {
         $target->before(...$nodes);
         $expected = $target->previousSibling;
@@ -56,7 +54,7 @@ final class ChildNodeTest extends TestCase
         }
     }
 
-    public function beforeProvider()
+    public function beforeProvider(): iterable
     {
         $doc = DomBuilder::create()->tag('test')->getDocument();
         yield 'works on elements' => [
@@ -88,10 +86,10 @@ final class ChildNodeTest extends TestCase
 
     /**
      * @dataProvider afterProvider
-     * @param HtmlNode $target
+     * @param Node $target
      * @param $nodes
      */
-    public function testAfter($target, $nodes)
+    public function testAfter($target, array $nodes)
     {
         $target->after(...$nodes);
         $expected = $target->nextSibling;
@@ -105,7 +103,7 @@ final class ChildNodeTest extends TestCase
         }
     }
 
-    public function afterProvider()
+    public function afterProvider(): iterable
     {
         $doc = DomBuilder::create()->tag('test')->getDocument();
         yield 'works on elements' => [
@@ -137,10 +135,8 @@ final class ChildNodeTest extends TestCase
 
     /**
      * @dataProvider replaceWithProvider
-     * @param $target
-     * @param $nodes
      */
-    public function testReplaceWith($target, $nodes)
+    public function testReplaceWith($target, array $nodes)
     {
         $parent = $target->parentNode;
         $target->replaceWith(...$nodes);
@@ -156,7 +152,7 @@ final class ChildNodeTest extends TestCase
         }
     }
 
-    public function replaceWithProvider()
+    public function replaceWithProvider(): iterable
     {
         $doc = DomBuilder::create()->tag('test')->getDocument();
         yield 'works on elements' => [

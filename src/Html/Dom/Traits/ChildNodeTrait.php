@@ -9,7 +9,7 @@ trait ChildNodeTrait
 {
     /**
      * @todo remove when https://bugs.php.net/bug.php?id=80602 is fixed
-     * @param DOMNode|string ...$nodes
+     * @param DOMNode|string $nodes
      */
     public function before(...$nodes): void
     {
@@ -34,7 +34,8 @@ trait ChildNodeTrait
     }
 
     /**
-     * @param DOMNode|string ...$nodes
+     * @todo remove when https://bugs.php.net/bug.php?id=80602 is fixed
+     * @param DOMNode|string $nodes
      */
     public function after(...$nodes): void
     {

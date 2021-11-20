@@ -115,7 +115,7 @@ final class TokenList implements \Countable, \IteratorAggregate
         return $this->tokenSet->count();
     }
 
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         $this->synchronize();
         return $this->tokenSet->getIterator();

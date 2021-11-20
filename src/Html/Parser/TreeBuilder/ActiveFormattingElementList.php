@@ -40,7 +40,7 @@ final class ActiveFormattingElementList extends Stack
      * @see https://html.spec.whatwg.org/multipage/parsing.html#push-onto-the-list-of-active-formatting-elements
      * @param \DOMElement|null $value
      */
-    public function push($value)
+    public function push($value): void
     {
         $equalCount = 0;
         if ($value !== null) {

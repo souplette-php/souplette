@@ -3,6 +3,7 @@
 namespace Souplette\Css\Selectors\Node;
 
 use Souplette\Css\Selectors\Specificity;
+use Traversable;
 
 final class CompoundSelector extends Selector implements \IteratorAggregate, \Countable
 {
@@ -22,9 +23,9 @@ final class CompoundSelector extends Selector implements \IteratorAggregate, \Co
     }
 
     /**
-     * @return Selector[]
+     * @return Traversable<Selector>
      */
-    public function getIterator(): iterable
+    public function getIterator(): Traversable
     {
         return new \ArrayIterator($this->selectors);
     }

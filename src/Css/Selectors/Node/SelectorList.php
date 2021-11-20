@@ -3,28 +3,28 @@
 namespace Souplette\Css\Selectors\Node;
 
 use Souplette\Css\Selectors\Specificity;
+use Traversable;
 
 final class SelectorList extends Selector implements \IteratorAggregate, \Countable
 {
-    /**
-     * @var Selector[]
-     */
-    public array $selectors;
-
-    public function __construct(array $selectors)
-    {
-        $this->selectors = $selectors;
+    public function __construct(
+        /** @var Selector[] */
+        public array $selectors,
+    ) {
     }
 
+    /**
+     * @return iterable<SimpleSelector>
+     */
     public function simpleSelectors(): iterable
     {
         yield from $this->selectors;
     }
 
     /**
-     * @return Selector[]
+     * @return Traversable<Selector>
      */
-    public function getIterator(): iterable
+    public function getIterator(): Traversable
     {
         return new \ArrayIterator($this->selectors);
     }
