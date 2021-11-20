@@ -13,7 +13,7 @@ if ($cc === '-') {
     {{ h.parse_error('INCORRECTLY_CLOSED_COMMENT') }}
     // Switch to the data state. Emit the comment token.
     {{ h.emit_and_resume_in('DATA') }}
-} elseif ($cc === null) {
+} elseif ({{ h.is_eof() }}) {
     // This is an eof-in-comment parse error.
     {{ h.parse_error('EOF_IN_COMMENT') }}
     // Emit the comment token. Emit an end-of-file token.

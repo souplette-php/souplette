@@ -6,7 +6,7 @@
 if ($cc === '>') {
     // Switch to the data state. Emit the comment token.
     {{ h.emit_and_resume_in('DATA') }}
-} elseif ($cc === null) {
+} elseif ({{ h.is_eof() }}) {
     // Emit the comment. Emit an end-of-file token.
     {{ h.emit_current_token() }}
     {{ h.emit_eof() }}

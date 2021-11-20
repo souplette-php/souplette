@@ -22,7 +22,7 @@ if ({{ h.is_whitespace() }}) {
     // Set the DOCTYPE token's force-quirks flag to on.
     // Switch to the data state. Emit that DOCTYPE token.
     {{ h.emit_and_resume_in('DATA') }}
-} elseif ($cc === null) {
+} elseif ({{ h.is_eof() }}) {
     // This is an eof-in-doctype parse error.
     {{ h.parse_error('EOF_IN_DOCTYPE') }}
     // Set the DOCTYPE token's force-quirks flag to on.

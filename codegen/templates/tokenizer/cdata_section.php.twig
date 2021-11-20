@@ -12,7 +12,7 @@ if ($cc === ']') {
     {# {{ h.parse_error('UNEXPECTED_NULL_CHARACTER') }} #}
     $this->tokenQueue->enqueue(new Character("\0"));
     {{ h.consume(current_state) }}
-} elseif ($cc === null) {
+} elseif ({{ h.is_eof() }}) {
     // This is an eof-in-cdata parse error.
     {{ h.parse_error('EOF_IN_CDATA') }}
     // Emit an end-of-file token.

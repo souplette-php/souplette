@@ -16,7 +16,7 @@ final class Tokenizer extends AbstractTokenizer
     public function nextToken(): bool
     {
         INITIAL:
-        $cc = $this->input[$this->position] ?? null;
+        $cc = $this->input[$this->position] ?? '';
         switch ($this->state) {
         {% for current_state in state_names ~%}
             case TokenizerState::{{ current_state }}:

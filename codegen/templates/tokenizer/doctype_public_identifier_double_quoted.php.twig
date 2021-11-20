@@ -19,7 +19,7 @@ if ($cc === '"') {
     // Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's public identifier.
     $this->currentToken->publicIdentifier .= "\u{FFFD}";
     {{ h.consume(current_state) }}
-} elseif ($cc === null) {
+} elseif ({{ h.is_eof() }}) {
     // This is an eof-in-doctype parse error.
     {{ h.parse_error('EOF_IN_DOCTYPE') }}
     // Set the DOCTYPE token's force-quirks flag to on.

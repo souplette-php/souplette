@@ -1,5 +1,5 @@
 {% macro is_eof() -%}
-$cc === null
+$cc === ''
 {%- endmacro %}
 
 {% macro is_whitespace() -%}
@@ -83,7 +83,7 @@ $this->currentToken->attributes[\count($this->currentToken->attributes) - 1][1] 
     and we want to update the current input character.
 #}
 {% macro update_cc() -%}
-$cc = $this->input[$this->position] ?? null;
+$cc = $this->input[$this->position] ?? '';
 {%- endmacro %}
 
 {#
@@ -122,7 +122,7 @@ goto INITIAL;
 #}
 {% macro advance_to(state_name) -%}
 $this->state = TokenizerState::{{ state_name }};
-$cc = $this->input[++$this->position] ?? null;
+$cc = $this->input[++$this->position] ?? '';
 goto {{ state_name }};
 {%- endmacro advance_to %}
 
@@ -131,7 +131,7 @@ goto {{ state_name }};
     It should always be invoked with the current state as a parameter.
 #}
 {% macro consume(state_name) -%}
-$cc = $this->input[++$this->position] ?? null;
+$cc = $this->input[++$this->position] ?? '';
 goto {{ state_name }};
 {%- endmacro consume %}
 
@@ -142,7 +142,7 @@ goto {{ state_name }};
 #}
 {% macro switch_to(state_name) -%}
 $this->state = TokenizerState::{{ state_name }};
-$cc = $this->input[++$this->position] ?? null;
+$cc = $this->input[++$this->position] ?? '';
 goto {{ state_name }};
 {%- endmacro switch_to %}
 

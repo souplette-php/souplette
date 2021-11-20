@@ -19,7 +19,7 @@ if ({{ h.is_whitespace() }}) {
     $this->currentToken->systemIdentifier = '';
     // switch to the DOCTYPE system identifier (single-quoted) state.
     {{ h.advance_to('DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED') }}
-} elseif ($cc === null) {
+} elseif ({{ h.is_eof() }}) {
     // This is an eof-in-doctype parse error.
     {{ h.parse_error('EOF_IN_DOCTYPE') }}
     // Set the DOCTYPE token's force-quirks flag to on.

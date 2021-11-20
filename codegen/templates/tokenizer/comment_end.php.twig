@@ -12,7 +12,7 @@ if ($cc === '>') {
     // Append a U+002D HYPHEN-MINUS character (-) to the comment token's data.
     $this->currentToken->data .= '-';
     {{ h.consume(current_state) }}
-} elseif ($cc === null) {
+} elseif ({{ h.is_eof() }}) {
     // This is an eof-in-comment parse error.
     {{ h.parse_error('EOF_IN_COMMENT') }}
     // Emit the comment token. Emit an end-of-file token.
