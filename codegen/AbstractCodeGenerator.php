@@ -55,18 +55,21 @@ abstract class AbstractCodeGenerator
     protected function getCodeStyleRules(): array
     {
         return [
-            '@PSR2' => true,
+            '@PSR12' => true,
             'array_indentation' => true,
             'no_extra_blank_lines' => ['extra', 'curly_brace_block'],
+            'native_function_invocation' => [
+                'include' => ['@all'],
+            ],
         ];
     }
 
     protected function fixCodeStyle(string $file, array $rules = []): void
     {
-        $bin = realpath(__DIR__.'/../tools/php-cs-fixer');
+        $bin = realpath(__DIR__.'/../tools/php-cs-fixer.phar');
         if (!$bin) {
             throw new \RuntimeException(
-                'php-cs-fixer binary not found. Please run `phive install`.'
+                'php-cs-fixer.phar. Please run `phive install`.'
             );
         }
         $cmd = [
