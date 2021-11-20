@@ -8,7 +8,7 @@ final class Utils
     {
         if (!$set) return;
 
-        $iterator = function(array $set) use(&$iterator) {
+        $iterator = function(array $set) use (&$iterator) {
             if (!$set) {
                 yield [];
                 return;

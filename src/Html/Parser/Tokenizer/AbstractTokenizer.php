@@ -116,7 +116,7 @@ abstract class AbstractTokenizer
             default => false,
         };
         if ($isForAttribute) {
-            $this->currentToken->attributes[\array_key_last($this->currentToken->attributes)][1] .= $this->temporaryBuffer;
+            $this->currentToken->attributes[array_key_last($this->currentToken->attributes)][1] .= $this->temporaryBuffer;
             return;
         }
         $this->tokenQueue->enqueue(new Character($this->temporaryBuffer));

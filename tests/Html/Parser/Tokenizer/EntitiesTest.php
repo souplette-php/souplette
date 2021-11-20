@@ -60,18 +60,18 @@ class EntitiesTest extends TestCase
             $output = \IntlChar::chr($replacement);
             $key = sprintf('Control char replacement: %s => \u{%X}', $input, $replacement);
             yield $key => [$input, [Token::character($output)], [
-                [ParseErrors::CONTROL_CHARACTER_REFERENCE, strlen($input)],
+                [ParseErrors::CONTROL_CHARACTER_REFERENCE, \strlen($input)],
             ]];
         }
         // Outside unicode range
         $cp = 0x10FFFF + 1;
         $input = sprintf('&#%d;', $cp);
         yield [$input, ["\u{FFFD}"], [
-            [ParseErrors::CHARACTER_REFERENCE_OUTSIDE_UNICODE_RANGE, strlen($input)],
+            [ParseErrors::CHARACTER_REFERENCE_OUTSIDE_UNICODE_RANGE, \strlen($input)],
         ]];
         $input = sprintf('&#x%X;', $cp);
         yield [$input, ["\u{FFFD}"], [
-            [ParseErrors::CHARACTER_REFERENCE_OUTSIDE_UNICODE_RANGE, strlen($input)],
+            [ParseErrors::CHARACTER_REFERENCE_OUTSIDE_UNICODE_RANGE, \strlen($input)],
         ]];
     }
 

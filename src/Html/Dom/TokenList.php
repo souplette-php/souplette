@@ -131,7 +131,7 @@ final class TokenList implements \Countable, \IteratorAggregate
         foreach ($tokens as $token) {
             if ($token === '') {
                 throw new SyntaxError('Empty token.');
-            } else if (\strcspn($token, " \n\t\f") !== \strlen($token)) {
+            } else if (strcspn($token, " \n\t\f") !== \strlen($token)) {
                 throw new InvalidCharacter('Token contains whitespace.');
             }
         }

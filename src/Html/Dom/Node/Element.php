@@ -113,7 +113,7 @@ class Element extends \DOMElement implements
         // 2. If this is in the HTML namespace and its node document is an HTML document,
         // then set qualifiedName to qualifiedName in ASCII lowercase.
         if ($this->namespaceURI === Namespaces::HTML && $this->ownerDocument->nodeType === XML_HTML_DOCUMENT_NODE) {
-            $qualifiedName = \strtolower($qualifiedName);
+            $qualifiedName = strtolower($qualifiedName);
         }
         return parent::setAttribute($qualifiedName, $value);
     }
@@ -142,7 +142,7 @@ class Element extends \DOMElement implements
         // 2. If this is in the HTML namespace and its node document is an HTML document,
         // then set qualifiedName to qualifiedName in ASCII lowercase.
         if ($this->namespaceURI === Namespaces::HTML && $this->ownerDocument->nodeType === XML_HTML_DOCUMENT_NODE) {
-            $qualifiedName = \strtolower($qualifiedName);
+            $qualifiedName = strtolower($qualifiedName);
         }
         // 3. Let attribute be the first attribute in this’s attribute list whose qualified name is qualifiedName,
         // and null otherwise.

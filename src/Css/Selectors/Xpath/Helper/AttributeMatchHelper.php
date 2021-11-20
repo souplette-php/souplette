@@ -51,14 +51,14 @@ final class AttributeMatchHelper
                 '@%1$s and substring(%2$s, string-length(%2$s) - %3$s) = %4$s',
                 $attribute,
                 StringHelper::translateForCaseInsensitiveSearch("@{$attribute}", $value),
-                \mb_strlen($lower, 'UTF-8') - 1,
+                mb_strlen($lower, 'UTF-8') - 1,
                 StringHelper::toStringLiteral($lower),
             );
         }
         return sprintf(
             '@%1$s and substring(@%1$s, string-length(@%1$s) - %2$s) = %3$s',
             $attribute,
-            \mb_strlen($value, 'UTF-8') - 1,
+            mb_strlen($value, 'UTF-8') - 1,
             StringHelper::toStringLiteral($value),
         );
     }
@@ -79,7 +79,7 @@ final class AttributeMatchHelper
     public static function attributeIncludes(string $attribute, string $value, bool $caseInsensitive = false): string
     {
         if ($caseInsensitive) {
-            $value = \mb_strtolower($value, 'UTF-8');
+            $value = mb_strtolower($value, 'UTF-8');
             return sprintf(
                 '@%s and contains(concat(" ", normalize-space(%s), " "), %s)',
                 $attribute,

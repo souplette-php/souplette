@@ -26,7 +26,7 @@ final class TreeConstructionTestDTO
         $test->scriptingEnabled = isset($data['script-on']);
         if (isset($data['document-fragment'])) {
             $context = explode(' ', trim($data['document-fragment']));
-            if (count($context) === 2) {
+            if (\count($context) === 2) {
                 [$prefix, $localName] = $context;
                 $test->contextElement = [Namespaces::NAMESPACES[$prefix], $localName];
             } else {

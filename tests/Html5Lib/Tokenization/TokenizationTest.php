@@ -73,7 +73,7 @@ class TokenizationTest extends TestCase
         $tokens = [];
         foreach ($input as $item) {
             $type = $item[0];
-            $args = array_slice($item, 1);
+            $args = \array_slice($item, 1);
             if ($doubleEscaped) {
                 $args[0] = self::unescape($args[0]);
             }
@@ -159,7 +159,7 @@ class TokenizationTest extends TestCase
         $states = [];
         foreach ($stateNames as $stateName) {
             $name = str_replace([' ', '_STATE'], ['_', ''], strtoupper($stateName));
-            $states[] = constant(sprintf('%s::%s', TokenizerState::class, $name));
+            $states[] = \constant(sprintf('%s::%s', TokenizerState::class, $name));
         }
         return $states;
     }
@@ -177,6 +177,6 @@ class TokenizationTest extends TestCase
         }
         [, $offset] = $line;
 
-        return max(0, min($offset + $col - 1, strlen($source)));
+        return max(0, min($offset + $col - 1, \strlen($source)));
     }
 }

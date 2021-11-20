@@ -20,7 +20,7 @@ final class AfterFrameset extends RuleSet
             $data = preg_replace('/[^ \n\t\f]+/S', '', $token->data, -1, $count);
             if ($count > 0) {
                 // TODO: Parse error. Ignore the character tokens.
-                if (strlen($data) === 0) return;
+                if (\strlen($data) === 0) return;
                 $token->data = $data;
             }
             // Insert the character.

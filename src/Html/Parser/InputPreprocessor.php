@@ -13,7 +13,7 @@ final class InputPreprocessor
     {
         // One leading U+FEFF BYTE ORDER MARK character must be ignored if any are present.
         if (str_starts_with($input, self::BOM)) {
-            return substr($input, strlen(self::BOM));
+            return substr($input, \strlen(self::BOM));
         }
 
         return $input;

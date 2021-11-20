@@ -107,7 +107,7 @@ final class Compiler
             case SelectorList::class:
                 /** @var SelectorList $selector */
                 $evaluators = array_map(fn($selector) => $this->doCompile($selector), $selector->selectors);
-                return match (count($evaluators)) {
+                return match (\count($evaluators)) {
                     0 => new NeverEvaluator(),
                     1 => $evaluators[0],
                     default => new ListEvaluator($evaluators),
@@ -118,7 +118,7 @@ final class Compiler
             case CompoundSelector::class:
                 /** @var CompoundSelector $selector */
                 $evaluators = array_map(fn($selector) => $this->doCompile($selector), $selector->selectors);
-                return match (count($evaluators)) {
+                return match (\count($evaluators)) {
                     0 => new NeverEvaluator(),
                     1 => $evaluators[0],
                     default => new CompoundEvaluator($evaluators),

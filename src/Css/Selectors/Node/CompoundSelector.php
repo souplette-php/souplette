@@ -32,7 +32,7 @@ final class CompoundSelector extends Selector implements \IteratorAggregate, \Co
 
     public function count(): int
     {
-        return count($this->selectors);
+        return \count($this->selectors);
     }
 
     public function __toString(): string

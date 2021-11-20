@@ -16,7 +16,7 @@ class SelectorQueryTestCase extends TestCase
     ) {
         foreach (self::elements($doc) as $element) {
             $path = Utils::elementPath($element);
-            $mustMatch = in_array($path, $matchingPaths);
+            $mustMatch = \in_array($path, $matchingPaths);
             $result = SelectorQuery::matches($element, $selectorText);
             $msg = sprintf(
                 "%s %s %s",

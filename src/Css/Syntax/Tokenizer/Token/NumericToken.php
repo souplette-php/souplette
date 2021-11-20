@@ -15,6 +15,6 @@ abstract class NumericToken extends Token
         $this->representation = $value;
         $this->position = $position;
         $this->value = (0 + $value);
-        $this->isInteger = is_integer($this->value);
+        $this->isInteger = \is_integer($this->value);
     }
 }

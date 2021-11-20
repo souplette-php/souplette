@@ -62,7 +62,7 @@ final class AnPlusBStringParser
             $token = $this->tokenStream->current();
             $s .= $token->representation;
             $token = $this->tokenStream->consume();
-        } while (!in_array($token::TYPE, $this->endTokenTypes, true));
+        } while (!\in_array($token::TYPE, $this->endTokenTypes, true));
         return $s;
     }
 }

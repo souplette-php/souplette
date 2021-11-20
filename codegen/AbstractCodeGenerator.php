@@ -55,9 +55,14 @@ abstract class AbstractCodeGenerator
     protected function getCodeStyleRules(): array
     {
         return [
-            '@PSR12' => true,
+            '@PSR2' => true,
             'array_indentation' => true,
-            'no_extra_blank_lines' => ['extra', 'curly_brace_block'],
+            //'declare_strict_types' => true,
+            //'linebreak_after_opening_tag' => false,
+            //'blank_line_after_opening_tag' => false,
+            'no_extra_blank_lines' => [
+                'tokens' => ['extra', 'curly_brace_block', 'square_brace_block'],
+            ],
             'native_function_invocation' => [
                 'include' => ['@all'],
             ],
@@ -69,17 +74,21 @@ abstract class AbstractCodeGenerator
         $bin = realpath(__DIR__.'/../tools/php-cs-fixer.phar');
         if (!$bin) {
             throw new \RuntimeException(
-                'php-cs-fixer.phar. Please run `phive install`.'
+                'php-cs-fixer.phar not found. Please run `phive install`.'
             );
         }
         $cmd = [
             escapeshellarg($bin),
             'fix',
+            '--allow-risky=yes',
             '--quiet',
             '--using-cache=no',
         ];
         if ($rules) {
             $cmd[] = sprintf('--rules=%s', escapeshellarg(json_encode($rules)));
+        }
+        if (version_compare(PHP_VERSION, '8.1', '>=')) {
+            array_unshift($cmd, 'PHP_CS_FIXER_IGNORE_ENV=1');
         }
         $cmd[] = escapeshellarg($file);
         passthru(implode(' ', $cmd));

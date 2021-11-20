@@ -88,7 +88,7 @@ abstract class AbstractTokenStream implements TokenStreamInterface
     public function expectOneOf(TokenType ...$tokenTypes): Token
     {
         $token = $this->current();
-        if (!in_array($token::TYPE, $tokenTypes, true)) {
+        if (!\in_array($token::TYPE, $tokenTypes, true)) {
             throw UnexpectedToken::expectingOneOf($token, ...$tokenTypes);
         }
         return $token;

@@ -17,7 +17,7 @@ final class ParentNodeTest extends TestCase
     public function testChildren(ParentNodeInterface $parent, array $expected)
     {
         $children = $parent->children;
-        Assert::assertCount(count($expected), $children);
+        Assert::assertCount(\count($expected), $children);
         foreach ($expected as $i => $child) {
             Assert::assertSame($child, $children[$i]->tagName);
         }
@@ -112,10 +112,10 @@ final class ParentNodeTest extends TestCase
     public function testPrepend($parent, $nodes, $expectedChildren)
     {
         $parent->prepend(...$nodes);
-        Assert::assertCount(count($expectedChildren), $parent->childNodes);
+        Assert::assertCount(\count($expectedChildren), $parent->childNodes);
         $child = $parent->firstChild;
         foreach ($expectedChildren as $expectedChild) {
-            if (is_string($expectedChild)) {
+            if (\is_string($expectedChild)) {
                 Assert::assertSame($expectedChild, $child->data);
             } else {
                 Assert::assertSame($expectedChild, $child);
@@ -156,10 +156,10 @@ final class ParentNodeTest extends TestCase
     public function testAppend($parent, $nodes, $expectedChildren)
     {
         $parent->append(...$nodes);
-        Assert::assertCount(count($expectedChildren), $parent->childNodes);
+        Assert::assertCount(\count($expectedChildren), $parent->childNodes);
         $child = $parent->firstChild;
         foreach ($expectedChildren as $expectedChild) {
-            if (is_string($expectedChild)) {
+            if (\is_string($expectedChild)) {
                 Assert::assertSame($expectedChild, $child->data);
             } else {
                 Assert::assertSame($expectedChild, $child);

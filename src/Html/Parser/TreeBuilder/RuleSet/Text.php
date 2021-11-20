@@ -18,7 +18,7 @@ final class Text extends RuleSet
         if ($type === TokenType::CHARACTER) {
             if ($tree->shouldSkipNextNewLine && $token->data[0] === "\n") {
                 // we're just after a "textarea" start tag token.
-                if (strlen($token->data) === 1) {
+                if (\strlen($token->data) === 1) {
                     return;
                 }
                 $token->data = substr($token->data, 1);

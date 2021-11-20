@@ -58,7 +58,7 @@ final class NthLastChildEvaluatorTest extends TestCase
         $provider = static function(int $a, int $b, array $indices) use ($dom) {
             $selector = new NthLastChild(new AnPlusB($a, $b));
             foreach ($dom->childNodes as $index => $node) {
-                $mustMatch = in_array($index, $indices, true);
+                $mustMatch = \in_array($index, $indices, true);
                 $key = sprintf(
                     'child n°%d %s %s',
                     $index,

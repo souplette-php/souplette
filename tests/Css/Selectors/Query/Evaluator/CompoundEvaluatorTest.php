@@ -30,7 +30,7 @@ final class CompoundEvaluatorTest extends TestCase
 
         $provider = function(array $indices, Selector $selector) use ($dom) {
             foreach ($dom->childNodes as $index => $node) {
-                $mustMatch = in_array($index, $indices, true);
+                $mustMatch = \in_array($index, $indices, true);
                 $key = sprintf(
                     "node n°%d %s %s",
                     $index,

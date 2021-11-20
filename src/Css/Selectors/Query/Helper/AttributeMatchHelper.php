@@ -42,7 +42,7 @@ final class AttributeMatchHelper
     public static function prefixMatch(string $expected, string $actual, bool $caseInsensitive = false): bool
     {
         return match ($caseInsensitive) {
-            true => strncasecmp($actual, $expected, strlen($expected)) === 0,
+            true => strncasecmp($actual, $expected, \strlen($expected)) === 0,
             false => str_starts_with($actual, $expected),
         };
     }
@@ -50,7 +50,7 @@ final class AttributeMatchHelper
     public static function suffixMatch(string $expected, string $actual, bool $caseInsensitive = false): bool
     {
         return match ($caseInsensitive) {
-            true => substr_compare($actual, $expected, -strlen($expected), null, true) === 0,
+            true => substr_compare($actual, $expected, -\strlen($expected), null, true) === 0,
             false => str_ends_with($actual, $expected),
         };
     }

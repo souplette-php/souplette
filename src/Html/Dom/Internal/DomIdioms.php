@@ -69,9 +69,9 @@ final class DomIdioms
      */
     public static function convertNodesIntoNode(DOMDocument $doc, array $nodes): DOMNode
     {
-        if (count($nodes) === 1) {
+        if (\count($nodes) === 1) {
             $node = $nodes[0];
-            if (is_string($node)) {
+            if (\is_string($node)) {
                 $node = $doc->createTextNode($node);
             }
             return $doc->importNode($node, true);
@@ -79,7 +79,7 @@ final class DomIdioms
 
         $frag = $doc->createDocumentFragment();
         foreach ($nodes as $node) {
-            if (is_string($node)) {
+            if (\is_string($node)) {
                 $node = $doc->createTextNode($node);
             }
             $frag->appendChild($doc->importNode($node, true));
@@ -92,7 +92,7 @@ final class DomIdioms
     public static function findViablePreviousSibling(DOMNode $refNode, array $nodes): ?DOMNode
     {
         for ($sibling = $refNode->previousSibling; $sibling; $sibling = $sibling->previousSibling) {
-            if (!in_array($sibling, $nodes, true)) {
+            if (!\in_array($sibling, $nodes, true)) {
                 return $sibling;
             }
         }
@@ -103,7 +103,7 @@ final class DomIdioms
     public static function findViableNextSibling(DOMNode $refNode, array $nodes): ?DOMNode
     {
         for ($sibling = $refNode->nextSibling; $sibling; $sibling = $sibling->nextSibling) {
-            if (!in_array($sibling, $nodes, true)) {
+            if (!\in_array($sibling, $nodes, true)) {
                 return $sibling;
             }
         }
@@ -133,7 +133,7 @@ final class DomIdioms
         // 1. If element is in the HTML namespace and its node document is an HTML document,
         // then set qualifiedName to qualifiedName in ASCII lowercase.
         if ($node->namespaceURI === Namespaces::HTML && $node->ownerDocument->nodeType === XML_HTML_DOCUMENT_NODE) {
-            $qualifiedName = \strtolower($qualifiedName);
+            $qualifiedName = strtolower($qualifiedName);
         }
         // 2. Return the first attribute in element’s attribute list whose qualified name is qualifiedName;
         // otherwise null.
@@ -147,11 +147,11 @@ final class DomIdioms
 
     public static function splitInputOnAsciiWhitespace(string $input): iterable
     {
-        $token = \strtok($input, self::ASCII_WHITESPACE);
+        $token = strtok($input, self::ASCII_WHITESPACE);
         $i = 0;
         while ($token) {
             yield $i++ => $token;
-            $token = \strtok(self::ASCII_WHITESPACE);
+            $token = strtok(self::ASCII_WHITESPACE);
         }
     }
 }

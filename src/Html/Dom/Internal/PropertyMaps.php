@@ -80,9 +80,9 @@ final class PropertyMaps
     private static function populateCache(string $mode, string $class)
     {
         $props = [];
-        foreach (\class_implements($class) as $interface) {
+        foreach (class_implements($class) as $interface) {
             if (isset(self::PROPERTIES[$mode][$interface])) {
-                $props = \array_merge($props, self::PROPERTIES[$mode][$interface]);
+                $props = array_merge($props, self::PROPERTIES[$mode][$interface]);
             }
         }
         if (!$props) {

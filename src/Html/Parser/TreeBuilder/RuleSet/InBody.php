@@ -62,7 +62,7 @@ final class InBody extends RuleSet
             // a dd, dt, li, optgroup, option, p, rb, rp, rt, rtc, tbody, td, tfoot, th, thead, tr, body or html element,
             // then this is a parse error.
             foreach ($tree->openElements as $node) {
-                if ($node->namespaceURI !== Namespaces::HTML && !in_array($node->localName, [
+                if ($node->namespaceURI !== Namespaces::HTML && !\in_array($node->localName, [
                     'dd', 'dt', 'li',
                     'optgroup', 'option',
                     'p',
@@ -78,7 +78,7 @@ final class InBody extends RuleSet
         } else if ($type === TokenType::CHARACTER) {
             $data = $token->data;
             if ($tree->shouldSkipNextNewLine && $data[0] === "\n") {
-                if (strlen($data) === 1) {
+                if (\strlen($data) === 1) {
                     return;
                 }
                 $data = $token->data = substr($data, 1);

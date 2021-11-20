@@ -36,9 +36,9 @@ final class StringHelper
      */
     public static function translateForCaseInsensitiveSearch(string $what, string $characters): string
     {
-        $characters = \mb_strtolower($characters, 'UTF-8');
-        $lowerChars = implode('', array_unique(\mb_str_split($characters, 1, 'UTF-8')));
-        $upperChars = \mb_strtoupper($lowerChars, 'UTF-8');
+        $characters = mb_strtolower($characters, 'UTF-8');
+        $lowerChars = implode('', array_unique(mb_str_split($characters, 1, 'UTF-8')));
+        $upperChars = mb_strtoupper($lowerChars, 'UTF-8');
 
         return sprintf(
             'translate(%s, %s, %s)',

@@ -48,7 +48,7 @@ final class OrderedTokenSet implements \Countable, \IteratorAggregate, \ArrayAcc
     #[Pure]
     public function isEmpty(): bool
     {
-        return count($this->tokens) === 0;
+        return \count($this->tokens) === 0;
     }
 
     public function contains(string $token): bool
@@ -113,7 +113,7 @@ final class OrderedTokenSet implements \Countable, \IteratorAggregate, \ArrayAcc
     #[Pure]
     public function count(): int
     {
-        return count($this->tokens);
+        return \count($this->tokens);
     }
 
     public function getIterator(): \Traversable

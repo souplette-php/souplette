@@ -24,7 +24,7 @@ final class AfterAfterFrameset extends RuleSet
             if ($count > 0) {
                 // TODO: Parse error.
                 // Ignore the character tokens.
-                if (strlen($data) === 0) return;
+                if (\strlen($data) === 0) return;
                 $token->data = $data;
             }
             InBody::process($token, $tree);

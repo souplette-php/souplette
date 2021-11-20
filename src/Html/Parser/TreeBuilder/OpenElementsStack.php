@@ -102,7 +102,7 @@ final class OpenElementsStack extends Stack
     {
         while (!$this->isEmpty()) {
             $node = $this->pop();
-            if (in_array($node->localName, $tagNames, true) && $node->namespaceURI === $namespace) {
+            if (\in_array($node->localName, $tagNames, true) && $node->namespaceURI === $namespace) {
                 return $node;
             }
         }
@@ -158,7 +158,7 @@ final class OpenElementsStack extends Stack
     {
         $scope = self::SCOPE_BASE;
         foreach ($this as $node) {
-            if (in_array($node->localName, $tagNames, true) && $node->namespaceURI === $namespace) return true;
+            if (\in_array($node->localName, $tagNames, true) && $node->namespaceURI === $namespace) return true;
             if (isset($scope[$node->namespaceURI][$node->localName])) return false;
         }
 
@@ -248,7 +248,7 @@ final class OpenElementsStack extends Stack
     {
         $scope = self::SCOPE_TABLE;
         foreach ($this as $node) {
-            if (in_array($node->localName, $tagNames, true) && $node->namespaceURI === $namespace) return true;
+            if (\in_array($node->localName, $tagNames, true) && $node->namespaceURI === $namespace) return true;
             if (isset($scope[$node->namespaceURI][$node->localName])) return false;
         }
 

@@ -291,8 +291,8 @@ final class SelectorParser
         $forceCase = null;
         if ($token::TYPE === TokenType::IDENT) {
             if (
-                \strcasecmp($token->value,AttributeSelector::CASE_FORCE_INSENSITIVE) === 0
-                || \strcasecmp($token->value, AttributeSelector::CASE_FORCE_SENSITIVE) === 0
+                strcasecmp($token->value,AttributeSelector::CASE_FORCE_INSENSITIVE) === 0
+                || strcasecmp($token->value, AttributeSelector::CASE_FORCE_SENSITIVE) === 0
             ) {
                 $forceCase = $token->value;
                 $this->tokenStream->consumeAndSkipWhitespace();
@@ -327,7 +327,7 @@ final class SelectorParser
         $token = $this->tokenStream->expectOneOf(TokenType::IDENT, TokenType::FUNCTION);
         if ($token::TYPE === TokenType::IDENT) {
             $this->tokenStream->consume();
-            $pseudoClass = \strtolower($token->value);
+            $pseudoClass = strtolower($token->value);
             if (isset(self::LEGACY_PSEUDO_ELEMENTS[$pseudoClass])) {
                 return new PseudoElementSelector($pseudoClass);
             }
@@ -373,7 +373,7 @@ final class SelectorParser
         $token = $this->tokenStream->expectOneOf(TokenType::IDENT, TokenType::FUNCTION);
         if ($token::TYPE === TokenType::IDENT) {
             $this->tokenStream->consume();
-            return new PseudoElementSelector(\strtolower($token->value));
+            return new PseudoElementSelector(strtolower($token->value));
         }
         return $this->parseFunctionalSelector();
     }
@@ -381,7 +381,7 @@ final class SelectorParser
     private function parseFunctionalSelector(): FunctionalSelector
     {
         $token = $this->tokenStream->expect(TokenType::FUNCTION);
-        $name = \strtolower($token->value);
+        $name = strtolower($token->value);
         $this->tokenStream->consumeAndSkipWhitespace();
         return match ($name) {
             'is', 'matches' => $this->parseMatchesAny(),

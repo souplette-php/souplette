@@ -45,7 +45,7 @@ final class ChildNodeTest extends TestCase
         $target->before(...$nodes);
         $expected = $target->previousSibling;
         foreach (array_reverse($nodes) as $node) {
-            if (is_string($node)) {
+            if (\is_string($node)) {
                 Assert::assertSame($expected->data, $node);
             } else {
                 Assert::assertSame($expected, $node);
@@ -94,7 +94,7 @@ final class ChildNodeTest extends TestCase
         $target->after(...$nodes);
         $expected = $target->nextSibling;
         foreach ($nodes as $node) {
-            if (is_string($node)) {
+            if (\is_string($node)) {
                 Assert::assertSame($expected->data, $node);
             } else {
                 Assert::assertSame($expected, $node);
@@ -140,10 +140,10 @@ final class ChildNodeTest extends TestCase
     {
         $parent = $target->parentNode;
         $target->replaceWith(...$nodes);
-        Assert::assertCount(count($nodes), $parent->childNodes);
+        Assert::assertCount(\count($nodes), $parent->childNodes);
         $expected = $parent->firstChild;
         foreach ($nodes as $node) {
-            if (is_string($node)) {
+            if (\is_string($node)) {
                 Assert::assertSame($expected->data, $node);
             } else {
                 Assert::assertSame($expected, $node);
