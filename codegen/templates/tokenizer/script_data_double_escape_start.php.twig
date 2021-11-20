@@ -13,7 +13,7 @@ if ({{ h.is_whitespace() }} || {{ cc_in('/', '>') }}) {
         // Otherwise, switch to the script data escaped state.
         {{ h.advance_to('SCRIPT_DATA_ESCAPED') }}
     }
-} elseif ({{ h.is_alpha() }}) {
+} else if ({{ h.is_alpha() }}) {
     // Append the lowercase version of the current input character to the temporary buffer.
     {{ h.chars_while_alpha() }}
     $this->temporaryBuffer .= strtolower($chars);

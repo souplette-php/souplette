@@ -49,7 +49,7 @@ abstract class AbstractTokenStream implements TokenStreamInterface
                 if ($stack->isEmpty()) {
                     break;
                 }
-            } elseif ($ett = BalancedPairs::getEndTokenType($tt)) {
+            } else if ($ett = BalancedPairs::getEndTokenType($tt)) {
                 $stack->push($ett);
             }
             $tokens[] = $token;

@@ -8,16 +8,16 @@ if ($cc === '<') {
     $this->currentToken->data .= $cc;
     // Switch to the comment less-than sign state.
     {{ h.advance_to('COMMENT_LESS_THAN_SIGN') }}
-} elseif ($cc === '-') {
+} else if ($cc === '-') {
     // Switch to the comment end dash state.
     {{ h.advance_to('COMMENT_END_DASH') }}
-} elseif ($cc === "\0") {
+} else if ($cc === "\0") {
     // This is an unexpected-null-character parse error.
     {{ h.parse_error('UNEXPECTED_NULL_CHARACTER') }}
     // Append a U+FFFD REPLACEMENT CHARACTER character to the comment token's data.
     $this->currentToken->data .= "\u{FFFD}";
     {{ h.consume(current_state) }}
-} elseif ({{ h.is_eof() }}) {
+} else if ({{ h.is_eof() }}) {
     // This is an eof-in-comment parse error.
     {{ h.parse_error('EOF_IN_COMMENT') }}
     // Emit the comment token. Emit an end-of-file token.

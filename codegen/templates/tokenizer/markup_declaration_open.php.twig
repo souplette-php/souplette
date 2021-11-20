@@ -10,12 +10,12 @@ if (0 === \substr_compare($this->input, '--', $this->position, 2)) {
     $this->currentToken = new Comment('');
     // and switch to the comment start state.
     {{ h.update_and_reconsume_in('COMMENT_START') }}
-} elseif (0 === \substr_compare($this->input, 'DOCTYPE', $this->position, 7, true)) {
+} else if (0 === \substr_compare($this->input, 'DOCTYPE', $this->position, 7, true)) {
     // Consume those characters
     $this->position += 7;
     // and switch to the DOCTYPE state.
     {{ h.update_and_reconsume_in('DOCTYPE') }}
-} elseif (0 === \substr_compare($this->input, '[CDATA[', $this->position, 7, true)) {
+} else if (0 === \substr_compare($this->input, '[CDATA[', $this->position, 7, true)) {
     // Consume those characters.
     $this->position += 7;
     {{ h.update_cc() }}

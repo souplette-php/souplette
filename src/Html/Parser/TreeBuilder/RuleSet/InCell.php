@@ -37,7 +37,7 @@ final class InCell extends RuleSet
             $tree->activeFormattingElements->clearUpToLastMarker();
             // Switch the insertion mode to "in row".
             $tree->insertionMode = InsertionModes::IN_ROW;
-        } elseif ($type === TokenType::START_TAG && (
+        } else if ($type === TokenType::START_TAG && (
             $token->name === 'caption'
             || $token->name === 'col'
             || $token->name === 'colgroup'
@@ -57,7 +57,7 @@ final class InCell extends RuleSet
             // Otherwise, close the cell (see below) and reprocess the token.
             self::closeTheCell($tree);
             $tree->processToken($token);
-        } elseif ($type === TokenType::END_TAG && (
+        } else if ($type === TokenType::END_TAG && (
             $token->name === 'body'
             || $token->name === 'caption'
             || $token->name === 'col'
@@ -67,7 +67,7 @@ final class InCell extends RuleSet
             // TODO: Parse error.
             // Ignore the token.
             return;
-        } elseif ($type === TokenType::END_TAG && (
+        } else if ($type === TokenType::END_TAG && (
             $token->name === 'table'
             || $token->name === 'tbody'
             || $token->name === 'tfoot'

@@ -46,7 +46,7 @@ final class DataFile extends TestFile
                 }
                 $currentSection = $heading;
                 $currentTest[$currentSection] = '';
-            } elseif ($currentSection !== null) {
+            } else if ($currentSection !== null) {
                 $currentTest[$currentSection] .= $line;
             }
         }

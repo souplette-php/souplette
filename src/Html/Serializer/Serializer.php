@@ -35,7 +35,7 @@ final class Serializer
             // 4.2 Append the appropriate string from the following list to s:
             if ($currentNode instanceof \DOMElement) {
                 $s .= $this->serializeElement($currentNode);
-            } elseif ($currentNode instanceof \DOMText) {
+            } else if ($currentNode instanceof \DOMText) {
                 // If the parent of current node is a style, script, xmp, iframe, noembed, noframes, or plaintext element,
                 // or if the parent of current node is a noscript element and scripting is enabled for the node,
                 // then append the value of current node's data IDL attribute literally.
@@ -47,19 +47,19 @@ final class Serializer
                     // Otherwise, append the value of current node's data IDL attribute, escaped as described below.
                     $s .= $this->escapeString($currentNode->data);
                 }
-            } elseif ($currentNode instanceof \DOMComment) {
+            } else if ($currentNode instanceof \DOMComment) {
                 // Append the literal string "<!--" ,
                 // followed by the value of current node's data IDL attribute,
                 // followed by the literal string "-->".
                 $s .= "<!--{$currentNode->data}-->";
-            } elseif ($currentNode instanceof \DOMProcessingInstruction) {
+            } else if ($currentNode instanceof \DOMProcessingInstruction) {
                 // Append the literal string "<?",
                 // followed by the value of current node's target IDL attribute,
                 // followed by a single U+0020 SPACE character,
                 // followed by the value of current node's data IDL attribute,
                 // followed by a single U+003E GREATER-THAN SIGN character (>).
                 $s .= "<?{$currentNode->target} {$currentNode->data}>";
-            } elseif ($currentNode instanceof \DOMDocumentType) {
+            } else if ($currentNode instanceof \DOMDocumentType) {
                 // Append the literal string "<!DOCTYPE",
                 // followed by a space (U+0020 SPACE),
                 // followed by the value of current node's name IDL attribute,
@@ -140,12 +140,12 @@ final class Serializer
         $ns = $attr->namespaceURI;
         if (!$ns) {
             return $attr->localName;
-        } elseif ($ns === Namespaces::XML) {
+        } else if ($ns === Namespaces::XML) {
             return "xml:{$attr->localName}" ;
-        } elseif ($ns === Namespaces::XMLNS) {
+        } else if ($ns === Namespaces::XMLNS) {
             // FIXME: there's no such thing as xmlns attributes when using DOMNode objects
             return $attr->localName === 'xmlns' ? 'xmlns' : "xmlns:{$attr->localName}";
-        } elseif ($ns === Namespaces::XLINK) {
+        } else if ($ns === Namespaces::XLINK) {
             return "xlink:{$attr->localName}";
         } else {
             return $attr->nodeName;

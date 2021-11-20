@@ -20,17 +20,17 @@ final class AfterBody extends RuleSet
         if ($type === TokenType::CHARACTER && ctype_space($token->data)) {
             // Process the token using the rules for the "in body" insertion mode.
             InBody::process($token, $tree);
-        } elseif ($type === TokenType::COMMENT) {
+        } else if ($type === TokenType::COMMENT) {
             // Insert a comment as the last child of the first element in the stack of open elements (the html element).
             $tree->insertComment($token, new InsertionLocation($tree->openElements->bottom()));
-        } elseif ($type === TokenType::DOCTYPE) {
+        } else if ($type === TokenType::DOCTYPE) {
             // TODO: Parse error.
             // Ignore the token.
             return;
-        } elseif ($type === TokenType::START_TAG && $token->name === 'html') {
+        } else if ($type === TokenType::START_TAG && $token->name === 'html') {
             // Process the token using the rules for the "in body" insertion mode.
             InBody::process($token, $tree);
-        } elseif ($type === TokenType::END_TAG && $token->name === 'html') {
+        } else if ($type === TokenType::END_TAG && $token->name === 'html') {
             // If the parser was created as part of the HTML fragment parsing algorithm,
             // this is a parse error; ignore the token. (fragment case)
             if ($tree->isBuildingFragment) {
@@ -39,7 +39,7 @@ final class AfterBody extends RuleSet
             }
             // Otherwise, switch the insertion mode to "after after body".
             $tree->insertionMode = InsertionModes::AFTER_AFTER_BODY;
-        } elseif ($type === TokenType::EOF) {
+        } else if ($type === TokenType::EOF) {
             // TODO: stop parsing.
             return;
         } else {

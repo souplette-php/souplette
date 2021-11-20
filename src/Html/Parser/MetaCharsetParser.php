@@ -71,11 +71,11 @@ final class MetaCharsetParser
                     return $charset;
                 }
                 $this->updateTokenizerState($token);
-            } elseif ($tt === TokenType::START_TAG) {
+            } else if ($tt === TokenType::START_TAG) {
                 if (!isset(self::ALLOWED_START_TAGS[$token->name])) {
                     $inHead = false;
                 }
-            } elseif ($tt === TokenType::END_TAG) {
+            } else if ($tt === TokenType::END_TAG) {
                 if (!isset(self::ALLOWED_END_TAGS[$token->name])) {
                     $inHead = false;
                 }
@@ -103,7 +103,7 @@ final class MetaCharsetParser
             if ($name === 'http-equiv' && strcasecmp($value, 'content-type') === 0) {
                 // If the attribute's value is "content-type", then set got pragma to true.
                 $gotPragma = true;
-            } elseif ($charset === null && $name === 'content') {
+            } else if ($charset === null && $name === 'content') {
                 // Apply the algorithm for extracting a character encoding from a meta element,
                 // giving the attribute's value as the string to parse.
                 $charset = self::extractFromMetaContentAttribute($value);
@@ -112,7 +112,7 @@ final class MetaCharsetParser
                 if ($charset) {
                     $needPragma = true;
                 }
-            } elseif ($name === 'charset') {
+            } else if ($name === 'charset') {
                 // Let charset be the result of getting an encoding from the attribute's value,
                 $label = strtolower(trim($value));
                 $charset = EncodingLookup::LABELS[$label] ?? null;

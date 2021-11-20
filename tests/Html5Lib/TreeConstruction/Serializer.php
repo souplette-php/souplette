@@ -20,9 +20,9 @@ final class Serializer
         $indent = str_repeat('  ', $depth);
         if ($node instanceof \DOMDocument) {
             $output[] = '#document';
-        } elseif ($node instanceof \DOMDocumentFragment) {
+        } else if ($node instanceof \DOMDocumentFragment) {
             $output[] = '#document-fragment';
-        } elseif ($node instanceof \DOMDocumentType) {
+        } else if ($node instanceof \DOMDocumentType) {
             if ($node->name) {
                 if ($node->publicId || $node->systemId) {
                     $output[] = sprintf(
@@ -38,9 +38,9 @@ final class Serializer
             } else {
                 $output[] = sprintf('|%s<!DOCTYPE >', $indent);
             }
-        } elseif ($node instanceof \DOMComment) {
+        } else if ($node instanceof \DOMComment) {
             $output[] = sprintf('|%s<!-- %s -->', $indent, $node->data);
-        } elseif ($node instanceof \DOMText) {
+        } else if ($node instanceof \DOMText) {
             $output[] = sprintf('|%s"%s"', $indent, $node->data);
         } else {
             $output[] = sprintf('|%s<%s>', $indent, $this->serializeTagName($node));
@@ -94,7 +94,7 @@ final class Serializer
     {
         if ($node->namespaceURI === Namespaces::HTML && $attr->namespaceURI === Namespaces::XML) {
             $name = XmlNameEscaper::escape($attr->nodeName);
-        } elseif ($attr->namespaceURI) {
+        } else if ($attr->namespaceURI) {
             $name = sprintf('%s %s', Namespaces::PREFIXES[$attr->namespaceURI], XmlNameEscaper::unescape($attr->localName));
         } else {
             $name = XmlNameEscaper::unescape($attr->localName);

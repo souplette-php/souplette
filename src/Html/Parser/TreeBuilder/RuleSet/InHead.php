@@ -29,18 +29,18 @@ final class InHead extends RuleSet
                 $tree->insertCharacter($token, substr($token->data, 0, $l));
                 $token->data = substr($token->data, $l);
             }
-        } elseif ($type === TokenType::COMMENT) {
+        } else if ($type === TokenType::COMMENT) {
             $tree->insertComment($token);
             return;
-        } elseif ($type === TokenType::DOCTYPE) {
+        } else if ($type === TokenType::DOCTYPE) {
             // TODO: Parse error. Ignore the token.
             return;
-        } elseif ($type === TokenType::START_TAG) {
+        } else if ($type === TokenType::START_TAG) {
             $name = $token->name;
             if ($name === 'html') {
                 InBody::process($token, $tree);
                 return;
-            } elseif (
+            } else if (
                 $name === 'base'
                 || $name === 'basefont'
                 || $name === 'bgsound'
@@ -50,7 +50,7 @@ final class InHead extends RuleSet
                 $tree->openElements->pop();
                 $tree->acknowledgeSelfClosingFlag($token);
                 return;
-            } elseif ($name === 'meta') {
+            } else if ($name === 'meta') {
                 $tree->insertElement($token);
                 $tree->openElements->pop();
                 $tree->acknowledgeSelfClosingFlag($token);
@@ -64,7 +64,7 @@ final class InHead extends RuleSet
                         if (isset(EncodingLookup::LABELS[$label])) {
                             $tree->changeTheEncoding(EncodingLookup::LABELS[$label]);
                         }
-                    } elseif (
+                    } else if (
                         isset($token->attributes['http-equiv'], $token->attributes['content'])
                         && strcasecmp($token->attributes['http-equiv'], 'content-type') === 0
                     ) {
@@ -82,11 +82,11 @@ final class InHead extends RuleSet
                     }
                 }
                 return;
-            } elseif ($name === 'title') {
+            } else if ($name === 'title') {
                 // Follow the generic RCDATA element parsing algorithm.
                 $tree->followTheGenericTextElementParsingAlgorithm($token);
                 return;
-            } elseif (
+            } else if (
                 ($tree->scriptingEnabled && $name === 'noscript')
                 || $name === 'noframes'
                 || $name === 'style'
@@ -94,11 +94,11 @@ final class InHead extends RuleSet
                 // Follow the generic RAWTEXT element parsing algorithm.
                 $tree->followTheGenericTextElementParsingAlgorithm($token, true);
                 return;
-            } elseif (!$tree->scriptingEnabled && $name === 'noscript') {
+            } else if (!$tree->scriptingEnabled && $name === 'noscript') {
                 $tree->insertElement($token);
                 $tree->insertionMode = InsertionModes::IN_HEAD_NOSCRIPT;
                 return;
-            } elseif ($name === 'script') {
+            } else if ($name === 'script') {
                 $location = $tree->appropriatePlaceForInsertingANode();
                 $node = $tree->createElement($token, Namespaces::HTML, $location->parent);
                 $location->insert($node);
@@ -107,7 +107,7 @@ final class InHead extends RuleSet
                 $tree->originalInsertionMode = $tree->insertionMode;
                 $tree->insertionMode = InsertionModes::TEXT;
                 return;
-            } elseif ($name === 'template') {
+            } else if ($name === 'template') {
                 // Insert an HTML element for the token.
                 $tree->insertElement($token);
                 // Insert a marker at the end of the list of active formatting elements.
@@ -119,23 +119,23 @@ final class InHead extends RuleSet
                 // Push "in template" onto the stack of template insertion modes so that it is the new current template insertion mode.
                 $tree->templateInsertionModes->push(InsertionModes::IN_TEMPLATE);
                 return;
-            } elseif ($name === 'head') {
+            } else if ($name === 'head') {
                 // TODO: Parse error. Ignore the token.
                 return;
             }
-        } elseif ($type === TokenType::END_TAG) {
+        } else if ($type === TokenType::END_TAG) {
             $name = $token->name;
             if ($name === 'head') {
                 $tree->openElements->pop();
                 $tree->insertionMode = InsertionModes::AFTER_HEAD;
                 return;
-            } elseif (
+            } else if (
                 $name === 'body'
                 || $name === 'html'
                 || $name === 'br'
             ) {
                 // Act as described in the "anything else" entry below.
-            } elseif ($name === 'template') {
+            } else if ($name === 'template') {
                 // If there is no template element on the stack of open elements, then this is a parse error; ignore the token.
                 if (!$tree->openElements->containsTag('template')) {
                     // TODO: Parse error

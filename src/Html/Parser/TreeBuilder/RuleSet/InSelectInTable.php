@@ -32,7 +32,7 @@ final class InSelectInTable extends RuleSet
             $tree->resetInsertionModeAppropriately();
             // Reprocess the token.
             $tree->processToken($token);
-        } elseif ($type === TokenType::END_TAG && (
+        } else if ($type === TokenType::END_TAG && (
             $token->name === 'caption'
             || $token->name === 'table'
             || $token->name === 'tbody'

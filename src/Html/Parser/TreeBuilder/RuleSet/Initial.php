@@ -21,9 +21,9 @@ final class Initial extends RuleSet
         if ($type === TokenType::CHARACTER && ctype_space($token->data)) {
             // Ignore the token.
             return;
-        } elseif ($type === TokenType::COMMENT) {
+        } else if ($type === TokenType::COMMENT) {
             $tree->insertComment($token, new InsertionLocation($tree->document));
-        } elseif ($type === TokenType::DOCTYPE) {
+        } else if ($type === TokenType::DOCTYPE) {
             // TODO: If the DOCTYPE token's name is not a case-sensitive match for the string "html",
             // or the token's public identifier is not missing,
             // or the token's system identifier is neither missing nor a case-sensitive match for the string "about:legacy-compat",
@@ -44,7 +44,7 @@ final class Initial extends RuleSet
                 || !$sys && $pub && preg_match(self::MISSING_SYSTEM_PUBLIC_PATTERN, $pub)
             ) {
                 $tree->compatMode = DocumentModes::QUIRKS;
-            } elseif (
+            } else if (
                 $pub && preg_match(self::PUBLIC_ID_LIMITED_QUIRKS_PATTERN, $pub)
                 || $sys && $pub && preg_match(self::MISSING_SYSTEM_PUBLIC_PATTERN, $pub)
             ) {

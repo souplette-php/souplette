@@ -85,7 +85,7 @@ abstract class AbstractTokenizer
                 }
                 $token->attributes = $attrs;
             }
-        } elseif ($token::TYPE === TokenType::END_TAG) {
+        } else if ($token::TYPE === TokenType::END_TAG) {
             /** @var EndTag $token */
             if ($token->attributes) {
                 // This is an end-tag-with-attributes parse error.

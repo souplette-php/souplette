@@ -40,9 +40,9 @@ final class AnPlusBStringParser
         if (preg_match(self::SYNTAX, $input, $m, PREG_UNMATCHED_AS_NULL)) {
             if (isset($m['odd'])) {
                 return new AnPlusB(2, 1);
-            } elseif (isset($m['even'])) {
+            } else if (isset($m['even'])) {
                 return new AnPlusB(2, 0);
-            } elseif (isset($m['int'])) {
+            } else if (isset($m['int'])) {
                 return new AnPlusB(0, (int)$m['int']);
             } else {
                 $aSign = $m['a_sign'] === '-' ? -1 : 1;

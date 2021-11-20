@@ -5,19 +5,19 @@
 if ({{ h.is_whitespace() }}) {
     // Switch to the before attribute name state.
     {{ h.advance_to('BEFORE_ATTRIBUTE_NAME') }}
-} elseif ($cc === '/') {
+} else if ($cc === '/') {
     // Switch to the self-closing start tag state.
     {{ h.advance_to('SELF_CLOSING_START_TAG') }}
-} elseif ($cc === '>') {
+} else if ($cc === '>') {
     // Switch to the data state. Emit the current tag token.
     {{ h.emit_and_resume_in('DATA') }}
-} elseif ($cc === "\0") {
+} else if ($cc === "\0") {
     // This is an unexpected-null-character parse error.
     {{ h.parse_error('UNEXPECTED_NULL_CHARACTER') }}
     // Append a U+FFFD REPLACEMENT CHARACTER character to the current tag token's tag name.
     $this->currentToken->name .= "\u{FFFD}";
     {{ h.consume(current_state) }}
-} elseif ({{ h.is_eof() }}) {
+} else if ({{ h.is_eof() }}) {
     // This is an eof-in-tag parse error.
     {{ h.parse_error('EOF_IN_TAG') }}
     // Emit an end-of-file token.

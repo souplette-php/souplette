@@ -6,10 +6,10 @@
 if ({{ h.is_whitespace() }}) {
     // Ignore the character.
     {{ h.consume(current_state) }}
-} elseif ($cc === '>') {
+} else if ($cc === '>') {
     // Switch to the data state. Emit the current DOCTYPE token.
     {{ h.emit_and_resume_in('DATA') }}
-} elseif ({{ h.is_eof() }}) {
+} else if ({{ h.is_eof() }}) {
     // This is an eof-in-doctype parse error.
     {{ h.parse_error('EOF_IN_DOCTYPE') }}
     // Set the DOCTYPE token's force-quirks flag to on.

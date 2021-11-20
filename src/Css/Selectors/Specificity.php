@@ -10,11 +10,10 @@ use JetBrains\PhpStorm\Pure;
 final class Specificity
 {
     public function __construct(
-        private int $a = 0,
-        private int $b = 0,
-        private int $c = 0,
-    )
-    {
+        public readonly int $a = 0,
+        public readonly int $b = 0,
+        public readonly int $c = 0,
+    ) {
     }
 
     #[Pure]

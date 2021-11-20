@@ -13,9 +13,9 @@ final class EncodingSniffer
     {
         if (str_starts_with($input, "\xEF\xBB\xBF")) {
             return EncodingLookup::UTF_8;
-        } elseif (str_starts_with($input, "\xFE\xFF")) {
+        } else if (str_starts_with($input, "\xFE\xFF")) {
             return EncodingLookup::UTF_16BE;
-        } elseif (str_starts_with($input, "\xFF\xFE")) {
+        } else if (str_starts_with($input, "\xFF\xFE")) {
             return EncodingLookup::UTF_16LE;
         }
         return null;

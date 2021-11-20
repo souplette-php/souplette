@@ -19,7 +19,7 @@ final class AfterAfterFrameset extends RuleSet
         if ($type === TokenType::COMMENT) {
             // Insert a comment as the last child of the Document object.
             $tree->insertComment($token, new InsertionLocation($tree->document));
-        } elseif ($type === TokenType::CHARACTER) {
+        } else if ($type === TokenType::CHARACTER) {
             $data = preg_replace('/[^ \n\t\f]+/S', '', $token->data, -1, $count);
             if ($count > 0) {
                 // TODO: Parse error.
@@ -28,17 +28,17 @@ final class AfterAfterFrameset extends RuleSet
                 $token->data = $data;
             }
             InBody::process($token, $tree);
-        } elseif (
+        } else if (
             $type === TokenType::DOCTYPE
             || ($type === TokenType::CHARACTER && ctype_space($token->data))
             || ($type === TokenType::START_TAG && $token->name === 'html')
         ) {
             // Process the token using the rules for the "in body" insertion mode.
             InBody::process($token, $tree);
-        } elseif ($type === TokenType::EOF) {
+        } else if ($type === TokenType::EOF) {
             // TODO: Stop parsing.
             return;
-        } elseif ($type === TokenType::START_TAG && $token->name === 'noframes') {
+        } else if ($type === TokenType::START_TAG && $token->name === 'noframes') {
             // Process the token using the rules for the "in head" insertion mode.
             InHead::process($token, $tree);
         } else {

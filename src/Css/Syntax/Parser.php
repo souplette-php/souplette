@@ -135,13 +135,15 @@ final class Parser
     {
         // 1. Repeatedly consume a component value until an <EOF-token> is returned,
         //    appending the returned values (except the final <EOF-token>) into a list.
-        $list = [];
+        $values = [];
         do {
-            $list[] = $this->consumeComponentValue();
+            if ($value = $this->consumeComponentValue()) {
+                $values[] = $value;
+            }
             $token = $this->tokenStream->current();
         } while ($token::TYPE !== TokenType::EOF);
         // Return the list.
-        return $list;
+        return $values;
     }
 
     public function parseCommaSeparatedComponentValueList(): array
@@ -202,7 +204,7 @@ final class Parser
                 if ($rule = $this->consumeQualifiedRule()) {
                     $rules[] = $rule;
                 }
-            } elseif ($tt === TokenType::AT_KEYWORD) {
+            } else if ($tt === TokenType::AT_KEYWORD) {
                 // Reconsume the current input token.
                 // Consume an at-rule, and append the returned value to the list of rules.
                 $rules[] = $this->consumeAtRule();
@@ -323,7 +325,7 @@ final class Parser
                 // Consume an at-rule.
                 // Append the returned rule to the list of declarations.
                 $declarations[] = $this->consumeAtRule();
-            } elseif ($tt === TokenType::IDENT) {
+            } else if ($tt === TokenType::IDENT) {
                 // Initialize a temporary list initially filled with the current input token.
                 // As long as the next input token is anything other than a <semicolon-token> or <EOF-token>,
                 // consume a component value and append it to the temporary list.
@@ -383,9 +385,8 @@ final class Parser
 
     /**
      * @see https://www.w3.org/TR/css-syntax-3/#consume-component-value
-     * @return CssFunction|CssSimpleBlock|Token
      */
-    private function consumeComponentValue(): SyntaxNode
+    private function consumeComponentValue(): CssFunction|CssSimpleBlock|Token
     {
         // Consume the next input token.
         $token = $this->tokenStream->current();

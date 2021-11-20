@@ -18,9 +18,9 @@ final class AnPlusB extends CssValue
         // 1.
         if ($this->a === 0) {
             return (string)$this->b;
-        } elseif ($this->a === 2 && $this->b === 0) {
+        } else if ($this->a === 2 && $this->b === 0) {
             return 'even';
-        } elseif ($this->a === 2 && $this->b === 1) {
+        } else if ($this->a === 2 && $this->b === 1) {
             return 'odd';
         }
         // 2.
@@ -28,7 +28,7 @@ final class AnPlusB extends CssValue
         // 3.
         if ($this->a === 1) {
             $result .= 'n';
-        } elseif ($this->a === -1) {
+        } else if ($this->a === -1) {
             $result .= '-n';
         } else {
             $result .= "{$this->a}n";
@@ -36,7 +36,7 @@ final class AnPlusB extends CssValue
         // 4.
         if ($this->b > 0) {
             $result .= "+{$this->b}";
-        } elseif ($this->b < 0) {
+        } else if ($this->b < 0) {
             $result .= $this->b;
         }
         // 5.

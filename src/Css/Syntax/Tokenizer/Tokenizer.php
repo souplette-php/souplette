@@ -162,7 +162,7 @@ final class Tokenizer implements \IteratorAggregate
             // 3. Return the <dimension-token>.
             $unit = $this->consumeName();
             return new Dimension($number, $unit, $start);
-        } elseif ($cc === '%') {
+        } else if ($cc === '%') {
             // Otherwise, if the next input code point is '%', consume it.
             $this->position++;
             // Create a <percentage-token> with the same value as number, and return it.
@@ -197,7 +197,7 @@ final class Tokenizer implements \IteratorAggregate
                 // Otherwise, consume a url token, and return it.
                 return $this->consumeUrlToken();
             }
-        } elseif ($cc === '(') {
+        } else if ($cc === '(') {
             // Otherwise, if the next input code point is "(", consume it.
             ++$this->position;
             // Create a <function-token> with its value set to string and return it.

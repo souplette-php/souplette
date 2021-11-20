@@ -21,7 +21,7 @@ final class InTable extends RuleSet
             // Process the token using the rules for the "in body" insertion mode.
             InBody::process($token, $tree);
             return;
-        } elseif ($type === TokenType::CHARACTER && (
+        } else if ($type === TokenType::CHARACTER && (
             $currentNode->localName === 'table'
             || $currentNode->localName === 'tbody'
             || $currentNode->localName === 'tfoot'
@@ -36,14 +36,14 @@ final class InTable extends RuleSet
             $tree->insertionMode = InsertionModes::IN_TABLE_TEXT;
             $tree->processToken($token);
             return;
-        } elseif ($type === TokenType::COMMENT) {
+        } else if ($type === TokenType::COMMENT) {
             $tree->insertComment($token);
             return;
-        } elseif ($type === TokenType::DOCTYPE) {
+        } else if ($type === TokenType::DOCTYPE) {
             // TODO: Parse error.
             // Ignore the token
             return;
-        } elseif ($type === TokenType::START_TAG) {
+        } else if ($type === TokenType::START_TAG) {
             $tagName = $token->name;
             if ($tagName === 'caption') {
                 // Clear the stack back to a table context. (See below.)
@@ -54,14 +54,14 @@ final class InTable extends RuleSet
                 $tree->insertElement($token);
                 $tree->insertionMode = InsertionModes::IN_CAPTION;
                 return;
-            } elseif ($tagName === 'colgroup') {
+            } else if ($tagName === 'colgroup') {
                 // Clear the stack back to a table context. (See below.)
                 self::clearTheStackBackToATableContext($tree);
                 // Insert an HTML element for the token, then switch the insertion mode to "in column group".
                 $tree->insertElement($token);
                 $tree->insertionMode = InsertionModes::IN_COLUMN_GROUP;
                 return;
-            } elseif ($tagName === 'col') {
+            } else if ($tagName === 'col') {
                 // Clear the stack back to a table context. (See below.)
                 self::clearTheStackBackToATableContext($tree);
                 // Insert an HTML element for a "colgroup" start tag token with no attributes,
@@ -71,7 +71,7 @@ final class InTable extends RuleSet
                 // Reprocess the current token.
                 $tree->processToken($token);
                 return;
-            } elseif (
+            } else if (
                 $tagName === 'tbody'
                 || $tagName === 'tfoot'
                 || $tagName === 'thead'
@@ -82,7 +82,7 @@ final class InTable extends RuleSet
                 $tree->insertElement($token);
                 $tree->insertionMode = InsertionModes::IN_TABLE_BODY;
                 return;
-            } elseif (
+            } else if (
                 $tagName === 'td'
                 || $tagName === 'th'
                 || $tagName === 'tr'
@@ -96,7 +96,7 @@ final class InTable extends RuleSet
                 // Reprocess the current token.
                 $tree->processToken($token);
                 return;
-            } elseif ($tagName === 'table') {
+            } else if ($tagName === 'table') {
                 // TODO: Parse error.
                 // If the stack of open elements does not have a table element in table scope, ignore the token.
                 if (!$tree->openElements->hasTagInScope('table')) {
@@ -110,7 +110,7 @@ final class InTable extends RuleSet
                 // Reprocess the token.
                 $tree->processToken($token);
                 return;
-            } elseif (
+            } else if (
                 $tagName === 'style'
                 || $tagName === 'script'
                 || $tagName === 'template'
@@ -118,7 +118,7 @@ final class InTable extends RuleSet
                 // Process the token using the rules for the "in head" insertion mode.
                 InHead::process($token, $tree);
                 return;
-            } elseif ($tagName === 'input') {
+            } else if ($tagName === 'input') {
                 // If the token does not have an attribute with the name "type",
                 // or if it does, but that attribute's value is not an ASCII case-insensitive match for the string "hidden",
                 // then: act as described in the "anything else" entry below.
@@ -137,7 +137,7 @@ final class InTable extends RuleSet
                 // Acknowledge the token's self-closing flag, if it is set.
                 $tree->acknowledgeSelfClosingFlag($token);
                 return;
-            } elseif ($tagName === 'form') {
+            } else if ($tagName === 'form') {
                 // TODO: Parse error.
                 // If there is a template element on the stack of open elements,
                 // or if the form element pointer is not null, ignore the token.
@@ -152,7 +152,7 @@ final class InTable extends RuleSet
                 $tree->openElements->pop();
                 return;
             }
-        } elseif ($type === TokenType::END_TAG) {
+        } else if ($type === TokenType::END_TAG) {
             $tagName = $token->name;
             if ($tagName === 'table') {
                 // If the stack of open elements does not have a table element in table scope,
@@ -167,7 +167,7 @@ final class InTable extends RuleSet
                 // Reset the insertion mode appropriately.
                 $tree->resetInsertionModeAppropriately();
                 return;
-            } elseif (
+            } else if (
                 $tagName === 'body'
                 || $tagName === 'caption'
                 || $tagName === 'col'
@@ -183,7 +183,7 @@ final class InTable extends RuleSet
                 // TODO: Parse error.
                 // Ignore the token.
                 return;
-            } elseif ($tagName === 'template') {
+            } else if ($tagName === 'template') {
                 // Process the token using the rules for the "in head" insertion mode.
                 InHead::process($token, $tree);
                 return;

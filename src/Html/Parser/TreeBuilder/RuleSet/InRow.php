@@ -24,7 +24,7 @@ final class InRow extends RuleSet
             $tree->insertionMode = InsertionModes::IN_CELL;
             // Insert a marker at the end of the list of active formatting elements.
             $tree->activeFormattingElements->push(null);
-        } elseif ($type === TokenType::END_TAG && $token->name === 'tr') {
+        } else if ($type === TokenType::END_TAG && $token->name === 'tr') {
             // If the stack of open elements does not have a tr element in table scope,
             // this is a parse error; ignore the token.
             if (!$tree->openElements->hasTagInScope('tr')) {
@@ -38,7 +38,7 @@ final class InRow extends RuleSet
             $tree->openElements->pop();
             // Switch the insertion mode to "in table body".
             $tree->insertionMode = InsertionModes::IN_TABLE_BODY;
-        } elseif (
+        } else if (
             ($type === TokenType::START_TAG && (
                 $token->name === 'caption'
                 || $token->name === 'col'
@@ -66,7 +66,7 @@ final class InRow extends RuleSet
             $tree->insertionMode = InsertionModes::IN_TABLE_BODY;
             // Reprocess the token.
             $tree->processToken($token);
-        }  elseif ($type === TokenType::END_TAG && (
+        }  else if ($type === TokenType::END_TAG && (
             $token->name === 'tbody'
             || $token->name === 'tfoot'
             || $token->name === 'thead'
@@ -90,7 +90,7 @@ final class InRow extends RuleSet
             $tree->insertionMode = InsertionModes::IN_TABLE_BODY;
             // Reprocess the token.
             $tree->processToken($token);
-        } elseif ($type === TokenType::END_TAG && (
+        } else if ($type === TokenType::END_TAG && (
             $token->name === 'body'
             || $token->name === 'caption'
             || $token->name === 'col'

@@ -22,7 +22,7 @@ final class InTableBody extends RuleSet
             // Insert an HTML element for the token, then switch the insertion mode to "in row".
             $tree->insertElement($token);
             $tree->insertionMode = InsertionModes::IN_ROW;
-        } elseif ($type === TokenType::START_TAG && ($token->name === 'th' || $token->name === 'td')) {
+        } else if ($type === TokenType::START_TAG && ($token->name === 'th' || $token->name === 'td')) {
             // TODO: Parse error.
             // Clear the stack back to a table body context.
             self::clearTheStackBackToATableBodyContext($tree);
@@ -32,7 +32,7 @@ final class InTableBody extends RuleSet
             $tree->insertionMode = InsertionModes::IN_ROW;
             // Reprocess the current token.
             $tree->processToken($token);
-        } elseif ($type === TokenType::END_TAG && (
+        } else if ($type === TokenType::END_TAG && (
             $token->name === 'tbody'
             || $token->name === 'tfoot'
             || $token->name === 'thead'
@@ -49,7 +49,7 @@ final class InTableBody extends RuleSet
             // Pop the current node from the stack of open elements. Switch the insertion mode to "in table".
             $tree->openElements->pop();
             $tree->insertionMode = InsertionModes::IN_TABLE;
-        } elseif (
+        } else if (
             ($type === TokenType::START_TAG && (
                 $token->name === 'caption'
                 || $token->name === 'col'
@@ -75,7 +75,7 @@ final class InTableBody extends RuleSet
             $tree->insertionMode = InsertionModes::IN_TABLE;
             // Reprocess the token.
             $tree->processToken($token);
-        } elseif ($type === TokenType::END_TAG && (
+        } else if ($type === TokenType::END_TAG && (
             $token->name === 'body'
             || $token->name === 'caption'
             || $token->name === 'col'

@@ -6,7 +6,7 @@ if ($cc === '>') {
     $this->currentToken->selfClosing = true;
     // Switch to the data state. Emit the current tag token.
     {{ h.emit_and_resume_in('DATA') }}
-} elseif ({{ h.is_eof() }}) {
+} else if ({{ h.is_eof() }}) {
     // This is an eof-in-tag parse error.
     {{ h.parse_error('EOF_IN_TAG') }}
     // Emit an end-of-file token.

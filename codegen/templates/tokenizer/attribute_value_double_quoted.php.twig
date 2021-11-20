@@ -6,18 +6,18 @@
 if ($cc === '"') {
     // Switch to the after attribute value (quoted) state.
     {{ h.advance_to('AFTER_ATTRIBUTE_VALUE_QUOTED') }}
-} elseif ($cc === '&') {
+} else if ($cc === '&') {
     // Set the return state to the attribute value (double-quoted) state.
     {{ h.set_return_state(current_state) }}
     // Switch to the character reference state.
     {{ h.advance_to('CHARACTER_REFERENCE') }}
-} elseif ($cc === "\0") {
+} else if ($cc === "\0") {
     // This is an unexpected-null-character parse error.
     {{ h.parse_error('UNEXPECTED_NULL_CHARACTER') }}
     // Append a U+FFFD REPLACEMENT CHARACTER character to the current attribute's value.
     {{ h.append_to_attr_value('"\\u{FFFD}"') }}
     {{ h.consume(current_state) }}
-} elseif ({{ h.is_eof() }}) {
+} else if ({{ h.is_eof() }}) {
     // This is an eof-in-tag parse error.
     {{ h.parse_error('EOF_IN_TAG') }}
     // Emit an end-of-file token.

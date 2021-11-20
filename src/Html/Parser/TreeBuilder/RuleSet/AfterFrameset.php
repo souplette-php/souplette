@@ -25,22 +25,22 @@ final class AfterFrameset extends RuleSet
             }
             // Insert the character.
             $tree->insertCharacter($token);
-        } elseif ($type === TokenType::COMMENT) {
+        } else if ($type === TokenType::COMMENT) {
             // Insert a comment.
             $tree->insertComment($token);
-        } elseif ($type === TokenType::DOCTYPE) {
+        } else if ($type === TokenType::DOCTYPE) {
             // TODO: Parse error. Ignore the token.
             return;
-        } elseif ($type === TokenType::START_TAG && $token->name === 'html') {
+        } else if ($type === TokenType::START_TAG && $token->name === 'html') {
             // Process the token using the rules for the "in body" insertion mode.
             InBody::process($token, $tree);
-        } elseif ($type === TokenType::END_TAG && $token->name === 'html') {
+        } else if ($type === TokenType::END_TAG && $token->name === 'html') {
             // Switch the insertion mode to "after after frameset".
             $tree->insertionMode = InsertionModes::AFTER_AFTER_FRAMESET;
-        } elseif ($type === TokenType::START_TAG && $token->name === 'noframes') {
+        } else if ($type === TokenType::START_TAG && $token->name === 'noframes') {
             // Process the token using the rules for the "in head" insertion mode.
             InHead::process($token, $tree);
-        } elseif ($type === TokenType::EOF) {
+        } else if ($type === TokenType::EOF) {
             // TODO: Stop parsing.
             return;
         } else {

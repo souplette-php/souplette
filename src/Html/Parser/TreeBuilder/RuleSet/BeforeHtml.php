@@ -21,10 +21,10 @@ final class BeforeHtml extends RuleSet
         if ($type === TokenType::DOCTYPE) {
             // TODO: Parse error. Ignore the token.
             return;
-        } elseif ($type === TokenType::COMMENT) {
+        } else if ($type === TokenType::COMMENT) {
             $tree->insertComment($token, new InsertionLocation($tree->document));
             return;
-        } elseif ($type === TokenType::CHARACTER) {
+        } else if ($type === TokenType::CHARACTER) {
             if (ctype_space($token->data)) {
                 // Ignore the token.
                 return;
@@ -32,7 +32,7 @@ final class BeforeHtml extends RuleSet
                 $token->data = ltrim($token->data, " \n\t\f");
                 goto ANYTHING_ELSE;
             }
-        } elseif ($type === TokenType::START_TAG && $token->name === 'html') {
+        } else if ($type === TokenType::START_TAG && $token->name === 'html') {
             // Create an element for the token in the HTML namespace, with the Document as the intended parent.
             $element = $tree->createElement($token, Namespaces::HTML, $tree->document);
             // Append it to the Document object.
@@ -42,7 +42,7 @@ final class BeforeHtml extends RuleSet
             // Switch the insertion mode to "before head".
             $tree->insertionMode = InsertionModes::BEFORE_HEAD;
             return;
-        } elseif ($type === TokenType::END_TAG) {
+        } else if ($type === TokenType::END_TAG) {
             if ($token->name === 'head' || $token->name === 'body' || $token->name === 'html' || $token->name === 'br') {
                 // Act as described in the "anything else" entry below.
                 goto ANYTHING_ELSE;

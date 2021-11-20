@@ -21,21 +21,21 @@ final class BeforeHead extends RuleSet
             if ($l = strspn($token->data, " \n\t\f")) {
                 $token->data = substr($token->data, $l);
             }
-        } elseif ($type === TokenType::COMMENT) {
+        } else if ($type === TokenType::COMMENT) {
             $tree->insertComment($token);
             return;
-        } elseif ($type === TokenType::DOCTYPE) {
+        } else if ($type === TokenType::DOCTYPE) {
             // TODO: Parse error. Ignore the token.
             return;
-        } elseif ($type === TokenType::START_TAG && $token->name === 'html') {
+        } else if ($type === TokenType::START_TAG && $token->name === 'html') {
             InBody::process($token, $tree);
             return;
-        } elseif ($type === TokenType::START_TAG && $token->name === 'head') {
+        } else if ($type === TokenType::START_TAG && $token->name === 'head') {
             $head = $tree->insertElement($token);
             $tree->headElement = $head;
             $tree->insertionMode = InsertionModes::IN_HEAD;
             return;
-        } elseif ($type === TokenType::END_TAG) {
+        } else if ($type === TokenType::END_TAG) {
             if ($token->name === 'head' || $token->name === 'body' || $token->name === 'html' || $token->name === 'br') {
                 // Act as described in the "anything else" entry below.
             } else {

@@ -75,7 +75,7 @@ final class InBody extends RuleSet
             }
             // 2. TODO: Stop parsing
             return;
-        } elseif ($type === TokenType::CHARACTER) {
+        } else if ($type === TokenType::CHARACTER) {
             $data = $token->data;
             if ($tree->shouldSkipNextNewLine && $data[0] === "\n") {
                 if (strlen($data) === 1) {
@@ -85,7 +85,7 @@ final class InBody extends RuleSet
             }
             if ($data === "\0") {
                 // TODO: Parse error. Ignore the token.
-            } elseif (ctype_space($data)) {
+            } else if (ctype_space($data)) {
                 // Reconstruct the active formatting elements, if any.
                 $tree->reconstructTheListOfActiveElements();
                 // Insert the token's character.
@@ -99,13 +99,13 @@ final class InBody extends RuleSet
                 $tree->framesetOK = false;
             }
             return;
-        } elseif ($type === TokenType::COMMENT) {
+        } else if ($type === TokenType::COMMENT) {
             $tree->insertComment($token);
             return;
-        } elseif ($type === TokenType::DOCTYPE) {
+        } else if ($type === TokenType::DOCTYPE) {
             // TODO: Parse error. Ignore the token.
             return;
-        } elseif ($type === TokenType::START_TAG) {
+        } else if ($type === TokenType::START_TAG) {
             $tagName = $token->name;
             if ($tagName === 'html') {
                 // TODO: Parse error.
@@ -120,11 +120,11 @@ final class InBody extends RuleSet
                     $tree->mergeAttributes($token, $tree->openElements->bottom());
                 }
                 return;
-            } elseif (isset(self::IN_HEAD_START_TAGS[$tagName])) {
+            } else if (isset(self::IN_HEAD_START_TAGS[$tagName])) {
                 // Process the token using the rules for the "in head" insertion mode.
                 InHead::process($token, $tree);
                 return;
-            } elseif ($tagName === 'body') {
+            } else if ($tagName === 'body') {
                 // TODO: Parse error.
                 $count = $tree->openElements->count();
                 if (
@@ -149,7 +149,7 @@ final class InBody extends RuleSet
                     $tree->mergeAttributes($token, $body);
                 }
                 return;
-            } elseif ($tagName === 'frameset') {
+            } else if ($tagName === 'frameset') {
                 // TODO: Parse error.
                 $count = $tree->openElements->count();
                 if (
@@ -182,7 +182,7 @@ final class InBody extends RuleSet
                 // Switch the insertion mode to "in frameset".
                 $tree->insertionMode = InsertionModes::IN_FRAMESET;
                 return;
-            } elseif (
+            } else if (
                 $tagName === 'address'
                 || $tagName === 'article'
                 || $tagName === 'aside'
@@ -215,7 +215,7 @@ final class InBody extends RuleSet
                 // Insert an HTML element for the token.
                 $tree->insertElement($token);
                 return;
-            } elseif (isset(Elements::HEADING_ELEMENTS[$tagName])) {
+            } else if (isset(Elements::HEADING_ELEMENTS[$tagName])) {
                 // If the stack of open elements has a p element in button scope, then close a p element.
                 if ($tree->openElements->hasTagInButtonScope('p')) {
                     self::closeAPElement($tree);
@@ -230,7 +230,7 @@ final class InBody extends RuleSet
                 // Insert an HTML element for the token.
                 $tree->insertElement($token);
                 return;
-            } elseif ($tagName === 'pre' || $tagName === 'listing') {
+            } else if ($tagName === 'pre' || $tagName === 'listing') {
                 // If the stack of open elements has a p element in button scope, then close a p element.
                 if ($tree->openElements->hasTagInButtonScope('p')) {
                     self::closeAPElement($tree);
@@ -245,7 +245,7 @@ final class InBody extends RuleSet
                 // Set the frameset-ok flag to "not ok".
                 $tree->framesetOK = false;
                 return;
-            } elseif ($tagName === 'form') {
+            } else if ($tagName === 'form') {
                 // If the form element pointer is not null, and there is no template element on the stack of open elements,
                 $hasTemplateOnStack = $tree->openElements->containsTag('template');
                 if ($tree->formElement && !$hasTemplateOnStack) {
@@ -266,7 +266,7 @@ final class InBody extends RuleSet
                     $tree->formElement = $form;
                 }
                 return;
-            } elseif ($tagName === 'li') {
+            } else if ($tagName === 'li') {
                 // Set the frameset-ok flag to "not ok".
                 $tree->framesetOK = false;
                 // Initialize node to be the current node (the bottommost node of the stack).
@@ -298,7 +298,7 @@ final class InBody extends RuleSet
                 // Finally, insert an HTML element for the token.
                 $tree->insertElement($token);
                 return;
-            } elseif ($tagName === 'dd' || $tagName === 'dt') {
+            } else if ($tagName === 'dd' || $tagName === 'dt') {
                 // Set the frameset-ok flag to "not ok".
                 $tree->framesetOK = false;
                 foreach ($tree->openElements as $node) {
@@ -332,7 +332,7 @@ final class InBody extends RuleSet
                 }
                 $tree->insertElement($token);
                 return;
-            } elseif ($tagName === 'plaintext') {
+            } else if ($tagName === 'plaintext') {
                 // If the stack of open elements has a p element in button scope, then close a p element.
                 if ($tree->openElements->hasTagInButtonScope('p')) {
                     self::closeAPElement($tree);
@@ -344,7 +344,7 @@ final class InBody extends RuleSet
                 // NOTE: Once a start tag with the tag name "plaintext" has been seen,
                 // that will be the last token ever seen other than character tokens (and the end-of-file token),
                 // because there is no way to switch out of the PLAINTEXT state.
-            } elseif ($tagName === 'button') {
+            } else if ($tagName === 'button') {
                 // If the stack of open elements has a button element in scope, then run these substeps:
                 if ($tree->openElements->hasTagInScope('button')) {
                     // TODO: Parse error.
@@ -359,7 +359,7 @@ final class InBody extends RuleSet
                 $tree->insertElement($token);
                 // Set the frameset-ok flag to "not ok".
                 $tree->framesetOK = false;
-            } elseif ($tagName === 'a') {
+            } else if ($tagName === 'a') {
                 // If the list of active formatting elements contains an a element between the end of the list and the last marker on the list
                 // (or the start of the list if there is no marker on the list)
                 if ($a = $tree->activeFormattingElements->containsTag('a')) {
@@ -378,7 +378,7 @@ final class InBody extends RuleSet
                 // Push onto the list of active formatting elements that element.
                 $tree->activeFormattingElements->push($element);
                 return;
-            } elseif (
+            } else if (
                 $tagName === 'b'
                 || $tagName === 'big'
                 || $tagName === 'code'
@@ -399,7 +399,7 @@ final class InBody extends RuleSet
                 // Push onto the list of active formatting elements that element.
                 $tree->activeFormattingElements->push($element);
                 return;
-            } elseif ($tagName === 'nobr') {
+            } else if ($tagName === 'nobr') {
                 // Reconstruct the active formatting elements, if any.
                 $tree->reconstructTheListOfActiveElements();
                 // If the stack of open elements has a nobr element in scope, then this is a parse error;
@@ -415,7 +415,7 @@ final class InBody extends RuleSet
                 // Push onto the list of active formatting elements that element.
                 $tree->activeFormattingElements->push($element);
                 return;
-            } elseif (
+            } else if (
                 $tagName === 'applet'
                 || $tagName === 'marquee'
                 || $tagName === 'object'
@@ -429,7 +429,7 @@ final class InBody extends RuleSet
                 // Set the frameset-ok flag to "not ok".
                 $tree->framesetOK = false;
                 return;
-            } elseif ($tagName === 'table') {
+            } else if ($tagName === 'table') {
                 // If the Document is not set to quirks mode, and the stack of open elements has a p element in button scope,
                 if (
                     $tree->compatMode !== DocumentModes::QUIRKS
@@ -445,7 +445,7 @@ final class InBody extends RuleSet
                 // Switch the insertion mode to "in table".
                 $tree->insertionMode = InsertionModes::IN_TABLE;
                 return;
-            } elseif (
+            } else if (
                 $tagName === 'area'
                 || $tagName === 'br'
                 || $tagName === 'embed'
@@ -464,7 +464,7 @@ final class InBody extends RuleSet
                 // Set the frameset-ok flag to "not ok".
                 $tree->framesetOK = false;
                 return;
-            } elseif ($tagName === 'input') {
+            } else if ($tagName === 'input') {
                 // Reconstruct the active formatting elements, if any.
                 $tree->reconstructTheListOfActiveElements();
                 // Insert an HTML element for the token.
@@ -483,7 +483,7 @@ final class InBody extends RuleSet
                     $tree->framesetOK = false;
                 }
                 return;
-            } elseif (
+            } else if (
                 $tagName === 'param'
                 || $tagName === 'source'
                 || $tagName === 'track'
@@ -495,7 +495,7 @@ final class InBody extends RuleSet
                 // Acknowledge the token's self-closing flag, if it is set.
                 $tree->acknowledgeSelfClosingFlag($token);
                 return;
-            } elseif ($tagName === 'hr') {
+            } else if ($tagName === 'hr') {
                 // If the stack of open elements has a p element in button scope, then close a p element.
                 if ($tree->openElements->hasTagInButtonScope('p')) {
                     self::closeAPElement($tree);
@@ -509,13 +509,13 @@ final class InBody extends RuleSet
                 // Set the frameset-ok flag to "not ok".
                 $tree->framesetOK = false;
                 return;
-            } elseif ($tagName === 'image') {
+            } else if ($tagName === 'image') {
                 // TODO: Parse error.
                 // Change the token's tag name to "img" and reprocess it. (Don't ask.)
                 $token->name = 'img';
                 $tree->processToken($token);
                 return;
-            } elseif ($tagName === 'textarea') {
+            } else if ($tagName === 'textarea') {
                 // 1. Insert an HTML element for the token.
                 $tree->insertElement($token);
                 // TODO: 2. If the next token is a U+000A LINE FEED (LF) character token,
@@ -531,7 +531,7 @@ final class InBody extends RuleSet
                 // 6. Switch the insertion mode to "text".
                 $tree->insertionMode = InsertionModes::TEXT;
                 return;
-            } elseif ($tagName === 'xmp') {
+            } else if ($tagName === 'xmp') {
                 // If the stack of open elements has a p element in button scope, then close a p element.
                 if ($tree->openElements->hasTagInButtonScope('p')) {
                     self::closeAPElement($tree);
@@ -543,20 +543,20 @@ final class InBody extends RuleSet
                 // Follow the generic raw text element parsing algorithm.
                 $tree->followTheGenericTextElementParsingAlgorithm($token, true);
                 return;
-            } elseif ($tagName === 'iframe') {
+            } else if ($tagName === 'iframe') {
                 // Set the frameset-ok flag to "not ok".
                 $tree->framesetOK = false;
                 // Follow the generic raw text element parsing algorithm.
                 $tree->followTheGenericTextElementParsingAlgorithm($token, true);
                 return;
-            } elseif (
+            } else if (
                 $tagName === 'noembed'
                 || ($tree->scriptingEnabled && $tagName === 'noscript')
             ) {
                 // Follow the generic raw text element parsing algorithm.
                 $tree->followTheGenericTextElementParsingAlgorithm($token, true);
                 return;
-            } elseif ($tagName === 'select') {
+            } else if ($tagName === 'select') {
                 // Reconstruct the active formatting elements, if any.
                 $tree->reconstructTheListOfActiveElements();
                 // Insert an HTML element for the token.
@@ -578,7 +578,7 @@ final class InBody extends RuleSet
                     $tree->insertionMode = InsertionModes::IN_SELECT;
                 }
                 return;
-            } elseif (
+            } else if (
                 $tagName === 'optgroup'
                 || $tagName === 'option'
             ) {
@@ -592,7 +592,7 @@ final class InBody extends RuleSet
                 // Insert an HTML element for the token.
                 $tree->insertElement($token);
                 return;
-            } elseif (
+            } else if (
                 $tagName === 'rb'
                 || $tagName === 'rtc'
             ) {
@@ -607,7 +607,7 @@ final class InBody extends RuleSet
                 // Insert an HTML element for the token.
                 $tree->insertElement($token);
                 return;
-            } elseif (
+            } else if (
                 $tagName === 'rp'
                 || $tagName === 'rt'
             ) {
@@ -624,7 +624,7 @@ final class InBody extends RuleSet
                 // Insert an HTML element for the token.
                 $tree->insertElement($token);
                 return;
-            } elseif ($tagName === 'math') {
+            } else if ($tagName === 'math') {
                 // Reconstruct the active formatting elements, if any.
                 $tree->reconstructTheListOfActiveElements();
                 // Adjust MathML attributes for the token. (This fixes the case of MathML attributes that are not all lowercase.)
@@ -641,7 +641,7 @@ final class InBody extends RuleSet
                     $tree->acknowledgeSelfClosingFlag($token);
                 }
                 return;
-            } elseif ($tagName === 'svg') {
+            } else if ($tagName === 'svg') {
                 // Reconstruct the active formatting elements, if any.
                 $tree->reconstructTheListOfActiveElements();
                 // Adjust SVG attributes for the token. (This fixes the case of SVG attributes that are not all lowercase.)
@@ -658,7 +658,7 @@ final class InBody extends RuleSet
                     $tree->acknowledgeSelfClosingFlag($token);
                 }
                 return;
-            } elseif (
+            } else if (
                 $tagName === 'caption'
                 || $tagName === 'col'
                 || $tagName === 'colgroup'
@@ -682,13 +682,13 @@ final class InBody extends RuleSet
             }
             return;
         // endif StartTag
-        } elseif ($type === TokenType::END_TAG) {
+        } else if ($type === TokenType::END_TAG) {
             $tagName = $token->name;
             if ($tagName === 'template') {
                 // Process the token using the rules for the "in head" insertion mode.
                 InHead::process($token, $tree);
                 return;
-            } elseif ($tagName === 'body') {
+            } else if ($tagName === 'body') {
                 // If the stack of open elements does not have a body element in scope,
                 if (!$tree->openElements->hasTagInScope('body')) {
                     // TODO: Parse error.
@@ -702,7 +702,7 @@ final class InBody extends RuleSet
                 // Switch the insertion mode to "after body".
                 $tree->insertionMode = InsertionModes::AFTER_BODY;
                 return;
-            } elseif ($tagName === 'html') {
+            } else if ($tagName === 'html') {
                 // If the stack of open elements does not have a body element in scope,
                 if (!$tree->openElements->hasTagInScope('body')) {
                     // TODO: Parse error.
@@ -718,7 +718,7 @@ final class InBody extends RuleSet
                 // Reprocess the token.
                 $tree->processToken($token);
                 return;
-            } elseif (
+            } else if (
                 $tagName === 'address'
                 || $tagName === 'article'
                 || $tagName === 'aside'
@@ -763,7 +763,7 @@ final class InBody extends RuleSet
                 // until an HTML element with the same tag name as the token has been popped from the stack.
                 $tree->openElements->popUntilTag($tagName);
                 return;
-            } elseif ($tagName === 'form') {
+            } else if ($tagName === 'form') {
                 // If there is no template element on the stack of open elements, then run these substeps:
                 if (!$tree->openElements->containsTag('template')) {
                     // 1. Let node be the element that the form element pointer is set to, or null if it is not set to an element.
@@ -801,7 +801,7 @@ final class InBody extends RuleSet
                     $tree->openElements->popUntilTag('form');
                 }
                 return;
-            } elseif ($tagName === 'p') {
+            } else if ($tagName === 'p') {
                 // If the stack of open elements does not have a p element in button scope,
                 if (!$tree->openElements->hasTagInButtonScope('p')) {
                     // TODO: then this is a parse error;
@@ -810,7 +810,7 @@ final class InBody extends RuleSet
                 }
                 self::closeAPElement($tree);
                 return;
-            } elseif ($tagName === 'li') {
+            } else if ($tagName === 'li') {
                 // If the stack of open elements does not have an li element in list item scope,
                 if (!$tree->openElements->hasTagInListItemScope('li')) {
                     // TODO:  then this is a parse error;
@@ -826,7 +826,7 @@ final class InBody extends RuleSet
                 }
                 // 3. Pop elements from the stack of open elements until an li element has been popped from the stack.
                 $tree->openElements->popUntilTag('li');
-            } elseif (
+            } else if (
                 $tagName === 'dd'
                 || $tagName === 'dt'
             ) {
@@ -846,7 +846,7 @@ final class InBody extends RuleSet
                 }
                 // 3. Pop elements from the stack of open elements until an HTML element with the same tag name as the token has been popped from the stack.
                 $tree->openElements->popUntilTag($tagName);
-            } elseif (isset(Elements::HEADING_ELEMENTS[$tagName])) {
+            } else if (isset(Elements::HEADING_ELEMENTS[$tagName])) {
                 // If the stack of open elements does not have an element in scope that is an HTML element
                 // and whose tag name is one of "h1", "h2", "h3", "h4", "h5", or "h6",
                 if (!$tree->openElements->hasTagsInScope(['h1', 'h2', 'h3', 'h4', 'h5', 'h6'])) {
@@ -864,15 +864,15 @@ final class InBody extends RuleSet
                 // 3. Pop elements from the stack of open elements until an HTML element
                 // whose tag name is one of "h1", "h2", "h3", "h4", "h5", or "h6" has been popped from the stack.
                 $tree->openElements->popUntilOneOf(['h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
-            } elseif ($tagName === 'sarcasm') {
+            } else if ($tagName === 'sarcasm') {
                 // 😬 Take a deep breath, then act as described in the "any other end tag" entry below.
                 self::anyOtherEndTag($tree, $token);
                 return;
-            } elseif (isset(self::ADOPTION_AGENCY_END_TAG_TRIGGERS[$tagName])) {
+            } else if (isset(self::ADOPTION_AGENCY_END_TAG_TRIGGERS[$tagName])) {
                 // Run the adoption agency algorithm for the token.
                 self::runTheAdoptionAgencyAlgorithm($tree, $token);
                 return;
-            } elseif (
+            } else if (
                 $tagName === 'applet'
                 || $tagName === 'marquee'
                 || $tagName === 'object'
@@ -896,7 +896,7 @@ final class InBody extends RuleSet
                 // 4. Clear the list of active formatting elements up to the last marker.
                 $tree->activeFormattingElements->clearUpToLastMarker();
                 return;
-            } elseif ($tagName === 'br') {
+            } else if ($tagName === 'br') {
                 // TODO: Parse error.
                 // Drop the attributes from the token, and act as described in the next entry;
                 // i.e. act as if this was a "br" start tag token with no attributes, rather than the end tag token that it actually is.
@@ -963,7 +963,7 @@ final class InBody extends RuleSet
                 // remove the element from the list, and return.
                 $tree->activeFormattingElements->remove($formattingElement);
                 return false;
-            } elseif (!$tree->openElements->hasElementInScope($formattingElement)) {
+            } else if (!$tree->openElements->hasElementInScope($formattingElement)) {
                 // 8. If formatting element is in the stack of open elements, but the element is not in scope,
                 // TODO: then this is a parse error; return.
                 return false;

@@ -51,11 +51,11 @@ final class CodeGeneratorExtension extends AbstractExtension
     {
         if (is_string($value)) {
             return $this->reprString($value);
-        } elseif (is_array($value)) {
+        } else if (is_array($value)) {
             return $this->reprArray($value);
-        } elseif (is_bool($value)) {
+        } else if (is_bool($value)) {
             return $value ? 'true': 'false';
-        } elseif (is_null($value)) {
+        } else if (is_null($value)) {
             return 'null';
         }
         return (string)$value;
@@ -89,14 +89,14 @@ final class CodeGeneratorExtension extends AbstractExtension
             if ($cp < 128) {
                 if (ctype_cntrl($char)) {
                     $output .= Utils::escapeAsciiControl($char);
-                } elseif ($char === '$' && $quoteChar === '"') {
+                } else if ($char === '$' && $quoteChar === '"') {
                     $output .= "\\$";
-                } elseif ($char === $quoteChar) {
+                } else if ($char === $quoteChar) {
                     $output .= "\\{$char}";
                 } else {
                     $output .= $char;
                 }
-            } elseif (!$this->isCodepointPrintable($cp)) {
+            } else if (!$this->isCodepointPrintable($cp)) {
                 $output .= sprintf('\u{%X}', $cp);
             } else {
                 $output .= $char;
@@ -114,9 +114,9 @@ final class CodeGeneratorExtension extends AbstractExtension
             $byte = $bytes[$i];
             if (ctype_cntrl($byte)) {
                 $output[] = Utils::escapeAsciiControl($byte);
-            } elseif ($byte === '$' && $quoteChar === '"') {
+            } else if ($byte === '$' && $quoteChar === '"') {
                 $output[] = '\\$';
-            } elseif ($byte === $quoteChar) {
+            } else if ($byte === $quoteChar) {
                 $output[] = '\\'.$byte;
             } else {
                 $output[] = $byte;

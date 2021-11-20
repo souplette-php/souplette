@@ -157,13 +157,13 @@ final class TreeBuilder
         $contextNS = $this->contextElement->namespaceURI;
         if (isset(Elements::CDATA_ELEMENTS[$contextNS][$contextTag])) {
             $tokenizerState = TokenizerState::RCDATA;
-        } elseif (isset(Elements::RCDATA_ELEMENTS[$contextNS][$contextTag])) {
+        } else if (isset(Elements::RCDATA_ELEMENTS[$contextNS][$contextTag])) {
             $tokenizerState = TokenizerState::RAWTEXT;
-        } elseif ($contextTag === 'script') {
+        } else if ($contextTag === 'script') {
             $tokenizerState = TokenizerState::SCRIPT_DATA;
-        } elseif ($this->scriptingEnabled && $contextTag === 'noscript') {
+        } else if ($this->scriptingEnabled && $contextTag === 'noscript') {
             $tokenizerState = TokenizerState::RAWTEXT;
-        } elseif (isset(Elements::PLAINTEXT_ELEMENTS[$contextNS][$contextTag])) {
+        } else if (isset(Elements::PLAINTEXT_ELEMENTS[$contextNS][$contextTag])) {
             $tokenizerState = TokenizerState::PLAINTEXT;
         } else {
             $tokenizerState = TokenizerState::DATA;
@@ -455,7 +455,7 @@ final class TreeBuilder
                 if (!$lastTemplate && $element->localName === 'template') {
                     $lastTemplate = $element;
                     $lastTemplatePosition = $pos;
-                } elseif (!$lastTable && $element->localName === 'table') {
+                } else if (!$lastTable && $element->localName === 'table') {
                     $lastTable = $element;
                     $lastTablePosition = $pos;
                 }
@@ -468,14 +468,14 @@ final class TreeBuilder
                 // and abort these steps.
                 // FIXME: nogood !
                 $adjustedInsertionLocation = new InsertionLocation($lastTemplate, $lastTemplate->lastChild);
-            } elseif (!$lastTable) {
+            } else if (!$lastTable) {
                 // 4. If there is no last table,
                 // then let adjusted insertion location be inside the first element in the stack of open elements (the html element),
                 // after its last child (if any),
                 // and abort these steps. (fragment case)
                 $parent = $this->openElements->bottom();
                 $adjustedInsertionLocation = new InsertionLocation($parent, $parent->lastChild);
-            } elseif ($lastTable && $lastTable->parentNode) {
+            } else if ($lastTable && $lastTable->parentNode) {
                 // 5. If last table has a parent node,
                 // then let adjusted insertion location be inside last table's parent node,
                 // immediately before last table, and abort these steps.
@@ -587,7 +587,7 @@ final class TreeBuilder
         // then append data to that Text node's data.
         if ($target && $target->nodeType === XML_TEXT_NODE) {
             $target->nodeValue .= $data;
-        } elseif ($target && $location->beforeTarget && $target->previousSibling && $target->previousSibling->nodeType === XML_TEXT_NODE) {
+        } else if ($target && $location->beforeTarget && $target->previousSibling && $target->previousSibling->nodeType === XML_TEXT_NODE) {
             $target->previousSibling->nodeValue .= $data;
         } else {
             // Otherwise, create a new Text node whose data is data

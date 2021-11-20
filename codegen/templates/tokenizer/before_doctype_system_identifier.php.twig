@@ -6,23 +6,23 @@
 if ({{ h.is_whitespace() }}) {
     // Ignore the character
     {{ h.consume(current_state) }}
-} elseif ($cc === '"') {
+} else if ($cc === '"') {
     // Set the DOCTYPE token's system identifier to the empty string (not missing)
     $this->currentToken->systemIdentifier = '';
     // switch to the DOCTYPE system identifier (double-quoted) state.
     {{ h.advance_to('DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED') }}
-} elseif ($cc === "'") {
+} else if ($cc === "'") {
     // Set the DOCTYPE token's system identifier to the empty string (not missing)
     $this->currentToken->systemIdentifier = '';
     // switch to the DOCTYPE system identifier (single-quoted) state.
     {{ h.advance_to('DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED') }}
-} elseif ($cc === '>') {
+} else if ($cc === '>') {
     // This is a missing-doctype-system-identifier parse error.
     {{ h.parse_error('MISSING_DOCTYPE_SYSTEM_IDENTIFIER') }}
     // Set the DOCTYPE token's force-quirks flag to on.
     // Switch to the data state. Emit that DOCTYPE token.
     {{ h.emit_and_resume_in('DATA') }}
-} elseif ({{ h.is_eof() }}) {
+} else if ({{ h.is_eof() }}) {
     // This is an eof-in-doctype parse error.
     {{ h.parse_error('EOF_IN_DOCTYPE') }}
     // Set the DOCTYPE token's force-quirks flag to on.

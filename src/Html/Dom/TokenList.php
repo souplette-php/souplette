@@ -37,7 +37,7 @@ final class TokenList implements \Countable, \IteratorAggregate
     {
         if ($name === 'value') {
             return $this->getValue();
-        } elseif ($name === 'length') {
+        } else if ($name === 'length') {
             return $this->count();
         }
     }
@@ -131,7 +131,7 @@ final class TokenList implements \Countable, \IteratorAggregate
         foreach ($tokens as $token) {
             if ($token === '') {
                 throw new SyntaxError('Empty token.');
-            } elseif (\strcspn($token, " \n\t\f") !== \strlen($token)) {
+            } else if (\strcspn($token, " \n\t\f") !== \strlen($token)) {
                 throw new InvalidCharacter('Token contains whitespace.');
             }
         }

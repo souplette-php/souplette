@@ -35,11 +35,11 @@ final class AnPlusBParser
         $tt = $token::TYPE;
         if ($tt === TokenType::IDENT) {
             $expr = $this->handleIdentifier($token);
-        } elseif ($tt === TokenType::DIMENSION) {
+        } else if ($tt === TokenType::DIMENSION) {
             $expr = $this->handleDimension($token);
-        } elseif ($tt === TokenType::NUMBER) {
+        } else if ($tt === TokenType::NUMBER) {
             $expr = $this->handleNumber($token);
-        } elseif ($tt === TokenType::DELIM) {
+        } else if ($tt === TokenType::DELIM) {
             $expr = $this->handleDelimiter($token);
         } else {
             throw UnexpectedToken::expectingOneOf($token, TokenType::NUMBER, TokenType::IDENT, TokenType::DIMENSION);

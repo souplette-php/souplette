@@ -27,9 +27,9 @@ final class Utils
     {
         if (!empty($matches['ignored'])) {
             return '';
-        } elseif (!empty($matches['any'])) {
+        } else if (!empty($matches['any'])) {
             return $matches['any'];
-        } elseif (!empty($matches['unicode'])) {
+        } else if (!empty($matches['unicode'])) {
             $cp = hexdec($matches['unicode']);
             if ($cp === 0 || $cp > 0x10FFFF || ($cp >= 0xD800 && $cp <= 0xDFFF)) {
                 // null, outside unicode or surrogate

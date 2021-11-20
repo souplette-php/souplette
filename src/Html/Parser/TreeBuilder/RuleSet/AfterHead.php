@@ -19,22 +19,22 @@ final class AfterHead extends RuleSet
         if ($type === TokenType::CHARACTER && ctype_space($token->data)) {
             // Insert the character.
             $tree->insertCharacter($token);
-        } elseif ($type === TokenType::COMMENT) {
+        } else if ($type === TokenType::COMMENT) {
             // Insert a comment.
             $tree->insertComment($token);
-        } elseif ($type === TokenType::START_TAG && $token->name === 'body') {
+        } else if ($type === TokenType::START_TAG && $token->name === 'body') {
             // Insert an HTML element for the token.
             $tree->insertElement($token);
             // Set the frameset-ok flag to "not ok".
             $tree->framesetOK = false;
             // Switch the insertion mode to "in body".
             $tree->insertionMode = InsertionModes::IN_BODY;
-        } elseif ($type === TokenType::START_TAG && $token->name === 'frameset') {
+        } else if ($type === TokenType::START_TAG && $token->name === 'frameset') {
             // Insert an HTML element for the token.
             $tree->insertElement($token);
             // Switch the insertion mode to "in frameset".
             $tree->insertionMode = InsertionModes::IN_FRAMESET;
-        } elseif ($type === TokenType::START_TAG && (
+        } else if ($type === TokenType::START_TAG && (
                 $token->name === 'base'
                 || $token->name === 'basefont'
                 || $token->name === 'bgsound'
@@ -55,10 +55,10 @@ final class AfterHead extends RuleSet
             // (It might not be the current node at this point.)
             $tree->openElements->remove($tree->headElement);
             // The head element pointer cannot be null at this point.
-        } elseif ($type === TokenType::END_TAG && $token->name === 'template') {
+        } else if ($type === TokenType::END_TAG && $token->name === 'template') {
             // Process the token using the rules for the "in head" insertion mode.
             InHead::process($token, $tree);
-        } elseif (
+        } else if (
             $type === TokenType::END_TAG && (
                 $token->name === 'body'
                 || $token->name === 'html'
@@ -66,7 +66,7 @@ final class AfterHead extends RuleSet
         )) {
             // Act as described in the "anything else" entry below.
             goto ANYTHING_ELSE;
-        } elseif (
+        } else if (
             $type === TokenType::START_TAG && $token->name === 'head'
             || $type === TokenType::END_TAG
         ) {

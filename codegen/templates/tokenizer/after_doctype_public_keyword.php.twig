@@ -6,28 +6,28 @@
 if ({{ h.is_whitespace() }}) {
     // Switch to the before DOCTYPE public identifier state.
     {{ h.advance_to('BEFORE_DOCTYPE_PUBLIC_IDENTIFIER') }}
-} elseif ($cc === '"') {
+} else if ($cc === '"') {
     // This is a missing-whitespace-after-doctype-public-keyword parse error.
     {{ h.parse_error('MISSING_WHITESPACE_AFTER_DOCTYPE_PUBLIC_KEYWORD') }}
     // Set the DOCTYPE token's public identifier to the empty string (not missing)
     $this->currentToken->publicIdentifier = '';
     // switch to the DOCTYPE public identifier (double-quoted) state.
     {{ h.advance_to('DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED') }}
-} elseif ($cc === "'") {
+} else if ($cc === "'") {
     // This is a missing-whitespace-after-doctype-public-keyword parse error.
     {{ h.parse_error('MISSING_WHITESPACE_AFTER_DOCTYPE_PUBLIC_KEYWORD') }}
     // Set the DOCTYPE token's public identifier to the empty string (not missing)
     $this->currentToken->publicIdentifier = '';
     // switch to the DOCTYPE public identifier (single-quoted) state.
     {{ h.advance_to('DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED') }}
-} elseif ($cc === '>') {
+} else if ($cc === '>') {
     // This is a missing-doctype-public-identifier parse error.
     {{ h.parse_error('MISSING_DOCTYPE_PUBLIC_IDENTIFIER') }}
     // Set the DOCTYPE token's force-quirks flag to on.
     $this->currentToken->forceQuirks = true;
     // Switch to the data state. Emit that DOCTYPE token.
     {{ h.emit_and_resume_in('DATA') }}
-} elseif ({{ h.is_eof() }}) {
+} else if ({{ h.is_eof() }}) {
     // This is an eof-in-doctype parse error.
     {{ h.parse_error('EOF_IN_DOCTYPE') }}
     // Set the DOCTYPE token's force-quirks flag to on.

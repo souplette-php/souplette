@@ -36,7 +36,7 @@ final class InCaption extends RuleSet
             $tree->activeFormattingElements->clearUpToLastMarker();
             // Switch the insertion mode to "in table".
             $tree->insertionMode = InsertionModes::IN_TABLE;
-        } elseif (
+        } else if (
             ($type === TokenType::END_TAG && $token->name === 'table')
             || ($type === TokenType::START_TAG && (
                 $token->name === 'caption'
@@ -71,7 +71,7 @@ final class InCaption extends RuleSet
             $tree->insertionMode = InsertionModes::IN_TABLE;
             // Reprocess the token.
             $tree->processToken($token);
-        } elseif ($type === TokenType::END_TAG && (
+        } else if ($type === TokenType::END_TAG && (
                 $token->name === 'body'
                 || $token->name === 'col'
                 || $token->name === 'colgroup'

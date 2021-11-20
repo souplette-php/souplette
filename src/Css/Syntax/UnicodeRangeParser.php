@@ -70,7 +70,7 @@ REGEXP;
             if ($token::TYPE === TokenType::IDENT) {
                 $text .= $token->representation;
                 $token = $this->tokenStream->consume();
-            } elseif ($token::TYPE === TokenType::DELIM && $token->representation === '?') {
+            } else if ($token::TYPE === TokenType::DELIM && $token->representation === '?') {
                 $text .= '?';
                 $token = $this->tokenStream->consume();
             } else {

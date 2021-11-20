@@ -14,7 +14,7 @@ if (\ctype_alnum($cc)) {
         $this->tokenQueue->enqueue(new Character($chars));
     }
     {{ h.update_and_continue(current_state) }}
-} elseif ($cc === ';') {
+} else if ($cc === ';') {
     // This is an unknown-named-character-reference parse error.
     {{ h.parse_error('UNKNOWN_NAMED_CHARACTER_REFERENCE') }}
     // Reconsume in the return state.

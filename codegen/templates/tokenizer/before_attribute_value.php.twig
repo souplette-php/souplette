@@ -6,13 +6,13 @@
 if ({{ h.is_whitespace() }}) {
     // Ignore the character.
     {{ h.consume(current_state) }}
-} elseif ($cc === '"') {
+} else if ($cc === '"') {
     // Switch to the attribute value (double-quoted) state.
     {{ h.advance_to('ATTRIBUTE_VALUE_DOUBLE_QUOTED') }}
-} elseif ($cc === "'") {
+} else if ($cc === "'") {
     // Switch to the attribute value (single-quoted) state.
     {{ h.advance_to('ATTRIBUTE_VALUE_SINGLE_QUOTED') }}
-} elseif ($cc === '>') {
+} else if ($cc === '>') {
     // This is a missing-attribute-value parse error.
     {{ h.parse_error('MISSING_ATTRIBUTE_VALUE') }}
     // Switch to the data state. Emit the current tag token.

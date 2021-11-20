@@ -23,24 +23,24 @@ final class InSelect extends RuleSet
             }
             // Insert the token's character.
             $tree->insertCharacter($token);
-        } elseif ($type === TokenType::COMMENT) {
+        } else if ($type === TokenType::COMMENT) {
             // Insert a comment.
             $tree->insertComment($token);
-        } elseif ($type === TokenType::DOCTYPE) {
+        } else if ($type === TokenType::DOCTYPE) {
             // TODO: Parse error.
             // Ignore the token.
             return;
-        } elseif ($type === TokenType::START_TAG && $token->name === 'html') {
+        } else if ($type === TokenType::START_TAG && $token->name === 'html') {
             // Process the token using the rules for the "in body" insertion mode.
             InBody::process($token, $tree);
-        } elseif ($type === TokenType::START_TAG && $token->name === 'option') {
+        } else if ($type === TokenType::START_TAG && $token->name === 'option') {
             // If the current node is an option element, pop that node from the stack of open elements.
             if ($tree->openElements->top()->localName === 'option') {
                 $tree->openElements->pop();
             }
             // Insert an HTML element for the token.
             $tree->insertElement($token);
-        } elseif ($type === TokenType::START_TAG && $token->name === 'optgroup') {
+        } else if ($type === TokenType::START_TAG && $token->name === 'optgroup') {
             // If the current node is an option element, pop that node from the stack of open elements.
             if ($tree->openElements->top()->localName === 'option') {
                 $tree->openElements->pop();
@@ -51,7 +51,7 @@ final class InSelect extends RuleSet
             }
             // Insert an HTML element for the token.
             $tree->insertElement($token);
-        } elseif ($type === TokenType::END_TAG && $token->name === 'optgroup') {
+        } else if ($type === TokenType::END_TAG && $token->name === 'optgroup') {
             // First, if the current node is an option element,
             // and the node immediately before it in the stack of open elements is an optgroup element,
             // then pop the current node from the stack of open elements.
@@ -69,7 +69,7 @@ final class InSelect extends RuleSet
                 // TODO: Parse error.
                 return;
             }
-        } elseif ($type === TokenType::END_TAG && $token->name === 'option') {
+        } else if ($type === TokenType::END_TAG && $token->name === 'option') {
             // If the current node is an option element, then pop that node from the stack of open elements.
             // Otherwise, this is a parse error; ignore the token.
             if ($tree->openElements->top()->localName === 'option') {
@@ -78,7 +78,7 @@ final class InSelect extends RuleSet
                 // TODO: Parse error.
                 return;
             }
-        } elseif ($type === TokenType::END_TAG && $token->name === 'select') {
+        } else if ($type === TokenType::END_TAG && $token->name === 'select') {
             // If the stack of open elements does not have a select element in select scope,
             // this is a parse error; ignore the token. (fragment case)
             if (!$tree->openElements->hasTagInSelectScope('select')) {
@@ -90,7 +90,7 @@ final class InSelect extends RuleSet
             $tree->openElements->popUntilTag('select');
             // Reset the insertion mode appropriately.
             $tree->resetInsertionModeAppropriately();
-        } elseif ($type === TokenType::START_TAG && $token->name === 'select') {
+        } else if ($type === TokenType::START_TAG && $token->name === 'select') {
             // TODO: Parse error.
             // If the stack of open elements does not have a select element in select scope, ignore the token. (fragment case)
             if (!$tree->openElements->hasTagInSelectScope('select')) {
@@ -101,7 +101,7 @@ final class InSelect extends RuleSet
             $tree->openElements->popUntilTag('select');
             // Reset the insertion mode appropriately.
             $tree->resetInsertionModeAppropriately();
-        } elseif ($type === TokenType::START_TAG && (
+        } else if ($type === TokenType::START_TAG && (
             $token->name === 'input'
             || $token->name === 'keygen'
             || $token->name === 'textarea'
@@ -118,13 +118,13 @@ final class InSelect extends RuleSet
             $tree->resetInsertionModeAppropriately();
             // Reprocess the token.
             $tree->processToken($token);
-        } elseif (
+        } else if (
             ($type === TokenType::START_TAG && ($token->name === 'script' || $token->name === 'template'))
             || ($type === TokenType::END_TAG && $token->name === 'template')
         ) {
             // Process the token using the rules for the "in head" insertion mode.
             InHead::process($token, $tree);
-        } elseif ($type === TokenType::EOF) {
+        } else if ($type === TokenType::EOF) {
             // Process the token using the rules for the "in body" insertion mode.
             InBody::process($token, $tree);
         } else {

@@ -346,7 +346,7 @@ final class SelectorParser
                 $seenWhitespace = true;
                 $token = $this->tokenStream->skipWhitespace();
                 continue;
-            } elseif ($token::TYPE === TokenType::DELIM) {
+            } else if ($token::TYPE === TokenType::DELIM) {
                 if ($combinator = Combinator::tryFrom($token->value)) {
                     $this->tokenStream->consumeAndSkipWhitespace();
                     return $combinator;

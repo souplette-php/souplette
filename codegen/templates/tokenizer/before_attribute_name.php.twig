@@ -6,10 +6,10 @@ if ({{ h.is_whitespace() }}) {
     // Ignore the character.
     {{ h.skip_whitespace() }}
     {{ h.update_and_continue(current_state) }}
-} elseif ({{ cc_in('/', '>') }} || {{ h.is_eof() }}) {
+} else if ({{ cc_in('/', '>') }} || {{ h.is_eof() }}) {
     // Reconsume in the after attribute name state.
     {{ h.reconsume_in('AFTER_ATTRIBUTE_NAME') }}
-} elseif ($cc === '=') {
+} else if ($cc === '=') {
     // This is an unexpected-equals-sign-before-attribute-name parse error.
     {{ h.parse_error('UNEXPECTED_EQUALS_SIGN_BEFORE_ATTRIBUTE_NAME') }}
     // Start a new attribute in the current tag token. Set that attribute's name to the current input character, and its value to the empty string.

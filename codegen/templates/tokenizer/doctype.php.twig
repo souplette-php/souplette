@@ -6,10 +6,10 @@
 if ({{ h.is_whitespace() }}) {
     // Switch to the before DOCTYPE name state.
     {{ h.advance_to('BEFORE_DOCTYPE_NAME') }}
-} elseif ($cc === '>') {
+} else if ($cc === '>') {
     // Reconsume in the before DOCTYPE name state.
     {{ h.reconsume_in('BEFORE_DOCTYPE_NAME') }}
-} elseif ({{ h.is_eof() }}) {
+} else if ({{ h.is_eof() }}) {
     // This is an eof-in-doctype parse error.
     {{ h.parse_error('EOF_IN_DOCTYPE') }}
     // Create a new DOCTYPE token.

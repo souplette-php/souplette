@@ -28,18 +28,18 @@ final class InHeadNoscript extends RuleSet
         if ($type === TokenType::DOCTYPE) {
             // TODO: Parse error. Ignore the token.
             return;
-        } elseif ($type === TokenType::START_TAG && $token->name === 'html') {
+        } else if ($type === TokenType::START_TAG && $token->name === 'html') {
             // Process the token using the rules for the "in body" insertion mode.
             InBody::process($token, $tree);
             return;
-        } elseif ($type === TokenType::END_TAG && $token->name === 'noscript') {
+        } else if ($type === TokenType::END_TAG && $token->name === 'noscript') {
             // Pop the current node (which will be a noscript element) from the stack of open elements;
             // the new current node will be a head element.
             $tree->openElements->pop();
             // Switch the insertion mode to "in head".
             $tree->insertionMode = InsertionModes::IN_HEAD;
             return;
-        } elseif (
+        } else if (
             ($type === TokenType::CHARACTER && ctype_space($token->data))
             || $type === TokenType::COMMENT
             || ($type === TokenType::START_TAG && isset(self::IN_HEAD_START_TAG_TRIGGERS[$token->name]))
@@ -47,10 +47,10 @@ final class InHeadNoscript extends RuleSet
             // Process the token using the rules for the "in head" insertion mode.
             InHead::process($token, $tree);
             return;
-        } elseif ($type === TokenType::END_TAG && $token->name === 'br') {
+        } else if ($type === TokenType::END_TAG && $token->name === 'br') {
             // Act as described in the "anything else" entry below.
             goto ANYTHING_ELSE;
-        } elseif (
+        } else if (
             ($type === TokenType::START_TAG && ($token->name === 'head' || $token->name === 'noscript'))
             || $type === TokenType::END_TAG
         ) {
