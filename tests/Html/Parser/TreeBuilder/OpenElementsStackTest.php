@@ -5,7 +5,7 @@ namespace Souplette\Tests\Html\Parser\TreeBuilder;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Dom\Namespaces;
-use Souplette\Html\Parser\TreeBuilder\OpenElementsStack;
+use Souplette\Html\TreeBuilder\OpenElementsStack;
 
 class OpenElementsStackTest extends TestCase
 {

@@ -4,7 +4,7 @@ namespace Souplette\Tests\Html\Parser\TreeBuilder;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Html\Parser\TreeBuilder\Stack;
+use Souplette\Html\TreeBuilder\Stack;
 
 class StackTest extends TestCase
 {

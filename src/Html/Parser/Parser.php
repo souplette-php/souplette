@@ -8,8 +8,8 @@ use Souplette\Encoding\Encoding;
 use Souplette\Encoding\EncodingLookup;
 use Souplette\Encoding\Exception\EncodingChanged;
 use Souplette\Encoding\Utf8Converter;
-use Souplette\Html\Parser\TreeBuilder\TreeBuilder;
 use Souplette\Html\Tokenizer\Tokenizer;
+use Souplette\Html\TreeBuilder\TreeBuilder;
 
 final class Parser
 {

@@ -2,7 +2,7 @@
 
 namespace Souplette\Html\Serializer;
 
-use Souplette\Html\Parser\TreeBuilder\Elements as TreeBuilderElements;
+use Souplette\Html\TreeBuilder\Elements as TreeBuilderElements;
 
 final class Elements
 {
