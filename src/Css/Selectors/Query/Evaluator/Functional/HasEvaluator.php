@@ -4,7 +4,7 @@ namespace Souplette\Css\Selectors\Query\Evaluator\Functional;
 
 use Souplette\Css\Selectors\Query\EvaluatorInterface;
 use Souplette\Css\Selectors\Query\QueryContext;
-use Souplette\Html\Dom\ElementIterator;
+use Souplette\Dom\ElementIterator;
 
 /**
  * @see https://drafts.csswg.org/selectors-4/#relational

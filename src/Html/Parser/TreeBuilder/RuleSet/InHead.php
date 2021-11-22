@@ -2,8 +2,8 @@
 
 namespace Souplette\Html\Parser\TreeBuilder\RuleSet;
 
+use Souplette\Dom\Namespaces;
 use Souplette\Encoding\EncodingLookup;
-use Souplette\Html\Namespaces;
 use Souplette\Html\Parser\MetaCharsetParser;
 use Souplette\Html\Parser\Tokenizer\Token;
 use Souplette\Html\Parser\Tokenizer\TokenizerState;

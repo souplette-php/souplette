@@ -2,7 +2,7 @@
 
 namespace Souplette\Html\Parser\TreeBuilder;
 
-use Souplette\Html\Dom\Exception\ErrorCodes;
+use Souplette\Dom\Exception\ErrorCodes;
 use Souplette\Html\Parser\Tokenizer\Token\Tag;
 use Souplette\Xml\XmlNameEscaper;
 

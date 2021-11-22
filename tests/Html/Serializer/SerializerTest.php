@@ -3,8 +3,8 @@
 namespace Souplette\Tests\Html\Serializer;
 
 use PHPUnit\Framework\TestCase;
-use Souplette\Html\Namespaces;
-use Souplette\Tests\Html\DomBuilder;
+use Souplette\Dom\Namespaces;
+use Souplette\Tests\Dom\DomBuilder;
 
 final class SerializerTest extends TestCase
 {

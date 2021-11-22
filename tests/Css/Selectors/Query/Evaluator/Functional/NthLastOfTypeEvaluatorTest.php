@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\Functional\NthLastOfType;
 use Souplette\Css\Syntax\Node\AnPlusB;
 use Souplette\Tests\Css\Selectors\Query\QueryAssert;
-use Souplette\Tests\Html\DomBuilder;
+use Souplette\Tests\Dom\DomBuilder;
 
 final class NthLastOfTypeEvaluatorTest extends TestCase
 {

@@ -3,10 +3,9 @@
 namespace Souplette\Css\Selectors\Query;
 
 use DOMDocument;
-use DOMDocumentFragment;
 use DOMElement;
-use Souplette\Html\Dom\Internal\DomIdioms;
-use Souplette\Html\Dom\Node\HtmlDocument;
+use Souplette\Dom\Internal\DomIdioms;
+use Souplette\Dom\Node\HtmlDocument;
 
 final class QueryContext
 {

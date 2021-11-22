@@ -2,7 +2,7 @@
 
 namespace Souplette\Html\Parser\TreeBuilder\RuleSet;
 
-use Souplette\Html\Namespaces;
+use Souplette\Dom\Namespaces;
 use Souplette\Html\Parser\Tokenizer\Token;
 use Souplette\Html\Parser\Tokenizer\TokenType;
 use Souplette\Html\Parser\TreeBuilder\RuleSet;

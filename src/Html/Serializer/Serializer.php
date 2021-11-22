@@ -2,7 +2,7 @@
 
 namespace Souplette\Html\Serializer;
 
-use Souplette\Html\Namespaces;
+use Souplette\Dom\Namespaces;
 use Souplette\Xml\XmlNameEscaper;
 
 /**

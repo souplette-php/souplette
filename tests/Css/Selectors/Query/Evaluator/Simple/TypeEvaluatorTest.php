@@ -4,9 +4,9 @@ namespace Souplette\Tests\Css\Selectors\Query\Evaluator\Simple;
 
 use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\Simple\TypeSelector;
-use Souplette\Html\Namespaces;
+use Souplette\Dom\Namespaces;
 use Souplette\Tests\Css\Selectors\Query\QueryAssert;
-use Souplette\Tests\Html\DomBuilder;
+use Souplette\Tests\Dom\DomBuilder;
 
 final class TypeEvaluatorTest extends TestCase
 {

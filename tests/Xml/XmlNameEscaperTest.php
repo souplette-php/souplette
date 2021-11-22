@@ -4,7 +4,7 @@ namespace Souplette\Tests\Xml;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Html\Namespaces;
+use Souplette\Dom\Namespaces;
 use Souplette\Xml\XmlNameEscaper;
 
 final class XmlNameEscaperTest extends TestCase

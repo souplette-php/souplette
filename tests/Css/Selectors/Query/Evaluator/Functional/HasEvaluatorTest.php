@@ -7,7 +7,7 @@ use Souplette\Css\Selectors\Node\Functional\Has;
 use Souplette\Css\Selectors\Node\SelectorList;
 use Souplette\Css\Selectors\Node\Simple\TypeSelector;
 use Souplette\Tests\Css\Selectors\Query\QueryAssert;
-use Souplette\Tests\Html\DomBuilder;
+use Souplette\Tests\Dom\DomBuilder;
 
 final class HasEvaluatorTest extends TestCase
 {

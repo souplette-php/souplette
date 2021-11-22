@@ -9,8 +9,8 @@ use Souplette\Css\Selectors\Query\EvaluatorInterface;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Syntax\Tokenizer\Tokenizer;
 use Souplette\Css\Syntax\TokenStream\TokenStream;
-use Souplette\Html\Dom\ElementIterator;
-use Souplette\Html\Dom\Node\Element;
+use Souplette\Dom\ElementIterator;
+use Souplette\Dom\Node\Element;
 
 final class SelectorQuery
 {

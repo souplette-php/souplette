@@ -3,11 +3,11 @@
 namespace Souplette\Html\Parser;
 
 use JetBrains\PhpStorm\Pure;
+use Souplette\Dom\HtmlDomImplementation;
 use Souplette\Encoding\Encoding;
 use Souplette\Encoding\EncodingLookup;
 use Souplette\Encoding\Exception\EncodingChanged;
 use Souplette\Encoding\Utf8Converter;
-use Souplette\Html\Dom\HtmlDomImplementation;
 use Souplette\Html\Parser\Tokenizer\Tokenizer;
 use Souplette\Html\Parser\TreeBuilder\TreeBuilder;
 

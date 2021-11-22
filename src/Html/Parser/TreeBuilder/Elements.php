@@ -2,7 +2,7 @@
 
 namespace Souplette\Html\Parser\TreeBuilder;
 
-use Souplette\Html\Namespaces;
+use Souplette\Dom\Namespaces;
 
 final class Elements
 {

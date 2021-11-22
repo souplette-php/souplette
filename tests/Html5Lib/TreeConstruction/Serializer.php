@@ -2,7 +2,7 @@
 
 namespace Souplette\Tests\Html5Lib\TreeConstruction;
 
-use Souplette\Html\Namespaces;
+use Souplette\Dom\Namespaces;
 use Souplette\Xml\XmlNameEscaper;
 
 final class Serializer

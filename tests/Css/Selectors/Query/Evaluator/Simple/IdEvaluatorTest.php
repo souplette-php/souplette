@@ -6,7 +6,7 @@ use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Query\Evaluator\Simple\IdEvaluator;
 use Souplette\Css\Selectors\Query\QueryContext;
-use Souplette\Tests\Html\DomBuilder;
+use Souplette\Tests\Dom\DomBuilder;
 
 final class IdEvaluatorTest extends TestCase
 {

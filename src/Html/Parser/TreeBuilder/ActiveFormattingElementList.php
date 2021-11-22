@@ -3,7 +3,7 @@
 namespace Souplette\Html\Parser\TreeBuilder;
 
 use DOMElement;
-use Souplette\Html\Namespaces;
+use Souplette\Dom\Namespaces;
 
 /**
  * @see https://html.spec.whatwg.org/multipage/parsing.html#the-list-of-active-formatting-elements

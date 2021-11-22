@@ -4,7 +4,7 @@ namespace Souplette\Tests\Css\Selectors\XPath;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Tests\Html\DomBuilder;
+use Souplette\Tests\Dom\DomBuilder;
 
 final class SimpleSelectorMatchingTest extends TestCase
 {

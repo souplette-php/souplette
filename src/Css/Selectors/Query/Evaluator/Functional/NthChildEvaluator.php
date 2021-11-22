@@ -3,7 +3,7 @@
 namespace Souplette\Css\Selectors\Query\Evaluator\Functional;
 
 use Souplette\Css\Selectors\Query\QueryContext;
-use Souplette\Html\Dom\ElementIterator;
+use Souplette\Dom\ElementIterator;
 
 final class NthChildEvaluator extends AbstractNthEvaluator
 {

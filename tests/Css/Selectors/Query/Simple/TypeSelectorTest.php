@@ -2,9 +2,8 @@
 
 namespace Souplette\Tests\Css\Selectors\Query\Simple;
 
-use Souplette\Html\Namespaces;
 use Souplette\Tests\Css\Selectors\Query\SelectorQueryTestCase;
-use Souplette\Tests\Html\DomBuilder;
+use Souplette\Tests\Dom\DomBuilder;
 
 final class TypeSelectorTest extends SelectorQueryTestCase
 {

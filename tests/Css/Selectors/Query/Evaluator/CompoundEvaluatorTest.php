@@ -8,7 +8,7 @@ use Souplette\Css\Selectors\Node\Selector;
 use Souplette\Css\Selectors\Node\Simple\ClassSelector;
 use Souplette\Css\Selectors\Node\Simple\TypeSelector;
 use Souplette\Tests\Css\Selectors\Query\QueryAssert;
-use Souplette\Tests\Html\DomBuilder;
+use Souplette\Tests\Dom\DomBuilder;
 
 final class CompoundEvaluatorTest extends TestCase
 {
