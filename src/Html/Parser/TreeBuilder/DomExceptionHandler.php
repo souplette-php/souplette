@@ -3,7 +3,7 @@
 namespace Souplette\Html\Parser\TreeBuilder;
 
 use Souplette\Dom\Exception\ErrorCodes;
-use Souplette\Html\Parser\Tokenizer\Token\Tag;
+use Souplette\Html\Tokenizer\Token\Tag;
 use Souplette\Xml\XmlNameEscaper;
 
 final class DomExceptionHandler

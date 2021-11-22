@@ -3,7 +3,7 @@
  * This file was automatically generated.
  * All modifications will be lost.
  */
-namespace Souplette\Html\Parser\Tokenizer;
+namespace Souplette\Html\Tokenizer;
 
 final class EntityLookup
 {

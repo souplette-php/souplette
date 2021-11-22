@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Html\Parser\Tokenizer;
+namespace Souplette\Html\Tokenizer;
 
 /**
  * @see https://html.spec.whatwg.org/multipage/parsing.html#parse-errors

@@ -4,7 +4,7 @@ namespace Souplette\Html\Parser;
 
 use JetBrains\PhpStorm\Pure;
 use Souplette\Encoding\EncodingLookup;
-use Souplette\Html\Parser\Tokenizer\Tokenizer;
+use Souplette\Html\Tokenizer\Tokenizer;
 
 final class EncodingSniffer
 {

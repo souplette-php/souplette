@@ -10,11 +10,11 @@ use Souplette\Dom\Namespaces;
 use Souplette\Encoding\Encoding;
 use Souplette\Encoding\EncodingLookup;
 use Souplette\Encoding\Exception\EncodingChanged;
-use Souplette\Html\Parser\Tokenizer\Token;
-use Souplette\Html\Parser\Tokenizer\Tokenizer;
-use Souplette\Html\Parser\Tokenizer\TokenizerState;
-use Souplette\Html\Parser\Tokenizer\TokenType;
 use Souplette\Html\Parser\TreeBuilder\RuleSet\InForeignContent;
+use Souplette\Html\Tokenizer\Token;
+use Souplette\Html\Tokenizer\Tokenizer;
+use Souplette\Html\Tokenizer\TokenizerState;
+use Souplette\Html\Tokenizer\TokenType;
 use Souplette\Xml\XmlNameEscaper;
 use SplStack;
 

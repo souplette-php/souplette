@@ -2,10 +2,10 @@
 
 namespace Souplette\Html\Parser\TreeBuilder\RuleSet;
 
-use Souplette\Html\Parser\Tokenizer\Token;
-use Souplette\Html\Parser\Tokenizer\TokenType;
 use Souplette\Html\Parser\TreeBuilder\RuleSet;
 use Souplette\Html\Parser\TreeBuilder\TreeBuilder;
+use Souplette\Html\Tokenizer\Token;
+use Souplette\Html\Tokenizer\TokenType;
 
 /**
  * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inselect

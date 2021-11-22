@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Html\Parser\Tokenizer\Token;
+namespace Souplette\Html\Tokenizer\Token;
 
-use Souplette\Html\Parser\Tokenizer\Token;
+use Souplette\Html\Tokenizer\Token;
 
 abstract class Tag extends Token
 {

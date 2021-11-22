@@ -2,7 +2,7 @@
 
 namespace Souplette\Html\Parser\TreeBuilder;
 
-use Souplette\Html\Parser\Tokenizer\Token;
+use Souplette\Html\Tokenizer\Token;
 
 abstract class RuleSet
 {

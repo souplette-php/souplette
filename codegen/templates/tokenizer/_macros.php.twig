@@ -35,19 +35,19 @@ $this->position += \strspn($this->input, {{ bytes|repr_bytes }}, $this->position
 {%- endmacro %}
 
 {% macro chars_while_alpha(return_var = 'chars') -%}
-{{ _self.chars_while(constant('Souplette\\Html\\Parser\\Tokenizer\\Characters::ALPHA'), return_var) }}
+{{ _self.chars_while(constant('Souplette\\Html\\Tokenizer\\Characters::ALPHA'), return_var) }}
 {%- endmacro %}
 
 {% macro chars_while_numeric(return_var = 'chars') -%}
-{{ _self.chars_while(constant('Souplette\\Html\\Parser\\Tokenizer\\Characters::NUM'), return_var) }}
+{{ _self.chars_while(constant('Souplette\\Html\\Tokenizer\\Characters::NUM'), return_var) }}
 {%- endmacro %}
 
 {% macro chars_while_alnum(return_var = 'chars') -%}
-{{ _self.chars_while(constant('Souplette\\Html\\Parser\\Tokenizer\\Characters::ALNUM'), return_var) }}
+{{ _self.chars_while(constant('Souplette\\Html\\Tokenizer\\Characters::ALNUM'), return_var) }}
 {%- endmacro %}
 
 {% macro chars_while_hex(return_var = 'chars') -%}
-{{ _self.chars_while(constant('Souplette\\Html\\Parser\\Tokenizer\\Characters::HEX'), return_var) }}
+{{ _self.chars_while(constant('Souplette\\Html\\Tokenizer\\Characters::HEX'), return_var) }}
 {%- endmacro %}
 
 {% macro peek_value(value, case_insensitive = false) -%}

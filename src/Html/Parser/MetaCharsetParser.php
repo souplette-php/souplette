@@ -3,10 +3,10 @@
 namespace Souplette\Html\Parser;
 
 use Souplette\Encoding\EncodingLookup;
-use Souplette\Html\Parser\Tokenizer\Token\StartTag;
-use Souplette\Html\Parser\Tokenizer\Tokenizer;
-use Souplette\Html\Parser\Tokenizer\TokenizerState;
-use Souplette\Html\Parser\Tokenizer\TokenType;
+use Souplette\Html\Tokenizer\Token\StartTag;
+use Souplette\Html\Tokenizer\Tokenizer;
+use Souplette\Html\Tokenizer\TokenizerState;
+use Souplette\Html\Tokenizer\TokenType;
 
 final class MetaCharsetParser
 {

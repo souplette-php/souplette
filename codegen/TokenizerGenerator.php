@@ -3,7 +3,7 @@
 namespace Souplette\Codegen;
 
 use Souplette\Codegen\Twig\TokenizerExtension;
-use Souplette\Html\Parser\Tokenizer\TokenizerState;
+use Souplette\Html\Tokenizer\TokenizerState;
 use Twig\Environment;
 
 final class TokenizerGenerator extends AbstractCodeGenerator
@@ -15,7 +15,7 @@ final class TokenizerGenerator extends AbstractCodeGenerator
 
     protected function getOutputFile(): string
     {
-        return __DIR__.'/../src/Html/Parser/Tokenizer/Tokenizer.php';
+        return __DIR__.'/../src/Html/Tokenizer/Tokenizer.php';
     }
 
     protected function createEnvironment(): Environment

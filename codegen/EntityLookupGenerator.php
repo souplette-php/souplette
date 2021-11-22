@@ -13,7 +13,7 @@ final class EntityLookupGenerator extends AbstractCodeGenerator
 
     protected function getOutputFile(): string
     {
-        return __DIR__.'/../src/Html/Parser/Tokenizer/EntityLookup.php';
+        return __DIR__.'/../src/Html/Tokenizer/EntityLookup.php';
     }
 
     protected function createContext(): array

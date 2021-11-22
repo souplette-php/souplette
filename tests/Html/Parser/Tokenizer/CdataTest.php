@@ -3,7 +3,7 @@
 namespace Souplette\Tests\Html\Parser\Tokenizer;
 
 use PHPUnit\Framework\TestCase;
-use Souplette\Html\Parser\Tokenizer\Token;
+use Souplette\Html\Tokenizer\Token;
 
 class CdataTest extends TestCase
 {

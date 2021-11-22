@@ -3,7 +3,7 @@
 namespace Souplette\Tests\Html\Parser\Tokenizer;
 
 use PHPUnit\Framework\TestCase;
-use Souplette\Html\Parser\Tokenizer\TokenizerState;
+use Souplette\Html\Tokenizer\TokenizerState;
 
 class RCDataTest extends TestCase
 {

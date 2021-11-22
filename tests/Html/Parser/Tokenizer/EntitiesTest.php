@@ -3,9 +3,9 @@
 namespace Souplette\Tests\Html\Parser\Tokenizer;
 
 use PHPUnit\Framework\TestCase;
-use Souplette\Html\Parser\Tokenizer\EntityLookup;
-use Souplette\Html\Parser\Tokenizer\ParseErrors;
-use Souplette\Html\Parser\Tokenizer\Token;
+use Souplette\Html\Tokenizer\EntityLookup;
+use Souplette\Html\Tokenizer\ParseErrors;
+use Souplette\Html\Tokenizer\Token;
 
 class EntitiesTest extends TestCase
 {

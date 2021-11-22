@@ -3,13 +3,13 @@
  * This file was automatically generated.
  * All modifications will be lost.
  */
-namespace Souplette\Html\Parser\Tokenizer;
+namespace Souplette\Html\Tokenizer;
 
-use Souplette\Html\Parser\Tokenizer\Token\Character;
-use Souplette\Html\Parser\Tokenizer\Token\Comment;
-use Souplette\Html\Parser\Tokenizer\Token\Doctype;
-use Souplette\Html\Parser\Tokenizer\Token\EndTag;
-use Souplette\Html\Parser\Tokenizer\Token\StartTag;
+use Souplette\Html\Tokenizer\Token\Character;
+use Souplette\Html\Tokenizer\Token\Comment;
+use Souplette\Html\Tokenizer\Token\Doctype;
+use Souplette\Html\Tokenizer\Token\EndTag;
+use Souplette\Html\Tokenizer\Token\StartTag;
 
 final class Tokenizer extends AbstractTokenizer
 {
