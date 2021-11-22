@@ -3,6 +3,7 @@
 namespace Souplette\Tests\Html5Lib\TreeConstruction;
 
 use PHPUnit\Framework\Assert;
+use Souplette\Html\Dom\Node\HtmlDocument;
 use Souplette\Html\Parser\Parser;
 
 final class TreeConstructionAssert
@@ -12,7 +13,7 @@ final class TreeConstructionAssert
         $parser = new Parser($test->scriptingEnabled);
         $serializer = new Serializer();
         if ($test->contextElement) {
-            $doc = new \DOMDocument();
+            $doc = new HtmlDocument();
             [$ns, $localName] = $test->contextElement;
             $context = $doc->createElementNS($ns, $localName);
             $nodes = $parser->parseFragment($context, $test->input, 'utf-8');
@@ -28,10 +29,12 @@ final class TreeConstructionAssert
         }
 
         $result = self::normalizeTreeDump($result);
-        if ($test->shouldFail) {
-            Assert::assertNotSame($test->output, $result);
+        if ($test->mustFail) {
+            $message = sprintf('Must fail (%s), input: %s', $test->mustFailReason, $test->input);
+            Assert::assertNotSame($test->output, $result, $message);
         } else {
-            Assert::assertSame($test->output, $result);
+            $message = sprintf('Input html: %s', $test->input);
+            Assert::assertSame($test->output, $result, $message);
         }
     }
 

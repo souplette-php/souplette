@@ -7,19 +7,23 @@ use Souplette\Html\Namespaces;
 final class TreeConstructionTestDTO
 {
     public string $id;
-    public bool $shouldFail = false;
     public bool $scriptingEnabled = false;
     public ?array $contextElement = null;
     public string $input = '';
     public string $output = '';
     // TODO: handle errors
     public string $errors = '';
+    // handle expected failures
+    public bool $mustFail = false;
+    public string $mustFailReason = '';
+    // handle allowed failures
+    public bool $isAllowedToFail = false;
+    public string $allowedToFailReason = '';
 
     public static function fromArray(array $data): self
     {
         $test = new self();
         $test->id = $data['id'];
-        $test->shouldFail = isset($data['xfail']);
         $test->input = $data['data'];
         $test->output = $data['document'];
         $test->errors = $data['errors'];

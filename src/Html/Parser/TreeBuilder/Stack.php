@@ -2,8 +2,14 @@
 
 namespace Souplette\Html\Parser\TreeBuilder;
 
+/**
+ * @template T
+ */
 class Stack extends \SplStack
 {
+    /**
+     * @param iterable<T> $values
+     */
     public function __construct(iterable $values = [])
     {
         foreach ($values as $value) {
@@ -11,6 +17,9 @@ class Stack extends \SplStack
         }
     }
 
+    /**
+     * @param T $value
+     */
     public function contains($value): bool
     {
         foreach ($this as $entry) {
@@ -21,6 +30,9 @@ class Stack extends \SplStack
         return false;
     }
 
+    /**
+     * @param T $value
+     */
     public function indexOf($value): ?int
     {
         $i = 0;
@@ -34,6 +46,9 @@ class Stack extends \SplStack
         return null;
     }
 
+    /**
+     * @return T
+     */
     public function get(int $offset)
     {
         if ($offset >= 0) {
@@ -42,6 +57,10 @@ class Stack extends \SplStack
         return $this->offsetGet($this->count() + $offset);
     }
 
+    /**
+     * @param int $offset
+     * @param T $value
+     */
     public function insert(int $offset, $value): void
     {
         $lastIndex = $this->count() - 1;
@@ -60,6 +79,9 @@ class Stack extends \SplStack
         $this->add($offset - 1, $value);
     }
 
+    /**
+     * @param T $value
+     */
     public function remove($value): bool
     {
         $i = 0;
@@ -73,6 +95,10 @@ class Stack extends \SplStack
         return false;
     }
 
+    /**
+     * @param T $old
+     * @param T $new
+     */
     public function replace($old, $new): bool
     {
         $i = 0;
@@ -92,7 +118,9 @@ class Stack extends \SplStack
             $this->pop();
         }
     }
-
+    /**
+     * @param T $value
+     */
     public function popUntil($value)
     {
         while (!$this->isEmpty()) {

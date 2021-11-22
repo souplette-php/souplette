@@ -36,28 +36,26 @@ final class InForeignContent extends RuleSet
             // TODO: Parse error.
             // Ignore the token.
             return;
-        } else if ($type === TokenType::START_TAG && (
-            isset(self::BREAKOUT_TAGS[$token->name])
-            || ($token->name === 'font' && (
-                isset($token->attributes['color'])
-                || isset($token->attributes['face'])
-                || isset($token->attributes['size'])
-            ))
-        )) {
+        } else if (match($type) {
+            TokenType::START_TAG => (
+                isset(self::BREAKOUT_START_TAGS[$token->name])
+                || ($token->name === 'font' && (
+                    isset($token->attributes['color'])
+                    || isset($token->attributes['face'])
+                    || isset($token->attributes['size'])
+                ))
+            ),
+            TokenType::END_TAG => isset(self::BREAKOUT_END_TAGS[$token->name]),
+            default => false,
+        }) {
             // TODO: Parse error.
-            // If the parser was created as part of the HTML fragment parsing algorithm,
-            // then act as described in the "any other start tag" entry below. (fragment case)
-            if ($tree->isBuildingFragment) {
-                goto ANY_OTHER_START_TAG;
-            }
-            // Otherwise:
-            // Pop an element from the stack of open elements, and then keep popping more elements from the stack of open elements
-            // until the current node is a MathML text integration point, an HTML integration point, or an element in the HTML namespace.
+            // While the current node is not a MathML text integration point, an HTML integration point,
+            // or an element in the HTML namespace, pop elements from the stack of open elements.
             $tree->openElements->popUntilForeignContentScopeMarker();
-            // Then, reprocess the token.
+            // Reprocess the token according to the rules given in the section
+            // corresponding to the current insertion mode in HTML content.
             $tree->processToken($token);
         } else if ($type === TokenType::START_TAG) {
-            ANY_OTHER_START_TAG:
             $adjustedCurrentNode = $tree->getAdjustedCurrentNode();
             // If the adjusted current node is an element in the MathML namespace, adjust MathML attributes for the token.
             // (This fixes the case of MathML attributes that are not all lowercase.)
@@ -129,7 +127,7 @@ final class InForeignContent extends RuleSet
         }
     }
 
-    private const BREAKOUT_TAGS = [
+    private const BREAKOUT_START_TAGS = [
         'b' => true,
         'big' => true,
         'blockquote' => true,
@@ -174,5 +172,10 @@ final class InForeignContent extends RuleSet
         'u' => true,
         'ul' => true,
         'var' => true,
+    ];
+
+    private const BREAKOUT_END_TAGS = [
+        'br' => true,
+        'p' => true,
     ];
 }

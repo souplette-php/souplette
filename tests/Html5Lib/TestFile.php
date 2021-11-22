@@ -4,14 +4,8 @@ namespace Souplette\Tests\Html5Lib;
 
 abstract class TestFile implements \ArrayAccess, \IteratorAggregate
 {
-    /**
-     * @var string;
-     */
-    protected $fileName;
-    /**
-     * @var array
-     */
-    protected $tests;
+    protected string $fileName;
+    protected array $tests;
 
     public function __construct(string $fileName)
     {

@@ -274,6 +274,28 @@ final class OpenElementsStack extends Stack
     }
 
     /**
+     * Helper method for adoption agency algorithm, section 4.7
+     * @return array{\DOMElement, int}|null
+     */
+    public function furthestBlockForFormattingElement(\DOMElement $formattingElement): ?array
+    {
+        // 4.7 Let furthest block be the topmost node in the stack of open elements
+        //     that is lower in the stack than formatting element, and is an element in the special category.
+        //     There might not be one.
+        $index = 0;
+        $furthestBlock = null;
+        foreach ($this as $node) {
+            if ($node === $formattingElement) {
+                return $furthestBlock ? [$furthestBlock, $index] : null;
+            } else if (isset(Elements::SPECIAL[$node->namespaceURI][$node->localName])) {
+                $furthestBlock = $node;
+            }
+            $index++;
+        }
+        return null;
+    }
+
+    /**
      * This method is inlined in the more specific public methods and is kept here as a reference.
      *
      * @see https://html.spec.whatwg.org/multipage/parsing.html#has-an-element-in-the-specific-scope

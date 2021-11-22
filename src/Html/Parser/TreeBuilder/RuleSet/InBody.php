@@ -908,6 +908,29 @@ final class InBody extends RuleSet
         }
     }
 
+
+    public static function anyOtherEndTag(TreeBuilder $tree, Token\EndTag $token)
+    {
+        foreach ($tree->openElements as $node) {
+            if ($node->tagName === $token->name && $node->namespaceURI === Namespaces::HTML) {
+                // Generate implied end tags, except for HTML elements with the same tag name as the token.
+                $tree->generateImpliedEndTags($node->localName);
+                // If node is not the current node, then this is a parse error.
+                if ($node !== $tree->openElements->top()) {
+                    // TODO: Parse error.
+                }
+                // Pop all the nodes from the current node up to node, including node, then stop these steps.
+                $tree->openElements->popUntil($node);
+                return;
+            }
+            // Otherwise, if node is in the special category, then this is a parse error; ignore the token, and return.
+            if (isset(Elements::SPECIAL[$node->namespaceURI][$node->localName])) {
+                // TODO: Parse error.
+                return;
+            }
+        }
+    }
+
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#close-a-p-element
      * @param TreeBuilder $tree
@@ -930,7 +953,7 @@ final class InBody extends RuleSet
      * @param Token $token
      * @return bool
      */
-    private static function runTheAdoptionAgencyAlgorithm(TreeBuilder $tree, Token $token): bool
+    private static function runTheAdoptionAgencyAlgorithm(TreeBuilder $tree, Token $token): void
     {
         // 1. Let subject be token's tag name.
         $subject = $token->name;
@@ -944,163 +967,144 @@ final class InBody extends RuleSet
         ) {
             // then pop the current node off the stack of open elements, and return.
             $tree->openElements->pop();
-            return false;
+            return;
         }
-        // 3. Let outer loop counter be zero.
-        // 4. Outer loop: If outer loop counter is greater than or equal to eight, then return.
-        // 5. Increment outer loop counter by one.
-        for ($outerLoopCounter = 0; $outerLoopCounter < 8; $outerLoopCounter++) {
-            // Step 6.
-            $formattingElement = $tree->activeFormattingElements->containsTag($subject);
+        // 3. Let outer loop counter be 0.
+        $outerLoopCounter = 0;
+        // 4. While true
+        while (true) {
+            // 4.1 If outer loop counter is greater than or equal to 8, then return.
+            if ($outerLoopCounter >= 8) return;
+            // 4.2 Increment outer loop counter by 1.
+            $outerLoopCounter++;
+            // 4.3 Let formatting element be the last element in the list of active formatting elements that:
+            //   - is between the end of the list and the last marker in the list, if any, or the start of the list otherwise, and
+            //   - has the tag name subject.
             // If there is no such element, then return and instead act as described in the "any other end tag" entry above.
+            $formattingElement = $tree->activeFormattingElements->containsTag($subject);
             if (!$formattingElement) {
-                self::anyOtherEndTag($tree, $token);
-                return true;
+                InBody::anyOtherEndTag($tree, $token);
+                return;
             }
-            // 7. If formatting element is not in the stack of open elements
+            // 4.4 If formatting element is not in the stack of open elements, then this is a parse error;
+            //     remove the element from the list, and return.
             if (!$tree->openElements->contains($formattingElement)) {
-                // TODO: then this is a parse error;
-                // remove the element from the list, and return.
+                // TODO: parse error;
                 $tree->activeFormattingElements->remove($formattingElement);
-                return false;
-            } else if (!$tree->openElements->hasElementInScope($formattingElement)) {
-                // 8. If formatting element is in the stack of open elements, but the element is not in scope,
-                // TODO: then this is a parse error; return.
-                return false;
+                return;
             }
-            // 9. If formatting element is not the current node, this is a parse error. (But do not return.)
+            // 4.5 If formatting element is in the stack of open elements, but the element is not in scope,
+            //     then this is a parse error; return.
+            if (!$tree->openElements->hasElementInScope($formattingElement)) {
+                // TODO: parse error;
+                return;
+            }
+            // 4.6 If formatting element is not the current node, this is a parse error. (But do not return.)
             if ($formattingElement !== $tree->openElements->top()) {
                 // TODO: Parse error.
             }
-            // 10. Let furthest block be the topmost node in the stack of open elements
-            // that is lower in the stack than formatting element, and is an element in the special category.
-            // There might not be one.
-            $furthestBlock = null;
-            $afeIndex = $tree->openElements->indexOf($formattingElement);
-            if ($afeIndex !== null) {
-                for ($i = $afeIndex - 1; $i >= 0; $i--) {
-                    $el = $tree->openElements[$i];
-                    if (isset(Elements::SPECIAL[$el->namespaceURI][$el->localName])) {
-                        $furthestBlock = $el;
-                        break;
-                    }
-                }
-            }
-            // 11. If there is no furthest block,
+            // 4.7 Let furthest block be the topmost node in the stack of open elements
+            //     that is lower in the stack than formatting element, and is an element in the special category.
+            //     There might not be one.
+            [$furthestBlock, $formattingElementIndex] = $tree->openElements->furthestBlockForFormattingElement($formattingElement);
+            // 4.8 If there is no furthest block, then the UA must first
             if (!$furthestBlock) {
-                // then the UA must first pop all the nodes from the bottom of the stack of open elements,
+                // pop all the nodes from the bottom of the stack of open elements,
                 // from the current node up to and including formatting element,
                 $tree->openElements->popUntil($formattingElement);
                 // then remove formatting element from the list of active formatting elements,
                 $tree->activeFormattingElements->remove($formattingElement);
                 // and finally return.
-                return false;
+                return;
             }
-            // 12. Let common ancestor be the element immediately above formatting element in the stack of open elements.
-            $commonAncestor = $tree->openElements[$afeIndex + 1];
-            // 13. Let a bookmark note the position of formatting element in the list of active formatting elements
-            // relative to the elements on either side of it in the list.
+            // 4.9 Let common ancestor be the element immediately above formatting element in the stack of open elements.
+            $commonAncestor = $tree->openElements[$formattingElementIndex + 1];
+            // 4.10 Let a bookmark note the position of formatting element in the list of active formatting elements
+            //     relative to the elements on either side of it in the list.
             $bookmark = $tree->activeFormattingElements->indexOf($formattingElement);
-            // 14. Let node and last node be furthest block.
+            // 4.11 Let node and last node be furthest block.
             $node = $lastNode = $furthestBlock;
-            // 14.1. Let inner loop counter be zero.
+            // 4.12 Let inner loop counter be 0.
             $innerLoopCounter = 0;
-            $index = $tree->openElements->indexOf($node);
-            // FIXME: this loop condition is not is the spec (see stp 14.5),
-            // but it is what browsers actually do...
-            //while (true) {
-            while ($innerLoopCounter < 3) {
-                // 14.2. Inner loop: Increment inner loop counter by one.
+            //
+            $initialIndex = $tree->openElements->indexOf($node);
+            // 4.13 While true
+            while (true) {
+                // 4.13.1 Increment inner loop counter by 1.
                 $innerLoopCounter++;
-                // 14.3. Let node be the element immediately above node in the stack of open elements,
-                // or if node is no longer in the stack of open elements (e.g. because it got removed by this algorithm),
-                // the element that was immediately above node in the stack of open elements before node was removed.
-                $index++;
-                $node = $tree->openElements[$index];
-                // 14.4. If node is formatting element, then go to the next step in the overall algorithm.
-                if ($node === $formattingElement) {
-                    break;
+                // 4.13.2 Let node be the element immediately above node in the stack of open elements,
+                //        or if node is no longer in the stack of open elements (e.g. because it got removed by this algorithm),
+                //        the element that was immediately above node in the stack of open elements before node was removed.
+                $index = $tree->openElements->indexOf($node);
+                if ($index === null) {
+                    $index = $initialIndex;
                 }
-                // 14.5. If inner loop counter is greater than three and node is in the list of active formatting elements,
+                $node = $tree->openElements[$index + 1];
+                //$index = $tree->openElements->indexOf($node);
+                //$node = $tree->openElements[$index];
+                // 4.13.3 If node is formatting element, then break.
+                if ($node === $formattingElement) break;
+                // 4.13.4 If inner loop counter is greater than 3 and node is in the list of active formatting elements,
+                //        then remove node from the list of active formatting elements.
                 $isInActiveElements = $tree->activeFormattingElements->contains($node);
                 if ($innerLoopCounter > 3 && $isInActiveElements) {
-                    // then remove node from the list of active formatting elements.
                     $tree->activeFormattingElements->remove($node);
+                    $isInActiveElements = false;
                 }
-                // 14.6. If node is not in the list of active formatting elements,
+                // 4.13.5 If node is not in the list of active formatting elements,
+                //        then remove node from the stack of open elements and continue.
                 if (!$isInActiveElements) {
-                    // then remove node from the stack of open elements and then go back to the step labeled inner loop.
                     $tree->openElements->remove($node);
-                    $index--;
+                    $initialIndex = $index;
                     continue;
                 }
-                // 14.7. Create an element for the token for which the element node was created, in the HTML namespace,
-                // with common ancestor as the intended parent;
+                // 4.13.6 Create an element for the token for which the element node was created, in the HTML namespace,
+                //        with common ancestor as the intended parent;
+                // TODO: check if we need to build a new element from scratch because of namespace
                 $element = $node->cloneNode();
-                // replace the entry for node in the list of active formatting elements with an entry for the new element
+                //        replace the entry for node in the list of active formatting elements with an entry for the new element,
                 $tree->activeFormattingElements->replace($node, $element);
-                // replace the entry for node in the stack of open elements with an entry for the new element,
+                //        replace the entry for node in the stack of open elements with an entry for the new element,
                 $tree->openElements->replace($node, $element);
-                // and let node be the new element.
+                //        and let node be the new element.
                 $node = $element;
-                // 14.8. If last node is furthest block,
+                // 4.13.7 If last node is furthest block,
+                //        then move the aforementioned bookmark to be immediately
+                //        after the new node in the list of active formatting elements.
                 if ($lastNode === $furthestBlock) {
-                    // then move the aforementioned bookmark to be immediately after the new node
-                    // in the list of active formatting elements.
                     $bookmark = $tree->activeFormattingElements->indexOf($node);
                 }
-                // 14.9. Insert last node into node, first removing it from its previous parent node if any.
+                // 4.13.8 Append last node to node.
                 $node->appendChild($lastNode);
-                // 14.10. Let last node be node.
+                // 4.13.9 Set last node to node.
                 $lastNode = $node;
-                // 14.11. Return to the step labeled inner loop.
             }
-            // 15. Insert whatever last node ended up being in the previous step at the appropriate place for inserting a node,
-            // but using common ancestor as the override target.
+            // 4.14 Insert whatever last node ended up being in the previous step
+            //      at the appropriate place for inserting a node,
+            //      but using common ancestor as the override target.
             $pos = $tree->appropriatePlaceForInsertingANode($commonAncestor);
             $pos->insert($lastNode);
-            // 16. Create an element for the token for which formatting element was created, in the HTML namespace,
-            // with furthest block as the intended parent.
+            // 4.15 Create an element for the token for which formatting element was created, in the HTML namespace,
+            //      with furthest block as the intended parent.
+            // TODO: check if we need to build a new element from scratch because of namespace
             $element = $formattingElement->cloneNode();
-            // 17. Take all of the child nodes of furthest block and append them to the element created in the last step.
+            // 4.16 Take all of the child nodes of furthest block and append them to the element created in the last step.
             for ($i = $furthestBlock->childNodes->length - 1; $i >= 0; $i--) {
                 $childNode = $furthestBlock->childNodes->item($i);
                 $element->insertBefore($childNode, $element->lastChild);
             }
-            // 18. Append that new element to furthest block.
+            // 4.17 Append that new element to furthest block.
             $furthestBlock->appendChild($element);
-            // 19. Remove formatting element from the list of active formatting elements,
-            // and insert the new element into the list of active formatting elements at the position of the aforementioned bookmark.
+            // 4.18 Remove formatting element from the list of active formatting elements,
+            //      and insert the new element into the list of active formatting elements
+            //      at the position of the aforementioned bookmark.
             $tree->activeFormattingElements->remove($formattingElement);
             $tree->activeFormattingElements->insert($bookmark, $element);
-            // 20. Remove formatting element from the stack of open elements,
-            // and insert the new element into the stack of open elements immediately below the position of furthest block in that stack.
+            // 4.19 Remove formatting element from the stack of open elements,
+            //      and insert the new element into the stack of open elements
+            //      immediately below the position of furthest block in that stack.
             $tree->openElements->remove($formattingElement);
             $tree->openElements->insert($tree->openElements->indexOf($furthestBlock), $element);
-            // 21. Jump back to the step labeled outer loop.
-        }
-        return false;
-    }
-
-    private static function anyOtherEndTag(TreeBuilder $tree, Token\EndTag $token)
-    {
-        foreach ($tree->openElements as $node) {
-            if ($node->tagName === $token->name && $node->namespaceURI === Namespaces::HTML) {
-                // Generate implied end tags, except for HTML elements with the same tag name as the token.
-                $tree->generateImpliedEndTags($node->localName);
-                // If node is not the current node, then this is a parse error.
-                if ($node !== $tree->openElements->top()) {
-                    // TODO: Parse error.
-                }
-                // Pop all the nodes from the current node up to node, including node, then stop these steps.
-                $tree->openElements->popUntil($node);
-                return;
-            }
-            // Otherwise, if node is in the special category, then this is a parse error; ignore the token, and return.
-            if (isset(Elements::SPECIAL[$node->namespaceURI][$node->localName])) {
-                // TODO: Parse error.
-                return;
-            }
         }
     }
 }

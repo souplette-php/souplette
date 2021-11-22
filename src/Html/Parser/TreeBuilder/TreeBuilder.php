@@ -48,7 +48,6 @@ final class TreeBuilder
         InsertionModes::AFTER_FRAMESET => RuleSet\AfterFrameset::class,
         InsertionModes::AFTER_AFTER_BODY => RuleSet\AfterAfterBody::class,
         InsertionModes::AFTER_AFTER_FRAMESET => RuleSet\AfterAfterFrameset::class,
-        InsertionModes::IN_FOREIGN_CONTENT => RuleSet\InForeignContent::class,
     ];
 
     public Tokenizer $tokenizer;

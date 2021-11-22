@@ -27,9 +27,9 @@ final class EncodingSnifferTest extends TestCase
         Assert::assertSame($expectedEncoding, strtolower($encoding));
     }
 
-    public function provideEncodingSniffing()
+    public function provideEncodingSniffing(): iterable
     {
-        $xfails = require __DIR__ . "/../../resources/html5lib-xfails.php";
+        $xfails = require __DIR__ . '/../../resources/html5lib-xfails.php';
         foreach (ResourceCollector::collect(self::RESOURCE_PATH) as $relPath => $fileInfo) {
             if (str_starts_with($relPath, 'scripted/')) {
                 // TODO: implement a scripting engine 😁
@@ -38,7 +38,7 @@ final class EncodingSnifferTest extends TestCase
             $file = new DataFile($fileInfo->getPathname());
             foreach ($file as $i => $test) {
                 $encoding = strtolower($test['encoding']);
-                $key = "{$relPath}::{$i}";
+                $key = sprintf('%s::%d@%d', $relPath, $i, $test['metadata']['line']);
                 $skipped = $xfails['encoding'][$key] ?? null;
                 yield $key => [$test['data'], $encoding, $skipped];
             }

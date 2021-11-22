@@ -2,14 +2,16 @@
 
 namespace Souplette\Html\Parser\TreeBuilder;
 
+use DOMElement;
 use Souplette\Html\Namespaces;
 
 /**
  * @see https://html.spec.whatwg.org/multipage/parsing.html#the-list-of-active-formatting-elements
+ * @extends Stack<DOMElement>
  */
 final class ActiveFormattingElementList extends Stack
 {
-    public static function areNodesEqual(\DOMElement $node, \DOMElement $other): bool
+    public static function areNodesEqual(DOMElement $node, DOMElement $other): bool
     {
         if ($node->localName !== $other->localName) {
             return false;
@@ -38,7 +40,7 @@ final class ActiveFormattingElementList extends Stack
 
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#push-onto-the-list-of-active-formatting-elements
-     * @param \DOMElement|null $value
+     * @param DOMElement|null $value
      */
     public function push($value): void
     {
@@ -78,7 +80,7 @@ final class ActiveFormattingElementList extends Stack
      * Check if an element exists between the end of the active formatting elements and the last marker.
      * If it does, return it, else return false
      *
-     * @param \DOMElement $value
+     * @param DOMElement $value
      * @return bool
      */
     public function contains($value): bool
@@ -98,7 +100,7 @@ final class ActiveFormattingElementList extends Stack
      * Check if an element exists between the end of the active formatting elements and the last marker.
      * If it does, return it, else return false
      */
-    public function containsTag(string $tagName, string $namespace = Namespaces::HTML): \DOMElement|false
+    public function containsTag(string $tagName, string $namespace = Namespaces::HTML): DOMElement|false
     {
         foreach ($this as $entry) {
             if ($entry === null) {

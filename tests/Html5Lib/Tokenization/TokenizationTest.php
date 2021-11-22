@@ -43,7 +43,7 @@ class TokenizationTest extends TestCase
         }
     }
 
-    public function tokenizationProvider()
+    public function tokenizationProvider(): iterable
     {
         foreach ($this->collectJsonFiles() as $relPath => $jsonFile) {
             foreach ($jsonFile as $i => $test) {
@@ -54,9 +54,9 @@ class TokenizationTest extends TestCase
     }
 
     /**
-     * @return \Generator|JsonFile[]
+     * @return iterable<JsonFile>
      */
-    private function collectJsonFiles()
+    private function collectJsonFiles(): iterable
     {
         $path = __DIR__.'/../../resources/html5lib-tests/tokenizer';
         foreach (ResourceCollector::collect($path, 'test') as $relPath => $fileInfo) {

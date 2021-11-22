@@ -57,9 +57,6 @@ abstract class AbstractCodeGenerator
         return [
             '@PSR2' => true,
             'array_indentation' => true,
-            //'declare_strict_types' => true,
-            //'linebreak_after_opening_tag' => false,
-            //'blank_line_after_opening_tag' => false,
             'no_extra_blank_lines' => [
                 'tokens' => ['extra', 'curly_brace_block', 'square_brace_block'],
             ],
