@@ -13,6 +13,27 @@ use Souplette\Html\Parser\TreeBuilder\TreeBuilder;
  */
 final class InTemplate extends RuleSet
 {
+    private const SWITCH_TO_HEAD_START_TAGS = [
+        'base' => true,
+        'basefont' => true,
+        'bgsound' => true,
+        'link' => true,
+        'meta' => true,
+        'noframes' => true,
+        'script' => true,
+        'style' => true,
+        'template' => true,
+        'title' => true,
+    ];
+
+    private const SWITCH_TO_TABLE_START_TAGS = [
+        'caption' => true,
+        'colgroup' => true,
+        'tbody' => true,
+        'tfoot' => true,
+        'thead' => true,
+    ];
+
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token::TYPE;
@@ -24,29 +45,12 @@ final class InTemplate extends RuleSet
             // Process the token using the rules for the "in body" insertion mode.
             InBody::process($token, $tree);
         } else if (
-            ($type === TokenType::START_TAG && (
-                $token->name === 'base'
-                || $token->name === 'basefont'
-                || $token->name === 'bgsound'
-                || $token->name === 'link'
-                || $token->name === 'meta'
-                || $token->name === 'noframes'
-                || $token->name === 'script'
-                || $token->name === 'style'
-                || $token->name === 'template'
-                || $token->name === 'title'
-            ))
+            ($type === TokenType::START_TAG && isset(self::SWITCH_TO_HEAD_START_TAGS[$token->name]))
             || ($type === TokenType::END_TAG && $token->name === 'template')
         ) {
             // Process the token using the rules for the "in head" insertion mode.
             InHead::process($token, $tree);
-        } else if ($type === TokenType::START_TAG && (
-            $token->name === 'caption'
-            || $token->name === 'colgroup'
-            || $token->name === 'tbody'
-            || $token->name === 'tfoot'
-            || $token->name === 'thead'
-        )) {
+        } else if ($type === TokenType::START_TAG && isset(self::SWITCH_TO_TABLE_START_TAGS[$token->name])) {
             // Pop the current template insertion mode off the stack of template insertion modes.
             $tree->templateInsertionModes->pop();
             // Push "in table" onto the stack of template insertion modes so that it is the new current template insertion mode.

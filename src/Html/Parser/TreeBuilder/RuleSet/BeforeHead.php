@@ -8,17 +8,21 @@ use Souplette\Html\Parser\TreeBuilder\InsertionModes;
 use Souplette\Html\Parser\TreeBuilder\RuleSet;
 use Souplette\Html\Parser\TreeBuilder\TreeBuilder;
 
+/**
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#the-before-head-insertion-mode
+ */
 final class BeforeHead extends RuleSet
 {
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token::TYPE;
         if ($type === TokenType::CHARACTER) {
-            if (ctype_space($token->data)) {
+            $l = strspn($token->data, " \n\t\f");
+            if ($l === \strlen($token->data)) {
                 // Ignore the token.
                 return;
             }
-            if ($l = strspn($token->data, " \n\t\f")) {
+            if ($l > 0) {
                 $token->data = substr($token->data, $l);
             }
         } else if ($type === TokenType::COMMENT) {

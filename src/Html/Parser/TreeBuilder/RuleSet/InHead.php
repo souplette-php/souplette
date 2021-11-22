@@ -4,7 +4,7 @@ namespace Souplette\Html\Parser\TreeBuilder\RuleSet;
 
 use Souplette\Encoding\EncodingLookup;
 use Souplette\Html\Namespaces;
-use Souplette\Html\Parser\EncodingSniffer;
+use Souplette\Html\Parser\MetaCharsetParser;
 use Souplette\Html\Parser\Tokenizer\Token;
 use Souplette\Html\Parser\Tokenizer\TokenizerState;
 use Souplette\Html\Parser\Tokenizer\TokenType;
@@ -21,11 +21,12 @@ final class InHead extends RuleSet
     {
         $type = $token::TYPE;
         if ($type === TokenType::CHARACTER) {
-            if (ctype_space($token->data)) {
+            $l = strspn($token->data, " \n\t\f");
+            if ($l === \strlen($token->data)) {
                 $tree->insertCharacter($token);
                 return;
             }
-            if ($l = strspn($token->data, " \n\t\f")) {
+            if ($l > 0) {
                 $tree->insertCharacter($token, substr($token->data, 0, $l));
                 $token->data = substr($token->data, $l);
             }
@@ -75,7 +76,7 @@ final class InHead extends RuleSet
                         // to that attribute's value returns an encoding,
                         // and the confidence is currently tentative,
                         // then change the encoding to the extracted encoding.
-                        $label = EncodingSniffer::extractFromMetaContentAttribute($token->attributes['content']);
+                        $label = MetaCharsetParser::extractFromMetaContentAttribute($token->attributes['content']);
                         if (isset(EncodingLookup::LABELS[$label])) {
                             $tree->changeTheEncoding(EncodingLookup::LABELS[$label]);
                         }

@@ -13,6 +13,30 @@ use Souplette\Html\Parser\TreeBuilder\TreeBuilder;
  */
 final class InTableBody extends RuleSet
 {
+    private const SWITCH_TO_TABLE_START_TAGS = [
+        'caption' => true,
+        'col' => true,
+        'colgroup' => true,
+        'tbody' => true,
+        'tfoot' => true,
+        'thead' => true,
+    ];
+    private const SWITCH_TO_TABLE_END_TAGS = [
+        'tbody' => true,
+        'tfoot' => true,
+        'thead' => true,
+    ];
+    private const PARSE_ERROR_END_TAGS = [
+        'body' => true,
+        'caption' => true,
+        'col' => true,
+        'colgroup' => true,
+        'html' => true,
+        'td' => true,
+        'th' => true,
+        'tr' => true,
+    ];
+
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token::TYPE;
@@ -32,11 +56,7 @@ final class InTableBody extends RuleSet
             $tree->insertionMode = InsertionModes::IN_ROW;
             // Reprocess the current token.
             $tree->processToken($token);
-        } else if ($type === TokenType::END_TAG && (
-            $token->name === 'tbody'
-            || $token->name === 'tfoot'
-            || $token->name === 'thead'
-        )) {
+        } else if ($type === TokenType::END_TAG && isset(self::SWITCH_TO_TABLE_END_TAGS[$token->name])) {
             // If the stack of open elements does not have an element in table scope
             // that is an HTML element with the same tag name as the token, this is a parse error; ignore the token.
             if (!$tree->openElements->hasTagInTableScope($token->name)) {
@@ -50,16 +70,8 @@ final class InTableBody extends RuleSet
             $tree->openElements->pop();
             $tree->insertionMode = InsertionModes::IN_TABLE;
         } else if (
-            ($type === TokenType::START_TAG && (
-                $token->name === 'caption'
-                || $token->name === 'col'
-                || $token->name === 'colgroup'
-                || $token->name === 'tbody'
-                || $token->name === 'tfoot'
-                || $token->name === 'thead'
-            )) || (
-                $type === TokenType::END_TAG && $token->name === 'table'
-            )
+            ($type === TokenType::START_TAG && isset(self::SWITCH_TO_TABLE_START_TAGS[$token->name]))
+            || ($type === TokenType::END_TAG && $token->name === 'table')
         ) {
             // If the stack of open elements does not have a tbody, thead, or tfoot element in table scope,
             // this is a parse error; ignore the token.
@@ -75,16 +87,7 @@ final class InTableBody extends RuleSet
             $tree->insertionMode = InsertionModes::IN_TABLE;
             // Reprocess the token.
             $tree->processToken($token);
-        } else if ($type === TokenType::END_TAG && (
-            $token->name === 'body'
-            || $token->name === 'caption'
-            || $token->name === 'col'
-            || $token->name === 'colgroup'
-            || $token->name === 'html'
-            || $token->name === 'td'
-            || $token->name === 'th'
-            || $token->name === 'tr'
-        )) {
+        } else if ($type === TokenType::END_TAG && isset(self::PARSE_ERROR_END_TAGS[$token->name])) {
             // TODO: Parse error.
             // Ignore the token.
             return;

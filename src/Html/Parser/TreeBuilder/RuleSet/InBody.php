@@ -47,6 +47,33 @@ final class InBody extends RuleSet
         'u' => true,
     ];
 
+    private const CLOSE_P_START_TAGS = [
+        'address' => true,
+        'article' => true,
+        'aside' => true,
+        'blockquote' => true,
+        'center' => true,
+        'details' => true,
+        'dialog' => true,
+        'dir' => true,
+        'div' => true,
+        'dl' => true,
+        'fieldset' => true,
+        'figcaption' => true,
+        'figure' => true,
+        'footer' => true,
+        'header' => true,
+        'hgroup' => true,
+        'main' => true,
+        'menu' => true,
+        'nav' => true,
+        'ol' => true,
+        'p' => true,
+        'section' => true,
+        'summary' => true,
+        'ul' => true,
+    ];
+
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token::TYPE;
@@ -182,32 +209,7 @@ final class InBody extends RuleSet
                 // Switch the insertion mode to "in frameset".
                 $tree->insertionMode = InsertionModes::IN_FRAMESET;
                 return;
-            } else if (
-                $tagName === 'address'
-                || $tagName === 'article'
-                || $tagName === 'aside'
-                || $tagName === 'blockquote'
-                || $tagName === 'center'
-                || $tagName === 'details'
-                || $tagName === 'dialog'
-                || $tagName === 'dir'
-                || $tagName === 'div'
-                || $tagName === 'dl'
-                || $tagName === 'fieldset'
-                || $tagName === 'figcaption'
-                || $tagName === 'figure'
-                || $tagName === 'footer'
-                || $tagName === 'header'
-                || $tagName === 'hgroup'
-                || $tagName === 'main'
-                || $tagName === 'menu'
-                || $tagName === 'nav'
-                || $tagName === 'ol'
-                || $tagName === 'p'
-                || $tagName === 'section'
-                || $tagName === 'summary'
-                || $tagName === 'ul'
-            ) {
+            } else if (isset(self::CLOSE_P_START_TAGS[$tagName])) {
                 // If the stack of open elements has a p element in button scope, then close a p element.
                 if ($tree->openElements->hasTagInButtonScope('p')) {
                     self::closeAPElement($tree);

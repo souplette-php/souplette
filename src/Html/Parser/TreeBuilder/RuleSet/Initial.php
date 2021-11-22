@@ -24,11 +24,11 @@ final class Initial extends RuleSet
         } else if ($type === TokenType::COMMENT) {
             $tree->insertComment($token, new InsertionLocation($tree->document));
         } else if ($type === TokenType::DOCTYPE) {
-            // TODO: If the DOCTYPE token's name is not a case-sensitive match for the string "html",
+            // If the DOCTYPE token's name is not a case-sensitive match for the string "html",
             // or the token's public identifier is not missing,
             // or the token's system identifier is neither missing nor a case-sensitive match for the string "about:legacy-compat",
             // then there is a parse error.
-
+            // TODO: parse error
             // Append a DocumentType node to the Document node,
             // with the name attribute set to the name given in the DOCTYPE token,
             // or the empty string if the name was missing;
@@ -45,8 +45,8 @@ final class Initial extends RuleSet
             ) {
                 $tree->compatMode = DocumentModes::QUIRKS;
             } else if (
-                $pub && preg_match(self::PUBLIC_ID_LIMITED_QUIRKS_PATTERN, $pub)
-                || $sys && $pub && preg_match(self::MISSING_SYSTEM_PUBLIC_PATTERN, $pub)
+                ($pub && preg_match(self::PUBLIC_ID_LIMITED_QUIRKS_PATTERN, $pub))
+                || ($sys && $pub && preg_match(self::MISSING_SYSTEM_PUBLIC_PATTERN, $pub))
             ) {
                 // Otherwise,
                 // TODO: if the document is not an iframe srcdoc document,

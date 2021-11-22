@@ -17,12 +17,13 @@ final class InColumnGroup extends RuleSet
     {
         $type = $token::TYPE;
         if ($type === TokenType::CHARACTER) {
-            if (ctype_space($token->data)) {
+            $l = strspn($token->data, " \n\t\f");
+            if ($l === \strlen($token->data)) {
                 // Insert the character.
                 $tree->insertCharacter($token);
                 return;
             }
-            if ($l = strspn($token->data, " \n\t\f")) {
+            if ($l > 0) {
                 // Insert the character.
                 $tree->insertCharacter($token, substr($token->data, 0, $l));
                 $token->data = substr($token->data, $l);

@@ -25,13 +25,12 @@ final class BeforeHtml extends RuleSet
             $tree->insertComment($token, new InsertionLocation($tree->document));
             return;
         } else if ($type === TokenType::CHARACTER) {
-            if (ctype_space($token->data)) {
+            $token->data = ltrim($token->data, " \n\t\f\r");
+            if (\strlen($token->data) === 0) {
                 // Ignore the token.
                 return;
-            } else {
-                $token->data = ltrim($token->data, " \n\t\f");
-                goto ANYTHING_ELSE;
             }
+            goto ANYTHING_ELSE;
         } else if ($type === TokenType::START_TAG && $token->name === 'html') {
             // Create an element for the token in the HTML namespace, with the Document as the intended parent.
             $element = $tree->createElement($token, Namespaces::HTML, $tree->document);

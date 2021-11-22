@@ -12,19 +12,31 @@ use Souplette\Html\Parser\TreeBuilder\TreeBuilder;
  */
 final class InSelectInTable extends RuleSet
 {
+    private const PARSE_ERROR_START_TAGS = [
+        'caption' => true,
+        'table' => true,
+        'tbody' => true,
+        'tfoot' => true,
+        'thead' => true,
+        'tr' => true,
+        'td' => true,
+        'th' => true,
+    ];
+    private const PARSE_ERROR_END_TAGS = [
+        'caption' => true,
+        'table' => true,
+        'tbody' => true,
+        'tfoot' => true,
+        'thead' => true,
+        'tr' => true,
+        'td' => true,
+        'th' => true,
+    ];
+
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token::TYPE;
-        if ($type === TokenType::START_TAG && (
-            $token->name === 'caption'
-            || $token->name === 'table'
-            || $token->name === 'tbody'
-            || $token->name === 'tfoot'
-            || $token->name === 'thead'
-            || $token->name === 'tr'
-            || $token->name === 'td'
-            || $token->name === 'th'
-        )) {
+        if ($type === TokenType::START_TAG && isset(self::PARSE_ERROR_START_TAGS[$token->name])) {
             // TODO: Parse error.
             // Pop elements from the stack of open elements until a select element has been popped from the stack.
             $tree->openElements->popUntilTag('select');
@@ -32,16 +44,7 @@ final class InSelectInTable extends RuleSet
             $tree->resetInsertionModeAppropriately();
             // Reprocess the token.
             $tree->processToken($token);
-        } else if ($type === TokenType::END_TAG && (
-            $token->name === 'caption'
-            || $token->name === 'table'
-            || $token->name === 'tbody'
-            || $token->name === 'tfoot'
-            || $token->name === 'thead'
-            || $token->name === 'tr'
-            || $token->name === 'td'
-            || $token->name === 'th'
-        )) {
+        } else if ($type === TokenType::END_TAG && isset(self::PARSE_ERROR_END_TAGS[$token->name])) {
             // TODO: Parse error.
             // If the stack of open elements does not have an element in table scope
             // that is an HTML element with the same tag name as that of the token, then ignore the token.

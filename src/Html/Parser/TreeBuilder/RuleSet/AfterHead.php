@@ -13,6 +13,19 @@ use Souplette\Html\Parser\TreeBuilder\TreeBuilder;
  */
 final class AfterHead extends RuleSet
 {
+    private const ERROR_START_TAGS = [
+        'base' => true,
+        'basefont' => true,
+        'bgsound' => true,
+        'link' => true,
+        'meta' => true,
+        'noframes' => true,
+        'script' => true,
+        'style' => true,
+        'template' => true,
+        'title' => true,
+    ];
+
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token::TYPE;
@@ -34,18 +47,7 @@ final class AfterHead extends RuleSet
             $tree->insertElement($token);
             // Switch the insertion mode to "in frameset".
             $tree->insertionMode = InsertionModes::IN_FRAMESET;
-        } else if ($type === TokenType::START_TAG && (
-                $token->name === 'base'
-                || $token->name === 'basefont'
-                || $token->name === 'bgsound'
-                || $token->name === 'link'
-                || $token->name === 'meta'
-                || $token->name === 'noframes'
-                || $token->name === 'script'
-                || $token->name === 'style'
-                || $token->name === 'template'
-                || $token->name === 'title'
-        )) {
+        } else if ($type === TokenType::START_TAG && isset(self::ERROR_START_TAGS[$token->name])) {
             // TODO: Parse error.
             // Push the node pointed to by the head element pointer onto the stack of open elements.
             $tree->openElements->push($tree->headElement);

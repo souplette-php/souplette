@@ -19,18 +19,9 @@ final class AfterAfterFrameset extends RuleSet
         if ($type === TokenType::COMMENT) {
             // Insert a comment as the last child of the Document object.
             $tree->insertComment($token, new InsertionLocation($tree->document));
-        } else if ($type === TokenType::CHARACTER) {
-            $data = preg_replace('/[^ \n\t\f]+/S', '', $token->data, -1, $count);
-            if ($count > 0) {
-                // TODO: Parse error.
-                // Ignore the character tokens.
-                if (\strlen($data) === 0) return;
-                $token->data = $data;
-            }
-            InBody::process($token, $tree);
         } else if (
             $type === TokenType::DOCTYPE
-            || ($type === TokenType::CHARACTER && ctype_space($token->data))
+            || ($type === TokenType::CHARACTER && strspn($token->data, "\t\n\f\r ") === \strlen($token->data))
             || ($type === TokenType::START_TAG && $token->name === 'html')
         ) {
             // Process the token using the rules for the "in body" insertion mode.

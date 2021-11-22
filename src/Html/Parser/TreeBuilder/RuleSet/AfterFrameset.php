@@ -17,7 +17,7 @@ final class AfterFrameset extends RuleSet
     {
         $type = $token::TYPE;
         if ($type === TokenType::CHARACTER) {
-            $data = preg_replace('/[^ \n\t\f]+/S', '', $token->data, -1, $count);
+            $data = preg_replace('/[^ \n\t\f\r]+/S', '', $token->data, -1, $count);
             if ($count > 0) {
                 // TODO: Parse error. Ignore the character tokens.
                 if (\strlen($data) === 0) return;

@@ -13,6 +13,32 @@ use Souplette\Html\Parser\TreeBuilder\TreeBuilder;
  */
 final class InCell extends RuleSet
 {
+    private const CLOSE_CELL_START_TAGS = [
+        'caption' => true,
+        'col' => true,
+        'colgroup' => true,
+        'tbody' => true,
+        'td' => true,
+        'tfoot' => true,
+        'th' => true,
+        'thead' => true,
+        'tr' => true,
+    ];
+    private const CLOSE_CELL_END_TAGS = [
+        'table' => true,
+        'tbody' => true,
+        'tfoot' => true,
+        'thead' => true,
+        'tr' => true,
+    ];
+    private const ERROR_END_TAGS = [
+        'body' => true,
+        'caption' => true,
+        'col' => true,
+        'colgroup' => true,
+        'html' => true,
+    ];
+
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token::TYPE;
@@ -37,17 +63,7 @@ final class InCell extends RuleSet
             $tree->activeFormattingElements->clearUpToLastMarker();
             // Switch the insertion mode to "in row".
             $tree->insertionMode = InsertionModes::IN_ROW;
-        } else if ($type === TokenType::START_TAG && (
-            $token->name === 'caption'
-            || $token->name === 'col'
-            || $token->name === 'colgroup'
-            || $token->name === 'tbody'
-            || $token->name === 'td'
-            || $token->name === 'tfoot'
-            || $token->name === 'th'
-            || $token->name === 'thead'
-            || $token->name === 'tr'
-        )) {
+        } else if ($type === TokenType::START_TAG && isset(self::CLOSE_CELL_START_TAGS[$token->name])) {
             // If the stack of open elements does not have a td or th element in table scope,
             // then this is a parse error; ignore the token. (fragment case)
             if (!$tree->openElements->hasTagsInTableScope(['td', 'th'])) {
@@ -57,23 +73,11 @@ final class InCell extends RuleSet
             // Otherwise, close the cell (see below) and reprocess the token.
             self::closeTheCell($tree);
             $tree->processToken($token);
-        } else if ($type === TokenType::END_TAG && (
-            $token->name === 'body'
-            || $token->name === 'caption'
-            || $token->name === 'col'
-            || $token->name === 'colgroup'
-            || $token->name === 'html'
-        )) {
+        } else if ($type === TokenType::END_TAG && isset(self::ERROR_END_TAGS[$token->name])) {
             // TODO: Parse error.
             // Ignore the token.
             return;
-        } else if ($type === TokenType::END_TAG && (
-            $token->name === 'table'
-            || $token->name === 'tbody'
-            || $token->name === 'tfoot'
-            || $token->name === 'thead'
-            || $token->name === 'tr'
-        )) {
+        } else if ($type === TokenType::END_TAG && isset(self::CLOSE_CELL_END_TAGS[$token->name])) {
             // If the stack of open elements does not have an element in table scope
             // that is an HTML element with the same tag name as that of the token,
             // then this is a parse error; ignore the token.

@@ -13,7 +13,7 @@ use Souplette\Html\Parser\TreeBuilder\TreeBuilder;
  */
 final class InHeadNoscript extends RuleSet
 {
-    private const IN_HEAD_START_TAG_TRIGGERS = [
+    private const SWITCH_TO_IN_HEAD_START_TAGS = [
         'basefont' => true,
         'bgsound' => true,
         'link' => true,
@@ -42,7 +42,7 @@ final class InHeadNoscript extends RuleSet
         } else if (
             ($type === TokenType::CHARACTER && ctype_space($token->data))
             || $type === TokenType::COMMENT
-            || ($type === TokenType::START_TAG && isset(self::IN_HEAD_START_TAG_TRIGGERS[$token->name]))
+            || ($type === TokenType::START_TAG && isset(self::SWITCH_TO_IN_HEAD_START_TAGS[$token->name]))
         ) {
             // Process the token using the rules for the "in head" insertion mode.
             InHead::process($token, $tree);
