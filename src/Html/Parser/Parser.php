@@ -36,9 +36,6 @@ final class Parser
     }
 
     /**
-     * @param \DOMElement $contextElement
-     * @param string $input
-     * @param string|null $encoding
      * @return \DOMNode[]
      */
     public function parseFragment(\DOMElement $contextElement, string $input, ?string $encoding = null): array

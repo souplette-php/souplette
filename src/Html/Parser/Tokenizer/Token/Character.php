@@ -8,10 +8,9 @@ use Souplette\Html\Parser\Tokenizer\TokenType;
 final class Character extends Token
 {
     const TYPE = TokenType::CHARACTER;
-    public string $data;
 
-    public function __construct(string $data = '')
-    {
-        $this->data = $data;
+    public function __construct(
+        public string $data = '',
+    ) {
     }
 }

@@ -8,10 +8,9 @@ use Souplette\Html\Parser\Tokenizer\TokenType;
 final class Comment extends Token
 {
     const TYPE = TokenType::COMMENT;
-    public string $data = '';
 
-    public function __construct(string $data = '')
-    {
-        $this->data = $data;
+    public function __construct(
+        public string $data = '',
+    ) {
     }
 }
