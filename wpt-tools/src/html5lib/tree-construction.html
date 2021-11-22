@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<script type="module">
+  const parser = new DOMParser()
+  function runTest(input) {
+    const doc = parser.parseFromString(input, 'text/html')
+    serializeNode(doc)
+  }
+
+  function serializeNode(node) {
+    const {nodeType, nodeName, childNodes} = node
+    let data = {
+      nodeType,
+      nodeName,
+      children: Array.from(childNodes, n => serializeNode(n))
+    }
+    switch (nodeType) {
+      case Node.DOCUMENT_TYPE_NODE: {
+        const {publicId, systemId} = node
+        return {...data, publicId, systemId}
+      }
+      case Node.TEXT_NODE:
+      case Node.CDATA_SECTION_NODE:
+      case Node.COMMENT_NODE: {
+        return {...data, data: node.data}
+      }
+      case Node.ELEMENT_NODE: {
+        const {namespaceURI} = node
+        const attributes = Array.from(node.attributes, ({name, value, namespaceURI}) => ({name, value, namespaceURI}))
+        if (nodeName === 'TEMPLATE') {
+          data.content = serializeNode(node.content)
+        }
+        return {namespaceURI, attributes, ...data}
+      }
+      default:
+        return data
+    }
+  }
+</script>
