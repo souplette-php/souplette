@@ -4,9 +4,9 @@ namespace Souplette\Html\TreeBuilder\RuleSet;
 
 use Souplette\Html\Tokenizer\Token;
 use Souplette\Html\Tokenizer\TokenType;
+use Souplette\Html\TreeBuilder;
 use Souplette\Html\TreeBuilder\InsertionModes;
 use Souplette\Html\TreeBuilder\RuleSet;
-use Souplette\Html\TreeBuilder\TreeBuilder;
 
 /**
  * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-intable

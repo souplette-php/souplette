@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Tests\Html\Parser\TreeBuilder;
+namespace Souplette\Tests\Html\TreeBuilder;
 
 use PHPUnit\Framework\TestCase;
 use Souplette\Tests\Html5Lib\DataFile;
@@ -20,7 +20,7 @@ final class WhitespaceTest extends TestCase
 
     public function whitespaceHandlingProvider()
     {
-        $fileName = __DIR__.'/../../../resources/tree-construction/whitespace.dat';
+        $fileName = __DIR__.'/../../resources/tree-construction/whitespace.dat';
         foreach (new DataFile($fileName) as $i => $test) {
             $id = "whitespace.dat::{$i}";
             $test['id'] = $id;

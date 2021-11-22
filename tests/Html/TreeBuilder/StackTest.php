@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Tests\Html\Parser\TreeBuilder;
+namespace Souplette\Tests\Html\TreeBuilder;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;

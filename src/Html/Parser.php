@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Html\Parser;
+namespace Souplette\Html;
 
 use JetBrains\PhpStorm\Pure;
 use Souplette\Dom\HtmlDomImplementation;
@@ -8,8 +8,9 @@ use Souplette\Encoding\Encoding;
 use Souplette\Encoding\EncodingLookup;
 use Souplette\Encoding\Exception\EncodingChanged;
 use Souplette\Encoding\Utf8Converter;
+use Souplette\Html\Parser\EncodingSniffer;
+use Souplette\Html\Parser\InputPreprocessor;
 use Souplette\Html\Tokenizer\Tokenizer;
-use Souplette\Html\TreeBuilder\TreeBuilder;
 
 final class Parser
 {

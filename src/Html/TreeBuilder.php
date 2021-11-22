@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Html\TreeBuilder;
+namespace Souplette\Html;
 
 use DOMDocument;
 use DOMElement;
@@ -14,6 +14,14 @@ use Souplette\Html\Tokenizer\Token;
 use Souplette\Html\Tokenizer\Tokenizer;
 use Souplette\Html\Tokenizer\TokenizerState;
 use Souplette\Html\Tokenizer\TokenType;
+use Souplette\Html\TreeBuilder\ActiveFormattingElementList;
+use Souplette\Html\TreeBuilder\Attributes;
+use Souplette\Html\TreeBuilder\DomExceptionHandler;
+use Souplette\Html\TreeBuilder\Elements;
+use Souplette\Html\TreeBuilder\InsertionLocation;
+use Souplette\Html\TreeBuilder\InsertionModes;
+use Souplette\Html\TreeBuilder\OpenElementsStack;
+use Souplette\Html\TreeBuilder\RuleSet;
 use Souplette\Html\TreeBuilder\RuleSet\InForeignContent;
 use Souplette\Xml\XmlNameEscaper;
 use SplStack;

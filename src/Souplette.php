@@ -8,7 +8,7 @@ final class Souplette
 {
     public static function parseHtml(string $html, ?string $encoding = null): HtmlDocument
     {
-        $parser = new Html\Parser\Parser();
+        $parser = new Html\Parser();
         return $parser->parse($html, $encoding);
     }
 }

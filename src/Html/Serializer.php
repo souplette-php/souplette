@@ -1,8 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Html\Serializer;
+namespace Souplette\Html;
 
 use Souplette\Dom\Namespaces;
+use Souplette\Html\Serializer\Elements;
 use Souplette\Xml\XmlNameEscaper;
 
 /**

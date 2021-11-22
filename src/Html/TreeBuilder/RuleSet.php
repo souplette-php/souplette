@@ -3,6 +3,7 @@
 namespace Souplette\Html\TreeBuilder;
 
 use Souplette\Html\Tokenizer\Token;
+use Souplette\Html\TreeBuilder;
 
 abstract class RuleSet
 {

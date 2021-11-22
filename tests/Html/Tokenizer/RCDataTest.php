@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Tests\Html\Parser\Tokenizer;
+namespace Souplette\Tests\Html\Tokenizer;
 
 use PHPUnit\Framework\TestCase;
 use Souplette\Html\Tokenizer\TokenizerState;

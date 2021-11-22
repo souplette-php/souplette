@@ -3,7 +3,7 @@
 namespace Souplette\Tests\Html\Serializer;
 
 use PHPUnit\Framework\Assert;
-use Souplette\Html\Serializer\Serializer;
+use Souplette\Html\Serializer;
 
 final class SerializerAssert
 {

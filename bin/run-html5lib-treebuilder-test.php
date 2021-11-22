@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-use Souplette\Html\Parser\Parser;
+use Souplette\Html\Parser;
 use Souplette\Tests\Html5Lib\DataFile;
 use Souplette\Tests\Html5Lib\Serializer;
 

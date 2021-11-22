@@ -14,8 +14,8 @@ use Souplette\Dom\TokenList;
 use Souplette\Dom\Traits\ChildNodeTrait;
 use Souplette\Dom\Traits\NodeTrait;
 use Souplette\Dom\Traits\ParentNodeTrait;
-use Souplette\Html\Parser\Parser;
-use Souplette\Html\Serializer\Serializer;
+use Souplette\Html\Parser;
+use Souplette\Html\Serializer;
 
 class Element extends \DOMElement implements
     NodeInterface,
