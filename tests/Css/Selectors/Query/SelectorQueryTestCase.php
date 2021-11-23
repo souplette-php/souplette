@@ -35,7 +35,7 @@ class SelectorQueryTestCase extends TestCase
         ?\DOMElement $root = null,
     ) {
         if (!$root) $root = $doc;
-        $results = SelectorQuery::queryAll($root, $selectorText) ?? [];
+        $results = SelectorQuery::all($root, $selectorText) ?? [];
         $actualPaths = array_map(fn($el) => Utils::elementPath($el), $results);
         Assert::assertEquals($expectedPaths, $actualPaths);
     }
@@ -47,7 +47,7 @@ class SelectorQueryTestCase extends TestCase
         ?\DOMElement $root = null,
     ) {
         if (!$root) $root = $doc;
-        $result = SelectorQuery::queryFirst($root, $selectorText);
+        $result = SelectorQuery::first($root, $selectorText);
         Assert::assertSame($expectedPath, $result ? Utils::elementPath($result) : null);
     }
 

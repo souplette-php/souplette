@@ -58,7 +58,7 @@ final class DomIdioms
             $selectorText .= ".{$class}";
         }
 
-        return SelectorQuery::queryAll($element, $selectorText);
+        return SelectorQuery::all($element, $selectorText);
     }
 
     /**

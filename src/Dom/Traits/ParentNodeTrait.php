@@ -11,7 +11,7 @@ use Souplette\Dom\Internal\DomIdioms;
 trait ParentNodeTrait
 {
     /**
-     * @return DOMElement[]
+     * @return Element[]
      */
     public function getChildren(): array
     {
@@ -63,11 +63,11 @@ trait ParentNodeTrait
 
     public function querySelector(string $selector): ?Element
     {
-        return SelectorQuery::queryFirst($this, $selector);
+        return SelectorQuery::first($this, $selector);
     }
 
     public function querySelectorAll(string $selector): array
     {
-        return SelectorQuery::queryAll($this, $selector);
+        return SelectorQuery::all($this, $selector);
     }
 }

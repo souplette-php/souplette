@@ -54,7 +54,7 @@ final class SelectorQuery
      * {@link https://dom.spec.whatwg.org/#scope-match-a-selectors-string scope-match a selectors string}
      *  selectors against this, if the result is not an empty list; otherwise null.
      */
-    public static function queryFirst(DOMParentNode $node, string $selectorText): DOMElement|Element|null
+    public static function first(DOMParentNode $node, string $selectorText): DOMElement|Element|null
     {
         $eval = self::compile($selectorText);
         $ctx = QueryContext::of($node);
@@ -71,7 +71,7 @@ final class SelectorQuery
      * {@link https://dom.spec.whatwg.org/#scope-match-a-selectors-string scope-match a selectors string}
      * selectors against this.
      */
-    public static function queryAll(DOMParentNode $node, string $selectorText): array
+    public static function all(DOMParentNode $node, string $selectorText): array
     {
         // To scope-match a selectors string selectors against a `node`, run these steps:
         // Let `s` be the result of parse a selector selectors.
