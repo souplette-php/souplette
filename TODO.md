@@ -1,22 +1,17 @@
 # HTML
-- [ ] Tokenizer character buffering to reduce the number of token objects ?
-- [ ] Check places where we could use chars_(while|until) instead of consuming one byte at a time.
-    Typically when the spec says « Ignore the character »
-- [ ] TreeBuilder namespace handling
+- [ ] Tokenizer
+  - [x] character buffering to reduce the number of token objects ?
+  - [ ] Since we now buffer some character tokens, add tests for whitespace handling,
+        i.e. for when the tree builder needs to ignore whitespace-only tokens
+  - [ ] Check places where we could use chars_(while|until) instead of consuming one byte at a time.
+      Typically, when the spec says « Ignore the character »
+- [ ] TreeBuilder
+  - namespace handling
     - [ ] Use `DOMElement->tagName` instead of `localName` where adequate
-- [ ] TreeBuilder parse errors
-- [ ] Template elements
-    - [x] Dom Implementation
-    - [ ] Tree Builder rules
-    - [ ] Serialization
+  - [ ] TreeBuilder parse errors
 - [ ] Serializer
     - [x] boolean attributes
-- [ ] DOM
-    - [ ] refactor TokenList to:
-        1. work even when using `$element->getAttributeNode('class')->value = 'foo'`
-        2. be even more lazy (no instantiation while parsing)
-        3. maybe use WeakRef ?
-    - [ ] HTMLCollection
+
 
 ## Notes
 
@@ -50,6 +45,7 @@ to retrieve the information. We should investigate that.
 - [x] Syntax Module Level 3
 - [ ] Selectors Module Level 4
     - [ ] Correctly handle [namespaces](https://drafts.csswg.org/selectors/index.html#type-nmsp)
+    - [ ] Correctly handle case sensitivity
     - [ ] Tests
         * https://www.w3.org/Style/CSS/Test/
         * http://test.csswg.org/harness/
