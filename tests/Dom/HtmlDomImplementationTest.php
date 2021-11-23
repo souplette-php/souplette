@@ -6,14 +6,14 @@ use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Dom\DocumentModes;
 use Souplette\Dom\Document;
-use Souplette\Dom\HtmlDomImplementation;
+use Souplette\Dom\Implementation;
 use Souplette\Dom\Element;
 
 final class HtmlDomImplementationTest extends TestCase
 {
     public function testCreateShell()
     {
-        $dom = new HtmlDomImplementation();
+        $dom = new Implementation();
         $doc = $dom->createShell();
         // document
         Assert::assertInstanceOf(Document::class, $doc);

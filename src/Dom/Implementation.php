@@ -4,7 +4,7 @@ namespace Souplette\Dom;
 
 use DOMDocumentType;
 
-final class HtmlDomImplementation extends \DOMImplementation
+final class Implementation extends \DOMImplementation
 {
     public function createDocument($namespace = null, $qualifiedName = null, DOMDocumentType $doctype = null): Document
     {

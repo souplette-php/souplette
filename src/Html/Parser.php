@@ -3,7 +3,7 @@
 namespace Souplette\Html;
 
 use JetBrains\PhpStorm\Pure;
-use Souplette\Dom\HtmlDomImplementation;
+use Souplette\Dom\Implementation;
 use Souplette\Encoding\Encoding;
 use Souplette\Encoding\EncodingLookup;
 use Souplette\Encoding\Exception\EncodingChanged;
@@ -18,7 +18,7 @@ final class Parser
 
     public function __construct(bool $scriptingEnabled = false)
     {
-        $this->treeBuilder = new TreeBuilder(new HtmlDomImplementation(), $scriptingEnabled);
+        $this->treeBuilder = new TreeBuilder(new Implementation(), $scriptingEnabled);
     }
 
     public function parse(string $input, ?string $encoding = null): \DOMDocument
