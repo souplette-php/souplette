@@ -2,31 +2,30 @@
 
 namespace Souplette\Dom\Api;
 
-use DOMElement;
 use DOMNode;
+use Souplette\Dom\Element;
 
 /**
  * @see https://dom.spec.whatwg.org/#parentnode
  *
- * @property-read DOMElement[] $children
+ * @property-read Element[] $children
  */
 interface ParentNodeInterface extends \DOMParentNode
 {
     /**
      * Returns the first element that is a descendant of node that matches selectors.
      */
-    public function querySelector(string $selector): ?DOMElement;
+    public function querySelector(string $selector): ?Element;
 
     /**
      * Returns all element descendants of node that match selectors.
      *
-     * @param string $selector
-     * @return DOMElement[]
+     * @return Element[]
      */
     public function querySelectorAll(string $selector): iterable;
 
     /**
-     * @return DOMElement[]
+     * @return Element[]
      */
     public function getChildren(): iterable;
 

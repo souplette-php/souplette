@@ -4,6 +4,7 @@ namespace Souplette\Dom\Api;
 
 use DOMElement;
 use DOMNode;
+use Souplette\Dom\Element;
 
 /**
  * @see https://dom.spec.whatwg.org/#interface-node
@@ -36,11 +37,29 @@ interface NodeInterface extends DomNodeInterface
     const DOCUMENT_POSITION_CONTAINED_BY = 0x10;
     const DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 0x20;
 
-    public function compareDocumentPosition(?DOMNode $other): int;
-
     public function contains(?DOMNode $other): bool;
 
-    public function getParentElement(): ?DOMElement;
+    /**
+     * Returns a bitmask indicating the position of other relative to node.
+     * These are the bits that can be set:
+     *
+     * - `NodeInterface::DOCUMENT_POSITION_DISCONNECTED` (1)
+     *   Set when node and other are not in the same tree.
+     * - `NodeInterface::DOCUMENT_POSITION_PRECEDING` (2)
+     *   Set when other is preceding node.
+     * - `NodeInterface::DOCUMENT_POSITION_FOLLOWING` (4)
+     *   Set when other is following node.
+     * - `NodeInterface::DOCUMENT_POSITION_CONTAINS` (8)
+     *   Set when other is an ancestor of node.
+     * -` NodeInterface::DOCUMENT_POSITION_CONTAINED_BY` (16, 10 in hexadecimal)
+     *   Set when other is a descendant of node.
+     *
+     * @param DOMNode|null $other
+     * @return int
+     */
+    public function compareDocumentPosition(?DOMNode $other): int;
+
+    public function getParentElement(): ?Element;
 
     public function getRootNode(): DOMNode;
 }

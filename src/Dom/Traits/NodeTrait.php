@@ -5,6 +5,7 @@ namespace Souplette\Dom\Traits;
 use DOMElement;
 use DOMNode;
 use Souplette\Dom\Api\NodeInterface;
+use Souplette\Dom\Element;
 use Souplette\Dom\Internal\DomIdioms;
 
 trait NodeTrait
@@ -87,10 +88,10 @@ trait NodeTrait
         return DomIdioms::isInclusiveDescendant($this, $other);
     }
 
-    public function getParentElement(): ?DOMElement
+    public function getParentElement(): ?Element
     {
         $parent = $this->parentNode;
-        if (!$parent || $parent->nodeType !== NodeInterface::ELEMENT_NODE) {
+        if (!$parent || $parent->nodeType !== XML_ELEMENT_NODE) {
             return null;
         }
 
