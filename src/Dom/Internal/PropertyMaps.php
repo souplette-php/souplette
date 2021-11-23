@@ -4,8 +4,6 @@ namespace Souplette\Dom\Internal;
 
 use Souplette\Dom\Api\DocumentInterface;
 use Souplette\Dom\Api\ElementInterface;
-use Souplette\Dom\Api\HtmlElementInterface;
-use Souplette\Dom\Api\HtmlTemplateElementInterface;
 use Souplette\Dom\Api\NodeInterface;
 use Souplette\Dom\Api\ParentNodeInterface;
 
@@ -30,14 +28,8 @@ final class PropertyMaps
                 'id' => 'getId',
                 'className' => 'getClassName',
                 'classList' => 'getClassList',
-            ],
-            HtmlElementInterface::class => [
                 'innerHTML' => 'getInnerHTML',
-                'outerHTML' => 'getOuterHTML',
-            ],
-            HtmlTemplateElementInterface::class => [
-                'content' => 'getContent',
-            ],
+                'outerHTML' => 'getOuterHTML',            ],
         ],
         'SET' => [
             DocumentInterface::class => [
@@ -46,8 +38,6 @@ final class PropertyMaps
             ElementInterface::class => [
                 'id' => 'setId',
                 'className' => 'setClassName',
-            ],
-            HtmlElementInterface::class => [
                 'innerHTML' => 'setInnerHTML',
                 'outerHTML' => 'setOuterHTML',
             ],

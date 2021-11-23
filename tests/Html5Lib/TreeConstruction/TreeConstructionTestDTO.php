@@ -32,7 +32,7 @@ final class TreeConstructionTestDTO
             $context = explode(' ', trim($data['document-fragment']));
             if (\count($context) === 2) {
                 [$prefix, $localName] = $context;
-                $test->contextElement = [Namespaces::NAMESPACES[$prefix], $localName];
+                $test->contextElement = [Namespaces::FROM_PREFIX[$prefix], $localName];
             } else {
                 $test->contextElement = [Namespaces::HTML, $context[0]];
             }

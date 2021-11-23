@@ -11,7 +11,7 @@ final class Namespaces
     const XML = "http://www.w3.org/XML/1998/namespace";
     const XMLNS = "http://www.w3.org/2000/xmlns/";
 
-    const PREFIXES = [
+    const TO_PREFIX = [
         self::HTML => 'html',
         self::MATHML => 'math',
         self::SVG => 'svg',
@@ -20,7 +20,7 @@ final class Namespaces
         self::XMLNS => 'xmlns',
     ];
 
-    const NAMESPACES = [
+    const FROM_PREFIX = [
         'html' => self::HTML,
         'math' => self::MATHML,
         'svg' => self::SVG,
@@ -28,4 +28,6 @@ final class Namespaces
         'xml' => self::XML,
         'xmlns' => self::XMLNS,
     ];
+
+    private function __construct() {}
 }

@@ -10,7 +10,7 @@ final class XmlNameEscaper
     /**
      * @see https://www.w3.org/TR/xml/#NT-Name
      */
-    private const INVALID_NAME_PATTERN = <<<REGEXP
+    private const INVALID_NAME_PATTERN = <<<'REGEXP'
     /
     (?(DEFINE)
         (?<NameStartChar> : | [A-Z] | _ | [a-z] | [\x{C0}-\x{D6}] | [\x{D8}-\x{F6}] | [\x{F8}-\x{2FF}]
@@ -30,15 +30,19 @@ final class XmlNameEscaper
      */
     public static function escape(string $name): string
     {
-        return preg_replace_callback(self::INVALID_NAME_PATTERN, function($m) {
-            return sprintf('U%06X', \IntlChar::ord($m[0]));
-        }, $name);
+        return preg_replace_callback(
+            self::INVALID_NAME_PATTERN,
+            fn($m) => sprintf('U%06X', \IntlChar::ord($m[0])),
+            $name,
+        );
     }
 
     public static function unescape(string $name): string
     {
-        return preg_replace_callback('/U([0-9A-Z]{6})/', function($m) {
-            return \IntlChar::chr(hexdec($m[1]));
-        }, $name);
+        return preg_replace_callback(
+            '/U([0-9A-Z]{6})/',
+            fn($m) => \IntlChar::chr(hexdec($m[1])),
+            $name,
+        );
     }
 }

@@ -4,6 +4,7 @@ namespace Souplette\Html\TreeBuilder;
 
 use DOMDocument;
 use DOMNode;
+use Souplette\Dom\Namespaces;
 
 final class InsertionLocation
 {
@@ -32,11 +33,11 @@ final class InsertionLocation
         }
     }
 
-    public function closestAncestor(string $tagName): ?\DOMElement
+    public function closestAncestor(string $tagName, string $namespaceURI = Namespaces::HTML): ?\DOMElement
     {
-        $node = $this->target ?: $this->parent;
+        $node = $this->parent;
         while ($node) {
-            if ($node->localName === $tagName) {
+            if ($node->localName === $tagName && $node->namespaceURI === $namespaceURI) {
                 return $node;
             }
             $node = $node->parentNode;

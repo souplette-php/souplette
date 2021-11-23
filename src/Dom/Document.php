@@ -11,7 +11,6 @@ use DOMText;
 use Souplette\Dom\Api\DocumentInterface;
 use Souplette\Dom\Api\ParentNodeInterface;
 use Souplette\Dom\Internal\DomIdioms;
-use Souplette\Dom\Internal\ElementClasses;
 use Souplette\Dom\Internal\PropertyMaps;
 use Souplette\Dom\Traits\NodeTrait;
 use Souplette\Dom\Traits\ParentNodeTrait;
@@ -33,16 +32,16 @@ final class Document extends \DOMDocument implements
     public function __construct()
     {
         parent::__construct('', EncodingLookup::UTF_8);
-        $this->registerNodeClass(DOMDocument::class, self::class);
-        $this->registerNodeClass(DOMDocumentFragment::class, DocumentFragment::class);
-        $this->registerNodeClass(DOMText::class, Text::class);
-        $this->registerNodeClass(DOMComment::class, Comment::class);
-        $this->registerNodeClass(DOMElement::class, HtmlElement::class);
-        $this->registerNodeClass(DOMAttr::class, Attr::class);
+        parent::registerNodeClass(DOMDocument::class, self::class);
+        parent::registerNodeClass(DOMDocumentFragment::class, DocumentFragment::class);
+        parent::registerNodeClass(DOMText::class, Text::class);
+        parent::registerNodeClass(DOMComment::class, Comment::class);
+        parent::registerNodeClass(DOMElement::class, Element::class);
+        parent::registerNodeClass(DOMAttr::class, Attr::class);
 
         // Force $this->nodeType to XML_HTML_DOCUMENT_NODE
         parent::loadHTML('<!doctype html>');
-        $this->removeChild($this->doctype);
+        parent::removeChild($this->doctype);
     }
 
     public function __get($name)
@@ -60,22 +59,12 @@ final class Document extends \DOMDocument implements
         return $this->createElementNS(Namespaces::HTML, $localName, $value ?? '');
     }
 
-    public function createElementNS($namespace, $qualifiedName, $value = null): bool|Element
-    {
-        $class = ElementClasses::ELEMENTS[$namespace][$qualifiedName] ?? null;
-        if (!$class) {
-            $class = ElementClasses::BASES[$namespace] ?? Element::class;
-        }
-        $this->registerNodeClass(DOMElement::class, $class);
-        return parent::createElementNS($namespace, $qualifiedName, $value ?? '');
-    }
-
-    public function getHead(): ?HtmlElement
+    public function getHead(): ?Element
     {
         return $this->getElementsByTagName('head')->item(0);
     }
 
-    public function getBody(): ?HtmlElement
+    public function getBody(): ?Element
     {
         return $this->getElementsByTagName('body')->item(0);
     }

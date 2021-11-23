@@ -4,7 +4,7 @@ namespace Souplette\Tests\Dom;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Dom\HtmlElement;
+use Souplette\Dom\Element;
 
 final class DocumentTest extends TestCase
 {
@@ -28,10 +28,10 @@ final class DocumentTest extends TestCase
             ->getDocument();
 
         $foo = $doc->getElementById('foo');
-        Assert::assertInstanceOf(HtmlElement::class, $foo);
+        Assert::assertInstanceOf(Element::class, $foo);
 
         $bar = $doc->getElementById('bar');
-        Assert::assertInstanceOf(HtmlElement::class, $bar);
+        Assert::assertInstanceOf(Element::class, $bar);
     }
 
     public function testGetElementsByClassName()
@@ -44,12 +44,12 @@ final class DocumentTest extends TestCase
 
         $rs = $doc->getElementsByClassName('foo');
         Assert::assertCount(1, $rs);
-        Assert::assertInstanceOf(HtmlElement::class, $rs[0]);
+        Assert::assertInstanceOf(Element::class, $rs[0]);
         Assert::assertSame($doc->firstChild, $rs[0]);
 
         $rs = $doc->getElementsByClassName('bar baz');
         Assert::assertCount(1, $rs);
-        Assert::assertInstanceOf(HtmlElement::class, $rs[0]);
+        Assert::assertInstanceOf(Element::class, $rs[0]);
         Assert::assertSame($doc->lastChild, $rs[0]);
     }
 }

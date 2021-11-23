@@ -57,6 +57,11 @@ final class Serializer
             if ($node->localName === 'template' && $node->namespaceURI === Namespaces::HTML) {
                 $output[] = sprintf('|%s  content', $indent);
                 $depth++;
+                //if ($node instanceof HtmlTemplateElement) {
+                //    foreach ($node->content->childNodes as $child) {
+                //        $this->serializeNode($child, $output, $depth + 1);
+                //    }
+                //}
             }
         }
         if ($node->hasChildNodes()) {
@@ -83,7 +88,7 @@ final class Serializer
     {
         if ($node->namespaceURI && $node->namespaceURI !== Namespaces::HTML) {
             $localName = XmlNameEscaper::unescape($node->localName);
-            $name = sprintf('%s %s', Namespaces::PREFIXES[$node->namespaceURI], $localName);
+            $name = sprintf('%s %s', Namespaces::TO_PREFIX[$node->namespaceURI], $localName);
         } else {
             $name = XmlNameEscaper::unescape($node->tagName);
         }
@@ -95,7 +100,7 @@ final class Serializer
         if ($node->namespaceURI === Namespaces::HTML && $attr->namespaceURI === Namespaces::XML) {
             $name = XmlNameEscaper::escape($attr->nodeName);
         } else if ($attr->namespaceURI) {
-            $name = sprintf('%s %s', Namespaces::PREFIXES[$attr->namespaceURI], XmlNameEscaper::unescape($attr->localName));
+            $name = sprintf('%s %s', Namespaces::TO_PREFIX[$attr->namespaceURI], XmlNameEscaper::unescape($attr->localName));
         } else {
             $name = XmlNameEscaper::unescape($attr->localName);
         }

@@ -5,10 +5,10 @@ namespace Souplette\Tests\Dom;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Dom\Comment;
-use Souplette\Dom\HtmlElement;
+use Souplette\Dom\Element;
 use Souplette\Dom\Text;
 
-final class HtmlElementTest extends TestCase
+final class ElementTest extends TestCase
 {
     public function testGetInnerHtml()
     {
@@ -27,7 +27,7 @@ final class HtmlElementTest extends TestCase
             ->tag('body')
                 ->tag('remove')->text('this!')
             ->getDocument();
-        /** @var HtmlElement $body */
+        /** @var Element $body */
         $body = $doc->documentElement;
         $body->innerHTML = '<!-- foo --><p>bar</p>baz';
         //
@@ -36,7 +36,7 @@ final class HtmlElementTest extends TestCase
         Assert::assertSame(' foo ', $comment->data);
         //
         $p = $comment->nextSibling;
-        Assert::assertInstanceOf(HtmlElement::class, $p);
+        Assert::assertInstanceOf(Element::class, $p);
         Assert::assertSame('bar', $p->nodeValue);
         //
         $text = $p->nextSibling;
@@ -60,14 +60,14 @@ final class HtmlElementTest extends TestCase
         $doc = DomBuilder::create()->tag('html')->tag('body')
             ->tag('div')
             ->getDocument();
+        /** @var Element $body */
         $body = $doc->documentElement->lastChild;
-        /** @var HtmlElement $div */
+        /** @var Element $div */
         $div = $body->firstChild;
         $div->outerHTML = '<article><!-- outer html! --><p>foo</p>bar</article>';
         //
-        /** @var HtmlElement $div */
         $article = $body->firstChild;
-        Assert::assertInstanceOf(HtmlElement::class, $article);
+        Assert::assertInstanceOf(Element::class, $article);
         Assert::assertSame('article', $article->tagName);
         //
         $comment = $article->firstChild;
@@ -75,7 +75,7 @@ final class HtmlElementTest extends TestCase
         Assert::assertSame(' outer html! ', $comment->data);
         //
         $p = $comment->nextSibling;
-        Assert::assertInstanceOf(HtmlElement::class, $p);
+        Assert::assertInstanceOf(Element::class, $p);
         Assert::assertSame('foo', $p->nodeValue);
         //
         $text = $p->nextSibling;
@@ -86,7 +86,7 @@ final class HtmlElementTest extends TestCase
     public function testId()
     {
         $doc = DomBuilder::create()->tag('html')->getDocument();
-        /** @var HtmlElement $html */
+        /** @var Element $html */
         $html = $doc->documentElement;
         Assert::assertSame('', $html->id);
         $html->id = 'foo';
@@ -98,7 +98,7 @@ final class HtmlElementTest extends TestCase
     public function testClassName()
     {
         $doc = DomBuilder::create()->tag('html')->getDocument();
-        /** @var HtmlElement $html */
+        /** @var Element $html */
         $html = $doc->documentElement;
         Assert::assertSame('', $html->className);
         $html->className = 'foo';

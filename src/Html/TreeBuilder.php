@@ -472,7 +472,9 @@ final class TreeBuilder
                 // or there is one, but last template is lower (more recently added) than last table in the stack of open elements,
                 // then: let adjusted insertion location be inside last template's template contents, after its last child (if any),
                 // and abort these steps.
-                // FIXME: nogood !
+                // NOTE: we can't support the template->content property,
+                // because of the PHP DOM implementation details.
+                //$adjustedInsertionLocation = new InsertionLocation($lastTemplate->content);
                 $adjustedInsertionLocation = new InsertionLocation($lastTemplate, $lastTemplate->lastChild);
             } else if (!$lastTable) {
                 // 4. If there is no last table,
@@ -497,8 +499,10 @@ final class TreeBuilder
             // Let adjusted insertion location be inside target, after its last child (if any).
             $adjustedInsertionLocation = new InsertionLocation($target, $target->lastChild);
         }
-        // 3. TODO: If the adjusted insertion location is inside a template element,
-        // let it instead be inside the template element's template contents, after its last child (if any).
+        // 3. If the adjusted insertion location is inside a template element,
+        //    let it instead be inside the template element's template contents, after its last child (if any).
+        // NOTE: we can't support the template->content property,
+        // so we have to skip this step
         //if ($template = $adjustedInsertionLocation->closestAncestor('template')) {
         //    $adjustedInsertionLocation = new InsertionLocation($template->content);
         //}
@@ -512,9 +516,6 @@ final class TreeBuilder
         // This seems to be the only way to create a doctype with an empty name...
         $doc->loadHTML('<!DOCTYPE>', \LIBXML_NOERROR);
         $this->blankDoctype = $doc->removeChild($doc->doctype);
-        if ($doc === null) {
-            throw new \LogicException('Document is null');
-        }
 
         return $doc;
     }
@@ -585,7 +586,7 @@ final class TreeBuilder
         $location = $this->appropriatePlaceForInsertingANode();
         // 3. If the adjusted insertion location is in a Document node, then return.
         // TODO: check this
-        if ($location->parent->nodeType === XML_DOCUMENT_NODE) {
+        if ($location->parent->nodeType === XML_HTML_DOCUMENT_NODE || $location->parent->nodeType === XML_DOCUMENT_NODE) {
             return;
         }
         $target = $location->target;
@@ -629,19 +630,18 @@ final class TreeBuilder
         // with the intended parent being the element in which the adjusted insertion location finds itself.
         $element = $this->createElement($token, $namespace, $location->parent, $inForeignContent);
         // 3. TODO: If it is possible to insert element at the adjusted insertion location, then:
-        $canInsert = !($location->parent === $this->document && $this->document->documentElement !== null);
+        $canInsert = match ($location->parent) {
+            $this->document => !$this->document->documentElement,
+            default => true,
+        };
         if ($canInsert) {
             // 3.1 If the parser was not created as part of the HTML fragment parsing algorithm,
-            if (!$this->isBuildingFragment) {
-                // then push a new element queue onto element's relevant agent's custom element reactions stack.
-            }
+            // then push a new element queue onto element's relevant agent's custom element reactions stack.
             // 3.2 Insert element at the adjusted insertion location.
             $location->insert($element);
             // 3.3 If the parser was not created as part of the HTML fragment parsing algorithm,
-            if (!$this->isBuildingFragment) {
-                // then pop the element queue from element's relevant agent's custom element reactions stack,
-                // and invoke custom element reactions in that queue.
-            }
+            // then pop the element queue from element's relevant agent's custom element reactions stack,
+            // and invoke custom element reactions in that queue.
         }
         // Note: If the adjusted insertion location cannot accept more elements,
         // e.g. because it's a Document that already has an element child, then element is dropped on the floor.
