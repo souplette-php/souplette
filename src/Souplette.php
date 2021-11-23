@@ -2,11 +2,11 @@
 
 namespace Souplette;
 
-use Souplette\Dom\Node\HtmlDocument;
+use Souplette\Dom\Document;
 
 final class Souplette
 {
-    public static function parseHtml(string $html, ?string $encoding = null): HtmlDocument
+    public static function parseHtml(string $html, ?string $encoding = null): Document
     {
         $parser = new Html\Parser();
         return $parser->parse($html, $encoding);

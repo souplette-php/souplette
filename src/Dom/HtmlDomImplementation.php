@@ -3,16 +3,15 @@
 namespace Souplette\Dom;
 
 use DOMDocumentType;
-use Souplette\Dom\Node\HtmlDocument;
 
 final class HtmlDomImplementation extends \DOMImplementation
 {
-    public function createDocument($namespace = null, $qualifiedName = null, DOMDocumentType $doctype = null): HtmlDocument
+    public function createDocument($namespace = null, $qualifiedName = null, DOMDocumentType $doctype = null): Document
     {
-        return new HtmlDocument();
+        return new Document();
     }
 
-    public function createShell(): HtmlDocument
+    public function createShell(): Document
     {
         $doc = $this->createDocument();
         $doc->appendChild($this->createDocumentType('html'));

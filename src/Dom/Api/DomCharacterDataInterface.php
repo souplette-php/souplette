@@ -8,9 +8,9 @@ namespace Souplette\Dom\Api;
  */
 interface DomCharacterDataInterface extends DomNodeInterface
 {
-    public function substringData($offset, $count);
     public function appendData($data);
-    public function insertData($offset, $data);
     public function deleteData($offset, $count);
+    public function insertData($offset, $data);
     public function replaceData($offset, $count, $data);
+    public function substringData($offset, $count);
 }

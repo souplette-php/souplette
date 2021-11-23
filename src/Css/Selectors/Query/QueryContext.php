@@ -4,8 +4,8 @@ namespace Souplette\Css\Selectors\Query;
 
 use DOMDocument;
 use DOMElement;
+use Souplette\Dom\Document;
 use Souplette\Dom\Internal\DomIdioms;
-use Souplette\Dom\Node\HtmlDocument;
 
 final class QueryContext
 {
@@ -49,15 +49,15 @@ final class QueryContext
 
     private static function isQuirksMode(DOMDocument $document): bool
     {
-        if ($document instanceof HtmlDocument) {
-            return $document->getCompatMode() === HtmlDocument::COMPAT_MODE_BACK;
+        if ($document instanceof Document) {
+            return $document->getCompatMode() === Document::COMPAT_MODE_BACK;
         }
         return true;
     }
 
     private static function isHtmlDocument(DOMDocument $document): bool
     {
-        if ($document instanceof HtmlDocument) {
+        if ($document instanceof Document) {
             return true;
         }
         return match ($document->nodeType) {

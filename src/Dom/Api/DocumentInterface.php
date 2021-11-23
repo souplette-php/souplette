@@ -2,24 +2,24 @@
 
 namespace Souplette\Dom\Api;
 
-use DOMElement;
-use Souplette\Dom\Node\Element;
+use Souplette\Dom\Element;
+use Souplette\Dom\HtmlElement;
 
 /**
  * @see https://dom.spec.whatwg.org/#document
  *
  * @property-read string $mode
  * @property-read string $compatMode
- * @property-read DOMElement $head
- * @property-read DOMElement $body
+ * @property-read HtmlElement $head
+ * @property-read HtmlElement $body
  * @property string $title
  */
 interface DocumentInterface extends NodeInterface
 {
     public function getMode(): string;
     public function getCompatMode(): string;
-    public function getHead(): ?DOMElement;
-    public function getBody(): ?DOMElement;
+    public function getHead(): ?HtmlElement;
+    public function getBody(): ?HtmlElement;
     public function getTitle(): string;
     public function setTitle(string $title): void;
     /**

@@ -4,9 +4,9 @@ namespace Souplette\Tests\Dom;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Dom\Node\Comment;
-use Souplette\Dom\Node\HtmlElement;
-use Souplette\Dom\Node\Text;
+use Souplette\Dom\Comment;
+use Souplette\Dom\HtmlElement;
+use Souplette\Dom\Text;
 
 final class HtmlElementTest extends TestCase
 {

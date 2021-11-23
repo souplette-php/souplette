@@ -5,9 +5,9 @@ namespace Souplette\Tests\Dom;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Dom\DocumentModes;
+use Souplette\Dom\Document;
 use Souplette\Dom\HtmlDomImplementation;
-use Souplette\Dom\Node\HtmlDocument;
-use Souplette\Dom\Node\HtmlElement;
+use Souplette\Dom\HtmlElement;
 
 final class HtmlDomImplementationTest extends TestCase
 {
@@ -16,9 +16,9 @@ final class HtmlDomImplementationTest extends TestCase
         $dom = new HtmlDomImplementation();
         $doc = $dom->createShell();
         // document
-        Assert::assertInstanceOf(HtmlDocument::class, $doc);
+        Assert::assertInstanceOf(Document::class, $doc);
         Assert::assertSame(DocumentModes::NO_QUIRKS, $doc->mode);
-        Assert::assertSame(HtmlDocument::COMPAT_MODE_CSS1, $doc->compatMode);
+        Assert::assertSame(Document::COMPAT_MODE_CSS1, $doc->compatMode);
         // doctype
         $doctype = $doc->firstChild;
         Assert::assertInstanceOf(\DOMDocumentType::class, $doctype);

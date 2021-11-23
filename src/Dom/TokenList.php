@@ -5,7 +5,6 @@ namespace Souplette\Dom;
 use Souplette\Dom\Exception\InvalidCharacter;
 use Souplette\Dom\Exception\SyntaxError;
 use Souplette\Dom\Internal\OrderedTokenSet;
-use Souplette\Dom\Node\Element;
 use WeakReference;
 
 /**

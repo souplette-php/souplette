@@ -5,16 +5,16 @@ namespace Souplette\Tests\Dom;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Dom\Api\ChildNodeInterface;
-use Souplette\Dom\Node\HtmlDocument;
+use Souplette\Dom\Document;
 
 final class ChildNodeTest extends TestCase
 {
     /**
      * @dataProvider removeProvider
-     * @param HtmlDocument $doc
+     * @param Document $doc
      * @param ChildNodeInterface $node
      */
-    public function testRemove(HtmlDocument $doc, ChildNodeInterface $node)
+    public function testRemove(Document $doc, ChildNodeInterface $node)
     {
         $node->remove();
         Assert::assertCount(0, $doc->childNodes);

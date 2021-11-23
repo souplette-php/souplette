@@ -3,10 +3,10 @@
 namespace Souplette\Dom\Internal;
 
 use Souplette\Dom\Elements\HtmlTemplateElement;
+use Souplette\Dom\HtmlElement;
+use Souplette\Dom\MathMLElement;
 use Souplette\Dom\Namespaces;
-use Souplette\Dom\Node\HtmlElement;
-use Souplette\Dom\Node\MathMLElement;
-use Souplette\Dom\Node\SvgElement;
+use Souplette\Dom\SvgElement;
 
 final class ElementClasses
 {

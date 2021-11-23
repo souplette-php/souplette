@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom\Node;
+namespace Souplette\Dom;
 
 use DOMAttr;
 use DOMComment;
@@ -10,16 +10,14 @@ use DOMElement;
 use DOMText;
 use Souplette\Dom\Api\DocumentInterface;
 use Souplette\Dom\Api\ParentNodeInterface;
-use Souplette\Dom\DocumentModes;
 use Souplette\Dom\Internal\DomIdioms;
 use Souplette\Dom\Internal\ElementClasses;
 use Souplette\Dom\Internal\PropertyMaps;
-use Souplette\Dom\Namespaces;
 use Souplette\Dom\Traits\NodeTrait;
 use Souplette\Dom\Traits\ParentNodeTrait;
 use Souplette\Encoding\EncodingLookup;
 
-final class HtmlDocument extends \DOMDocument implements
+final class Document extends \DOMDocument implements
     DocumentInterface,
     ParentNodeInterface
     //NonElementParentNodeInterface
@@ -36,7 +34,7 @@ final class HtmlDocument extends \DOMDocument implements
     {
         parent::__construct('', EncodingLookup::UTF_8);
         $this->registerNodeClass(DOMDocument::class, self::class);
-        $this->registerNodeClass(DOMDocumentFragment::class, HtmlDocumentFragment::class);
+        $this->registerNodeClass(DOMDocumentFragment::class, DocumentFragment::class);
         $this->registerNodeClass(DOMText::class, Text::class);
         $this->registerNodeClass(DOMComment::class, Comment::class);
         $this->registerNodeClass(DOMElement::class, HtmlElement::class);
@@ -72,12 +70,12 @@ final class HtmlDocument extends \DOMDocument implements
         return parent::createElementNS($namespace, $qualifiedName, $value ?? '');
     }
 
-    public function getHead(): ?DOMElement
+    public function getHead(): ?HtmlElement
     {
         return $this->getElementsByTagName('head')->item(0);
     }
 
-    public function getBody(): ?DOMElement
+    public function getBody(): ?HtmlElement
     {
         return $this->getElementsByTagName('body')->item(0);
     }

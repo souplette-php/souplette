@@ -2,17 +2,17 @@
 
 namespace Souplette\Tests\Dom;
 
+use Souplette\Dom\Document;
 use Souplette\Dom\Namespaces;
-use Souplette\Dom\Node\HtmlDocument;
 
 final class DomBuilder
 {
-    protected HtmlDocument $document;
+    protected Document $document;
     protected \SplStack $openElements;
 
     private function __construct()
     {
-        $this->document = new HtmlDocument();
+        $this->document = new Document();
         $this->openElements = new \SplStack();
     }
 
@@ -21,7 +21,7 @@ final class DomBuilder
         return new self();
     }
 
-    public function getDocument(): HtmlDocument
+    public function getDocument(): Document
     {
         while (!$this->openElements->isEmpty()) {
             $this->openElements->pop();

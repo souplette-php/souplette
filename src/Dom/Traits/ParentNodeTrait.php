@@ -5,8 +5,8 @@ namespace Souplette\Dom\Traits;
 use DOMElement;
 use DOMNode;
 use Souplette\Css\Selectors\SelectorQuery;
+use Souplette\Dom\Element;
 use Souplette\Dom\Internal\DomIdioms;
-use Souplette\Dom\Node\Element;
 
 trait ParentNodeTrait
 {

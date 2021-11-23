@@ -3,7 +3,7 @@
 
 use Souplette\Html\Parser;
 use Souplette\Tests\Html5Lib\DataFile;
-use Souplette\Tests\Html5Lib\Serializer;
+use Souplette\Tests\Html5Lib\TreeConstruction\Serializer;
 
 require __DIR__.'/../vendor/autoload.php';
 

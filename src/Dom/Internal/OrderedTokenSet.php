@@ -74,8 +74,7 @@ final class OrderedTokenSet implements \Countable, \IteratorAggregate, \ArrayAcc
             return false;
         }
         $index = $this->indices[$token];
-        unset($this->indices[$token]);
-        unset($this->tokens[$index]);
+        unset($this->indices[$token], $this->tokens[$index]);
         return true;
     }
 
@@ -126,7 +125,7 @@ final class OrderedTokenSet implements \Countable, \IteratorAggregate, \ArrayAcc
         return isset($this->tokens[$offset]);
     }
 
-    public function offsetGet($offset): mixed
+    public function offsetGet($offset): string
     {
         return $this->tokens[$offset];
     }

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom\Node;
+namespace Souplette\Dom;
 
 use Souplette\Css\Selectors\SelectorQuery;
 use Souplette\Dom\Api\ChildNodeInterface;
@@ -9,8 +9,6 @@ use Souplette\Dom\Api\NodeInterface;
 use Souplette\Dom\Api\ParentNodeInterface;
 use Souplette\Dom\Internal\DomIdioms;
 use Souplette\Dom\Internal\PropertyMaps;
-use Souplette\Dom\Namespaces;
-use Souplette\Dom\TokenList;
 use Souplette\Dom\Traits\ChildNodeTrait;
 use Souplette\Dom\Traits\NodeTrait;
 use Souplette\Dom\Traits\ParentNodeTrait;
