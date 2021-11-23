@@ -137,22 +137,23 @@ final class SelectorParser
         // [ <type-selector>? <subclass-selector>* [ <pseudo-element-selector> <pseudo-class-selector>* ]* ]!
         $selectors = [];
         $token = $this->tokenStream->current();
-        if (
-            $token::TYPE === TokenType::IDENT
-            || ($token::TYPE === TokenType::DELIM && ($token->value === '*' || $token->value === '|'))
-        ) {
+
+        if (match ($token::TYPE) {
+            TokenType::IDENT => true,
+            TokenType::DELIM => $token->value === '*' || $token->value === '|',
+            default => false,
+        }) {
             $selectors[] = $this->parseTypeSelector();
         }
 
         while (true) {
             $token = $this->tokenStream->current();
-            $tt = $token::TYPE;
-            if (
-                $tt === TokenType::HASH
-                || $tt === TokenType::LBRACK
-                || ($tt === TokenType::DELIM && $token->value === '.')
-                || ($tt === TokenType::COLON && $this->tokenStream->lookahead()::TYPE !== TokenType::COLON)
-            ) {
+            if (match ($token::TYPE) {
+                TokenType::HASH, TokenType::LBRACK => true,
+                TokenType::DELIM => $token->value === '.',
+                TokenType::COLON => $this->tokenStream->lookahead()::TYPE !== TokenType::COLON,
+                default => false,
+            }) {
                 $selectors[] = $this->parseSubclassSelector();
             } else {
                 break;
@@ -190,10 +191,11 @@ final class SelectorParser
         // handle the "|" <ident-or-star> case
         if ($token::TYPE === TokenType::DELIM && $token->value === '|') {
             $token = $this->tokenStream->consume();
-            if (
-                $token::TYPE === TokenType::IDENT
-                || ($allowStar && $token::TYPE === TokenType::DELIM && $token->value === '*')
-            ) {
+            if (match ($token::TYPE) {
+                TokenType::IDENT => true,
+                TokenType::DELIM => $allowStar && $token->value === '*',
+                default => false,
+            }) {
                 $this->tokenStream->consume();
                 return [Namespaces::NONE, $token->value];
             }
@@ -204,10 +206,11 @@ final class SelectorParser
         $la = $this->tokenStream->lookahead();
         if ($la::TYPE === TokenType::DELIM && $la->value === '|') {
             $la2 = $this->tokenStream->lookahead(2);
-            if (
-                $la2::TYPE === TokenType::IDENT
-                || ($allowStar && $la2::TYPE === TokenType::DELIM && $la2->value === '*')
-            ) {
+            if (match ($la2::TYPE) {
+                TokenType::IDENT => true,
+                TokenType::DELIM => $allowStar && $la2->value === '*',
+                default => false,
+            }) {
                 if ($token::TYPE === TokenType::IDENT) {
                     $prefix = $token->value;
                     if (!isset($this->namespaces[$prefix])) {
@@ -228,10 +231,11 @@ final class SelectorParser
         }
 
         // handle the <ident-or-star> case
-        if (
-            $token::TYPE === TokenType::IDENT
-            || ($allowStar && $token::TYPE === TokenType::DELIM && $token->value === '*')
-        ) {
+        if (match ($token::TYPE) {
+            TokenType::IDENT => true,
+            TokenType::DELIM => $allowStar && $token->value === '*',
+            default => false,
+        }) {
             $this->tokenStream->consume();
             return [$defaultNamespace, $token->value];
         }
@@ -257,14 +261,18 @@ final class SelectorParser
             }
             throw UnexpectedToken::expecting($nextToken, TokenType::IDENT);
         }
-        if ($token::TYPE === TokenType::LBRACK) {
-            return $this->parseAttributeSelector();
-        }
-        if ($token::TYPE === TokenType::COLON) {
-            return $this->parsePseudoClassSelector();
-        }
 
-        throw UnexpectedToken::expectingOneOf($token, TokenType::HASH, TokenType::DELIM, TokenType::LBRACK, TokenType::COLON);
+        return match ($token::TYPE) {
+            TokenType::LBRACK => $this->parseAttributeSelector(),
+            TokenType::COLON => $this->parsePseudoClassSelector(),
+            default => throw UnexpectedToken::expectingOneOf(
+                $token,
+                TokenType::HASH,
+                TokenType::DELIM,
+                TokenType::LBRACK,
+                TokenType::COLON
+            ),
+        };
     }
 
     private function parseAttributeSelector(): ?AttributeSelector
