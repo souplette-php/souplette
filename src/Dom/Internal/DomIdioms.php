@@ -51,16 +51,6 @@ final class DomIdioms
         return false;
     }
 
-    public static function getElementsByClassName(\DOMParentNode $element, string $classNames): array
-    {
-        $selectorText = '';
-        foreach (self::splitInputOnAsciiWhitespace($classNames) as $class) {
-            $selectorText .= ".{$class}";
-        }
-
-        return SelectorQuery::all($element, $selectorText);
-    }
-
     /**
      * @param DOMDocument $doc
      * @param array<DOMNode|string> $nodes

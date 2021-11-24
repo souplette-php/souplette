@@ -8,6 +8,7 @@ use DOMDocument;
 use DOMDocumentFragment;
 use DOMElement;
 use DOMText;
+use Souplette\Css\Selectors\SelectorQuery;
 use Souplette\Dom\Api\DocumentInterface;
 use Souplette\Dom\Api\ParentNodeInterface;
 use Souplette\Dom\Internal\DomIdioms;
@@ -110,7 +111,7 @@ final class Document extends \DOMDocument implements
      */
     public function getElementsByClassName(string $classNames): array
     {
-        return DomIdioms::getElementsByClassName($this, $classNames);
+        return SelectorQuery::byClassNames($this, $classNames);
     }
 
     private ?\DOMXPath $_xpath = null;

@@ -67,7 +67,7 @@ final class Element extends \DOMElement implements
 
     public function getElementsByClassName(string $classNames): array
     {
-        return DomIdioms::getElementsByClassName($this, $classNames);
+        return SelectorQuery::byClassNames($this, $classNames);
     }
 
     public function matches(string $selector): bool
