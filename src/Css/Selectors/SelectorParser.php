@@ -5,7 +5,6 @@ namespace Souplette\Css\Selectors;
 use Souplette\Css\Selectors\Exception\UndeclaredNamespacePrefix;
 use Souplette\Css\Selectors\Node\Combinator;
 use Souplette\Css\Selectors\Node\ComplexSelector;
-use Souplette\Css\Selectors\Node\CompoundSelector;
 use Souplette\Css\Selectors\Node\Functional\Dir;
 use Souplette\Css\Selectors\Node\Functional\Has;
 use Souplette\Css\Selectors\Node\Functional\Is;
@@ -19,6 +18,7 @@ use Souplette\Css\Selectors\Node\Functional\NthLastOfType;
 use Souplette\Css\Selectors\Node\Functional\NthOfType;
 use Souplette\Css\Selectors\Node\Functional\Where;
 use Souplette\Css\Selectors\Node\FunctionalSelector;
+use Souplette\Css\Selectors\Node\RelationType;
 use Souplette\Css\Selectors\Node\RelativeSelector;
 use Souplette\Css\Selectors\Node\Selector;
 use Souplette\Css\Selectors\Node\SelectorList;
@@ -116,26 +116,32 @@ final class SelectorParser
         while (true) {
             $combinator = $this->parseCombinator();
             if (!$combinator) {
-                return $selector instanceof ComplexSelector ? $selector : new ComplexSelector($selector);
+                return new ComplexSelector($selector);
             }
-            $compound = $this->parseCompoundSelector();
-            if (!$compound) {
+            $nextSelector = $this->parseCompoundSelector();
+            if (!$nextSelector) {
                 // TODO: ParseError ?
-                return $selector instanceof ComplexSelector ? $selector : new ComplexSelector($selector);
+                return new ComplexSelector($selector);
             }
-            // NOTE: left-associativity is required for the Xpath translator to work
-            // if we were to change that, we should refactor both.
-            $selector = new ComplexSelector($selector, $combinator, $compound);
+            $end = $nextSelector;
+            while ($end->next) $end = $end->next;
+            $end->relationType = RelationType::fromCombinator($combinator);
+            $end->next = $selector;
+            $selector = $nextSelector;
         }
         $this->tokenStream->skipWhitespace();
 
-        return $selector;
+        return new ComplexSelector($selector);
     }
 
-    private function parseCompoundSelector(): ?CompoundSelector
+    /**
+     * @return SimpleSelector|null
+     * @throws UnexpectedToken
+     */
+    private function parseCompoundSelector(): ?SimpleSelector
     {
         // [ <type-selector>? <subclass-selector>* [ <pseudo-element-selector> <pseudo-class-selector>* ]* ]!
-        $selectors = [];
+        $compound = null;
         $token = $this->tokenStream->current();
 
         if (match ($token::TYPE) {
@@ -143,7 +149,7 @@ final class SelectorParser
             TokenType::DELIM => $token->value === '*' || $token->value === '|',
             default => false,
         }) {
-            $selectors[] = $this->parseTypeSelector();
+            $compound = $this->parseTypeSelector();
         }
 
         while (true) {
@@ -154,7 +160,8 @@ final class SelectorParser
                 TokenType::COLON => $this->tokenStream->lookahead()::TYPE !== TokenType::COLON,
                 default => false,
             }) {
-                $selectors[] = $this->parseSubclassSelector();
+                $selector = $this->parseSubclassSelector();
+                $compound = $compound ? $this->appendSimpleToCompound($compound, $selector) : $selector;
             } else {
                 break;
             }
@@ -165,15 +172,23 @@ final class SelectorParser
             if ($token::TYPE !== TokenType::COLON) {
                 break;
             }
-            $selectors[] = $this->parsePseudoElementSelector();
+            $selector = $this->parsePseudoElementSelector();
+            $compound = $compound ? $this->appendSimpleToCompound($compound, $selector) : $selector;
             $token = $this->tokenStream->current();
             while ($token::TYPE === TokenType::COLON) {
-                $selectors[] = $this->parsePseudoClassSelector();
+                $selector = $this->parsePseudoClassSelector();
+                $compound = $compound ? $this->appendSimpleToCompound($compound, $selector) : $selector;
                 $token = $this->tokenStream->current();
             }
         }
 
-        return $selectors ? new CompoundSelector($selectors) : null;
+        return $compound;
+    }
+
+    private function appendSimpleToCompound(SimpleSelector $compound, SimpleSelector $simple): SimpleSelector
+    {
+        $compound->append($simple, RelationType::SUB);
+        return $compound;
     }
 
     private function parseTypeSelector(): TypeSelector
@@ -339,7 +354,7 @@ final class SelectorParser
             if (isset(self::LEGACY_PSEUDO_ELEMENTS[$pseudoClass])) {
                 return new PseudoElementSelector($pseudoClass);
             }
-            return new PseudoClassSelector($pseudoClass);
+            return PseudoClassSelector::of($pseudoClass);
         }
         return $this->parseFunctionalSelector();
     }

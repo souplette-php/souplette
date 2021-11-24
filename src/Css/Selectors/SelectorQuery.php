@@ -4,8 +4,7 @@ namespace Souplette\Css\Selectors;
 
 use DOMElement;
 use DOMParentNode;
-use Souplette\Css\Selectors\Query\Compiler;
-use Souplette\Css\Selectors\Query\EvaluatorInterface;
+use Souplette\Css\Selectors\Node\SelectorList;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Syntax\Tokenizer\Tokenizer;
 use Souplette\Css\Syntax\TokenStream\TokenStream;
@@ -90,11 +89,10 @@ final class SelectorQuery
         return $results;
     }
 
-    private static function compile(string $selectorText): EvaluatorInterface
+    private static function compile(string $selectorText): SelectorList
     {
         $tokens = new TokenStream(new Tokenizer($selectorText), 2);
         $parser = new SelectorParser($tokens);
-        $selector = $parser->parseSelectorList();
-        return (new Compiler())->compile($selector);
+        return $parser->parseSelectorList();
     }
 }

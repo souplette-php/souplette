@@ -2,6 +2,7 @@
 
 namespace Souplette\Css\Selectors\Node;
 
+use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Selectors\Specificity;
 use Traversable;
 
@@ -52,5 +53,15 @@ final class SelectorList extends Selector implements \IteratorAggregate, \Counta
         }
 
         return $max;
+    }
+
+    public function matches(QueryContext $context, \DOMElement $element): bool
+    {
+        foreach ($this->selectors as $selector) {
+            if ($selector->matches($context, $element)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

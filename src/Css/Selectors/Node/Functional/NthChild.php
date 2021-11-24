@@ -4,15 +4,22 @@ namespace Souplette\Css\Selectors\Node\Functional;
 
 use Souplette\Css\Selectors\Node\FunctionalSelector;
 use Souplette\Css\Selectors\Node\SelectorList;
+use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Selectors\Specificity;
 use Souplette\Css\Syntax\Node\AnPlusB;
+use Souplette\Dom\ElementIterator;
 
 final class NthChild extends FunctionalSelector
 {
+    use NthFilteredMatcher;
+
+    public ?SelectorList $selectorList = null;
+
     public function __construct(
         public AnPlusB $anPlusB,
-        public ?SelectorList $selectorList = null
+        ?SelectorList $selectorList = null,
     ) {
+        $this->selectorList = $selectorList;
         $args = [$this->anPlusB];
         if ($this->selectorList) {
             $args[] = $this->selectorList;
@@ -37,5 +44,16 @@ final class NthChild extends FunctionalSelector
             $spec = $spec->add($this->selectorList->getSpecificity());
         }
         return $spec;
+    }
+
+    private function getChildIndex(QueryContext $context, \DOMElement $element): int
+    {
+        $index = 1;
+        foreach (ElementIterator::preceding($element) as $sibling) {
+            if (!$this->selectorList || $this->selectorList->matches($context, $sibling)) {
+                $index++;
+            }
+        }
+        return $index;
     }
 }

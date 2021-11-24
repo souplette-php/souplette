@@ -2,6 +2,7 @@
 
 namespace Souplette\Css\Selectors\Node;
 
+use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Selectors\Specificity;
 use Souplette\Css\Syntax\SyntaxNode;
 
@@ -14,4 +15,9 @@ abstract class Selector extends SyntaxNode
      * @return iterable<SimpleSelector>.
      */
     abstract public function simpleSelectors(): iterable;
+
+    public function matches(QueryContext $context, \DOMElement $element): bool
+    {
+        return false;
+    }
 }

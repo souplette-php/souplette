@@ -3,12 +3,15 @@
 namespace Souplette\Css\Selectors\Node\Simple;
 
 use Souplette\Css\Selectors\Node\SimpleSelector;
+use Souplette\Css\Selectors\Query\AttributeMatcher;
+use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Selectors\Specificity;
 
 final class ClassSelector extends SimpleSelector
 {
-    public function __construct(public string $class)
-    {
+    public function __construct(
+        public string $class,
+    ) {
     }
 
     public function __toString(): string
@@ -19,5 +22,15 @@ final class ClassSelector extends SimpleSelector
     public function getSpecificity(): Specificity
     {
         return new Specificity(0, 1);
+    }
+
+    public function matches(QueryContext $context, \DOMElement $element): bool
+    {
+        $className = $element->getAttribute('class');
+        if (!$className) {
+            return false;
+        }
+
+        return AttributeMatcher::includes($this->class, $className, $context->caseInsensitiveClasses);
     }
 }

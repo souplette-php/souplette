@@ -17,8 +17,7 @@ final class QueryAssert
         string $message = ''
     ) {
         $ctx = QueryContext::of($element);
-        $evaluator = (new Compiler)->compile($selector);
-        $result = $evaluator->matches($ctx, $element);
+        $result = $selector->matches($ctx, $element);
         if (!$message) {
             $message = sprintf(
                 'Failed asserting that selector "%s" %s element "%s"',

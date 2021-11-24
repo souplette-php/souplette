@@ -5,6 +5,8 @@ namespace Souplette\Css\Selectors\Node\Simple;
 use JetBrains\PhpStorm\Pure;
 use Souplette\Css\Selectors\Namespaces;
 use Souplette\Css\Selectors\Node\SimpleSelector;
+use Souplette\Css\Selectors\Query\AttributeMatcher;
+use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Selectors\Specificity;
 
 final class AttributeSelector extends SimpleSelector
@@ -92,5 +94,47 @@ final class AttributeSelector extends SimpleSelector
     public function getSpecificity(): Specificity
     {
         return new Specificity(0, 1);
+    }
+
+    public function matches(QueryContext $context, \DOMElement $element): bool
+    {
+        $attr = $this->attribute;
+        $hasAttribute = match ($this->namespace) {
+            Namespaces::NONE, Namespaces::DEFAULT => $element->hasAttributeNS(null, $attr),
+            Namespaces::ANY => (
+                $element->hasAttribute($attr)
+                || AttributeMatcher::hasAttributeInAnyNamespace($element, $attr)
+            ),
+            default => $element->hasAttributeNS($this->namespace, $attr),
+        };
+
+        if (!$this->operator) return $hasAttribute;
+        if (!$hasAttribute || !$this->value) return false;
+
+        $expected = $this->value;
+        $actual = match ($this->namespace) {
+            Namespaces::NONE, Namespaces::DEFAULT => $element->getAttributeNS(null, $attr),
+            Namespaces::ANY => AttributeMatcher::getAttributeInAnyNamespace($element, $attr),
+            default => $element->getAttributeNS($this->namespace, $attr),
+        };
+        $caseInsensitive = match ($this->forceCase) {
+            AttributeSelector::CASE_FORCE_INSENSITIVE => true,
+            AttributeSelector::CASE_FORCE_SENSITIVE, null => false,
+        };
+
+        return match ($this->operator) {
+            AttributeSelector::OPERATOR_EQUALS
+                => AttributeMatcher::equals($expected, $actual, $caseInsensitive),
+            AttributeSelector::OPERATOR_DASH_MATCH
+                => AttributeMatcher::dashMatch($expected, $actual, $caseInsensitive),
+            AttributeSelector::OPERATOR_INCLUDES
+                => AttributeMatcher::includes($expected, $actual, $caseInsensitive),
+            AttributeSelector::OPERATOR_PREFIX_MATCH
+                => AttributeMatcher::prefixMatch($expected, $actual, $caseInsensitive),
+            AttributeSelector::OPERATOR_SUFFIX_MATCH
+                => AttributeMatcher::suffixMatch($expected, $actual, $caseInsensitive),
+            AttributeSelector::OPERATOR_SUBSTRING_MATCH
+                => AttributeMatcher::substring($expected, $actual, $caseInsensitive),
+        };
     }
 }

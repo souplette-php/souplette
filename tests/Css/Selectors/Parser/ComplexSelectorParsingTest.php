@@ -2,29 +2,28 @@
 
 namespace Souplette\Tests\Css\Selectors\Parser;
 
-use PHPUnit\Framework\Assert;
 use Souplette\Css\Selectors\Node\Combinator;
 use Souplette\Css\Selectors\Node\ComplexSelector;
-use Souplette\Css\Selectors\Node\CompoundSelector;
+use Souplette\Css\Selectors\Node\RelationType;
 use Souplette\Css\Selectors\Node\SelectorList;
 use Souplette\Css\Selectors\Node\Simple\TypeSelector;
+use Souplette\Tests\Css\Selectors\SelectorAssert;
 use Souplette\Tests\Css\Selectors\SelectorParserTestCase;
+use Souplette\Tests\Css\Selectors\Utils;
 
 final class ComplexSelectorParsingTest extends SelectorParserTestCase
 {
     /**
      * @dataProvider parseSelectorListWithComplexSelectorsProvider
-     * @param string $input
-     * @param $expected
      */
     public function testParseSelectorListWithComplexSelectors(string $input, ComplexSelector $expected)
     {
-        $selector = self::parseSelectorList($input);
+        $selector = Utils::parseSelectorList($input);
         $expected = new SelectorList([$expected]);
-        Assert::assertEquals($expected, $selector);
+        SelectorAssert::selectorListEquals($expected, $selector);
     }
 
-    public function parseSelectorListWithComplexSelectorsProvider(): \Generator
+    public function parseSelectorListWithComplexSelectorsProvider(): iterable
     {
         foreach (Combinator::cases() as $combinator) {
             $inputs = [
@@ -32,11 +31,11 @@ final class ComplexSelectorParsingTest extends SelectorParserTestCase
                 sprintf('foo %s bar', $combinator->value),
             ];
             foreach ($inputs as $input) {
-                yield $input => [$input, new ComplexSelector(
-                    new CompoundSelector([new TypeSelector('foo', '*')]),
-                    $combinator,
-                    new CompoundSelector([new TypeSelector('bar', '*')]),
-                )];
+                $foo = new TypeSelector('foo', '*');
+                $bar = new TypeSelector('bar', '*');
+                $bar->next = $foo;
+                $bar->relationType = RelationType::fromCombinator($combinator);
+                yield $input => [$input, new ComplexSelector($bar)];
             }
         }
     }

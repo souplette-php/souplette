@@ -2,15 +2,16 @@
 
 namespace Souplette\Tests\Css\Selectors\Parser;
 
-use PHPUnit\Framework\Assert;
 use Souplette\Css\Selectors\Exception\UndeclaredNamespacePrefix;
-use Souplette\Css\Selectors\Node\ComplexSelector;
-use Souplette\Css\Selectors\Node\CompoundSelector;
+use Souplette\Css\Selectors\Node\PseudoClass\FirstChildPseudo;
+use Souplette\Css\Selectors\Node\PseudoClass\RootPseudo;
 use Souplette\Css\Selectors\Node\SelectorList;
 use Souplette\Css\Selectors\Node\Simple\ClassSelector;
 use Souplette\Css\Selectors\Node\Simple\IdSelector;
 use Souplette\Css\Selectors\Node\Simple\PseudoClassSelector;
+use Souplette\Tests\Css\Selectors\SelectorAssert;
 use Souplette\Tests\Css\Selectors\SelectorParserTestCase;
+use Souplette\Tests\Css\Selectors\Utils;
 
 final class SimpleSelectorParsingTest extends SelectorParserTestCase
 {
@@ -19,12 +20,14 @@ final class SimpleSelectorParsingTest extends SelectorParserTestCase
      */
     public function testParseSelectorListWithSimpleSelectors(string $input, $expected, array $namespaces = [])
     {
-        $selector = self::parseSelectorList($input, $namespaces);
-        $expected = new SelectorList([new ComplexSelector(new CompoundSelector([$expected]))]);
-        Assert::assertEquals($expected, $selector);
+        $selector = Utils::parseSelectorList($input, $namespaces);
+        $expected = new SelectorList([
+            Utils::simpleToComplex($expected),
+        ]);
+        SelectorAssert::selectorListEquals($expected, $selector);
     }
 
-    public function parseSelectorListWithSimpleSelectorsProvider(): \Generator
+    public function parseSelectorListWithSimpleSelectorsProvider(): iterable
     {
         // Type selectors
         yield from SimpleSelectorProvider::typeSelectors();
@@ -36,8 +39,9 @@ final class SimpleSelectorParsingTest extends SelectorParserTestCase
         // Attributes
         yield from SimpleSelectorProvider::attributeSelectors();
         // pseudo-classes
-        yield ':root' => [':root', new PseudoClassSelector('root')];
-        yield ':first-child' => [':first-child', new PseudoClassSelector('first-child')];
+        yield ':root' => [':root', new RootPseudo('root')];
+        yield ':first-child' => [':first-child', new FirstChildPseudo('first-child')];
+        yield ':unknown' => [':unknown', new PseudoClassSelector('unknown')];
         // functional pseudo-classes
         yield from SimpleSelectorProvider::simpleFunctionalPseudoClasses();
         // TODO: :is() :not() :has() :where()
@@ -49,10 +53,10 @@ final class SimpleSelectorParsingTest extends SelectorParserTestCase
     public function testUndeclaredNamespacePrefixes(string $input)
     {
         $this->expectException(UndeclaredNamespacePrefix::class);
-        self::parseSelectorList($input);
+        Utils::parseSelectorList($input);
     }
 
-    public function undeclaredNamespacePrefixesProvider(): \Generator
+    public function undeclaredNamespacePrefixesProvider(): iterable
     {
         foreach (SimpleSelectorProvider::namespacedTypeSelectors() as $key => [$input,]) {
             yield $key => [$input];

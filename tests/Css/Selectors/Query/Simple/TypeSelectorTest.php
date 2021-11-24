@@ -15,7 +15,7 @@ final class TypeSelectorTest extends SelectorQueryTestCase
         self::assertQueryAll($doc, $selector, $matches);
     }
 
-    public function anyNamespaceProvider(): \Generator
+    public function anyNamespaceProvider(): iterable
     {
         $doc = DomBuilder::create()
             ->tag('a')->close()

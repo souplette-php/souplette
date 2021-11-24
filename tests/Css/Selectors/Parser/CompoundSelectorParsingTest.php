@@ -2,9 +2,6 @@
 
 namespace Souplette\Tests\Css\Selectors\Parser;
 
-use PHPUnit\Framework\Assert;
-use Souplette\Css\Selectors\Node\ComplexSelector;
-use Souplette\Css\Selectors\Node\CompoundSelector;
 use Souplette\Css\Selectors\Node\SelectorList;
 use Souplette\Css\Selectors\Node\Simple\AttributeSelector;
 use Souplette\Css\Selectors\Node\Simple\ClassSelector;
@@ -12,20 +9,25 @@ use Souplette\Css\Selectors\Node\Simple\IdSelector;
 use Souplette\Css\Selectors\Node\Simple\PseudoClassSelector;
 use Souplette\Css\Selectors\Node\Simple\PseudoElementSelector;
 use Souplette\Css\Selectors\Node\Simple\TypeSelector;
+use Souplette\Css\Selectors\Node\SimpleSelector;
+use Souplette\Tests\Css\Selectors\SelectorAssert;
 use Souplette\Tests\Css\Selectors\SelectorParserTestCase;
+use Souplette\Tests\Css\Selectors\Utils;
 
 final class CompoundSelectorParsingTest extends SelectorParserTestCase
 {
     /**
      * @dataProvider parseSelectorListWithCompoundSelectorsProvider
      * @param string $input
-     * @param $expected
+     * @param SimpleSelector[] $expected
      */
     public function testParseSelectorListWithCompoundSelectors(string $input, array $expected)
     {
-        $selector = self::parseSelectorList($input);
-        $expected = new SelectorList([new ComplexSelector(new CompoundSelector($expected))]);
-        Assert::assertEquals($expected, $selector);
+        $selector = Utils::parseSelectorList($input);
+        $expected = new SelectorList([
+            Utils::compoundToComplex($expected),
+        ]);
+        SelectorAssert::selectorListEquals($expected, $selector);
     }
 
     public function parseSelectorListWithCompoundSelectorsProvider(): \Generator
