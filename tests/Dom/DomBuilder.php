@@ -61,6 +61,16 @@ final class DomBuilder
         return $this;
     }
 
+    public function id(string $id): self
+    {
+        return $this->attr('id', $id);
+    }
+
+    public function class(string $className): self
+    {
+        return $this->attr('class', $className);
+    }
+
     public function comment(string $data): self
     {
         $node = $this->document->createComment($data);

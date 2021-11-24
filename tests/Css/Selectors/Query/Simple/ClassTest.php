@@ -24,7 +24,7 @@ final class ClassTest extends TestCase
     public function matchesProvider(): \Generator
     {
         $dom = DomBuilder::create()
-            ->tag('foo')->attr('class', 'foo bar baz qux')
+            ->tag('foo')->class('foo bar baz qux')
             ->getDocument();
 
         yield 'matches' => [$dom->documentElement, 'bar', false, true];

@@ -15,7 +15,7 @@ final class TokenListTest extends TestCase
     {
         $doc = DomBuilder::create()
             ->tag('html')
-                ->attr('class', 'foo bar baz')
+                ->class('foo bar baz')
             ->getDocument();
         $node = $doc->documentElement;
         /** @var Element $node */
@@ -32,7 +32,7 @@ final class TokenListTest extends TestCase
     {
         $doc = DomBuilder::create()
             ->tag('html')
-                ->attr('class', 'foo bar baz')
+                ->class('foo bar baz')
             ->getDocument();
         /** @var Element $node */
         $node = $doc->documentElement;
@@ -46,7 +46,7 @@ final class TokenListTest extends TestCase
     {
         $doc = DomBuilder::create()
             ->tag('html')
-                ->attr('class', 'foo')
+                ->class('foo')
             ->getDocument();
         /** @var Element $node */
         $node = $doc->documentElement;
@@ -62,7 +62,7 @@ final class TokenListTest extends TestCase
     {
         $doc = DomBuilder::create()
             ->tag('html')
-                ->attr('class', 'foo bar baz qux')
+                ->class('foo bar baz qux')
             ->getDocument();
         /** @var Element $node */
         $node = $doc->documentElement;
@@ -74,7 +74,7 @@ final class TokenListTest extends TestCase
     {
         $doc = DomBuilder::create()
             ->tag('html')
-                ->attr('class', 'foo bar baz')
+                ->class('foo bar baz')
             ->getDocument();
         /** @var Element $node */
         $node = $doc->documentElement;
@@ -87,7 +87,7 @@ final class TokenListTest extends TestCase
     {
         $doc = DomBuilder::create()
             ->tag('html')
-                ->attr('class', 'foo bar baz')
+                ->class('foo bar baz')
             ->getDocument();
         /** @var Element $node */
         $node = $doc->documentElement;
@@ -99,7 +99,7 @@ final class TokenListTest extends TestCase
     {
         $doc = DomBuilder::create()
             ->tag('html')
-                ->attr('class', 'foo bar baz')
+                ->class('foo bar baz')
             ->getDocument();
         /** @var Element $node */
         $node = $doc->documentElement;
@@ -117,7 +117,7 @@ final class TokenListTest extends TestCase
     {
         $doc = DomBuilder::create()
             ->tag('html')
-                ->attr('class', 'foo bar baz')
+                ->class('foo bar baz')
             ->getDocument();
         /** @var Element $node */
         $node = $doc->documentElement;

@@ -24,7 +24,7 @@ final class IdTest extends TestCase
     public function matchesProvider(): \Generator
     {
         $dom = DomBuilder::create()
-            ->tag('foo')->attr('id', 'yep')
+            ->tag('foo')->id('yep')
             ->getDocument();
         yield 'matches' => [$dom->documentElement, 'yep', false, true];
         yield 'matches case-insensitive' => [$dom->documentElement, 'YEP', true, true];

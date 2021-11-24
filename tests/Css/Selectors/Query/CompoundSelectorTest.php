@@ -22,9 +22,9 @@ final class CompoundSelectorTest extends TestCase
     public function itMatchesClassesProvider(): iterable
     {
         $dom = DomBuilder::create()
-            ->tag('a')->attr('class', 'a')->close()
-            ->tag('a')->attr('class', 'a b')->close()
-            ->tag('a')->attr('class', 'a b c')->close()
+            ->tag('a')->class('a')->close()
+            ->tag('a')->class('a b')->close()
+            ->tag('a')->class('a b c')->close()
             ->getDocument();
 
         $provider = function(array $indices, Selector $selector) use ($dom) {

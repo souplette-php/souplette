@@ -51,11 +51,11 @@ final class SimpleSelectorMatchingTest extends TestCase
     public function idSelectorProvider(): \Generator
     {
         $doc = DomBuilder::create()->tag('html')->tag('body')
-            ->tag('div')->attr('id', 'root')
+            ->tag('div')->id('root')
                 ->tag('ul')
-                    ->tag('li')->attr('id', 'item-1')->close()
-                    ->tag('li')->attr('id', 'item-2')->close()
-                    ->tag('li')->attr('id', 'item-3')->close()
+                    ->tag('li')->id('item-1')->close()
+                    ->tag('li')->id('item-2')->close()
+                    ->tag('li')->id('item-3')->close()
             ->getDocument()
         ;
         yield [$doc, '#root', 'root'];
@@ -75,11 +75,11 @@ final class SimpleSelectorMatchingTest extends TestCase
     public function classSelectorsProvider(): \Generator
     {
         $doc = DomBuilder::create()->tag('html')->tag('body')
-            ->tag('ul')->attr('class', 'list')
-                ->tag('li')->attr('class', 'item odd')->close()
-                ->tag('li')->attr('class', 'item even')->close()
-                ->tag('li')->attr('class', 'item odd')->close()
-                ->tag('li')->attr('class', 'item even')->close()
+            ->tag('ul')->class('list')
+                ->tag('li')->class('item odd')->close()
+                ->tag('li')->class('item even')->close()
+                ->tag('li')->class('item odd')->close()
+                ->tag('li')->class('item even')->close()
             ->getDocument()
         ;
         yield [$doc, '.list', ['list']];

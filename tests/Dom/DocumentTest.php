@@ -23,8 +23,8 @@ final class DocumentTest extends TestCase
     public function testGetElementById()
     {
         $doc = DomBuilder::create()
-            ->tag('div')->attr('id', 'foo')->close()
-            ->tag('div')->attr('ID', 'bar')->close()
+            ->tag('div')->id('foo')->close()
+            ->tag('div')->id('bar')->close()
             ->getDocument();
 
         $foo = $doc->getElementById('foo');
@@ -37,9 +37,9 @@ final class DocumentTest extends TestCase
     public function testGetElementsByClassName()
     {
         $doc = DomBuilder::create()
-            ->tag('div')->attr('class', 'foo')->close()
-            ->tag('div')->attr('class', 'bar')->close()
-            ->tag('div')->attr('class', 'bar baz')->close()
+            ->tag('div')->class('foo')->close()
+            ->tag('div')->class('bar')->close()
+            ->tag('div')->class('bar baz')->close()
             ->getDocument();
 
         $rs = $doc->getElementsByClassName('foo');
