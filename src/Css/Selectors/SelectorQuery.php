@@ -4,6 +4,7 @@ namespace Souplette\Css\Selectors;
 
 use DOMElement;
 use DOMParentNode;
+use Souplette\Css\Selectors\Node\ComplexSelector;
 use Souplette\Css\Selectors\Node\Selector;
 use Souplette\Css\Selectors\Node\SelectorList;
 use Souplette\Css\Selectors\Node\Simple\ClassSelector;
@@ -30,7 +31,7 @@ final class SelectorQuery
             $compound = $compound ? $compound->append($selector) : $selector;
         }
 
-        return self::all($element, $compound);
+        return self::all($element, new ComplexSelector($compound));
     }
 
     /**

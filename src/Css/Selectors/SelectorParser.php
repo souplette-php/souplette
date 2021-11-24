@@ -112,26 +112,27 @@ final class SelectorParser
     {
         // <compound-selector> [ <combinator>? <compound-selector> ]*
         $this->tokenStream->skipWhitespace();
-        $selector = $this->parseCompoundSelector();
+        $compound = $this->parseCompoundSelector();
         while (true) {
             $combinator = $this->parseCombinator();
             if (!$combinator) {
-                return new ComplexSelector($selector);
+                return new ComplexSelector($compound);
             }
-            $nextSelector = $this->parseCompoundSelector();
-            if (!$nextSelector) {
+            $selector = $this->parseCompoundSelector();
+            if (!$selector) {
                 // TODO: ParseError ?
-                return new ComplexSelector($selector);
+                return new ComplexSelector($compound);
             }
-            $end = $nextSelector;
-            while ($end->next) $end = $end->next;
-            $end->relationType = RelationType::fromCombinator($combinator);
-            $end->next = $selector;
-            $selector = $nextSelector;
+            $compound = $selector->append($compound, RelationType::fromCombinator($combinator));
+            //$end = $selector;
+            //while ($end->next) $end = $end->next;
+            //$end->relationType = RelationType::fromCombinator($combinator);
+            //$end->next = $compound;
+            //$compound = $selector;
         }
         $this->tokenStream->skipWhitespace();
 
-        return new ComplexSelector($selector);
+        return new ComplexSelector($compound);
     }
 
     /**
@@ -161,7 +162,7 @@ final class SelectorParser
                 default => false,
             }) {
                 $selector = $this->parseSubclassSelector();
-                $compound = $compound ? $this->appendSimpleToCompound($compound, $selector) : $selector;
+                $compound = $compound ? $compound->append($selector) : $selector;
             } else {
                 break;
             }
@@ -173,21 +174,15 @@ final class SelectorParser
                 break;
             }
             $selector = $this->parsePseudoElementSelector();
-            $compound = $compound ? $this->appendSimpleToCompound($compound, $selector) : $selector;
+            $compound = $compound ? $compound->append($selector) : $selector;
             $token = $this->tokenStream->current();
             while ($token::TYPE === TokenType::COLON) {
                 $selector = $this->parsePseudoClassSelector();
-                $compound = $compound ? $this->appendSimpleToCompound($compound, $selector) : $selector;
+                $compound = $compound ? $compound->append($selector) : $selector;
                 $token = $this->tokenStream->current();
             }
         }
 
-        return $compound;
-    }
-
-    private function appendSimpleToCompound(SimpleSelector $compound, SimpleSelector $simple): SimpleSelector
-    {
-        $compound->append($simple, RelationType::SUB);
         return $compound;
     }
 
