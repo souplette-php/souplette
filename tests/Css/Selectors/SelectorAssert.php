@@ -5,6 +5,8 @@ namespace Souplette\Tests\Css\Selectors;
 use PHPUnit\Framework\Assert;
 use Souplette\Css\Selectors\Node\ComplexSelector;
 use Souplette\Css\Selectors\Node\SelectorList;
+use Souplette\Css\Selectors\SelectorQuery;
+use Souplette\Tests\Utils as TestUtils;
 
 final class SelectorAssert
 {
@@ -23,5 +25,17 @@ final class SelectorAssert
             $actualSelector = $actual->selectors[$i];
             self::selectorEquals($expectedSelector, $actualSelector);
         }
+    }
+
+    public static function assertQueryAll(
+        \DOMDocument $doc,
+        string $selectorText,
+        array $expectedPaths,
+        ?\DOMElement $root = null,
+    ) {
+        if (!$root) $root = $doc;
+        $results = SelectorQuery::all($root, $selectorText) ?? [];
+        $actualPaths = array_map(fn($el) => TestUtils::elementPath($el), $results);
+        Assert::assertEquals($expectedPaths, $actualPaths);
     }
 }

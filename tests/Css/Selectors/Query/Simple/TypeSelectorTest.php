@@ -3,6 +3,7 @@
 namespace Souplette\Tests\Css\Selectors\Query\Simple;
 
 use Souplette\Tests\Css\Selectors\Query\SelectorQueryTestCase;
+use Souplette\Tests\Css\Selectors\SelectorAssert;
 use Souplette\Tests\Dom\DomBuilder;
 
 final class TypeSelectorTest extends SelectorQueryTestCase
@@ -12,7 +13,7 @@ final class TypeSelectorTest extends SelectorQueryTestCase
      */
     public function testAnyNamespace(\DOMDocument $doc, string $selector, array $matches)
     {
-        self::assertQueryAll($doc, $selector, $matches);
+        SelectorAssert::assertQueryAll($doc, $selector, $matches);
     }
 
     public function anyNamespaceProvider(): iterable
@@ -63,7 +64,7 @@ final class TypeSelectorTest extends SelectorQueryTestCase
         </html>
         HTML);
 
-        self::assertQueryAll($doc, 'a', [
+        SelectorAssert::assertQueryAll($doc, 'a', [
             '/html/a',
             '/html/p/a',
         ]);

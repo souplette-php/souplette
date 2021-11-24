@@ -7,6 +7,7 @@ use Souplette\Css\Selectors\Node\Functional\Has;
 use Souplette\Css\Selectors\Node\SelectorList;
 use Souplette\Css\Selectors\Node\Simple\TypeSelector;
 use Souplette\Tests\Css\Selectors\Query\QueryAssert;
+use Souplette\Tests\Css\Selectors\SelectorAssert;
 use Souplette\Tests\Dom\DomBuilder;
 
 final class HasTest extends TestCase
@@ -61,5 +62,25 @@ final class HasTest extends TestCase
             ])),
             false,
         ];
+    }
+
+    public function testScope()
+    {
+        $doc = DomBuilder::create()->tag('main')
+            ->tag('div')->id('d1')
+                ->tag('div')->id('d2')->class('a')
+                    ->tag('div')->id('d3')->class('a')
+                        ->tag('div')->id('d4')
+                            ->tag('div')->id('d5')->class('b')
+            ->getDocument();
+        SelectorAssert::assertQueryAll($doc, 'div:has(.a .b)', [
+            '/main/div', // #d1
+            '/main/div/div', // #d2
+        ], $doc->documentElement);
+    }
+
+    public function testItAcceptsRelativeSelectors()
+    {
+        $this->markTestIncomplete('Not implemented');
     }
 }

@@ -28,18 +28,6 @@ class SelectorQueryTestCase extends TestCase
         }
     }
 
-    protected static function assertQueryAll(
-        \DOMDocument $doc,
-        string $selectorText,
-        array $expectedPaths,
-        ?\DOMElement $root = null,
-    ) {
-        if (!$root) $root = $doc;
-        $results = SelectorQuery::all($root, $selectorText) ?? [];
-        $actualPaths = array_map(fn($el) => Utils::elementPath($el), $results);
-        Assert::assertEquals($expectedPaths, $actualPaths);
-    }
-
     protected static function assertQueryFirst(
         \DOMDocument $doc,
         string $selectorText,

@@ -33,6 +33,8 @@ final class Has extends FunctionalSelector
 
     public function matches(QueryContext $context, \DOMElement $element): bool
     {
+        // FIXME: the actual logic is much more involved than this !
+        // TODO: check Blink's `SelectorChecker::CheckPseudoHas()`
         $subContext = $context->withScope($element);
         foreach (ElementIterator::descendants($element) as $candidate) {
             if ($this->selectorList->matches($subContext, $candidate)) {
