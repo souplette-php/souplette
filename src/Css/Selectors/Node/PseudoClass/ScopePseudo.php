@@ -12,6 +12,10 @@ final class ScopePseudo extends PseudoClassSelector
 {
     public function matches(QueryContext $context, \DOMElement $element): bool
     {
+        if (!$context->scopingRoot) return false;
+        if ($context->scopingRoot === $element->ownerDocument) {
+            return $element === $element->ownerDocument->documentElement;
+        }
         return $element === $context->scopingRoot;
     }
 }

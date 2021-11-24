@@ -2,6 +2,7 @@
 
 namespace Souplette\Css\Selectors\Node;
 
+use Souplette\Css\Selectors\Node\PseudoClass\ScopePseudo;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Selectors\Specificity;
 
@@ -80,20 +81,22 @@ final class ComplexSelector extends Selector implements \IteratorAggregate
         $nextSelector = $selector->next;
         switch ($relationType) {
             case RelationType::CHILD:
+                if ($this->isLeftMostScopeForFragment($context, $selector)) return true;
                 $parent = $element->parentNode;
                 if (!$parent) return false;
                 return $this->matchSelector($nextSelector, $context, $parent);
-            case RelationType::NEXT:
-                $previous = $element->previousElementSibling;
-                if (!$previous) return false;
-                return $this->matchSelector($nextSelector, $context, $previous);
             case RelationType::DESCENDANT:
+                if ($this->isLeftMostScopeForFragment($context, $selector)) return true;
                 $parent = $element->parentNode;
                 while ($parent) {
                     if ($this->matchSelector($nextSelector, $context, $parent)) return true;
                     $parent = $parent->parentNode;
                 }
                 return false;
+            case RelationType::NEXT:
+                $previous = $element->previousElementSibling;
+                if (!$previous) return false;
+                return $this->matchSelector($nextSelector, $context, $previous);
             case RelationType::FOLLOWING:
                 $previous = $element->previousElementSibling;
                 while ($previous) {
@@ -105,6 +108,15 @@ final class ComplexSelector extends Selector implements \IteratorAggregate
                 break;
         }
         return false;
+    }
+
+    private function isLeftMostScopeForFragment(QueryContext $context, SimpleSelector $selector): bool
+    {
+        return (
+            $selector instanceof ScopePseudo
+            && !$selector->next
+            && $context->scopingRoot->nodeType === XML_DOCUMENT_FRAG_NODE
+        );
     }
 
     /**
