@@ -18,12 +18,6 @@ final class Has extends FunctionalSelector
         parent::__construct('has', [$this->selectorList]);
     }
 
-    public function simpleSelectors(): iterable
-    {
-        yield $this;
-        yield from $this->selectorList;
-    }
-
     public function __toString(): string
     {
         return ":has({$this->selectorList})";

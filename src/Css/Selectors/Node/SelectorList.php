@@ -15,14 +15,6 @@ final class SelectorList extends Selector implements \IteratorAggregate, \Counta
     }
 
     /**
-     * @return iterable<SimpleSelector>
-     */
-    public function simpleSelectors(): iterable
-    {
-        yield from $this->selectors;
-    }
-
-    /**
      * @return Traversable<Selector>
      */
     public function getIterator(): Traversable

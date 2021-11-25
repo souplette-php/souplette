@@ -14,12 +14,6 @@ final class Where extends FunctionalSelector
         parent::__construct('where', [$this->selectorList]);
     }
 
-    public function simpleSelectors(): iterable
-    {
-        yield $this;
-        yield from $this->selectorList;
-    }
-
     public function __toString(): string
     {
         return ":where({$this->selectorList})";

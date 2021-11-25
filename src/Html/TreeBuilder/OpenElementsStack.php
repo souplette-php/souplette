@@ -119,9 +119,9 @@ final class OpenElementsStack extends Stack
     {
         while (true) {
             $node = $this->top();
-            if (Elements::isMathMlTextIntegrationPoint($node)
+            if ($node->namespaceURI === Namespaces::HTML
+                || Elements::isMathMlTextIntegrationPoint($node)
                 || Elements::isHtmlIntegrationPoint($node)
-                || $node->namespaceURI === Namespaces::HTML
             ) {
                 return;
             }
@@ -297,6 +297,7 @@ final class OpenElementsStack extends Stack
 
     /**
      * This method is inlined in the more specific public methods and is kept here as a reference.
+     * @codeCoverageIgnore
      *
      * @see https://html.spec.whatwg.org/multipage/parsing.html#has-an-element-in-the-specific-scope
      *
@@ -324,6 +325,7 @@ final class OpenElementsStack extends Stack
 
     /**
      * This method is inlined in the more specific public methods and is kept here as a reference.
+     * @codeCoverageIgnore
      *
      * @see https://html.spec.whatwg.org/multipage/parsing.html#has-an-element-in-the-specific-scope
      *

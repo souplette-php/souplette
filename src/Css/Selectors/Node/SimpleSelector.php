@@ -7,11 +7,6 @@ abstract class SimpleSelector extends Selector
     public RelationType $relationType = RelationType::SUB;
     public ?SimpleSelector $next = null;
 
-    public function simpleSelectors(): iterable
-    {
-        yield $this;
-    }
-
     public function append(SimpleSelector $selector, RelationType $relation = RelationType::SUB): static
     {
         $end = $this;

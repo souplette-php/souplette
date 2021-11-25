@@ -16,14 +16,6 @@ final class ComplexSelector extends Selector implements \IteratorAggregate
     /**
      * @return iterable<SimpleSelector>
      */
-    public function simpleSelectors(): iterable
-    {
-        yield from $this->getIterator();
-    }
-
-    /**
-     * @return iterable<SimpleSelector>
-     */
     public function getIterator(): iterable
     {
         for ($selector = $this->selector; $selector; $selector = $selector->next) {

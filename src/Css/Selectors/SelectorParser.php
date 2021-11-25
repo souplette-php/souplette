@@ -20,7 +20,6 @@ use Souplette\Css\Selectors\Node\Functional\Where;
 use Souplette\Css\Selectors\Node\FunctionalSelector;
 use Souplette\Css\Selectors\Node\PseudoClass\Internal\LeftMostRelativeSelectorMarker;
 use Souplette\Css\Selectors\Node\RelationType;
-use Souplette\Css\Selectors\Node\RelativeSelector;
 use Souplette\Css\Selectors\Node\Selector;
 use Souplette\Css\Selectors\Node\SelectorList;
 use Souplette\Css\Selectors\Node\Simple\AttributeSelector;
