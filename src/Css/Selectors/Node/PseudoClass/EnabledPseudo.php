@@ -3,6 +3,7 @@
 namespace Souplette\Css\Selectors\Node\PseudoClass;
 
 use Souplette\Css\Selectors\Node\Simple\PseudoClassSelector;
+use Souplette\Css\Selectors\Query\FormMatcher;
 use Souplette\Css\Selectors\Query\QueryContext;
 
 /**
@@ -16,7 +17,7 @@ final class EnabledPseudo extends PseudoClassSelector
         return match ($type) {
             'input', 'button', 'select', 'textarea' => (
                 !$element->hasAttribute('disabled')
-                && !DisabledEvaluator::inDisabledFieldset($element, $context)
+                && !FormMatcher::inDisabledFieldset($element, $context)
             ),
             'fieldset', 'optgroup', 'option' => !$element->hasAttribute('disabled'),
             default => false,
