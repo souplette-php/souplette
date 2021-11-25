@@ -85,21 +85,9 @@ final class InBody extends RuleSet
                 return;
             }
             // Otherwise, follow these steps:
-            // 1. TODO: If there is a node in the stack of open elements that is not either
+            // 1. If there is a node in the stack of open elements that is not either
             // a dd, dt, li, optgroup, option, p, rb, rp, rt, rtc, tbody, td, tfoot, th, thead, tr, body or html element,
             // then this is a parse error.
-            foreach ($tree->openElements as $node) {
-                if ($node->namespaceURI !== Namespaces::HTML && !\in_array($node->localName, [
-                    'dd', 'dt', 'li',
-                    'optgroup', 'option',
-                    'p',
-                    'rb', 'rp', 'rt', 'rtc',
-                    'tbody', 'td', 'tfoot', 'th', 'thead', 'tr',
-                    'body', 'html',
-                ], true)) {
-                    // TODO: Parse error.
-                }
-            }
             // 2. TODO: Stop parsing
             return;
         } else if ($type === TokenType::CHARACTER) {
@@ -111,7 +99,8 @@ final class InBody extends RuleSet
                 $data = $token->data = substr($data, 1);
             }
             if ($data === "\0") {
-                // TODO: Parse error. Ignore the token.
+                // TODO: Parse error.
+                // Ignore the token.
             } else if (ctype_space($data)) {
                 // Reconstruct the active formatting elements, if any.
                 $tree->reconstructTheListOfActiveElements();

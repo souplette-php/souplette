@@ -25,8 +25,9 @@ final class Serializer
         }
         // 2. Let s be a string, and initialize it to the empty string.
         $s = '';
-        // TODO: 3. If the node is a template element,
+        // 3. If the node is a template element,
         // then let the node instead be the template element's template contents (a DocumentFragment node).
+        // NOTE: we cannot support this.
         if (!$node->hasChildNodes()) {
             return $s;
         }

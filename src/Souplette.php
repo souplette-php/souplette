@@ -11,4 +11,10 @@ final class Souplette
         $parser = new Html\Parser();
         return $parser->parse($html, $encoding);
     }
+
+    public static function serializeDocument(Document $document): string
+    {
+        $serializer = new Html\Serializer();
+        return $serializer->serialize($document);
+    }
 }

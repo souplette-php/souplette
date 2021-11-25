@@ -153,7 +153,7 @@ final class TreeBuilder
         $this->reset();
         $this->isBuildingFragment = true;
         $this->contextElement = $contextElement;
-        // TODO: 2. If the node document of the context element is in quirks mode, then let the Document be in quirks mode.
+        // 2. If the node document of the context element is in quirks mode, then let the Document be in quirks mode.
         // Otherwise, the node document of the context element is in limited-quirks mode,
         // then let the Document be in limited-quirks mode.
         // Otherwise, leave the Document in no-quirks mode.
