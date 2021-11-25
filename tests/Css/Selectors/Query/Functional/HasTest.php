@@ -8,6 +8,7 @@ use Souplette\Css\Selectors\Node\SelectorList;
 use Souplette\Css\Selectors\Node\Simple\TypeSelector;
 use Souplette\Tests\Css\Selectors\Query\QueryAssert;
 use Souplette\Tests\Css\Selectors\SelectorAssert;
+use Souplette\Tests\Css\Selectors\Utils;
 use Souplette\Tests\Dom\DomBuilder;
 
 final class HasTest extends TestCase
@@ -15,8 +16,9 @@ final class HasTest extends TestCase
     /**
      * @dataProvider matchesProvider
      */
-    public function testMatches(\DOMElement $element, Has $selector, bool $expected)
+    public function testMatches(\DOMElement $element, string $selectorText, bool $expected)
     {
+        $selector = Utils::parseSelectorList($selectorText);
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
@@ -39,7 +41,7 @@ final class HasTest extends TestCase
             ->close()
             ->getDocument();
         foreach (['b', 'c', 'd', 'e'] as $i => $tagName) {
-            $selector = new Has(new SelectorList([new TypeSelector($tagName, '*')]));
+            $selector = ":has({$tagName})";
             yield "node {$i} matches {$selector}" => [
                 $dom->childNodes->item($i),
                 $selector,
@@ -48,18 +50,12 @@ final class HasTest extends TestCase
         }
         yield "node 0 matches :has(a, b)" => [
             $dom->childNodes->item(0),
-            new Has(new SelectorList([
-                new TypeSelector('a', '*'),
-                new TypeSelector('b', '*'),
-            ])),
+            ':has(a, b)',
             true,
         ];
         yield "node 1 does not matches :has(a, b)" => [
             $dom->childNodes->item(1),
-            new Has(new SelectorList([
-                new TypeSelector('a', '*'),
-                new TypeSelector('b', '*'),
-            ])),
+            ':has(a, b)',
             false,
         ];
     }

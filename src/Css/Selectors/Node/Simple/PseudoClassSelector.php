@@ -47,7 +47,7 @@ class PseudoClassSelector extends SimpleSelector
         'selected' => SelectedPseudo::class,
     ];
 
-    public static function of(string $name): static
+    final public static function of(string $name): static
     {
         if ($class = self::KNOWN_CLASSES[$name] ?? null) {
             return new $class($name);

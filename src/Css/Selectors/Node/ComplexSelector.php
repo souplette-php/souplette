@@ -6,9 +6,6 @@ use Souplette\Css\Selectors\Node\PseudoClass\ScopePseudo;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Selectors\Specificity;
 
-/**
- * TODO: can we remove this class ?
- */
 final class ComplexSelector extends Selector implements \IteratorAggregate
 {
     public function __construct(
@@ -80,23 +77,35 @@ final class ComplexSelector extends Selector implements \IteratorAggregate
         $relationType = $selector->relationType;
         $nextSelector = $selector->next;
         switch ($relationType) {
+            case RelationType::RELATIVE_CHILD:
+                $context->hasArgumentLeftMostCompoundMatches[] = $element;
+            // fallthrough
             case RelationType::CHILD:
                 if ($this->isLeftMostScopeForFragment($context, $selector)) return true;
                 $parent = $element->parentNode;
-                if (!$parent) return false;
+                if (!$parent || $parent->nodeType !== XML_ELEMENT_NODE) return false;
                 return $this->matchSelector($nextSelector, $context, $parent);
+            case RelationType::RELATIVE_DESCENDANT:
+                $context->hasArgumentLeftMostCompoundMatches[] = $element;
+            // fallthrough
             case RelationType::DESCENDANT:
                 if ($this->isLeftMostScopeForFragment($context, $selector)) return true;
                 $parent = $element->parentNode;
-                while ($parent) {
+                while ($parent && $parent->nodeType === XML_ELEMENT_NODE) {
                     if ($this->matchSelector($nextSelector, $context, $parent)) return true;
                     $parent = $parent->parentNode;
                 }
                 return false;
-            case RelationType::NEXT:
+            case RelationType::RELATIVE_ADJACENT:
+                $context->hasArgumentLeftMostCompoundMatches[] = $element;
+            // fallthrough
+            case RelationType::ADJACENT:
                 $previous = $element->previousElementSibling;
                 if (!$previous) return false;
                 return $this->matchSelector($nextSelector, $context, $previous);
+            case RelationType::RELATIVE_FOLLOWING:
+                $context->hasArgumentLeftMostCompoundMatches[] = $element;
+            // fallthrough
             case RelationType::FOLLOWING:
                 $previous = $element->previousElementSibling;
                 while ($previous) {

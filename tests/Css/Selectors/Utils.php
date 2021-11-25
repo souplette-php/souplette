@@ -35,4 +35,19 @@ final class Utils
     {
         return new ComplexSelector($selector);
     }
+
+    public static function toSelectorList(array $selectors): SelectorList
+    {
+        $arguments = [];
+        foreach ($selectors as $selector) {
+            if ($selector instanceof SimpleSelector) {
+                $arguments[] = self::simpleToComplex($selector);
+            } else if (\is_array($selector)) {
+                $arguments[] = self::compoundToComplex($selector);
+            } else {
+                $arguments[] = $selector;
+            }
+        }
+        return new SelectorList($arguments);
+    }
 }

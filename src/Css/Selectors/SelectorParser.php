@@ -18,6 +18,7 @@ use Souplette\Css\Selectors\Node\Functional\NthLastOfType;
 use Souplette\Css\Selectors\Node\Functional\NthOfType;
 use Souplette\Css\Selectors\Node\Functional\Where;
 use Souplette\Css\Selectors\Node\FunctionalSelector;
+use Souplette\Css\Selectors\Node\PseudoClass\Internal\LeftMostRelativeSelectorMarker;
 use Souplette\Css\Selectors\Node\RelationType;
 use Souplette\Css\Selectors\Node\RelativeSelector;
 use Souplette\Css\Selectors\Node\Selector;
@@ -31,6 +32,7 @@ use Souplette\Css\Selectors\Node\Simple\TypeSelector;
 use Souplette\Css\Selectors\Node\Simple\UniversalSelector;
 use Souplette\Css\Selectors\Node\SimpleSelector;
 use Souplette\Css\Syntax\AnPlusBParser;
+use Souplette\Css\Syntax\Exception\ParseError;
 use Souplette\Css\Syntax\Exception\UnexpectedToken;
 use Souplette\Css\Syntax\Exception\UnexpectedValue;
 use Souplette\Css\Syntax\Tokenizer\TokenType;
@@ -100,12 +102,13 @@ final class SelectorParser
     {
         // <relative-selector> = <combinator>? <complex-selector>
         $combinator = $this->parseCombinator();
-        $selector = $this->parseComplexSelector();
-        if ($combinator) {
-            return new RelativeSelector($combinator, $selector);
-        }
-
-        return $selector;
+        $relation = match ($combinator) {
+            Combinator::CHILD => RelationType::RELATIVE_CHILD,
+            Combinator::NEXT_SIBLING => RelationType::RELATIVE_ADJACENT,
+            Combinator::SUBSEQUENT_SIBLING => RelationType::RELATIVE_FOLLOWING,
+            Combinator::DESCENDANT, null => RelationType::RELATIVE_DESCENDANT,
+        };
+        return $this->parsePartialComplexSelector($relation, new LeftMostRelativeSelectorMarker());
     }
 
     private function parseComplexSelector(): ComplexSelector
@@ -113,26 +116,43 @@ final class SelectorParser
         // <compound-selector> [ <combinator>? <compound-selector> ]*
         $this->tokenStream->skipWhitespace();
         $compound = $this->parseCompoundSelector();
-        while (true) {
-            $combinator = $this->parseCombinator();
-            if (!$combinator) {
-                return new ComplexSelector($compound);
-            }
-            $selector = $this->parseCompoundSelector();
-            if (!$selector) {
-                // TODO: ParseError ?
-                return new ComplexSelector($compound);
-            }
-            $compound = $selector->append($compound, RelationType::fromCombinator($combinator));
-            //$end = $selector;
-            //while ($end->next) $end = $end->next;
-            //$end->relationType = RelationType::fromCombinator($combinator);
-            //$end->next = $compound;
-            //$compound = $selector;
+        if ($combinator = $this->parseCombinator()) {
+            return $this->parsePartialComplexSelector(RelationType::fromCombinator($combinator), $compound);
         }
-        $this->tokenStream->skipWhitespace();
-
         return new ComplexSelector($compound);
+    }
+
+    /**
+     * Provides the common logic of consuming a complex selector and consuming a relative selector.
+     *
+     * After consuming the left-most combinator of a relative selector
+     * we can consume the remaining selectors with the common logic.
+     * For example, after consuming the left-most combinator '~' of the relative
+     * selector '~ .a ~ .b', we can consume remaining selectors '.a ~ .b' with this method.
+     *
+     * After consuming the left-most compound selector and a combinator of a
+     * complex selector, we can also use this method to consume the remaining
+     * selectors of the complex selector.
+     */
+    private function parsePartialComplexSelector(RelationType $relation, SimpleSelector $selector): ComplexSelector
+    {
+        do {
+            $compound = $this->parseCompoundSelector();
+            if (!$compound) {
+                return match ($relation) {
+                    RelationType::DESCENDANT => new ComplexSelector($selector),
+                    default => throw new ParseError('Expected compound selector after combinator.'),
+                };
+            }
+            if ($selector) {
+                $selector = $compound->append($selector, $relation);
+            }
+            if ($combinator = $this->parseCombinator()) {
+                $relation = RelationType::fromCombinator($combinator);
+            }
+        } while ($combinator);
+
+        return new ComplexSelector($selector);
     }
 
     /**
