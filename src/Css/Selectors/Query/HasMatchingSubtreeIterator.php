@@ -116,14 +116,14 @@ final class HasMatchingSubtreeIterator implements \Iterator
             $traversalEnd = $this->scopeElement->nextElementSibling;
             if (!$traversalEnd) return;
             $lastSibling = $this->scopeElement->parentNode->lastElementChild;
-            $current = $this->lastDescendantOf($lastSibling, $this->depth, $this->depthLimit);
+            $current = $this->lastDescendantOf($lastSibling);
             if (!$current) $current = $lastSibling;
         } else if ($adjacentDistanceLimit === 0) {
             // Set the $traversalEnd as the first child of the :has scope element,
             // and move to the last descendant of the :has scope element without exceeding the depth limit.
             $traversalEnd = $this->scopeElement->firstElementChild;
             if (!$traversalEnd) return;
-            $current = $this->lastDescendantOf($this->scopeElement, $this->depth, $this->depthLimit);
+            $current = $this->lastDescendantOf($this->scopeElement);
         } else {
             // Set the $traversalEnd as the element at the adjacent distance of the :has scope element,
             // and move to the last descendant of the element without exceeding the depth limit.
@@ -134,7 +134,7 @@ final class HasMatchingSubtreeIterator implements \Iterator
                 $traversalEnd = $traversalEnd->nextElementSibling;
             }
             if (!$traversalEnd) return;
-            $current = $this->lastDescendantOf($traversalEnd, $this->depth, $this->depthLimit);
+            $current = $this->lastDescendantOf($traversalEnd);
             if (!$current) $current = $traversalEnd;
         }
 
@@ -142,14 +142,14 @@ final class HasMatchingSubtreeIterator implements \Iterator
         $this->traversalEnd = $traversalEnd;
     }
 
-    private function lastDescendantOf(\DOMElement $element, int $depth, int $depthLimit): ?\DOMElement
+    private function lastDescendantOf(\DOMElement $element): ?\DOMElement
     {
-        if ($depth === $depthLimit) return null;
+        if ($this->depth === $this->depthLimit) return null;
         // Return the rightmost bottom element of the element without exceeding the depth limit.
         $lastDescendant = null;
         for ($descendant = $element->lastElementChild; $descendant; $descendant = $descendant->lastElementChild) {
             $lastDescendant = $descendant;
-            if (++$depth === $depthLimit) break;
+            if (++$this->depth === $this->depthLimit) break;
         }
         return $lastDescendant;
     }

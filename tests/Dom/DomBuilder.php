@@ -4,6 +4,7 @@ namespace Souplette\Tests\Dom;
 
 use Souplette\Dom\Document;
 use Souplette\Dom\Namespaces;
+use Souplette\Html\TreeBuilder\Elements;
 
 final class DomBuilder
 {
@@ -33,7 +34,9 @@ final class DomBuilder
     {
         $element = $this->document->createElementNS($namespace, $name);
         $this->getParent()->appendChild($element);
-        $this->openElements->push($element);
+        if (!isset(Elements::VOID_ELEMENTS[$name])) {
+            $this->openElements->push($element);
+        }
 
         return $this;
     }

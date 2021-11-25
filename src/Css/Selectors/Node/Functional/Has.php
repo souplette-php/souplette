@@ -53,12 +53,11 @@ final class Has extends FunctionalSelector
 
             $hasMatchingContext = new HasMatchingContext($selector->selector);
             $isDepthFixed = $hasMatchingContext->isDepthFixed();
-            // To prevent incorrect 'NotChecked' status while matching ':has' pseudo
-            // class, change the argument matching context scope when the ':has'
-            // argument matching traversal cannot be fixed with a certain depth and
-            // adjacent distance.
+            // To prevent incorrect 'NotChecked' status while matching ':has' pseudo class,
+            // change the argument matching context scope when the ':has'
+            // argument matching traversal cannot be fixed within a certain depth and adjacent distance.
             //
-            // For example, When we tries to match '.a:has(.b .c) .d' on below DOM,
+            // For example, When we trys to match '.a:has(.b .c) .d' on:
             // <div id=d1 class="a">
             //  <div id=d2 class="b">
             //   <div id=d3 class="a">
@@ -69,21 +68,20 @@ final class Has extends FunctionalSelector
             //  </div>
             // </div>
             // the ':has(.b .c)' selector will be checked on the #d3 element first
-            // because the selector '.a:has(.b .c) .d' will be matched upward from
-            // the #d5 element.
+            // because the selector '.a:has(.b .c) .d' will be matched upward from the #d5 element.
             //  1) '.d' will be matched first on #d5
             //  2) move to the #d3 until the '.a' matched
             //  3) match the ':has(.b .c)' on the #d3
             //    3.1) match the argument selector '.b .c' on the descendants of #d3
-            //  4) move to the #d1 until the '.a' matched
+            //  4) move to the #d1 until the '.a' is matched
             //  5) match the ':has(.b .c)' on the #d1
             //    5.1) match the argument selector '.b .c' on the descendants of #d1
             //
-            // The argument selector '.b .c' will not be matched on the #d4 at this
-            // step if the argument matching scope is limited to #d3. But the '.b .c'
-            // can be matched on the #d4 if the argument matching scope is #d1.
-            // To prevent duplicated argument matching operation, the #d1 should be
-            // marked as 'Matched' at the step 3.
+            // The argument selector '.b .c' will not be matched on the #d4 at this step
+            // if the argument matching scope is limited to #d3.
+            // But '.b .c' can be matched on the #d4 if the argument matching scope is #d1.
+            // To prevent duplicated argument matching operation,
+            // #d1 should be marked as 'Matched' at step 3.
             if (!$isDepthFixed) {
                 // TODO: this should bee the root of the element's TreeScope
                 $subContext->relativeLeftMostElement = $this->getRootElement($element);
@@ -100,7 +98,7 @@ final class Has extends FunctionalSelector
             $selectorMatched = false;
             $iterator = new HasMatchingSubtreeIterator($element, $hasMatchingContext);
             foreach ($iterator as $current) {
-                if ($isDepthFixed && $iterator->isAtFixedDepth()) {
+                if ($isDepthFixed && !$iterator->isAtFixedDepth()) {
                     continue;
                 }
                 $subContext->hasArgumentLeftMostCompoundMatches = [];
