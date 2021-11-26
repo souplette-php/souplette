@@ -32,11 +32,10 @@ final class DomBuilder
 
     public function tag(string $name, string $namespace = Namespaces::HTML): self
     {
+        $this->closeVoidElements();
         $element = $this->document->createElementNS($namespace, $name);
         $this->getParent()->appendChild($element);
-        if (!isset(Elements::VOID_ELEMENTS[$name])) {
-            $this->openElements->push($element);
-        }
+        $this->openElements->push($element);
 
         return $this;
     }
@@ -76,6 +75,7 @@ final class DomBuilder
 
     public function comment(string $data): self
     {
+        $this->closeVoidElements();
         $node = $this->document->createComment($data);
         $this->getParent()->appendChild($node);
         return $this;
@@ -83,6 +83,7 @@ final class DomBuilder
 
     public function text(string $data): self
     {
+        $this->closeVoidElements();
         $node = $this->document->createTextNode($data);
         $this->getParent()->appendChild($node);
         return $this;
@@ -90,6 +91,7 @@ final class DomBuilder
 
     public function doctype(string $name, string $pub = '', string $sys = ''): self
     {
+        $this->closeVoidElements();
         $node = $this->document->implementation->createDocumentType($name, $pub, $sys);
         $this->document->appendChild($node);
         return $this;
@@ -98,5 +100,16 @@ final class DomBuilder
     private function getParent(): \DOMNode
     {
         return $this->openElements->isEmpty() ? $this->document : $this->openElements->top();
+    }
+
+    private function closeVoidElements()
+    {
+        if ($this->openElements->isEmpty()) {
+            return;
+        }
+        $node = $this->openElements->top();
+        if (isset(Elements::VOID_ELEMENTS[$node->localName]) && $node->namespaceURI === Namespaces::HTML) {
+            $this->openElements->pop();
+        }
     }
 }

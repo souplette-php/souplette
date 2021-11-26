@@ -7,7 +7,7 @@ use Souplette\Html\Serializer;
 
 final class SerializerAssert
 {
-    public static function assertSerializationEquals(\DOMDocument $input, string $expected)
+    public static function assertSerializationEquals(\DOMNode $input, string $expected)
     {
         $serializer = new Serializer();
         $result = $serializer->serialize($input);

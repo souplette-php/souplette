@@ -18,7 +18,7 @@ final class SerializerTest extends TestCase
         SerializerAssert::assertSerializationEquals($input, $expected);
     }
 
-    public function doctypeProvider()
+    public function doctypeProvider(): iterable
     {
         yield 'html doctype' => [
             DomBuilder::create()->doctype('html')->getDocument(),
@@ -48,7 +48,7 @@ final class SerializerTest extends TestCase
         SerializerAssert::assertSerializationEquals($input, $expected);
     }
 
-    public function commentsProvider()
+    public function commentsProvider(): iterable
     {
         yield [
             DomBuilder::create()->comment('foobar')->getDocument(),
@@ -61,12 +61,12 @@ final class SerializerTest extends TestCase
      * @param \DOMDocument $input
      * @param string $expected
      */
-    public function testElements(\DOMDocument $input, string $expected)
+    public function testElements(\DOMNode $input, string $expected)
     {
         SerializerAssert::assertSerializationEquals($input, $expected);
     }
 
-    public function elementsProvider()
+    public function elementsProvider(): iterable
     {
         yield '<div>' => [
             DomBuilder::create()->tag('div')->getDocument(),
@@ -76,11 +76,10 @@ final class SerializerTest extends TestCase
             DomBuilder::create()->tag('input')->getDocument(),
             '<input>',
         ];
+        $doc = new \DOMDocument();
+        $doc->appendChild($doc->createElementNS(Namespaces::HTML, 'input', 'foo'));
         yield '<input>foo</input>' => [
-            DomBuilder::create()
-                ->tag('input')
-                ->text('foo')
-                ->getDocument(),
+            $doc,
             '<input>',
         ];
         yield 'foreign namespace' => [
@@ -99,7 +98,7 @@ final class SerializerTest extends TestCase
         SerializerAssert::assertSerializationEquals($input, $expected);
     }
 
-    public function attributesProvider()
+    public function attributesProvider(): iterable
     {
         yield 'double quote escaping' => [
             DomBuilder::create()->tag('span')->attr('title', 'foo"bar')->getDocument(),
@@ -149,7 +148,7 @@ final class SerializerTest extends TestCase
         SerializerAssert::assertSerializationEquals($input, $expected);
     }
 
-    public function characterDataEscapingProvider()
+    public function characterDataEscapingProvider(): iterable
     {
         yield 'character data' => [
             DomBuilder::create()->tag('span')->text("<foo> & bar\u{00A0}baz")->getDocument(),
@@ -171,7 +170,7 @@ final class SerializerTest extends TestCase
         SerializerAssert::assertSerializationEquals($input, $expected);
     }
 
-    public function booleanAttributesProvider()
+    public function booleanAttributesProvider(): iterable
     {
         yield '<div hidden="">' => [
             DomBuilder::create()->tag('div')->attr('hidden', '')->getDocument(),
