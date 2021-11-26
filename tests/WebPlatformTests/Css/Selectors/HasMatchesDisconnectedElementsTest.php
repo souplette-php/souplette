@@ -25,16 +25,18 @@ final class HasMatchesDisconnectedElementsTest extends TestCase
     public function itMatchesDisconnectedElementsProvider(): iterable
     {
         $doc = new Document();
-        $subject = $doc->createElement('subject');
 
+        $subject = $doc->createElement('subject');
         $subject->appendChild($doc->createElement('child'));
         yield [$subject, ':has(child)', true];
         yield [$subject, ':has(> child)', true];
 
+        $subject = $doc->createElement('subject');
         $subject->innerHTML = '<child><descendant></descendant></child>';
         yield [$subject, ':has(descendant)', true];
         yield [$subject, ':has(> descendant)', false];
 
+        $subject = $doc->createElement('subject');
         $subject->innerHTML = <<<'HTML'
         <child></child>
         <direct-sibling></direct-sibling>

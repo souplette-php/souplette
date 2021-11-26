@@ -20,124 +20,123 @@ final class HasRelativeArgumentTest extends TestCase
     <title>:has pseudo class behavior with various relative arguments</title>
     <link rel="author" title="Byungwoo Lee" href="mailto:blee@igalia.com">
     <link rel="help" href="https://drafts.csswg.org/selectors/#relational">
-
     <main id=main>
-     <div id=d01>
-      <div id=d02 class="x">
-        <div id=d03 class="a"></div>
-        <div id=d04></div>
-        <div id=d05 class="b"></div>
-      </div>
-      <div id=d06 class="x">
-        <div id=d07 class="x">
-          <div id=d08 class="a"></div>
+      <div id=d01>
+        <div id=d02 class="x">
+          <div id=d03 class="a"></div>
+          <div id=d04></div>
+          <div id=d05 class="b"></div>
         </div>
-      </div>
-      <div id=d09 class="x">
-        <div id=d10 class="a">
-          <div id=d11 class="b"></div>
-        </div>
-      </div>
-      <div id=d12 class="x">
-        <div id=d13 class="a">
-          <div id=d14>
-            <div id=d15 class="b"></div>
+        <div id=d06 class="x">
+          <div id=d07 class="x">
+            <div id=d08 class="a"></div>
           </div>
         </div>
-        <div id=d16 class="b"></div>
-      </div>
-     </div>
-     <div id=d17>
-      <div id=d18 class="x"></div>
-      <div id=d19 class="x"></div>
-      <div id=d20 class="a"></div>
-      <div id=d21 class="x"></div>
-      <div id=d22 class="a">
-       <div id=d23 class="b"></div>
-      </div>
-      <div id=d24 class="x"></div>
-      <div id=d25 class="a">
-       <div id=d26>
-        <div id=d27 class="b"></div>
-       </div>
-      </div>
-      <div id=d28 class="x"></div>
-      <div id=d29 class="a"></div>
-      <div id=d30 class="b">
-       <div id=d31 class="c"></div>
-      </div>
-      <div id=d32 class="x"></div>
-      <div id=d33 class="a"></div>
-      <div id=d34 class="b">
-       <div id=d35>
-        <div id=d36 class="c"></div>
-       </div>
-      </div>
-      <div id=d37 class="x"></div>
-      <div id=d38 class="a"></div>
-      <div id=d39 class="b"></div>
-      <div id=d40 class="x"></div>
-      <div id=d41 class="a"></div>
-      <div id=d42></div>
-      <div id=d43 class="b">
-       <div id=d44 class="x">
-        <div id=d45 class="c"></div>
-       </div>
-      </div>
-      <div id=d46 class="x"></div>
-      <div id=d47 class="a">
-      </div>
-     </div>
-     <div>
-      <div id=d48 class="x">
-       <div id=d49 class="x">
-        <div id=d50 class="x d">
-         <div id=d51 class="x d">
-          <div id=d52 class="x">
-           <div id=d53 class="x e">
-            <div id=d54 class="f"></div>
-           </div>
+        <div id=d09 class="x">
+          <div id=d10 class="a">
+            <div id=d11 class="b"></div>
           </div>
-         </div>
         </div>
-       </div>
-      </div>
-      <div id=d55 class="x"></div>
-      <div id=d56 class="x d"></div>
-      <div id=d57 class="x d"></div>
-      <div id=d58 class="x"></div>
-      <div id=d59 class="x e"></div>
-      <div id=d60 class="f"></div>
-     </div>
-     <div>
-      <div id=d61 class="x"></div>
-      <div id=d62 class="x y"></div>
-      <div id=d63 class="x y">
-       <div id=d64 class="y g">
-        <div id=d65 class="y">
-         <div id=d66 class="y h">
-          <div id=d67 class="i"></div>
-         </div>
-        </div>
-       </div>
-      </div>
-      <div id=d68 class="x y">
-       <div id=d69 class="x"></div>
-       <div id=d70 class="x"></div>
-       <div id=d71 class="x y">
-        <div id=d72 class="y g">
-         <div id=d73 class="y">
-          <div id=d74 class="y h">
-           <div id=d75 class="i"></div>
+        <div id=d12 class="x">
+          <div id=d13 class="a">
+            <div id=d14>
+              <div id=d15 class="b"></div>
+            </div>
           </div>
-         </div>
+          <div id=d16 class="b"></div>
         </div>
-       </div>
-       <div id=d76 class="x"></div>
-       <div id=d77 class="j"><div id=d78><div id=d79></div></div></div>
       </div>
-      <div id=d80 class="j"></div>
-     </div>
+      <div id=d17>
+        <div id=d18 class="x"></div>
+        <div id=d19 class="x"></div>
+        <div id=d20 class="a"></div>
+        <div id=d21 class="x"></div>
+        <div id=d22 class="a">
+          <div id=d23 class="b"></div>
+        </div>
+        <div id=d24 class="x"></div>
+        <div id=d25 class="a">
+          <div id=d26>
+            <div id=d27 class="b"></div>
+          </div>
+        </div>
+        <div id=d28 class="x"></div>
+        <div id=d29 class="a"></div>
+        <div id=d30 class="b">
+          <div id=d31 class="c"></div>
+        </div>
+        <div id=d32 class="x"></div>
+        <div id=d33 class="a"></div>
+        <div id=d34 class="b">
+          <div id=d35>
+            <div id=d36 class="c"></div>
+          </div>
+        </div>
+        <div id=d37 class="x"></div>
+        <div id=d38 class="a"></div>
+        <div id=d39 class="b"></div>
+        <div id=d40 class="x"></div>
+        <div id=d41 class="a"></div>
+        <div id=d42></div>
+        <div id=d43 class="b">
+          <div id=d44 class="x">
+            <div id=d45 class="c"></div>
+          </div>
+        </div>
+        <div id=d46 class="x"></div>
+        <div id=d47 class="a">
+        </div>
+      </div>
+      <div>
+        <div id=d48 class="x">
+          <div id=d49 class="x">
+            <div id=d50 class="x d">
+              <div id=d51 class="x d">
+                <div id=d52 class="x">
+                  <div id=d53 class="x e">
+                    <div id=d54 class="f"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id=d55 class="x"></div>
+        <div id=d56 class="x d"></div>
+        <div id=d57 class="x d"></div>
+        <div id=d58 class="x"></div>
+        <div id=d59 class="x e"></div>
+        <div id=d60 class="f"></div>
+      </div>
+      <div>
+        <div id=d61 class="x"></div>
+        <div id=d62 class="x y"></div>
+        <div id=d63 class="x y">
+          <div id=d64 class="y g">
+            <div id=d65 class="y">
+              <div id=d66 class="y h">
+                <div id=d67 class="i"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id=d68 class="x y">
+          <div id=d69 class="x"></div>
+          <div id=d70 class="x"></div>
+          <div id=d71 class="x y">
+            <div id=d72 class="y g">
+              <div id=d73 class="y">
+                <div id=d74 class="y h">
+                  <div id=d75 class="i"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id=d76 class="x"></div>
+          <div id=d77 class="j"><div id=d78><div id=d79></div></div></div>
+        </div>
+        <div id=d80 class="j"></div>
+      </div>
     </main>
     HTML;
 

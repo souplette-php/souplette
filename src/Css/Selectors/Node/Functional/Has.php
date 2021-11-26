@@ -31,7 +31,12 @@ final class Has extends FunctionalSelector
     public function matches(QueryContext $context, \DOMElement $element): bool
     {
         // unstable implementation ported from Blink
-        $subContext = $context->withScope($element);
+        // TODO: Need to clarify the :scope dependency in relative selector definition.
+        // - csswg issue : https://github.com/w3c/csswg-drafts/issues/6399
+        // - spec : https://www.w3.org/TR/selectors-4/#relative
+        //$subContext = $context->withScope($element);
+        $subContext = clone $context;
+
         /** @var ComplexSelector $selector */
         foreach ($this->selectorList as $selector) {
             // Get the cache item of matching ':has(<selector>)' on the element
@@ -41,15 +46,13 @@ final class Has extends FunctionalSelector
             //    move to the next argument selector.
             //  - Otherwise, mark the element as checked but not matched.
             $cache = $context->getHasMatchedCache($selector);
+            // if element was already marked as checked
             if (isset($cache[$element])) {
-                // was already marked as checked
-                if ($cache[$element]) {
-                    // was already marked as matched
-                    return true;
-                }
+                // if element was already marked as matched
+                if ($cache[$element]) return true;
                 continue;
             }
-            $cache[$element] = false;
+            $cache[$element] = false; // Mark as checked
 
             $hasMatchingContext = new HasMatchingContext($selector->selector);
             $isDepthFixed = $hasMatchingContext->isDepthFixed();
@@ -108,7 +111,7 @@ final class Has extends FunctionalSelector
 
                 switch ($hasMatchingContext->leftMostRelation) {
                     case RelationType::RELATIVE_DESCENDANT:
-                        $cache[$current] = false; // mark as checked
+                        $cache[$current] ??= false; // Mark as checked
                         if ($subContext->hasArgumentLeftMostCompoundMatches) {
                             $node = $subContext->hasArgumentLeftMostCompoundMatches[0];
                             for ($node = $node->parentNode; $node; $node = $node->parentNode) {
@@ -126,7 +129,7 @@ final class Has extends FunctionalSelector
                         break;
                     case RelationType::RELATIVE_ADJACENT:
                         if (!$isDepthFixed && !$iterator->isAtSiblingOfHasScope()) {
-                            $cache[$current] = false; // mark as checked
+                            $cache[$current] ??= false; // Mark as checked
                         }
                         foreach ($subContext->hasArgumentLeftMostCompoundMatches as $leftMost) {
                             if ($sibling = $leftMost->previousElementSibling) {
@@ -137,7 +140,7 @@ final class Has extends FunctionalSelector
                         break;
                     case RelationType::RELATIVE_FOLLOWING:
                         if ($isDepthFixed) {
-                            $cache[$current] = false; // mark as checked
+                            $cache[$current] ??= false; // mark as checked
                         }
                         foreach ($subContext->hasArgumentLeftMostCompoundMatches as $leftMost) {
                             for ($sibling = $leftMost->previousElementSibling; $sibling; $sibling = $sibling->previousElementSibling) {
