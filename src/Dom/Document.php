@@ -106,6 +106,11 @@ final class Document extends \DOMDocument implements
         $this->internalMode = $mode;
     }
 
+    public function getElementById(string $id): ?Element
+    {
+        return SelectorQuery::byId($this, $id);
+    }
+
     /**
      * @return Element[]
      */

@@ -91,8 +91,8 @@ final class HasMatchingSubtreeIterator implements \Iterator
             return;
         }
         // Move to the previous element in DOM tree order within the depth limit.
-        if ($next = $this->current->previousSibling) {
-            $lastDescendant = $this->lastDescendantOf($next, $this->depth, $this->depthLimit);
+        if ($next = $this->current->previousElementSibling) {
+            $lastDescendant = $this->lastDescendantOf($next);
             $this->current = $lastDescendant ?? $next;
         } else {
             $this->depth--;

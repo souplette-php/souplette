@@ -67,6 +67,7 @@ final class Has extends FunctionalSelector
             //   </div>
             //  </div>
             // </div>
+            //
             // the ':has(.b .c)' selector will be checked on the #d3 element first
             // because the selector '.a:has(.b .c) .d' will be matched upward from the #d5 element.
             //  1) '.d' will be matched first on #d5

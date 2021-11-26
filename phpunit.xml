@@ -14,9 +14,10 @@
   </coverage>
   <testsuites>
     <testsuite name="html">
-      <directory>tests</directory>
-      <exclude>tests/resources</exclude>
-      <exclude>tests/Css</exclude>
+      <directory>tests/Xml</directory>
+      <directory>tests/Dom</directory>
+      <directory>tests/Html</directory>
+      <directory>tests/Html5Lib</directory>
     </testsuite>
     <testsuite name="css-syntax">
       <directory>tests/Css/Syntax</directory>
@@ -24,6 +25,7 @@
     <testsuite name="css-selectors">
       <directory>tests/Css/Selectors/Parser</directory>
       <directory>tests/Css/Selectors/Query</directory>
+      <directory>tests/WebPlatformTests/Css/Selectors</directory>
     </testsuite>
   </testsuites>
 </phpunit>
