@@ -7,6 +7,9 @@ use Souplette\Css\Selectors\Node\SimpleSelector;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Selectors\Specificity;
 
+/**
+ * @see https://drafts.csswg.org/selectors-4/#type-selectors
+ */
 class TypeSelector extends SimpleSelector
 {
     public function __construct(

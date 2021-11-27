@@ -55,9 +55,12 @@ final class Document extends \DOMDocument implements
         PropertyMaps::set($this, $name, $value);
     }
 
+    /**
+     * @see https://dom.spec.whatwg.org/#dom-document-createelement
+     */
     public function createElement($localName, $value = null): bool|Element
     {
-        return $this->createElementNS(Namespaces::HTML, $localName, $value ?? '');
+        return $this->createElementNS(Namespaces::HTML, strtolower($localName), $value ?? '');
     }
 
     public function getHead(): ?Element
