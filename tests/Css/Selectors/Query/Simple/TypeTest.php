@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\Simple\TypeSelector;
 use Souplette\Dom\Namespaces;
 use Souplette\Tests\Css\Selectors\Query\QueryAssert;
+use Souplette\Tests\Css\Selectors\SelectorAssert;
 use Souplette\Tests\Dom\DomBuilder;
 
 final class TypeTest extends TestCase
@@ -102,5 +103,26 @@ final class TypeTest extends TestCase
             new TypeSelector('FOO', null),
             true,
         ];
+    }
+
+    public function testXmlDocumentIsCaseSensitive()
+    {
+        $xml = <<<'XML'
+        <html>
+          <a/>
+          <A/>
+          <p>
+            <A/>
+            <a/>
+          </p>
+        </html>
+        XML;
+
+        $doc = new \DOMDocument();
+        $doc->loadXML($xml);
+        SelectorAssert::assertQueryAll($doc, 'a', [
+            '/html/a',
+            '/html/p/a',
+        ]);
     }
 }
