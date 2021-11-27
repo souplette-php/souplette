@@ -17,7 +17,7 @@ final class AttributeTest extends TestCase
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function existsProvider(): \Generator
+    public function existsProvider(): iterable
     {
         $dom = DomBuilder::create()
             ->tag('foo')->attr('bar', 'baz')->close()
@@ -43,7 +43,7 @@ final class AttributeTest extends TestCase
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function equalsProvider(): \Generator
+    public function equalsProvider(): iterable
     {
         $dom = DomBuilder::create()
             ->tag('foo')->attr('foo', 'bar')
@@ -79,7 +79,7 @@ final class AttributeTest extends TestCase
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function dashMatchProvider(): \Generator
+    public function dashMatchProvider(): iterable
     {
         $dom = DomBuilder::create()
             ->tag('foo')->attr('lang', 'en')->close()
@@ -116,7 +116,7 @@ final class AttributeTest extends TestCase
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function includesProvider(): \Generator
+    public function includesProvider(): iterable
     {
         $dom = DomBuilder::create()
             ->tag('foo')->attr('rel', 'nofollow noopener noreferer')->close()
@@ -157,7 +157,7 @@ final class AttributeTest extends TestCase
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function prefixProvider(): \Generator
+    public function prefixProvider(): iterable
     {
         $dom = DomBuilder::create()
             ->tag('foo')->attr('bar', 'bazqux')->close()
@@ -188,7 +188,7 @@ final class AttributeTest extends TestCase
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function suffixProvider(): \Generator
+    public function suffixProvider(): iterable
     {
         $dom = DomBuilder::create()
             ->tag('foo')->attr('bar', 'bazqux')->close()
@@ -219,7 +219,7 @@ final class AttributeTest extends TestCase
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function substringProvider(): \Generator
+    public function substringProvider(): iterable
     {
         $dom = DomBuilder::create()
             ->tag('a')->attr('b', 'foobarbaz')->close()

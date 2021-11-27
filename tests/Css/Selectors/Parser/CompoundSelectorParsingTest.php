@@ -30,7 +30,7 @@ final class CompoundSelectorParsingTest extends SelectorParserTestCase
         SelectorAssert::selectorListEquals($expected, $selector);
     }
 
-    public function parseSelectorListWithCompoundSelectorsProvider(): \Generator
+    public function parseSelectorListWithCompoundSelectorsProvider(): iterable
     {
         yield 'foo.bar' => [
             'foo.bar',

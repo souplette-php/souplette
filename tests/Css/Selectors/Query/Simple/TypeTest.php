@@ -19,7 +19,7 @@ final class TypeTest extends TestCase
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function anyNamespaceProvider(): \Generator
+    public function anyNamespaceProvider(): iterable
     {
         $dom = DomBuilder::create()
             ->tag('g', Namespaces::SVG)->close()
@@ -51,7 +51,7 @@ final class TypeTest extends TestCase
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function explicitNamespaceProvider(): \Generator
+    public function explicitNamespaceProvider(): iterable
     {
         $dom = DomBuilder::create()
             ->tag('svg:g', Namespaces::SVG)->close()
@@ -82,7 +82,7 @@ final class TypeTest extends TestCase
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function nullNamespaceProvider(): \Generator
+    public function nullNamespaceProvider(): iterable
     {
         $dom = DomBuilder::create()
             ->tag('foo', '')->close()

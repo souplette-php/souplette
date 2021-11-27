@@ -21,7 +21,7 @@ final class ClassTest extends TestCase
         Assert::assertSame($expected, $evaluator->matches($ctx, $element));
     }
 
-    public function matchesProvider(): \Generator
+    public function matchesProvider(): iterable
     {
         $dom = DomBuilder::create()
             ->tag('foo')->class('foo bar baz qux')

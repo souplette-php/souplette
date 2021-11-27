@@ -24,7 +24,7 @@ final class NestedSelectorParsingTest extends SelectorParserTestCase
         Assert::assertEquals($expected, $selector);
     }
 
-    public function parseIsProvider(): \Generator
+    public function parseIsProvider(): iterable
     {
         yield ':is(foo)' => [
             ':is(foo)',

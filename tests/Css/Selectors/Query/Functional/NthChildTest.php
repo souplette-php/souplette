@@ -18,7 +18,7 @@ final class NthChildTest extends TestCase
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function simpleAnPlusBProvider(): \Generator
+    public function simpleAnPlusBProvider(): iterable
     {
         $dom = DomBuilder::create()
             ->tag('a')->close()
@@ -43,7 +43,7 @@ final class NthChildTest extends TestCase
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function aNPlusBProvider(): \Generator
+    public function aNPlusBProvider(): iterable
     {
         $dom = DomBuilder::create()
             ->tag('a')->close()

@@ -19,7 +19,7 @@ final class HtmlNodeTest extends TestCase
         Assert::assertSame($expected, $parent->contains($target));
     }
 
-    public function containsProvider(): \Generator
+    public function containsProvider(): iterable
     {
         yield 'returns true when document contains element' => [
             $doc = DomBuilder::create()
@@ -73,7 +73,7 @@ final class HtmlNodeTest extends TestCase
         Assert::assertSame($expected, $node->parentElement);
     }
 
-    public function parentElementProvider(): \Generator
+    public function parentElementProvider(): iterable
     {
         yield 'returns null for document' => [
             DomBuilder::create()->getDocument(),
