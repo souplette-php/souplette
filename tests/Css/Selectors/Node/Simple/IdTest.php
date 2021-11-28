@@ -1,15 +1,27 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Tests\Css\Selectors\Query\Simple;
+namespace Souplette\Tests\Css\Selectors\Node\Simple;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\Simple\IdSelector;
 use Souplette\Css\Selectors\Query\QueryContext;
+use Souplette\Css\Selectors\Specificity;
+use Souplette\Tests\Css\Selectors\SelectorTestCase;
 use Souplette\Tests\Dom\DomBuilder;
 
-final class IdTest extends TestCase
+final class IdTest extends SelectorTestCase
 {
+    public function toStringProvider(): iterable
+    {
+        yield [new IdSelector('foo'), '#foo'];
+    }
+
+    public function specificityProvider(): iterable
+    {
+        yield [new IdSelector('foo'), new Specificity(1, 0, 0)];
+    }
+
     /**
      * @dataProvider matchesProvider
      */

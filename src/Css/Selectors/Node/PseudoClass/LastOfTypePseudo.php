@@ -14,7 +14,7 @@ final class LastOfTypePseudo extends PseudoClassSelector
     public function matches(QueryContext $context, \DOMElement $element): bool
     {
         $type = $element->localName;
-        while ($next = $element->nextElementSibling) {
+        for ($next = $element->nextElementSibling; $next; $next = $next->nextElementSibling) {
             if (TypeMatcher::isOfType($next, $type, $context->caseInsensitiveTypes)) {
                 return false;
             }

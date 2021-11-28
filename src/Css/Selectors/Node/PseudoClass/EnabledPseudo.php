@@ -8,19 +8,12 @@ use Souplette\Css\Selectors\Query\QueryContext;
 
 /**
  * @see https://drafts.csswg.org/selectors-4/#enableddisabled
+ * @see https://html.spec.whatwg.org/multipage/semantics-other.html#selector-enabled
  */
 final class EnabledPseudo extends PseudoClassSelector
 {
     public function matches(QueryContext $context, \DOMElement $element): bool
     {
-        $type = $context->caseInsensitiveTypes ? strtolower($element->localName) : $element->localName;
-        return match ($type) {
-            'input', 'button', 'select', 'textarea' => (
-                !$element->hasAttribute('disabled')
-                && !FormMatcher::inDisabledFieldset($element, $context)
-            ),
-            'fieldset', 'optgroup', 'option' => !$element->hasAttribute('disabled'),
-            default => false,
-        };
+        return FormMatcher::isEnabled($element, $context);
     }
 }

@@ -24,7 +24,7 @@
     </testsuite>
     <testsuite name="css-selectors">
       <directory>tests/Css/Selectors/Parser</directory>
-      <directory>tests/Css/Selectors/Query</directory>
+      <directory>tests/Css/Selectors/Node</directory>
       <directory>tests/WebPlatformTests/Css/Selectors</directory>
     </testsuite>
   </testsuites>

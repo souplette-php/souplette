@@ -1,12 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Tests\Css\Selectors\Query;
+namespace Souplette\Tests\Css\Selectors\Node;
 
 use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\Selector;
 use Souplette\Css\Selectors\Node\Simple\ClassSelector;
 use Souplette\Css\Selectors\Node\Simple\TypeSelector;
-use Souplette\Tests\Css\Selectors\Utils;
+use Souplette\Tests\Css\Selectors\QueryAssert;
+use Souplette\Tests\Css\Selectors\SelectorUtils;
 use Souplette\Tests\Dom\DomBuilder;
 
 final class CompoundSelectorTest extends TestCase
@@ -42,14 +43,14 @@ final class CompoundSelectorTest extends TestCase
 
         yield from $provider(
             [0, 1, 2],
-            Utils::compoundToComplex([
+            SelectorUtils::compoundToComplex([
                 new TypeSelector('a', '*'),
                 new ClassSelector('a'),
             ]),
         );
         yield from $provider(
             [1, 2],
-            Utils::compoundToComplex([
+            SelectorUtils::compoundToComplex([
                 new TypeSelector('a', '*'),
                 new ClassSelector('a'),
                 new ClassSelector('b'),
@@ -57,7 +58,7 @@ final class CompoundSelectorTest extends TestCase
         );
         yield from $provider(
             [2],
-            Utils::compoundToComplex([
+            SelectorUtils::compoundToComplex([
                 new ClassSelector('a'),
                 new ClassSelector('b'),
                 new ClassSelector('c'),
@@ -65,7 +66,7 @@ final class CompoundSelectorTest extends TestCase
         );
         yield from $provider(
             [],
-            Utils::compoundToComplex([
+            SelectorUtils::compoundToComplex([
                 new ClassSelector('a'),
                 new ClassSelector('nope'),
             ]),

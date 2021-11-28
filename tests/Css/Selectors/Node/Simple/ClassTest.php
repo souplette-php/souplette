@@ -1,15 +1,27 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Tests\Css\Selectors\Query\Simple;
+namespace Souplette\Tests\Css\Selectors\Node\Simple;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\Simple\ClassSelector;
 use Souplette\Css\Selectors\Query\QueryContext;
+use Souplette\Css\Selectors\Specificity;
+use Souplette\Tests\Css\Selectors\SelectorTestCase;
 use Souplette\Tests\Dom\DomBuilder;
 
-final class ClassTest extends TestCase
+final class ClassTest extends SelectorTestCase
 {
+    public function toStringProvider(): iterable
+    {
+        yield [new ClassSelector('foo'), '.foo'];
+    }
+
+    public function specificityProvider(): iterable
+    {
+        yield [new ClassSelector('foo'), new Specificity(0, 1, 0)];
+    }
+
     /**
      * @dataProvider matchesProvider
      */

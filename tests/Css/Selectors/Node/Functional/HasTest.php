@@ -1,24 +1,48 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Tests\Css\Selectors\Query\Functional;
+namespace Souplette\Tests\Css\Selectors\Node\Functional;
 
-use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\Functional\Has;
-use Souplette\Css\Selectors\Node\SelectorList;
+use Souplette\Css\Selectors\Node\Simple\ClassSelector;
+use Souplette\Css\Selectors\Node\Simple\IdSelector;
 use Souplette\Css\Selectors\Node\Simple\TypeSelector;
-use Souplette\Tests\Css\Selectors\Query\QueryAssert;
+use Souplette\Css\Selectors\Specificity;
+use Souplette\Tests\Css\Selectors\QueryAssert;
 use Souplette\Tests\Css\Selectors\SelectorAssert;
-use Souplette\Tests\Css\Selectors\Utils;
+use Souplette\Tests\Css\Selectors\SelectorTestCase;
+use Souplette\Tests\Css\Selectors\SelectorUtils;
 use Souplette\Tests\Dom\DomBuilder;
 
-final class HasTest extends TestCase
+final class HasTest extends SelectorTestCase
 {
+    public function toStringProvider(): iterable
+    {
+        yield [
+            new Has(SelectorUtils::toSelectorList([
+                new TypeSelector('foo', '*'),
+                new TypeSelector('bar', '*'),
+            ])),
+            ':has(foo, bar)',
+        ];
+    }
+
+    public function specificityProvider(): iterable
+    {
+        yield [
+            new Has(SelectorUtils::toSelectorList([
+                new TypeSelector('foo', '*'),
+                new ClassSelector('bar'),
+                new IdSelector('baz'),
+            ])),
+            new Specificity(1, 0, 0),
+        ];
+    }
     /**
      * @dataProvider matchesProvider
      */
     public function testMatches(\DOMElement $element, string $selectorText, bool $expected)
     {
-        $selector = Utils::parseSelectorList($selectorText);
+        $selector = SelectorUtils::parseSelectorList($selectorText);
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 

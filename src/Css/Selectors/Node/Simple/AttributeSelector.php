@@ -8,6 +8,7 @@ use Souplette\Css\Selectors\Node\SimpleSelector;
 use Souplette\Css\Selectors\Query\AttributeMatcher;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Selectors\Specificity;
+use Souplette\Dom\Namespaces as DomNamespaces;
 
 final class AttributeSelector extends SimpleSelector
 {
@@ -20,6 +21,9 @@ final class AttributeSelector extends SimpleSelector
 
     const CASE_FORCE_INSENSITIVE = 'i';
     const CASE_FORCE_SENSITIVE = 's';
+
+    // Named constructors are to be used in tests only
+    // @codeCoverageIgnoreStart
 
     #[Pure]
     public static function exists(string $attribute, ?string $namespace = null): self
@@ -63,14 +67,15 @@ final class AttributeSelector extends SimpleSelector
         return new self($attribute, $namespace, self::OPERATOR_SUBSTRING_MATCH, $value, $forceCase);
     }
 
+    // @codeCoverageIgnoreEnd
+
     public function __construct(
         public string $attribute,
         public ?string $namespace = null,
         public ?string $operator = null,
         public ?string $value = null,
         public ?string $forceCase = null
-    )
-    {
+    ) {
     }
 
     public function __toString(): string
@@ -119,7 +124,8 @@ final class AttributeSelector extends SimpleSelector
         };
         $caseInsensitive = match ($this->forceCase) {
             AttributeSelector::CASE_FORCE_INSENSITIVE => true,
-            AttributeSelector::CASE_FORCE_SENSITIVE, null => false,
+            AttributeSelector::CASE_FORCE_SENSITIVE => false,
+            default => isset(AttributeMatcher::CASE_INSENSITIVE_VALUES[$attr]) && $element->namespaceURI === DomNamespaces::HTML,
         };
 
         return match ($this->operator) {

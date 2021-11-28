@@ -14,14 +14,6 @@ final class DisabledPseudo extends PseudoClassSelector
 {
     public function matches(QueryContext $context, \DOMElement $element): bool
     {
-        $type = $context->caseInsensitiveTypes ? strtolower($element->localName) : $element->localName;
-        return match ($type) {
-            'input', 'button', 'select', 'textarea' => (
-                $element->hasAttribute('disabled')
-                || FormMatcher::inDisabledFieldset($element, $context)
-            ),
-            'fieldset', 'optgroup', 'option' => $element->hasAttribute('disabled'),
-            default => false,
-        };
+        return FormMatcher::isDisabled($element, $context);
     }
 }

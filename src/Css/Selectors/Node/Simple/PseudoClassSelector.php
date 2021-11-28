@@ -5,8 +5,10 @@ namespace Souplette\Css\Selectors\Node\Simple;
 use Souplette\Css\Selectors\Node\PseudoClass\AnyLinkPseudo;
 use Souplette\Css\Selectors\Node\PseudoClass\CheckedPseudo;
 use Souplette\Css\Selectors\Node\PseudoClass\DefaultPseudo;
+use Souplette\Css\Selectors\Node\PseudoClass\DefinedPseudo;
 use Souplette\Css\Selectors\Node\PseudoClass\DisabledPseudo;
 use Souplette\Css\Selectors\Node\PseudoClass\EmptyPseudo;
+use Souplette\Css\Selectors\Node\PseudoClass\EnabledPseudo;
 use Souplette\Css\Selectors\Node\PseudoClass\FirstChildPseudo;
 use Souplette\Css\Selectors\Node\PseudoClass\FirstOfTypePseudo;
 use Souplette\Css\Selectors\Node\PseudoClass\LastChildPseudo;
@@ -29,8 +31,10 @@ class PseudoClassSelector extends SimpleSelector
         'any-link' => AnyLinkPseudo::class,
         'checked' => CheckedPseudo::class,
         'default' => DefaultPseudo::class,
+        'defined' => DefinedPseudo::class,
         'disabled' => DisabledPseudo::class,
         'empty' => EmptyPseudo::class,
+        'enabled' => EnabledPseudo::class,
         'first-child' => FirstChildPseudo::class,
         'first-of-type' => FirstOfTypePseudo::class,
         'last-child' => LastChildPseudo::class,

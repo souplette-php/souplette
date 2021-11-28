@@ -1,19 +1,30 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Tests\Css\Selectors\Query\Functional;
+namespace Souplette\Tests\Css\Selectors\Node\Functional;
 
-use PHPUnit\Framework\TestCase;
-use Souplette\Css\Selectors\Node\Functional\NthLastOfType;
+use Souplette\Css\Selectors\Node\Functional\NthOfType;
+use Souplette\Css\Selectors\Specificity;
 use Souplette\Css\Syntax\Node\AnPlusB;
-use Souplette\Tests\Css\Selectors\Query\QueryAssert;
+use Souplette\Tests\Css\Selectors\QueryAssert;
+use Souplette\Tests\Css\Selectors\SelectorTestCase;
 use Souplette\Tests\Dom\DomBuilder;
 
-final class NthLastOfTypeTest extends TestCase
+final class NthOfTypeTest extends SelectorTestCase
 {
+    public function toStringProvider(): iterable
+    {
+        yield [new NthOfType(new AnPlusB(2, 1)), ':nth-of-type(odd)'];
+    }
+
+    public function specificityProvider(): iterable
+    {
+        yield [new NthOfType(new AnPlusB(2, 1)), new Specificity(0, 1, 0)];
+    }
+
     /**
      * @dataProvider simpleAnPlusBProvider
      */
-    public function testSimpleAnPlusB(\DOMElement $element, NthLastOfType $selector, bool $expected)
+    public function testSimpleAnPlusB(\DOMElement $element, NthOfType $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
@@ -29,14 +40,13 @@ final class NthLastOfTypeTest extends TestCase
             ->tag('b')->close()
             ->getDocument();
         $indices = [];
-        $nodes = iterator_to_array($dom->childNodes);
-        foreach (array_reverse($nodes) as $node) {
+        foreach ($dom->childNodes as $node) {
             $indices[$node->localName] ??= 1;
             $b = $indices[$node->localName]++;
-            $key = sprintf('matches %s:nth-last-of-type(%d)', $node->localName, $b);
+            $key = sprintf('matches %s:nth-of-type(%d)', $node->localName, $b);
             yield $key => [
                 $node,
-                new NthLastOfType(new AnPlusB(0, $b)),
+                new NthOfType(new AnPlusB(0, $b)),
                 true,
             ];
         }
@@ -45,7 +55,7 @@ final class NthLastOfTypeTest extends TestCase
     /**
      * @dataProvider aNPlusBProvider
      */
-    public function testAnPlusB(\DOMElement $element, NthLastOfType $selector, bool $expected)
+    public function testAnPlusB(\DOMElement $element, NthOfType $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
@@ -62,7 +72,7 @@ final class NthLastOfTypeTest extends TestCase
             ->getDocument();
 
         $provider = static function(int $a, int $b, array $indices) use ($dom) {
-            $selector = new NthLastOfType(new AnPlusB($a, $b));
+            $selector = new NthOfType(new AnPlusB($a, $b));
             foreach ($dom->childNodes as $index => $node) {
                 $mustMatch = \in_array($index, $indices, true);
                 $key = sprintf(
@@ -77,8 +87,8 @@ final class NthLastOfTypeTest extends TestCase
 
         yield from $provider(2, 0, [2, 3]);
         yield from $provider(2, 1, [0, 1, 4, 5]);
-        yield from $provider(3, 0, [0, 1]);
-        yield from $provider(3, 1, [4, 5]);
+        yield from $provider(3, 0, [4, 5]);
+        yield from $provider(3, 1, [0, 1]);
         yield from $provider(3, 2, [2, 3]);
     }
 }

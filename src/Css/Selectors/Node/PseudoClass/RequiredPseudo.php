@@ -5,6 +5,9 @@ namespace Souplette\Css\Selectors\Node\PseudoClass;
 use Souplette\Css\Selectors\Node\Simple\PseudoClassSelector;
 use Souplette\Css\Selectors\Query\QueryContext;
 
+/**
+ * @see https://html.spec.whatwg.org/multipage/semantics-other.html#selector-required
+ */
 final class RequiredPseudo extends PseudoClassSelector
 {
     public function matches(QueryContext $context, \DOMElement $element): bool

@@ -42,6 +42,7 @@ final class DomBuilder
 
     public function close(?string $untilTag = null): self
     {
+        $this->closeVoidElements();
         if ($untilTag === null) {
             $this->openElements->pop();
             return $this;
@@ -52,7 +53,7 @@ final class DomBuilder
         return $this;
     }
 
-    public function attr(string $name, string $value, ?string $namespace = null): self
+    public function attr(string $name, string $value = '', ?string $namespace = null): self
     {
         $element = $this->openElements->top();
         if ($namespace) {

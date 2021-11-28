@@ -14,8 +14,8 @@ final class FirstOfTypePseudo extends PseudoClassSelector
     public function matches(QueryContext $context, \DOMElement $element): bool
     {
         $type = $element->localName;
-        while ($previous = $element->previousElementSibling) {
-            if (TypeMatcher::isOfType($previous, $type, $context->caseInsensitiveTypes)) {
+        for ($prev = $element->previousElementSibling; $prev; $prev = $prev->previousElementSibling) {
+            if (TypeMatcher::isOfType($prev, $type, $context->caseInsensitiveTypes)) {
                 return false;
             }
         }

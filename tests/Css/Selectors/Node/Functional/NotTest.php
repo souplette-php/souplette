@@ -1,16 +1,43 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Tests\Css\Selectors\Query\Functional;
+namespace Souplette\Tests\Css\Selectors\Node\Functional;
 
-use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\Functional\Not;
 use Souplette\Css\Selectors\Node\SelectorList;
+use Souplette\Css\Selectors\Node\Simple\ClassSelector;
+use Souplette\Css\Selectors\Node\Simple\IdSelector;
 use Souplette\Css\Selectors\Node\Simple\TypeSelector;
-use Souplette\Tests\Css\Selectors\Query\QueryAssert;
+use Souplette\Css\Selectors\Specificity;
+use Souplette\Tests\Css\Selectors\QueryAssert;
+use Souplette\Tests\Css\Selectors\SelectorTestCase;
+use Souplette\Tests\Css\Selectors\SelectorUtils;
 use Souplette\Tests\Dom\DomBuilder;
 
-final class NotTest extends TestCase
+final class NotTest extends SelectorTestCase
 {
+    public function toStringProvider(): iterable
+    {
+        yield [
+            new Not(SelectorUtils::toSelectorList([
+                new TypeSelector('foo', '*'),
+                new TypeSelector('bar', '*'),
+            ])),
+            ':not(foo, bar)',
+        ];
+    }
+
+    public function specificityProvider(): iterable
+    {
+        yield [
+            new Not(SelectorUtils::toSelectorList([
+                new TypeSelector('foo', '*'),
+                new ClassSelector('bar'),
+                new IdSelector('baz'),
+            ])),
+            new Specificity(1, 0, 0),
+        ];
+    }
+
     /**
      * @dataProvider matchesProvider
      */

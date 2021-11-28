@@ -11,7 +11,7 @@ use Souplette\Css\Selectors\Node\Simple\IdSelector;
 use Souplette\Css\Selectors\Node\Simple\PseudoClassSelector;
 use Souplette\Tests\Css\Selectors\SelectorAssert;
 use Souplette\Tests\Css\Selectors\SelectorParserTestCase;
-use Souplette\Tests\Css\Selectors\Utils;
+use Souplette\Tests\Css\Selectors\SelectorUtils;
 
 final class SimpleSelectorParsingTest extends SelectorParserTestCase
 {
@@ -20,9 +20,9 @@ final class SimpleSelectorParsingTest extends SelectorParserTestCase
      */
     public function testParseSelectorListWithSimpleSelectors(string $input, $expected, array $namespaces = [])
     {
-        $selector = Utils::parseSelectorList($input, $namespaces);
+        $selector = SelectorUtils::parseSelectorList($input, $namespaces);
         $expected = new SelectorList([
-            Utils::simpleToComplex($expected),
+            SelectorUtils::simpleToComplex($expected),
         ]);
         SelectorAssert::selectorListEquals($expected, $selector);
     }
@@ -53,7 +53,7 @@ final class SimpleSelectorParsingTest extends SelectorParserTestCase
     public function testUndeclaredNamespacePrefixes(string $input)
     {
         $this->expectException(UndeclaredNamespacePrefix::class);
-        Utils::parseSelectorList($input);
+        SelectorUtils::parseSelectorList($input);
     }
 
     public function undeclaredNamespacePrefixesProvider(): iterable

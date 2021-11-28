@@ -35,7 +35,7 @@ final class TokenizerTest extends TestCase
         self::assertTokenizationResult($input, $expected);
     }
 
-    public function commentsProvider()
+    public function commentsProvider(): iterable
     {
         yield 'skips lone comment' => ['/* foo */', []];
         yield 'skip comments' => ['foo/* nope *//* neither */bar', [
@@ -57,7 +57,7 @@ final class TokenizerTest extends TestCase
         self::assertTokenizationResult($input, $expected);
     }
 
-    public function whitespaceProvider()
+    public function whitespaceProvider(): iterable
     {
         yield 'aggregates whitespace' => ["  \n\t   ", [
             new Whitespace(0),
@@ -72,7 +72,7 @@ final class TokenizerTest extends TestCase
         self::assertTokenizationResult($input, $expected);
     }
 
-    public function stringsProvider()
+    public function stringsProvider(): iterable
     {
         yield 'double quoted string' => ['"foo bar"', [
             new Str('foo bar', 0),
@@ -100,7 +100,7 @@ final class TokenizerTest extends TestCase
         Assert::assertSame($expectedRepr, $token->representation);
     }
 
-    public function stringEscapesProvider()
+    public function stringEscapesProvider(): iterable
     {
         yield 'escaped double quote' => ['"foo\\"bar"', 'foo"bar', '"foo\\"bar"'];
         yield 'escaped single quote' => ["'foo\\'bar'", "foo'bar", '"foo\\\'bar"'];
@@ -116,7 +116,7 @@ final class TokenizerTest extends TestCase
         self::assertTokenizationResult($input, $expected);
     }
 
-    public function tokenizationProvider()
+    public function tokenizationProvider(): iterable
     {
         yield 'at-keyword' => ['@foo', [
             new AtKeyword('foo', 0),

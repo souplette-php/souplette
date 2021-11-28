@@ -9,7 +9,7 @@ use Souplette\Css\Selectors\Node\SelectorList;
 use Souplette\Css\Selectors\Node\Simple\TypeSelector;
 use Souplette\Tests\Css\Selectors\SelectorAssert;
 use Souplette\Tests\Css\Selectors\SelectorParserTestCase;
-use Souplette\Tests\Css\Selectors\Utils;
+use Souplette\Tests\Css\Selectors\SelectorUtils;
 
 final class ComplexSelectorParsingTest extends SelectorParserTestCase
 {
@@ -18,7 +18,7 @@ final class ComplexSelectorParsingTest extends SelectorParserTestCase
      */
     public function testParseSelectorListWithComplexSelectors(string $input, ComplexSelector $expected)
     {
-        $selector = Utils::parseSelectorList($input);
+        $selector = SelectorUtils::parseSelectorList($input);
         $expected = new SelectorList([$expected]);
         SelectorAssert::selectorListEquals($expected, $selector);
     }

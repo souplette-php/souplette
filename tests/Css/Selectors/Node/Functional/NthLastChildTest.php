@@ -1,15 +1,49 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Tests\Css\Selectors\Query\Functional;
+namespace Souplette\Tests\Css\Selectors\Node\Functional;
 
-use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\Functional\NthLastChild;
+use Souplette\Css\Selectors\Node\Simple\ClassSelector;
+use Souplette\Css\Selectors\Node\Simple\IdSelector;
+use Souplette\Css\Selectors\Node\Simple\TypeSelector;
+use Souplette\Css\Selectors\Specificity;
 use Souplette\Css\Syntax\Node\AnPlusB;
-use Souplette\Tests\Css\Selectors\Query\QueryAssert;
+use Souplette\Tests\Css\Selectors\QueryAssert;
+use Souplette\Tests\Css\Selectors\SelectorTestCase;
+use Souplette\Tests\Css\Selectors\SelectorUtils;
 use Souplette\Tests\Dom\DomBuilder;
 
-final class NthLastChildTest extends TestCase
+final class NthLastChildTest extends SelectorTestCase
 {
+    public function toStringProvider(): iterable
+    {
+        yield [new NthLastChild(new AnPlusB(0, 1)), ':nth-last-child(1)'];
+        yield [
+            new NthLastChild(new AnPlusB(2, 1), SelectorUtils::toSelectorList([
+                new TypeSelector('a', '*'),
+                new ClassSelector('b'),
+                new IdSelector('c'),
+            ])),
+            ':nth-last-child(odd of a, .b, #c)',
+        ];
+    }
+
+    public function specificityProvider(): iterable
+    {
+        yield [
+            new NthLastChild(new AnPlusB(2, 1)),
+            new Specificity(0, 1, 0),
+        ];
+        yield [
+            new NthLastChild(new AnPlusB(2, 1), SelectorUtils::toSelectorList([
+                new TypeSelector('a', '*'),
+                new ClassSelector('b'),
+                new IdSelector('c'),
+            ])),
+            new Specificity(1, 1, 0),
+        ];
+    }
+
     /**
      * @dataProvider simpleAnPlusBProvider
      */

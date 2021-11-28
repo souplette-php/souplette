@@ -7,6 +7,4 @@ final class DocumentModes
     const QUIRKS = 'quirks';
     const LIMITED_QUIRKS = 'limited quirks';
     const NO_QUIRKS = 'no quirks';
-
-    private function __construct() {}
 }

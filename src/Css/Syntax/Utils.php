@@ -20,16 +20,18 @@ final class Utils
             return $input;
         }
 
-        return preg_replace_callback(self::UNESCAPE_STRING_PATTERN, 'self::unescapeCodepointCallback', $input);
+        return preg_replace_callback(self::UNESCAPE_STRING_PATTERN, self::unescapeCodepointCallback(...), $input);
     }
 
     private static function unescapeCodepointCallback(array $matches): string
     {
         if (!empty($matches['ignored'])) {
             return '';
-        } else if (!empty($matches['any'])) {
+        }
+        if (!empty($matches['any'])) {
             return $matches['any'];
-        } else if (!empty($matches['unicode'])) {
+        }
+        if (!empty($matches['unicode'])) {
             $cp = hexdec($matches['unicode']);
             if ($cp === 0 || $cp > 0x10FFFF || ($cp >= 0xD800 && $cp <= 0xDFFF)) {
                 // null, outside unicode or surrogate
@@ -37,6 +39,7 @@ final class Utils
             }
             return \IntlChar::chr($cp);
         }
+
         return "\u{FFFD}";
     }
 }

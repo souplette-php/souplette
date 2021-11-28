@@ -9,7 +9,7 @@ use Souplette\Css\Selectors\SelectorParser;
 use Souplette\Css\Syntax\Tokenizer\Tokenizer;
 use Souplette\Css\Syntax\TokenStream\TokenStream;
 
-final class Utils
+final class SelectorUtils
 {
     public static function parseSelectorList(string $input, array $namespaces = []): SelectorList
     {

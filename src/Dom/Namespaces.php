@@ -28,6 +28,4 @@ final class Namespaces
         'xml' => self::XML,
         'xmlns' => self::XMLNS,
     ];
-
-    private function __construct() {}
 }

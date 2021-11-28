@@ -1,16 +1,32 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Tests\Css\Selectors\Query\Simple;
+namespace Souplette\Tests\Css\Selectors\Node\Simple;
 
-use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\Simple\TypeSelector;
+use Souplette\Css\Selectors\Specificity;
 use Souplette\Dom\Namespaces;
-use Souplette\Tests\Css\Selectors\Query\QueryAssert;
+use Souplette\Tests\Css\Selectors\QueryAssert;
 use Souplette\Tests\Css\Selectors\SelectorAssert;
+use Souplette\Tests\Css\Selectors\SelectorTestCase;
 use Souplette\Tests\Dom\DomBuilder;
 
-final class TypeTest extends TestCase
+final class TypeTest extends SelectorTestCase
 {
+    public function toStringProvider(): iterable
+    {
+        yield [new TypeSelector('foo', '*'), 'foo'];
+        yield [new TypeSelector('foo', 'svg'), 'svg|foo'];
+        yield [new TypeSelector('foo', null), '|foo'];
+    }
+
+    public function specificityProvider(): iterable
+    {
+        $spec = new Specificity(0, 0, 1);
+        yield [new TypeSelector('foo', '*'), $spec];
+        yield [new TypeSelector('foo', 'svg'), $spec];
+        yield [new TypeSelector('foo', null), $spec];
+    }
+
     /**
      * @dataProvider anyNamespaceProvider
      */

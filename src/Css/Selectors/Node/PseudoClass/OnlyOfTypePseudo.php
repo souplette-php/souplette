@@ -14,19 +14,15 @@ final class OnlyOfTypePseudo extends PseudoClassSelector
     public function matches(QueryContext $context, \DOMElement $element): bool
     {
         $type = $element->localName;
-        $previous = $element->previousElementSibling;
-        while ($previous) {
-            if (TypeMatcher::isOfType($previous, $type, $context->caseInsensitiveTypes)) {
+        for ($node = $element->previousElementSibling; $node; $node = $node->previousElementSibling) {
+            if (TypeMatcher::isOfType($node, $type, $context->caseInsensitiveTypes)) {
                 return false;
             }
-            $previous = $previous->previousElementSibling;
         }
-        $next = $element->nextElementSibling;
-        while ($next) {
-            if (TypeMatcher::isOfType($next, $type, $context->caseInsensitiveTypes)) {
+        for ($node = $element->nextElementSibling; $node; $node = $node->nextElementSibling) {
+            if (TypeMatcher::isOfType($node, $type, $context->caseInsensitiveTypes)) {
                 return false;
             }
-            $next = $next->nextElementSibling;
         }
         return true;
     }

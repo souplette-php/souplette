@@ -12,7 +12,7 @@ use Souplette\Css\Selectors\Node\Simple\TypeSelector;
 use Souplette\Css\Selectors\Node\SimpleSelector;
 use Souplette\Tests\Css\Selectors\SelectorAssert;
 use Souplette\Tests\Css\Selectors\SelectorParserTestCase;
-use Souplette\Tests\Css\Selectors\Utils;
+use Souplette\Tests\Css\Selectors\SelectorUtils;
 
 final class CompoundSelectorParsingTest extends SelectorParserTestCase
 {
@@ -23,9 +23,9 @@ final class CompoundSelectorParsingTest extends SelectorParserTestCase
      */
     public function testParseSelectorListWithCompoundSelectors(string $input, array $expected)
     {
-        $selector = Utils::parseSelectorList($input);
+        $selector = SelectorUtils::parseSelectorList($input);
         $expected = new SelectorList([
-            Utils::compoundToComplex($expected),
+            SelectorUtils::compoundToComplex($expected),
         ]);
         SelectorAssert::selectorListEquals($expected, $selector);
     }

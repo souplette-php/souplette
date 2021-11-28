@@ -4,8 +4,10 @@ namespace Souplette\Tests\Css\Selectors;
 
 use PHPUnit\Framework\Assert;
 use Souplette\Css\Selectors\Node\ComplexSelector;
+use Souplette\Css\Selectors\Node\Selector;
 use Souplette\Css\Selectors\Node\SelectorList;
 use Souplette\Css\Selectors\SelectorQuery;
+use Souplette\Css\Selectors\Specificity;
 use Souplette\Tests\Utils as TestUtils;
 
 final class SelectorAssert
@@ -25,6 +27,12 @@ final class SelectorAssert
             $actualSelector = $actual->selectors[$i];
             self::selectorEquals($expectedSelector, $actualSelector);
         }
+    }
+
+    public static function specificityEquals(Selector $selector, Specificity $expected)
+    {
+        $actual = $selector->getSpecificity();
+        Assert::assertSame((string)$expected, (string)$actual);
     }
 
     public static function assertQueryAll(

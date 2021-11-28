@@ -1,14 +1,46 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Tests\Css\Selectors\Query\Simple;
+namespace Souplette\Tests\Css\Selectors\Node\Simple;
 
 use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\Simple\AttributeSelector;
-use Souplette\Tests\Css\Selectors\Query\QueryAssert;
+use Souplette\Css\Selectors\Specificity;
+use Souplette\Tests\Css\Selectors\QueryAssert;
+use Souplette\Tests\Css\Selectors\SelectorTestCase;
 use Souplette\Tests\Dom\DomBuilder;
 
-final class AttributeTest extends TestCase
+final class AttributeTest extends SelectorTestCase
 {
+    public function toStringProvider(): iterable
+    {
+        yield [AttributeSelector::exists('foo'), '[foo]'];
+        yield [AttributeSelector::exists('foo', 'bar'), '[bar|foo]'];
+
+        yield [AttributeSelector::equals('foo', 'bar'), '[foo="bar"]'];
+        yield [AttributeSelector::equals('foo', 'bar', 'baz'), '[baz|foo="bar"]'];
+        yield [AttributeSelector::equals('foo', 'bar', 'baz', 'i'), '[baz|foo="bar" i]'];
+        yield [AttributeSelector::equals('foo', 'bar', 'baz', 's'), '[baz|foo="bar" s]'];
+
+        yield [AttributeSelector::prefixMatch('foo', 'bar'), '[foo^="bar"]'];
+        yield [AttributeSelector::prefixMatch('foo', 'bar', 'baz', 'i'), '[baz|foo^="bar" i]'];
+        yield [AttributeSelector::suffixMatch('foo', 'bar'), '[foo$="bar"]'];
+        yield [AttributeSelector::suffixMatch('foo', 'bar', 'baz', 's'), '[baz|foo$="bar" s]'];
+
+        yield [AttributeSelector::includes('foo', 'bar'), '[foo~="bar"]'];
+        yield [AttributeSelector::includes('foo', 'bar', 'baz', 'i'), '[baz|foo~="bar" i]'];
+
+        yield [AttributeSelector::substring('foo', 'bar'), '[foo*="bar"]'];
+        yield [AttributeSelector::substring('foo', 'bar', 'baz', 's'), '[baz|foo*="bar" s]'];
+
+        yield [AttributeSelector::dashMatch('foo', 'bar'), '[foo|="bar"]'];
+        yield [AttributeSelector::dashMatch('foo', 'bar', 'baz', 'i'), '[baz|foo|="bar" i]'];
+    }
+
+    public function specificityProvider(): iterable
+    {
+        yield [new AttributeSelector('foo'), new Specificity(0, 1, 0)];
+    }
+
     /**
      * @dataProvider existsProvider
      */
@@ -32,6 +64,11 @@ final class AttributeTest extends TestCase
             $dom->firstElementChild,
             AttributeSelector::exists('nope'),
             false,
+        ];
+        yield 'attribute names are not case sensitive' => [
+            $dom->firstElementChild,
+            AttributeSelector::exists('BAR', '*'),
+            true,
         ];
     }
 
@@ -118,34 +155,42 @@ final class AttributeTest extends TestCase
 
     public function includesProvider(): iterable
     {
-        $dom = DomBuilder::create()
+        $doc = DomBuilder::create()
             ->tag('foo')->attr('rel', 'nofollow noopener noreferer')->close()
             ->getDocument();
 
         yield 'fails' => [
-            $dom->firstElementChild,
+            $doc->firstElementChild,
             AttributeSelector::includes('rel', 'noope'),
             false,
         ];
         yield 'matches' => [
-            $dom->firstElementChild,
+            $doc->firstElementChild,
             AttributeSelector::includes('rel', 'noopener'),
             true,
         ];
         yield 'matches at start' => [
-            $dom->firstElementChild,
+            $doc->firstElementChild,
             AttributeSelector::includes('rel', 'nofollow'),
             true,
         ];
         yield 'matches at end' => [
-            $dom->firstElementChild,
+            $doc->firstElementChild,
             AttributeSelector::includes('rel', 'noreferer'),
             true,
         ];
         yield 'matches case-insensitive' => [
-            $dom->firstElementChild,
+            $doc->firstElementChild,
             AttributeSelector::includes('rel', 'NoOpener', '*', 'i'),
             true,
+        ];
+        $doc = DomBuilder::create()
+            ->tag('foo')->attr('title')->close()
+            ->getDocument();
+        yield 'empty value matches nothing' => [
+            $doc->firstElementChild,
+            AttributeSelector::includes('title', ''),
+            false,
         ];
     }
 

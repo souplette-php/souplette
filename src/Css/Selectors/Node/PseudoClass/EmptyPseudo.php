@@ -12,6 +12,8 @@ final class EmptyPseudo extends PseudoClassSelector
 {
     public function matches(QueryContext $context, \DOMElement $element): bool
     {
+        if ($element->firstElementChild) return false;
+
         foreach ($element->childNodes as $child) {
             $isEmpty = match ($child->nodeType) {
                 XML_ELEMENT_NODE,

@@ -1,10 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Tests\Css\Selectors\Query;
+namespace Souplette\Tests\Css\Selectors;
 
 use PHPUnit\Framework\Assert;
 use Souplette\Css\Selectors\Node\Selector;
-use Souplette\Css\Selectors\Query\Compiler;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Tests\Utils;
 

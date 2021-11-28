@@ -22,7 +22,7 @@ final class UnicodeRangeParserTest extends TestCase
         Assert::assertSame($expected, (string)$urange);
     }
 
-    public function unicodeRangeProvider()
+    public function unicodeRangeProvider(): iterable
     {
         // First exercise all the clauses individually
         //<urange> = u '+' <ident-token> '?'* |
@@ -93,7 +93,7 @@ final class UnicodeRangeParserTest extends TestCase
         $parser->parse();
     }
 
-    public function invalidUnicodeRangeProvider()
+    public function invalidUnicodeRangeProvider(): iterable
     {
         // only hex
         yield ["u+efg"];

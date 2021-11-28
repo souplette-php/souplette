@@ -7,6 +7,58 @@ namespace Souplette\Css\Selectors\Query;
  */
 final class AttributeMatcher
 {
+    /**
+     * @see https://html.spec.whatwg.org/multipage/semantics-other.html#case-sensitivity-of-selectors
+     */
+    const CASE_INSENSITIVE_VALUES = [
+        'accept' => true,
+        'accept-charset' => true,
+        'align' => true,
+        'alink' => true,
+        'axis' => true,
+        'bgcolor' => true,
+        'charset' => true,
+        'checked' => true,
+        'clear' => true,
+        'codetype' => true,
+        'color' => true,
+        'compact' => true,
+        'declare' => true,
+        'defer' => true,
+        'dir' => true,
+        'direction' => true,
+        'disabled' => true,
+        'enctype' => true,
+        'face' => true,
+        'frame' => true,
+        'hreflang' => true,
+        'http-equiv' => true,
+        'lang' => true,
+        'language' => true,
+        'link' => true,
+        'media' => true,
+        'method' => true,
+        'multiple' => true,
+        'nohref' => true,
+        'noresize' => true,
+        'noshade' => true,
+        'nowrap' => true,
+        'readonly' => true,
+        'rel' => true,
+        'rev' => true,
+        'rules' => true,
+        'scope' => true,
+        'scrolling' => true,
+        'selected' => true,
+        'shape' => true,
+        'target' => true,
+        'text' => true,
+        'type' => true,
+        'valign' => true,
+        'valuetype' => true,
+        'vlink' => true,
+    ];
+
     public static function equals(string $expected, string $actual, bool $caseInsensitive = false): bool
     {
         return match ($caseInsensitive) {

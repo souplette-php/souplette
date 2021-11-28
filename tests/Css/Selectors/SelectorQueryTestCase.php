@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Tests\Css\Selectors\Query;
+namespace Souplette\Tests\Css\Selectors;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;

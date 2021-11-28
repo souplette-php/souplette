@@ -18,6 +18,6 @@ trait NthFilteredMatcher
             return false;
         }
         $index = $this->getChildIndex($context, $element);
-        return AnPlusBMatcher::indexMatchesAnPlusB($index, $this->anPlusB->a, $this->anPlusB->b);
+        return $this->anPlusB->matchesIndex($index);
     }
 }

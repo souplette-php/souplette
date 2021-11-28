@@ -15,7 +15,7 @@ class FunctionalSelector extends SimpleSelector
     public function __toString(): string
     {
         $args = array_map(fn($arg) => (string)$arg, $this->arguments);
-        return sprintf(':%s(%s)', $this->name, implode('', $args));
+        return sprintf(':%s(%s)', $this->name, implode(', ', $args));
     }
 
     public function getSpecificity(): Specificity

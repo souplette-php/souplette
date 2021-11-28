@@ -15,6 +15,6 @@ trait NthMatcher
     public function matches(QueryContext $context, \DOMElement $element): bool
     {
         $index = $this->getChildIndex($context, $element);
-        return AnPlusBMatcher::indexMatchesAnPlusB($index, $this->anPlusB->a, $this->anPlusB->b);
+        return $this->anPlusB->matchesIndex($index);
     }
 }

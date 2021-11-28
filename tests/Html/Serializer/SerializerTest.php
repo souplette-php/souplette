@@ -173,7 +173,7 @@ final class SerializerTest extends TestCase
     public function booleanAttributesProvider(): iterable
     {
         yield '<div hidden="">' => [
-            DomBuilder::create()->tag('div')->attr('hidden', '')->getDocument(),
+            DomBuilder::create()->tag('div')->attr('hidden')->getDocument(),
             '<div hidden></div>',
         ];
         yield '<div hidden="hidden">' => [
@@ -181,7 +181,7 @@ final class SerializerTest extends TestCase
             '<div hidden></div>',
         ];
         yield '<input disabled="">' => [
-            DomBuilder::create()->tag('input')->attr('disabled', '')->getDocument(),
+            DomBuilder::create()->tag('input')->attr('disabled')->getDocument(),
             '<input disabled>',
         ];
         yield '<input disabled="disabled">' => [
