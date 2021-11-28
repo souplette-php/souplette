@@ -4,5 +4,11 @@ namespace Souplette\Css\Syntax\Node;
 
 final class CssStylesheet
 {
-    public array $rules = [];
+    /**
+     * @param CssRule[] $rules
+     */
+    public function __construct(
+        public array $rules = [],
+    ) {
+    }
 }

@@ -12,11 +12,13 @@ use Souplette\Css\Syntax\Node\CssStylesheet;
 use Souplette\Css\Syntax\Tokenizer\Token;
 use Souplette\Css\Syntax\Tokenizer\Tokenizer;
 use Souplette\Css\Syntax\Tokenizer\TokenType;
+use Souplette\Css\Syntax\TokenStream\TokenRange;
 use Souplette\Css\Syntax\TokenStream\TokenStream;
+use Souplette\Css\Syntax\TokenStream\TokenStreamInterface;
 
 final class Parser
 {
-    private TokenStream $tokenStream;
+    private TokenStreamInterface $tokenStream;
     private bool $topLevel = true;
 
     public function __construct(Tokenizer $tokenizer)
@@ -48,7 +50,6 @@ final class Parser
 
     public function parseRule(): ?CssRule
     {
-        $rule = null;
         // 1. While the next input token is a <whitespace-token>, consume the next input token.
         $token = $this->tokenStream->skipWhitespace();
         // 2. If the next input token is an <EOF-token>, return a syntax error.
@@ -56,6 +57,7 @@ final class Parser
             // TODO: syntax error;
             return null;
         }
+        $rule = null;
         // Otherwise, if the next input token is an <at-keyword-token>,
         // consume an at-rule, and let rule be the return value.
         if ($token::TYPE === TokenType::AT_KEYWORD) {
@@ -148,28 +150,28 @@ final class Parser
 
     public function parseCommaSeparatedComponentValueList(): array
     {
-        // 1. Let list of cvls be an initially empty list of component value lists.
+        // 1. Let list of csv be an initially empty list of component value lists.
         $list = [];
         // 2. Repeatedly consume a component value until an <EOF-token> or <comma-token> is returned,
         //    appending the returned values (except the final <EOF-token> or <comma-token>) into a list.
-        //    Append the list to list of cvls.
+        //    Append the list to list of csv.
         //    If it was a <comma-token> that was returned, repeat this step.
         while (true) {
             $values = [];
             while (true) {
                 $value = $this->consumeComponentValue();
                 if ($value instanceof Token\EOF) {
-                    $list[] = $values;
+                    array_push($list, ...$values);
                     return $list;
                 }
                 if ($value instanceof Token\Comma) {
-                    $list[] = $values;
+                    array_push($list, ...$values);
                     break;
                 }
                 $values[] = $value;
             }
         }
-        // 3. Return list of cvls.
+        // 3. Return list of csv.
         return $list;
     }
 
@@ -327,22 +329,36 @@ final class Parser
                 $declarations[] = $this->consumeAtRule();
             } else if ($tt === TokenType::IDENT) {
                 // Initialize a temporary list initially filled with the current input token.
+                $tmp = [$token];
                 // As long as the next input token is anything other than a <semicolon-token> or <EOF-token>,
                 // consume a component value and append it to the temporary list.
+                while (true) {
+                    $next = $this->tokenStream->lookahead();
+                    if ($next::TYPE === TokenType::SEMICOLON || $next::TYPE === TokenType::EOF) {
+                        $this->tokenStream->consume();
+                        break;
+                    }
+                    $tmp[] = $this->tokenStream->consume();
+                };
                 // Consume a declaration from the temporary list.
+                $stream = $this->tokenStream;
+                $this->tokenStream = new TokenRange($tmp);
+                $decl = $this->consumeDeclaration();
+                $this->tokenStream = $stream;
                 // If anything was returned, append it to the list of declarations.
+                if ($decl) $declarations[] = $decl;
             } else {
                 // This is a parse error.
                 // Reconsume the current input token.
                 // As long as the next input token is anything other than a <semicolon-token> or <EOF-token>,
                 // consume a component value and throw away the returned value.
                 while (true) {
-                    if ($tt === TokenType::SEMICOLON || $tt === TokenType::EOF) {
-                        $this->tokenStream->consume();
+                    $next = $this->tokenStream->lookahead();
+                    if ($next::TYPE === TokenType::SEMICOLON || $next::TYPE === TokenType::EOF) {
                         break;
                     }
                     $this->consumeComponentValue();
-                }
+                };
             }
         }
     }
@@ -355,9 +371,12 @@ final class Parser
         // Note: This algorithm assumes that the next input token has already been checked to be an <ident-token>.
         // Consume the next input token.
         $token = $this->tokenStream->current();
+        $this->tokenStream->consume();
         // Create a new declaration with its name set to the value of the current input token
         // and its value initially set to the empty list.
-        $declaration = new CssDeclaration($token->value);
+        $name = $token->value;
+        $body = [];
+        $important = false;
         // 1. While the next input token is a <whitespace-token>, consume the next input token.
         $token = $this->tokenStream->skipWhitespace();
         // 2. If the next input token is anything other than a <colon-token>, this is a parse error. Return nothing.
@@ -367,20 +386,38 @@ final class Parser
             return null;
         }
         // 3. While the next input token is a <whitespace-token>, consume the next input token.
+        $this->tokenStream->consume();
         $token = $this->tokenStream->skipWhitespace();
         // 4. As long as the next input token is anything other than an <EOF-token>,
         //    consume a component value and append it to the declaration’s value.
-        while ($token::TYPE !== TokenType::EOF) {
+        while ($token && $token::TYPE !== TokenType::EOF) {
             $value = $this->consumeComponentValue();
-            $declaration->body[] = $value;
+            $body[] = $value;
+            $token = $this->tokenStream->current();
         }
         // 5. If the last two non-<whitespace-token>s in the declaration’s value
         //    are a <delim-token> with the value "!" followed by an <ident-token> with a value
         //    that is an ASCII case-insensitive match for "important",
         //    remove them from the declaration’s value and set the declaration’s important flag to true.
         // 6. While the last token in the declaration’s value is a <whitespace-token>, remove that token.
+        while (true) {
+            $lastKey = array_key_last($body);
+            $last = $body[$lastKey] ?? null;
+            if ($last instanceof Token\Whitespace) {
+                array_pop($body);
+            } else if ($last instanceof Token\Identifier && strcasecmp($last->value, 'important') === 0) {
+                $bang = $body[$lastKey - 1] ?? null;
+                if ($bang instanceof Token\Delimiter && $bang->value === '!') {
+                    array_pop($body);
+                    array_pop($body);
+                    $important = true;
+                }
+            } else {
+                break;
+            }
+        }
         // 7. Return the declaration.
-        return $declaration;
+        return new CssDeclaration($name, $body, $important);
     }
 
     /**
@@ -413,19 +450,11 @@ final class Parser
         // Note:
         // This algorithm assumes that the current input token has already been checked to be an {, [, or ( token.
         $token = $this->tokenStream->current();
-        switch ($token::TYPE) {
-            case TokenType::LCURLY:
-                $endToken = TokenType::RCURLY;
-                break;
-            case TokenType::LPAREN:
-                $endToken = TokenType::RPAREN;
-                break;
-            case TokenType::LBRACK:
-                $endToken = TokenType::RBRACK;
-                break;
-            default:
-                break;
-        }
+        $endToken = match ($token::TYPE) {
+            TokenType::LCURLY => TokenType::RCURLY,
+            TokenType::LPAREN => TokenType::RPAREN,
+            TokenType::LBRACK => TokenType::RBRACK,
+        };
         // Create a simple block with its associated token set to the current input token
         // and with a value with is initially an empty list.
         $block = new CssSimpleBlock($token->value);

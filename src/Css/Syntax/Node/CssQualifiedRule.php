@@ -2,14 +2,17 @@
 
 namespace Souplette\Css\Syntax\Node;
 
+use Souplette\Css\Syntax\Tokenizer\Token;
+
 final class CssQualifiedRule extends CssRule
 {
     /**
-     * @var CssValue[]
+     * @param CssValue|Token[] $prelude
+     * @param CssSimpleBlock|null $body
      */
-    public array $prelude = [];
-    /**
-     * @var CssSimpleBlock
-     */
-    public ?CssSimpleBlock $body = null;
+    public function __construct(
+        public array $prelude = [],
+        public ?CssSimpleBlock $body = null,
+    ) {
+    }
 }
