@@ -4,6 +4,7 @@ namespace Souplette\Tests\Css\Selectors\Parser;
 
 use PHPUnit\Framework\Assert;
 use Souplette\Css\Selectors\Node\Functional\Is;
+use Souplette\Css\Selectors\Node\Functional\Where;
 use Souplette\Css\Selectors\Node\SelectorList;
 use Souplette\Css\Selectors\Node\Simple\ClassSelector;
 use Souplette\Css\Selectors\Node\Simple\TypeSelector;
@@ -30,7 +31,7 @@ final class NestedSelectorParsingTest extends SelectorParserTestCase
             ':is(foo)',
             [
                 SelectorUtils::simpleToComplex(new TypeSelector('foo', '*')),
-            ]
+            ],
         ];
         yield ':is(foo, .bar)' => [
             ':is(foo, .bar)',
@@ -43,7 +44,44 @@ final class NestedSelectorParsingTest extends SelectorParserTestCase
             ':is(?, foo)',
             [
                 SelectorUtils::simpleToComplex(new TypeSelector('foo', '*')),
-            ]
+            ],
         ];
+        yield 'forgiving :is(?, &&&)' => [':is(?, &&&)', []];
+    }
+
+    /**
+     * @dataProvider parseWhereProvider
+     */
+    public function testParseWhere(string $selectorText, array $expected)
+    {
+        $selector = SelectorUtils::parseSelectorList($selectorText);
+        $expected = new SelectorList([
+            SelectorUtils::simpleToComplex(new Where(new SelectorList($expected))),
+        ]);
+        Assert::assertEquals($expected, $selector);
+    }
+
+    public function parseWhereProvider(): iterable
+    {
+        yield ':where(foo)' => [
+            ':where(foo)',
+            [
+                SelectorUtils::simpleToComplex(new TypeSelector('foo', '*')),
+            ],
+        ];
+        yield ':where(foo, .bar)' => [
+            ':where(foo, .bar)',
+            [
+                SelectorUtils::simpleToComplex(new TypeSelector('foo', '*')),
+                SelectorUtils::simpleToComplex(new ClassSelector('bar')),
+            ],
+        ];
+        yield 'forgiving :where(?, foo)' => [
+            ':where(?, foo)',
+            [
+                SelectorUtils::simpleToComplex(new TypeSelector('foo', '*')),
+            ],
+        ];
+        yield 'forgiving :where(?, &&&)' => [':where(?, &&&)', []];
     }
 }

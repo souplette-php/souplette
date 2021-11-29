@@ -115,6 +115,9 @@ final class SelectorParser
         // <compound-selector> [ <combinator>? <compound-selector> ]*
         $this->tokenStream->skipWhitespace();
         $compound = $this->parseCompoundSelector();
+        if (!$compound) {
+            throw new ParseError('Expected at least one compound selector.');
+        }
         if ($combinator = $this->parseCombinator()) {
             return $this->parsePartialComplexSelector(RelationType::fromCombinator($combinator), $compound);
         }

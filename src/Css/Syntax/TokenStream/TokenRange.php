@@ -16,7 +16,7 @@ final class TokenRange extends AbstractTokenStream
 
     public function __construct(array $tokens)
     {
-        if (end($tokens)::TYPE !== TokenType::EOF) {
+        if (!$tokens || end($tokens)::TYPE !== TokenType::EOF) {
             $tokens[] = new Token\EOF(-1);
         }
         $this->tokens = $tokens;
