@@ -21,6 +21,7 @@
       <directory>tests/Dom</directory>
       <directory>tests/Html</directory>
       <directory>tests/Html5Lib</directory>
+      <file>tests/SoupletteTest.php</file>
     </testsuite>
     <testsuite name="css-syntax">
       <directory>tests/Css/Syntax</directory>
