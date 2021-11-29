@@ -555,19 +555,13 @@ final class InBody extends RuleSet
                 // Set the frameset-ok flag to "not ok".
                 $tree->framesetOK = false;
                 // If the insertion mode is one of "in table", "in caption", "in table body", "in row", or "in cell",
-                if (
-                    $tree->insertionMode === InsertionModes::IN_TABLE
-                    || $tree->insertionMode === InsertionModes::IN_CAPTION
-                    || $tree->insertionMode === InsertionModes::IN_TABLE_BODY
-                    || $tree->insertionMode === InsertionModes::IN_ROW
-                    || $tree->insertionMode === InsertionModes::IN_CELL
-                ) {
+                $tree->insertionMode = match ($tree->insertionMode) {
                     // then switch the insertion mode to "in select in table".
-                    $tree->insertionMode = InsertionModes::IN_SELECT_IN_TABLE;
-                } else {
+                    InsertionModes::IN_TABLE, InsertionModes::IN_CAPTION, InsertionModes::IN_TABLE_BODY,
+                    InsertionModes::IN_ROW, InsertionModes::IN_CELL => InsertionModes::IN_SELECT_IN_TABLE,
                     // Otherwise, switch the insertion mode to "in select".
-                    $tree->insertionMode = InsertionModes::IN_SELECT;
-                }
+                    default => InsertionModes::IN_SELECT
+                };
                 return;
             } else if (
                 $tagName === 'optgroup'

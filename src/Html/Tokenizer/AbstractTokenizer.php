@@ -50,9 +50,7 @@ abstract class AbstractTokenizer
         $this->appropriateEndTag = $appropriateEndTag;
         do {
             $carryOn = $this->nextToken();
-            while (!$this->tokenQueue->isEmpty()) {
-                yield $this->tokenQueue->dequeue();
-            }
+            yield from $this->tokenQueue;
         } while ($carryOn);
         yield new EOF();
     }
@@ -62,6 +60,7 @@ abstract class AbstractTokenizer
         $this->position = 0;
         $this->temporaryBuffer = '';
         $this->tokenQueue = new SplQueue();
+        $this->tokenQueue->setIteratorMode(\SplDoublyLinkedList::IT_MODE_DELETE|\SplDoublyLinkedList::IT_MODE_FIFO);
         $this->parseErrors = [];
     }
 

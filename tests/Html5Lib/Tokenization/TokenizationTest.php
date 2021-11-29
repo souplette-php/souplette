@@ -33,7 +33,7 @@ class TokenizationTest extends TestCase
         $tokenizer = new Tokenizer($input);
         $initialStates = self::convertHtml5LibStates($test['initialStates'] ?? []);
         foreach ($initialStates as $state) {
-            $tokens = iterator_to_array($tokenizer->tokenize($state, $appropriateEndTag));
+            $tokens = iterator_to_array($tokenizer->tokenize($state, $appropriateEndTag), false);
             array_pop($tokens);
             $tokens = self::concatenateCharacterTokens($tokens);
             Assert::assertEquals($expectedTokens, $tokens, 'Tokens differ.');

@@ -17,7 +17,7 @@ class CdataTest extends TestCase
         TokenizerAssert::tokensEquals($input, $expected);
     }
 
-    public function cdataInHtmlProvider()
+    public function cdataInHtmlProvider(): iterable
     {
         // CDATA in html is treated as a bogus comment
         yield ['<![CDATA[ foo ]]>', [Token::comment('[CDATA[ foo ]]')]];

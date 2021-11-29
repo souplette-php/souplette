@@ -396,8 +396,6 @@ final class TreeBuilder
 
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#closing-elements-that-have-implied-end-tags
-     * @param string $excluded
-     * @param bool $thoroughly
      */
     public function generateImpliedEndTags(?string $excluded = null, bool $thoroughly = false)
     {
@@ -417,7 +415,6 @@ final class TreeBuilder
 
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#adjusted-current-node
-     * @return DOMElement|null
      */
     public function getAdjustedCurrentNode(): ?DOMElement
     {

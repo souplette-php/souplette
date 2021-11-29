@@ -24,7 +24,7 @@ final class TokenizerAssert
         bool $omitEOF = true
     ) {
         $tokenizer = new Tokenizer($input);
-        $tokens = iterator_to_array($tokenizer->tokenize($startState));
+        $tokens = iterator_to_array($tokenizer->tokenize($startState), false);
         if ($omitEOF) {
             $eof = array_pop($tokens);
         }
