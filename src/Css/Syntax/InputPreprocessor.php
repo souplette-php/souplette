@@ -2,13 +2,14 @@
 
 namespace Souplette\Css\Syntax;
 
+use Souplette\Encoding\Encoding;
 use Souplette\Encoding\Utf8Converter;
 
 final class InputPreprocessor
 {
-    public static function preprocess(string $input, string $inputEncoding)
+    public static function preprocess(string $input, Encoding $fromEncoding): string
     {
-        $output = Utf8Converter::convert($input, $inputEncoding);
+        $output = Utf8Converter::convert($input, $fromEncoding);
         return strtr($output, [
             "\r\n" => "\n",
             "\r" => "\n",

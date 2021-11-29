@@ -4,5 +4,4 @@ namespace Souplette\Encoding\Exception;
 
 class EncodingException extends \Exception
 {
-
 }

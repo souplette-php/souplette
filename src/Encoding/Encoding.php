@@ -6,7 +6,7 @@ use Souplette\Encoding\Exception\UnsupportedEncoding;
 
 final class Encoding implements \Stringable
 {
-    public string $encoding;
+    public readonly string $name;
     public Confidence $confidence;
 
     public function __construct(string $encoding, Confidence $confidence)
@@ -15,7 +15,7 @@ final class Encoding implements \Stringable
         if (!isset(EncodingLookup::LABELS[$encoding])) {
             throw new UnsupportedEncoding($encoding);
         }
-        $this->encoding = EncodingLookup::LABELS[$encoding];
+        $this->name = EncodingLookup::LABELS[$encoding];
         $this->confidence = $confidence;
     }
 
@@ -39,11 +39,6 @@ final class Encoding implements \Stringable
         return new self($encoding, Confidence::CERTAIN);
     }
 
-    public function getName(): string
-    {
-        return $this->encoding;
-    }
-
     public function isIrrelevant(): bool
     {
         return $this->confidence === Confidence::IRRELEVANT;
@@ -59,23 +54,26 @@ final class Encoding implements \Stringable
         return $this->confidence === Confidence::CERTAIN;
     }
 
-    public function makeIrrelevant(): void
+    public function makeIrrelevant(): self
     {
         $this->confidence = Confidence::IRRELEVANT;
+        return $this;
     }
 
-    public function makeTentative(): void
+    public function makeTentative(): self
     {
         $this->confidence = Confidence::TENTATIVE;
+        return $this;
     }
 
-    public function makeCertain(): void
+    public function makeCertain(): self
     {
         $this->confidence = Confidence::CERTAIN;
+        return $this;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->encoding;
+        return $this->name;
     }
 }

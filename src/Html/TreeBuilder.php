@@ -571,7 +571,7 @@ final class TreeBuilder
     {
         // don't use setAttribute here to avoid lower-casing the name.
         $attr = $element->ownerDocument->createAttribute($name);
-        $attr->value = htmlspecialchars($value, ENT_NOQUOTES|ENT_HTML5, $this->encoding->getName(), false);
+        $attr->value = htmlspecialchars($value, ENT_NOQUOTES|ENT_HTML5, $this->encoding->name, false);
         $element->appendChild($attr);
     }
 
@@ -793,7 +793,7 @@ final class TreeBuilder
 
     public function changeTheEncoding(string $label)
     {
-        $currentEncoding = $this->encoding->getName();
+        $currentEncoding = $this->encoding->name;
         // 1. If the encoding that is already being used to interpret the input stream is a UTF-16 encoding,
         // then set the confidence to certain and return.
         // The new encoding is ignored; if it was anything but the same encoding, then it would be clearly incorrect.

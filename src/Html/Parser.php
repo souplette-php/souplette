@@ -29,7 +29,7 @@ final class Parser
         try {
             return $this->treeBuilder->buildDocument($tokenizer, $encoding);
         } catch (EncodingChanged $err) {
-            $encoding = $err->getEncoding();
+            $encoding = $err->encoding;
             $converted = $this->preprocessInput($input, $encoding);
             $tokenizer = $this->createTokenizer($converted);
             return $this->treeBuilder->buildDocument($tokenizer, $encoding);
@@ -47,7 +47,7 @@ final class Parser
         try {
             return $this->treeBuilder->buildFragment($tokenizer, $encoding, $contextElement);
         } catch (EncodingChanged $err) {
-            $encoding = $err->getEncoding();
+            $encoding = $err->encoding;
             $converted = $this->preprocessInput($input, $encoding);
             $tokenizer = $this->createTokenizer($converted);
             return $this->treeBuilder->buildFragment($tokenizer, $encoding, $contextElement);
@@ -74,8 +74,8 @@ final class Parser
 
     private function preprocessInput(string $input, Encoding $encoding): string
     {
-        if ($encoding->getName() !== EncodingLookup::UTF_8) {
-            $input = Utf8Converter::convert($input, $encoding->getName());
+        if ($encoding->name !== EncodingLookup::UTF_8) {
+            $input = Utf8Converter::convert($input, $encoding);
         }
         $input = InputPreprocessor::removeBOM($input);
         $input = InputPreprocessor::normalizeNewlines($input);

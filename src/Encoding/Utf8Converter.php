@@ -8,18 +8,13 @@ use UConverter;
 
 final class Utf8Converter
 {
-    public static function convert(string $input, string $fromEncoding): string
+    public static function convert(string $input, Encoding $fromEncoding): string
     {
-        $inputEncoding = EncodingLookup::LABELS[strtolower(trim($fromEncoding))] ?? null;
-        if ($inputEncoding === null) {
-            throw new UnsupportedEncoding($fromEncoding);
-        }
-
-        $output = @UConverter::transcode($input, EncodingLookup::UTF_8, $inputEncoding, [
+        $output = @UConverter::transcode($input, EncodingLookup::UTF_8, $fromEncoding->name, [
             'to_subst' => "\u{FFFD}",
         ]);
         if ($output === false) {
-            throw new ConversionException($fromEncoding, 'UTF-8');
+            throw new ConversionException($fromEncoding->name, 'UTF-8');
         }
 
         return $output;
