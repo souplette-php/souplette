@@ -11,7 +11,7 @@ use SplQueue;
 abstract class AbstractTokenizer
 {
     public TokenizerState $state = TokenizerState::DATA;
-    public bool $allowCdata = false;
+    public \Closure $allowCdata;
     protected int $position = 0;
     protected TokenizerState $returnState = TokenizerState::DATA;
     protected SplQueue $tokenQueue;
@@ -28,6 +28,7 @@ abstract class AbstractTokenizer
     public function __construct(protected string $input)
     {
         $this->entitySearch = EntitySearch::create();
+        $this->allowCdata = fn() => false;
     }
 
     final public function getPosition(): int
@@ -62,7 +63,6 @@ abstract class AbstractTokenizer
         $this->temporaryBuffer = '';
         $this->tokenQueue = new SplQueue();
         $this->parseErrors = [];
-        $this->allowCdata = false;
     }
 
     /**

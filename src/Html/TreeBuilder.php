@@ -229,6 +229,11 @@ final class TreeBuilder
         $this->fosterParenting = false;
         $this->shouldSkipNextNewLine = false;
         $this->pendingTableCharacterTokens = [];
+
+        $this->tokenizer->allowCdata = function() {
+            $adjustedCurrentNode = $this->getAdjustedCurrentNode();
+            return $adjustedCurrentNode && $adjustedCurrentNode->namespaceURI !== Namespaces::HTML;
+        };
     }
 
     private function run(TokenizerState $tokenizerState)
@@ -273,19 +278,6 @@ final class TreeBuilder
             } else {
                 InForeignContent::process($token, $this);
             }
-
-            // NOTE: This is needed for the tokenizer,
-            // to know if it should allow CDATA sections in the MARKUP_DECLARATION_OPEN state.
-            // This has to happen here since the adjusted current node changes during rules invocations.
-            // If there is an adjusted current node and it is not an element in the HTML namespace,
-            // then switch to the CDATA section state.
-            $adjustedCurrentNode = $this->getAdjustedCurrentNode();
-            $this->tokenizer->allowCdata = $adjustedCurrentNode
-                && $adjustedCurrentNode->namespaceURI !== Namespaces::HTML
-                // NOTE: I can't remember why these two lines were here, but the tests pass without them, so...
-                //&& !Elements::isHtmlIntegrationPoint($adjustedCurrentNode)
-                //&& !Elements::isMathMlTextIntegrationPoint($adjustedCurrentNode)
-            ;
 
             $previousToken = $token;
         }
