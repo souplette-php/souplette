@@ -7,6 +7,10 @@ use Souplette\Dom\Api\ChildNodeInterface;
 use Souplette\Dom\Api\ElementInterface;
 use Souplette\Dom\Api\NodeInterface;
 use Souplette\Dom\Api\ParentNodeInterface;
+use Souplette\Dom\Exception\DomException;
+use Souplette\Dom\Exception\ErrorCodes;
+use Souplette\Dom\Exception\NoModificationAllowed;
+use Souplette\Dom\Exception\SyntaxError;
 use Souplette\Dom\Internal\DomIdioms;
 use Souplette\Dom\Internal\PropertyMaps;
 use Souplette\Dom\Traits\ChildNodeTrait;
@@ -175,30 +179,79 @@ final class Element extends \DOMElement implements
 
     public function getInnerHTML(): string
     {
+        // https://w3c.github.io/DOM-Parsing/#the-innerhtml-mixin
         $serializer = new Serializer();
         return $serializer->serialize($this);
     }
 
     public function setInnerHTML(string $html): void
     {
+        // https://w3c.github.io/DOM-Parsing/#the-innerhtml-mixin
         $parser = new Parser();
         $children = $parser->parseFragment($this, $html, $this->ownerDocument->encoding);
-        while ($child = $this->firstChild) {
-            $this->removeChild($child);
-        }
+        while ($child = $this->firstChild) $this->removeChild($child);
         $this->append(...$children);
     }
 
     public function getOuterHTML(): string
     {
+        // https://w3c.github.io/DOM-Parsing/#dom-element-outerhtml
         $serializer = new Serializer();
         return $serializer->serializeElement($this);
     }
 
     public function setOuterHTML(string $html): void
     {
+        // https://w3c.github.io/DOM-Parsing/#dom-element-outerhtml
+        $parent = $this->parentNode;
+        if (!$parent) return;
+        if ($parent->nodeType === XML_HTML_DOCUMENT_NODE) {
+            throw new NoModificationAllowed(sprintf(
+                'Failed to execute %s: The element has no parent.',
+                __METHOD__,
+            ));
+        }
+        if ($parent->nodeType === XML_DOCUMENT_FRAG_NODE) {
+            $parent = $this->ownerDocument->createElement('body');
+        }
         $parser = new Parser();
-        $children = $parser->parseFragment($this, $html, $this->ownerDocument->encoding);
+        $children = $parser->parseFragment($parent, $html, $this->ownerDocument->encoding);
         $this->replaceWith(...$children);
+    }
+
+    public function insertAdjacentHTML(string $position, string $html): void
+    {
+        // https://w3c.github.io/DOM-Parsing/#dom-element-insertadjacenthtml
+        $position = strtolower($position);
+        $context = match ($position) {
+            'beforebegin', 'afterend' => $this->parentNode,
+            'afterbegin', 'beforeend' => $this,
+            default => throw new SyntaxError(sprintf(
+                'Failed to execute %s: The value provided ("%s") is not one of "beforebegin", "afterend", "afterbegin", or "beforeend".',
+                __METHOD__,
+                $position
+            )),
+        };
+        if (!$context || $context === $this->ownerDocument) {
+            throw new NoModificationAllowed(sprintf(
+                'Failed to execute %s: The element has no parent.',
+                __METHOD__,
+            ));
+        }
+        if ($context->nodeType !== XML_ELEMENT_NODE || (
+            $context->ownerDocument->nodeType === XML_HTML_DOCUMENT_NODE
+            && $context->localName === 'html'
+            && $context->namespaceURI === Namespaces::HTML
+        )) {
+            $context = $this->ownerDocument->createElement('body');
+        }
+        $parser = new Parser();
+        $children = $parser->parseFragment($context, $html, $this->ownerDocument->encoding);
+        match ($position) {
+            'beforebegin' => $this->before(...$children),
+            'afterbegin' => $this->prepend(...$children),
+            'beforeend' => $this->append(...$children),
+            'afterend' => $this->after(...$children),
+        };
     }
 }

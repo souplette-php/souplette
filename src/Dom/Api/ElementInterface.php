@@ -59,6 +59,8 @@ interface ElementInterface extends DomElementInterface
     public function getOuterHTML(): string;
     public function setOuterHTML(string $html): void;
 
+    public function insertAdjacentHTML(string $position, string $html): void;
+
     public function matches(string $selector): bool;
     public function closest(string $selector): ?Element;
 }
