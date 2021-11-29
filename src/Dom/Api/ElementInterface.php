@@ -3,6 +3,8 @@
 namespace Souplette\Dom\Api;
 
 
+use Souplette\Dom\Api\Native\DomElementInterface;
+use Souplette\Dom\Attr;
 use Souplette\Dom\Element;
 use Souplette\Dom\TokenList;
 
@@ -15,6 +17,20 @@ use Souplette\Dom\TokenList;
  */
 interface ElementInterface extends DomElementInterface
 {
+    /**
+     * @return Attr|\DOMNameSpaceNode|false
+     */
+    public function getAttributeNode(string $qualifiedName);
+    public function setAttribute(string $qualifiedName, string $value): Attr|bool;
+    /**
+     * @return Attr|false|null
+     */
+    public function setAttributeNode(\DOMAttr $attr);
+    /**
+     * @return Attr|false|null
+     */
+    public function setAttributeNodeNS(\DOMAttr $attr);
+
     /**
      * If force is not given, "toggles" qualifiedName, removing it if it is present and adding it if it is not present.
      * If force is true, adds qualifiedName.

@@ -8,7 +8,7 @@ use DOMParentNode;
 final class ElementIterator
 {
     /**
-     * @return iterable<DOMElement>
+     * @return iterable<Element>
      */
     public static function descendants(DOMParentNode $root): iterable
     {
@@ -33,7 +33,7 @@ final class ElementIterator
     }
 
     /**
-     * @return iterable<DOMElement>
+     * @return iterable<Element>
      */
     public static function ancestors(DOMParentNode $root): iterable
     {
@@ -44,7 +44,7 @@ final class ElementIterator
     }
 
     /**
-     * @return iterable<DOMElement>
+     * @return iterable<Element>
      */
     public static function following(DOMElement $node): iterable
     {
@@ -54,7 +54,7 @@ final class ElementIterator
     }
 
     /**
-     * @return iterable<DOMElement>
+     * @return iterable<Element>
      */
     public static function preceding(DOMElement $node): iterable
     {

@@ -2,7 +2,7 @@
 
 namespace Souplette\Dom\Api;
 
-use DOMElement;
+use Souplette\Dom\Element;
 
 /**
  * Implemented by: Document, DocumentFragment
@@ -10,5 +10,5 @@ use DOMElement;
  */
 interface NonElementParentNodeInterface
 {
-    public function getElementById(string $id): ?DOMElement;
+    public function getElementById(string $elementId): ?Element;
 }

@@ -2,18 +2,22 @@
 
 namespace Souplette\Dom\Api;
 
+use Souplette\Dom\Api\Native\DomDocumentInterface;
 use Souplette\Dom\Element;
+use Souplette\Dom\Implementation;
 
 /**
  * @see https://dom.spec.whatwg.org/#document
  *
+ * @property-read Implementation $implementation
+ * @property-read Element|null $documentElement
  * @property-read string $mode
  * @property-read string $compatMode
- * @property-read Element $head
- * @property-read Element $body
+ * @property-read Element|null $head
+ * @property-read Element|null $body
  * @property string $title
  */
-interface DocumentInterface extends NodeInterface
+interface DocumentInterface extends NodeInterface, ParentNodeInterface, NonElementParentNodeInterface, DomDocumentInterface
 {
     public function getMode(): string;
     public function getCompatMode(): string;

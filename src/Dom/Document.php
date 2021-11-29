@@ -17,10 +17,7 @@ use Souplette\Dom\Traits\NodeTrait;
 use Souplette\Dom\Traits\ParentNodeTrait;
 use Souplette\Encoding\EncodingLookup;
 
-final class Document extends \DOMDocument implements
-    DocumentInterface,
-    ParentNodeInterface
-    //NonElementParentNodeInterface
+final class Document extends \DOMDocument implements DocumentInterface
 {
     use NodeTrait;
     use ParentNodeTrait;
@@ -58,9 +55,9 @@ final class Document extends \DOMDocument implements
     /**
      * @see https://dom.spec.whatwg.org/#dom-document-createelement
      */
-    public function createElement($localName, $value = null): bool|Element
+    public function createElement(string $localName, string $value = ''): Element|false
     {
-        return $this->createElementNS(Namespaces::HTML, strtolower($localName), $value ?? '');
+        return $this->createElementNS(Namespaces::HTML, strtolower($localName), $value);
     }
 
     public function getHead(): ?Element
@@ -109,9 +106,9 @@ final class Document extends \DOMDocument implements
         $this->internalMode = $mode;
     }
 
-    public function getElementById(string $id): ?Element
+    public function getElementById(string $elementId): ?Element
     {
-        return SelectorQuery::byId($this, $id);
+        return SelectorQuery::byId($this, $elementId);
     }
 
     /**

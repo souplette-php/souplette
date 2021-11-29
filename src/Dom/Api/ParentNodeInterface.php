@@ -8,6 +8,8 @@ use Souplette\Dom\Element;
 /**
  * @see https://dom.spec.whatwg.org/#parentnode
  *
+ * @property-read Element|null $firstElementChild
+ * @property-read Element|null $lastElementChild
  * @property-read Element[] $children
  */
 interface ParentNodeInterface extends \DOMParentNode

@@ -2,14 +2,16 @@
 
 namespace Souplette\Dom\Api;
 
-use DOMElement;
 use DOMNode;
+use Souplette\Dom\Api\Native\DomNodeInterface;
+use Souplette\Dom\Document;
 use Souplette\Dom\Element;
 
 /**
  * @see https://dom.spec.whatwg.org/#interface-node
  *
- * @property-read DOMElement|null $parentElement
+ * @property-read Document|null $ownerDocument
+ * @property-read Element|null $parentElement
  */
 interface NodeInterface extends DomNodeInterface
 {

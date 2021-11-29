@@ -104,7 +104,7 @@ final class Element extends \DOMElement implements
     /**
      * @see https://dom.spec.whatwg.org/#dom-element-setattribute
      */
-    public function setAttribute(string $qualifiedName, string $value): \DOMAttr|false
+    public function setAttribute(string $qualifiedName, string $value): Attr|false
     {
         // 1. If qualifiedName does not match the Name production in XML,
         // then throw an "InvalidCharacterError" DOMException.
