@@ -8,6 +8,11 @@ use Souplette\Css\Selectors\SelectorQuery;
 use Souplette\Dom\Element;
 use Souplette\Dom\Internal\DomIdioms;
 
+/**
+ * @property-read Element|null $firstElementChild
+ * @property-read Element|null $lastElementChild
+ * @property-read Element[] $children
+ */
 trait ParentNodeTrait
 {
     /**

@@ -18,9 +18,12 @@ use Souplette\Dom\TokenList;
 interface ElementInterface extends DomElementInterface
 {
     /**
-     * @return Attr|\DOMNameSpaceNode|false
+     * @return Attr|false
      */
     public function getAttributeNode(string $qualifiedName);
+    /**
+     * @return Attr|false
+     */
     public function setAttribute(string $qualifiedName, string $value): Attr|bool;
     /**
      * @return Attr|false|null

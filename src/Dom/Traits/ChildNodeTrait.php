@@ -3,8 +3,13 @@
 namespace Souplette\Dom\Traits;
 
 use DOMNode;
+use Souplette\Dom\Element;
 use Souplette\Dom\Internal\DomIdioms;
 
+/**
+ * @property-read Element|null $nextElementSibling
+ * @property-read Element|null $previousElementSibling
+ */
 trait ChildNodeTrait
 {
     /**

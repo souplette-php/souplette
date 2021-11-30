@@ -12,6 +12,17 @@ use Souplette\Dom\Element;
  *
  * @property-read Document|null $ownerDocument
  * @property-read Element|null $parentElement
+ * @property-read NodeInterface|null $parentNode
+ * @property-read NodeInterface|null $firstChild
+ * @property-read NodeInterface|null $lastChild
+ * @property-read NodeInterface|null $previousSibling
+ * @property-read NodeInterface|null $nextSibling
+ *
+ * @method NodeInterface|false appendChild(DOMNode $node)
+ * @method NodeInterface|false cloneNode(bool $deep = false)
+ * @method NodeInterface|false insertBefore(DOMNode $node, ?DOMNode $child = null)
+ * @method NodeInterface|false removeChild(DOMNode $child)
+ * @method NodeInterface|false replaceChild(DOMNode $node, DOMNode $child)
  */
 interface NodeInterface extends DomNodeInterface
 {

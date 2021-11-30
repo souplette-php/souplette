@@ -10,13 +10,22 @@ use DOMElement;
 use DOMText;
 use Souplette\Css\Selectors\SelectorQuery;
 use Souplette\Dom\Api\DocumentInterface;
-use Souplette\Dom\Api\ParentNodeInterface;
-use Souplette\Dom\Internal\DomIdioms;
 use Souplette\Dom\Internal\PropertyMaps;
 use Souplette\Dom\Traits\NodeTrait;
 use Souplette\Dom\Traits\ParentNodeTrait;
 use Souplette\Encoding\EncodingLookup;
 
+/**
+ * @property-read Implementation $implementation
+ * @property-read Element|null $documentElement
+ *
+ * @method DocumentFragment|false createDocumentFragment()
+ * @method Element|false createElementNS(?string $namespace, string $qualifiedName, string $value = '')
+ * @method Attr|false createAttribute(string $localName)
+ * @method Attr|false createAttributeNS(?string $namespace, string $qualifiedName)
+ * @method Comment|false createComment(string $data)
+ * @method Text|false createTextNode(string $data)
+ */
 final class Document extends \DOMDocument implements DocumentInterface
 {
     use NodeTrait;
