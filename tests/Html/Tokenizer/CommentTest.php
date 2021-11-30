@@ -17,7 +17,7 @@ class CommentTest extends TestCase
         TokenizerAssert::tokensEquals($input, $expected);
     }
 
-    public function commentsProvider()
+    public function commentsProvider(): iterable
     {
         yield ['<!-- comment -->', [Token::comment(' comment ')]];
         yield ['<!-- XXX - XXX -->', [Token::comment(' XXX - XXX ')]];

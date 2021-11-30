@@ -16,7 +16,7 @@ class CharacterTest extends TestCase
         TokenizerAssert::tokensEquals($input, $expected);
     }
 
-    public function characterInDataProvider()
+    public function characterInDataProvider(): iterable
     {
         yield [
             'foo',

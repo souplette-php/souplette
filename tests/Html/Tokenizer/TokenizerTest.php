@@ -17,7 +17,7 @@ class TokenizerTest extends TestCase
         TokenizerAssert::tokensEquals($input, $expected);
     }
 
-    public function characterDataInElementProvider()
+    public function characterDataInElementProvider(): iterable
     {
         yield [
             '<title>The New York Times - Breaking News, World News &amp; Multimedia</title>',

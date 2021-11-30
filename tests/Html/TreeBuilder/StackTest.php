@@ -36,7 +36,7 @@ class StackTest extends TestCase
         Assert::assertSame($expected, $stack->get($offset));
     }
 
-    public function getProvider()
+    public function getProvider(): iterable
     {
         $init = ['a', 'b', 'c', 'd'];
         // negative index yields in reverse order
@@ -71,7 +71,7 @@ class StackTest extends TestCase
         Assert::assertSame($expected, iterator_to_array($stack));
     }
 
-    public function removeProvider()
+    public function removeProvider(): iterable
     {
         $init = ['a', 'b', 'c'];
         yield [$init, 'a', [1 => 'c', 0 => 'b']];
@@ -92,7 +92,7 @@ class StackTest extends TestCase
         Assert::assertSame($expected, iterator_to_array($stack));
     }
 
-    public function replaceProvider()
+    public function replaceProvider(): iterable
     {
         $init = ['a', 'b', 'c'];
         $rep = 'ins';
@@ -128,7 +128,7 @@ class StackTest extends TestCase
         Assert::assertSame($expected, iterator_to_array($stack));
     }
 
-    public function insertProvider()
+    public function insertProvider(): iterable
     {
         $init = ['a', 'b', 'c', 'd'];
         $ins = 'ins';

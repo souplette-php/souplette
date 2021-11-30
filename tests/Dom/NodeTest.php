@@ -6,15 +6,12 @@ use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Dom\Api\NodeInterface;
 
-final class HtmlNodeTest extends TestCase
+final class NodeTest extends TestCase
 {
     /**
      * @dataProvider containsProvider
-     * @param $parent
-     * @param $target
-     * @param $expected
      */
-    public function testContains(NodeInterface $parent, $target, $expected)
+    public function testContains(NodeInterface $parent, ?\DOMNode $target, bool $expected)
     {
         Assert::assertSame($expected, $parent->contains($target));
     }
@@ -65,10 +62,8 @@ final class HtmlNodeTest extends TestCase
 
     /**
      * @dataProvider parentElementProvider
-     * @param $node
-     * @param $expected
      */
-    public function testParentElement(NodeInterface $node, $expected)
+    public function testParentElement(NodeInterface $node, ?\DOMElement $expected)
     {
         Assert::assertSame($expected, $node->parentElement);
     }

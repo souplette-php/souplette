@@ -10,8 +10,6 @@ final class ParentNodeTest extends TestCase
 {
     /**
      * @dataProvider childrenProvider
-     * @param ParentNodeInterface $parent
-     * @param array $expected
      */
     public function testChildren(ParentNodeInterface $parent, array $expected)
     {
@@ -22,7 +20,7 @@ final class ParentNodeTest extends TestCase
         }
     }
 
-    public function childrenProvider()
+    public function childrenProvider(): iterable
     {
         $doc = DomBuilder::create()
             ->text('foo')
@@ -46,15 +44,13 @@ final class ParentNodeTest extends TestCase
 
     /**
      * @dataProvider firstElementChildProvider
-     * @param ParentNodeInterface $parent
-     * @param $expected
      */
-    public function testFirstElementChild(ParentNodeInterface $parent, $expected)
+    public function testFirstElementChild(ParentNodeInterface $parent, \DOMElement $expected)
     {
         Assert::assertSame($expected, $parent->firstElementChild);
     }
 
-    public function firstElementChildProvider()
+    public function firstElementChildProvider(): iterable
     {
         $doc = DomBuilder::create()
             ->text('foo')
@@ -75,15 +71,13 @@ final class ParentNodeTest extends TestCase
 
     /**
      * @dataProvider lastElementChildProvider
-     * @param ParentNodeInterface $parent
-     * @param $expected
      */
-    public function testLastElementChild(ParentNodeInterface $parent, $expected)
+    public function testLastElementChild(ParentNodeInterface $parent, \DOMElement $expected)
     {
         Assert::assertSame($expected, $parent->lastElementChild);
     }
 
-    public function lastElementChildProvider()
+    public function lastElementChildProvider(): iterable
     {
         $doc = DomBuilder::create()
             ->tag('foo')->close()
@@ -104,9 +98,6 @@ final class ParentNodeTest extends TestCase
 
     /**
      * @dataProvider prependProvider
-     * @param $parent
-     * @param $nodes
-     * @param $expectedChildren
      */
     public function testPrepend($parent, $nodes, $expectedChildren)
     {
@@ -123,7 +114,7 @@ final class ParentNodeTest extends TestCase
         }
     }
 
-    public function prependProvider()
+    public function prependProvider(): iterable
     {
         $doc = DomBuilder::create()
             ->tag('a')->close()
@@ -148,9 +139,6 @@ final class ParentNodeTest extends TestCase
 
     /**
      * @dataProvider appendProvider
-     * @param $parent
-     * @param $nodes
-     * @param $expectedChildren
      */
     public function testAppend($parent, $nodes, $expectedChildren)
     {
@@ -167,7 +155,7 @@ final class ParentNodeTest extends TestCase
         }
     }
 
-    public function appendProvider()
+    public function appendProvider(): iterable
     {
         $doc = DomBuilder::create()
             ->tag('a')->close()

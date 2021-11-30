@@ -17,7 +17,7 @@ class StartTagTest extends TestCase
         TokenizerAssert::tokensEquals($input, $expected);
     }
 
-    public function startTagProvider()
+    public function startTagProvider(): iterable
     {
         yield ['<a>', [Token::startTag('a')]];
         yield ['<A>', [Token::startTag('a')]];
@@ -38,7 +38,7 @@ class StartTagTest extends TestCase
         TokenizerAssert::tokensEquals($input, $expected);
     }
 
-    public function attributesProvider()
+    public function attributesProvider(): iterable
     {
         yield ['<a b c>', [Token::startTag('a', false, ['b' => '', 'c' => ''])]];
         yield ['<a b=c>', [Token::startTag('a', false, ['b' => 'c'])]];

@@ -22,7 +22,7 @@ final class XmlNameEscaperTest extends TestCase
         $element = new \DOMElement($name, Namespaces::HTML);
     }
 
-    public function escapeElementNameProvider()
+    public function escapeElementNameProvider(): iterable
     {
         yield ['div<div', 'divU00003Cdiv'];
         yield ['foo>bar', 'fooU00003Ebar'];
@@ -41,7 +41,7 @@ final class XmlNameEscaperTest extends TestCase
         Assert::assertSame($expected, XmlNameEscaper::unescape($input));
     }
 
-    public function unescapeElementNameProvider()
+    public function unescapeElementNameProvider(): iterable
     {
         yield ['divU00003Cdiv', 'div<div'];
         yield ['fooU00003Ebar', 'foo>bar'];

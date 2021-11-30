@@ -29,7 +29,7 @@ final class AnPlusBParserTest extends TestCase
         Assert::assertEquals(new AnPlusB($a, $b), $result);
     }
 
-    public function parseProvider()
+    public function parseProvider(): iterable
     {
         // odd -> { a: 2, b: 1 }
         yield 'odd' => ['odd', 2, 1];
@@ -78,7 +78,7 @@ final class AnPlusBParserTest extends TestCase
         self::parse($input);
     }
 
-    public function parseErrorsProvider()
+    public function parseErrorsProvider(): iterable
     {
         yield 'unknown identifier' => ['food'];
         yield 'hash token' => ['#even'];

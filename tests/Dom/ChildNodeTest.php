@@ -11,10 +11,8 @@ final class ChildNodeTest extends TestCase
 {
     /**
      * @dataProvider removeProvider
-     * @param Document $doc
-     * @param ChildNodeInterface $node
      */
-    public function testRemove(Document $doc, ChildNodeInterface $node)
+    public function testRemove(Document $doc, \DOMChildNode $node)
     {
         $node->remove();
         Assert::assertCount(0, $doc->childNodes);
@@ -85,10 +83,8 @@ final class ChildNodeTest extends TestCase
 
     /**
      * @dataProvider afterProvider
-     * @param Node $target
-     * @param $nodes
      */
-    public function testAfter($target, array $nodes)
+    public function testAfter(\DOMChildNode $target, array $nodes)
     {
         $target->after(...$nodes);
         $expected = $target->nextSibling;
@@ -135,7 +131,7 @@ final class ChildNodeTest extends TestCase
     /**
      * @dataProvider replaceWithProvider
      */
-    public function testReplaceWith($target, array $nodes)
+    public function testReplaceWith(\DOMChildNode $target, array $nodes)
     {
         $parent = $target->parentNode;
         $target->replaceWith(...$nodes);

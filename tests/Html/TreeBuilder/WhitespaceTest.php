@@ -18,7 +18,7 @@ final class WhitespaceTest extends TestCase
         TreeConstructionAssert::assertTestPasses($test);
     }
 
-    public function whitespaceHandlingProvider()
+    public function whitespaceHandlingProvider(): iterable
     {
         $fileName = __DIR__.'/../../resources/tree-construction/whitespace.dat';
         foreach (new DataFile($fileName) as $i => $test) {

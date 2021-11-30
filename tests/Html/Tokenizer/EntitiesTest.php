@@ -19,7 +19,7 @@ class EntitiesTest extends TestCase
         TokenizerAssert::tokensEquals($input, $expected);
     }
 
-    public function entitiesInDataProvider()
+    public function entitiesInDataProvider(): iterable
     {
         yield ['&amp;', ['&']];
         yield ['&Abreve', ['&', 'Abreve']];
@@ -48,7 +48,7 @@ class EntitiesTest extends TestCase
         TokenizerAssert::tokensEquals($input, $expectedTokens, $expectedErrors);
     }
 
-    public function invalidEntitiesInDataProvider()
+    public function invalidEntitiesInDataProvider(): iterable
     {
         yield ['&test=', ['&', 'test', '=']];
         yield ['&foobar;', ['&', 'foobar', ';'], [
@@ -85,7 +85,7 @@ class EntitiesTest extends TestCase
         TokenizerAssert::tokensEquals($input, $expectedTokens);
     }
 
-    public function entitiesInAttributeProvider()
+    public function entitiesInAttributeProvider(): iterable
     {
         yield ['<a b="I\'m &notit; I tell you">', [
             Token::startTag('a', false, [

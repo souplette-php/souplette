@@ -9,7 +9,7 @@ use Souplette\Dom\Document;
 use Souplette\Dom\Implementation;
 use Souplette\Dom\Element;
 
-final class HtmlDomImplementationTest extends TestCase
+final class DomImplementationTest extends TestCase
 {
     public function testCreateShell()
     {

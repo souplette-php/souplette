@@ -18,7 +18,7 @@ class DoctypeTest extends TestCase
         TokenizerAssert::tokensEquals($input, $expected);
     }
 
-    public function doctypeProvider()
+    public function doctypeProvider(): iterable
     {
         yield ['<!DOCTYPE html>', [Token::doctype('html')]];
         yield [

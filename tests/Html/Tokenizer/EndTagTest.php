@@ -17,7 +17,7 @@ class EndTagTest extends TestCase
         TokenizerAssert::tokensEquals($input, $expected);
     }
 
-    public function endTagProvider()
+    public function endTagProvider(): iterable
     {
         yield ['</foo>', [Token::endTag('foo')]];
         yield ['</foo >', [Token::endTag('foo')]];

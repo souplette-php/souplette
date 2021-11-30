@@ -17,7 +17,7 @@ class RCDataTest extends TestCase
         TokenizerAssert::tokensEquals($input, $expected, null, TokenizerState::RCDATA);
     }
 
-    public function rcdataProvider()
+    public function rcdataProvider(): iterable
     {
         yield [
             'Foo & Bar', [
