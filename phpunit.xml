@@ -17,8 +17,11 @@
       <directory>tests/Encoding</directory>
       <directory>tests/Xml</directory>
     </testsuite>
-    <testsuite name="html">
+    <testsuite name="dom">
       <directory>tests/Dom</directory>
+      <directory>tests/WebPlatformTests/Dom</directory>
+    </testsuite>
+    <testsuite name="html">
       <directory>tests/Html</directory>
       <directory>tests/Html5Lib</directory>
       <file>tests/SoupletteTest.php</file>

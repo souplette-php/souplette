@@ -6,10 +6,13 @@ use DOMAttr;
 use DOMComment;
 use DOMDocument;
 use DOMDocumentFragment;
+use DOMDocumentType;
 use DOMElement;
+use DOMNode;
 use DOMText;
 use Souplette\Css\Selectors\SelectorQuery;
 use Souplette\Dom\Api\DocumentInterface;
+use Souplette\Dom\Api\NodeInterface;
 use Souplette\Dom\Internal\PropertyMaps;
 use Souplette\Dom\Traits\NodeTrait;
 use Souplette\Dom\Traits\ParentNodeTrait;
@@ -25,6 +28,7 @@ use Souplette\Encoding\EncodingLookup;
  * @method Attr|false createAttributeNS(?string $namespace, string $qualifiedName)
  * @method Comment|false createComment(string $data)
  * @method Text|false createTextNode(string $data)
+ * @method NodeInterface|false importNode(DOMNode $node, bool $deep = false)
  */
 final class Document extends \DOMDocument implements DocumentInterface
 {
@@ -40,6 +44,7 @@ final class Document extends \DOMDocument implements DocumentInterface
     {
         parent::__construct('', EncodingLookup::UTF_8);
         parent::registerNodeClass(DOMDocument::class, self::class);
+        parent::registerNodeClass(DOMDocumentType::class, DocumentType::class);
         parent::registerNodeClass(DOMDocumentFragment::class, DocumentFragment::class);
         parent::registerNodeClass(DOMText::class, Text::class);
         parent::registerNodeClass(DOMComment::class, Comment::class);
