@@ -50,6 +50,8 @@ interface NodeInterface extends DomNodeInterface
     const DOCUMENT_POSITION_CONTAINED_BY = 0x10;
     const DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 0x20;
 
+    public function isEqualNode(?DOMNode $otherNode): bool;
+
     public function contains(?DOMNode $other): bool;
 
     /**

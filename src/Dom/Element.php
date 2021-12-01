@@ -63,10 +63,7 @@ final class Element extends \DOMElement implements
 
     public function getClassList(): TokenList
     {
-        if (!isset($this->internalClassList)) {
-            $this->internalClassList = new TokenList($this, 'class');
-        }
-        return $this->internalClassList;
+        return $this->internalClassList ??= new TokenList($this, 'class');
     }
 
     public function getElementsByClassName(string $classNames): array

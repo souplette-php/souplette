@@ -157,6 +157,7 @@ final class TokenList implements \Countable, \IteratorAggregate
     {
         /** @var Element $element */
         $element = $this->elementRef->get();
+        if (!$element) return;
         // 1. If the associated element does not have an associated attribute and token set is empty, then return.
         if (!$element->hasAttribute($this->attributeName) && $this->tokenSet->isEmpty()) {
             return;
@@ -164,8 +165,7 @@ final class TokenList implements \Countable, \IteratorAggregate
         // 2. Set an attribute value for the associated element using associated attribute’s local name
         // and the result of running the ordered set serializer for token set.
         $newValue = $this->tokenSet->serialize();
-        $attr = $element->getAttributeNode($this->attributeName);
-        $attr->value = $newValue;
+        $element->setAttribute($this->attributeName, $newValue);
         $this->previousValue = $newValue;
     }
 }

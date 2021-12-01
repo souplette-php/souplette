@@ -40,12 +40,12 @@ trait NodeTrait
         // 3. Let attr1 and attr2 be null.
         $attr1 = $attr2 = null;
         // 4. If node1 is an attribute, then set attr1 to node1 and node1 to attr1’s element.
-        if ($node1 instanceof \DOMAttr) {
+        if ($node1->nodeType === \XML_ATTRIBUTE_NODE) {
             $attr1 = $node1;
             $node1 = $attr1->ownerElement;
         }
         // 5. If node2 is an attribute, then:
-        if ($node2 instanceof \DOMAttr) {
+        if ($node2->nodeType === \XML_ATTRIBUTE_NODE) {
             // 1. Set attr2 to node2 and node2 to attr2’s element.
             $attr2 = $node2;
             $node2 = $attr2->ownerElement;
@@ -123,5 +123,10 @@ trait NodeTrait
         }
 
         return $node;
+    }
+
+    public function isEqualNode(?DOMNode $otherNode): bool
+    {
+        return DomIdioms::isEqualNode($this, $otherNode);
     }
 }

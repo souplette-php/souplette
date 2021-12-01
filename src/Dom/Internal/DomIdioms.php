@@ -143,4 +143,69 @@ final class DomIdioms
             $token = strtok(self::ASCII_WHITESPACE);
         }
     }
+
+    public static function isEqualNode(\DOMNode $node, ?\DOMNode $otherNode): bool
+    {
+        // The isEqualNode(otherNode) method steps are to return true if otherNode is non-null and this equals otherNode;
+        // otherwise false.
+        if (!$otherNode) {
+            return false;
+        }
+        if ($node === $otherNode) {
+            return true;
+        }
+        if ($node->nodeType !== $otherNode->nodeType) {
+            return false;
+        }
+        if ($node->nodeType === \XML_DOCUMENT_TYPE_NODE) {
+            return (
+                $node->name === $otherNode->name
+                && $node->publicId === $otherNode->publicId
+                && $node->systemId === $otherNode->systemId
+            );
+        }
+        if ($node->nodeType === \XML_ATTRIBUTE_NODE) {
+            return (
+                $node->namespaceURI === $otherNode->namespaceURI
+                && $node->localName === $otherNode->localName
+                && $node->value === $otherNode->value
+            );
+        }
+        if ($node->nodeType === \XML_PI_NODE) {
+            return (
+                $node->target === $otherNode->target
+                && $node->data === $otherNode->data
+            );
+        }
+        if ($node->nodeType === \XML_TEXT_NODE || $node->nodeType === \XML_COMMENT_NODE) {
+            return $node->data === $otherNode->data;
+        }
+        if ($node->nodeType === \XML_ELEMENT_NODE) {
+            if (
+                $node->namespaceURI !== $otherNode->namespaceURI
+                || $node->prefix !== $otherNode->prefix
+                || $node->localName !== $otherNode->localName
+                || $node->attributes->length !== $otherNode->attributes->length
+            ) {
+                return false;
+            }
+            foreach ($node->attributes as $attribute) {
+                $otherAttr = $otherNode->attributes->getNamedItem($attribute->name);
+                if (!self::isEqualNode($attribute, $otherAttr)) {
+                    return false;
+                }
+            }
+        }
+        if ($node->childNodes->length !== $otherNode->childNodes->length) {
+            return false;
+        }
+        foreach ($node->childNodes as $i => $child) {
+            $otherChild = $otherNode->childNodes->item($i);
+            if (!self::isEqualNode($child, $otherChild)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

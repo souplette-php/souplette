@@ -28,6 +28,25 @@ final class TokenListTest extends TestCase
         Assert::assertSame('foo bar baz', (string)$classList);
     }
 
+    public function testSetValue()
+    {
+        $doc = DomBuilder::create()->tag('html')->getDocument();
+        $node = $doc->documentElement;
+        $node->classList->value = 'foo bar baz';
+        Assert::assertSame('foo bar baz', $node->getAttribute('class'));
+    }
+
+    public function testGetItem()
+    {
+        $doc = DomBuilder::create()
+            ->tag('html')->class('foo bar baz')
+            ->getDocument();
+        $node = $doc->documentElement;
+        foreach (['foo', 'bar', 'baz'] as $i => $item) {
+            Assert::assertSame($item, $node->classList->item($i));
+        }
+    }
+
     public function testContains()
     {
         $doc = DomBuilder::create()
