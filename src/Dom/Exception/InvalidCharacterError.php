@@ -4,7 +4,7 @@ namespace Souplette\Dom\Exception;
 
 use Throwable;
 
-final class InvalidCharacter extends DomException
+final class InvalidCharacterError extends DomException
 {
     public function __construct($message = "", Throwable $previous = null)
     {

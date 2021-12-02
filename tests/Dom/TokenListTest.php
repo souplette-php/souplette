@@ -5,7 +5,7 @@ namespace Souplette\Tests\Dom;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Dom\Element;
-use Souplette\Dom\Exception\InvalidCharacter;
+use Souplette\Dom\Exception\InvalidCharacterError;
 use Souplette\Dom\Exception\SyntaxError;
 use Souplette\Dom\TokenList;
 
@@ -165,7 +165,7 @@ final class TokenListTest extends TestCase
 
     public function testWhitespaceInToken()
     {
-        $this->expectException(InvalidCharacter::class);
+        $this->expectException(InvalidCharacterError::class);
         $doc = DomBuilder::create()->tag('html')->getDocument();
         /** @var Element $node */
         $node = $doc->documentElement;

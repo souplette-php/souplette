@@ -4,7 +4,8 @@ namespace Souplette\Tests\WebPlatformTests\Dom\Nodes;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Dom\Implementation;
+use Souplette\Dom\Node\DocumentType;
+use Souplette\Dom\Node\Implementation;
 
 /**
  * Ported from web-platform-tests
@@ -15,7 +16,7 @@ final class NodeIsEqualNodeTest extends TestCase
     /**
      * @dataProvider documentTypeProvider
      */
-    public function testDocumentType(\DOMDocumentType $doctype, \DOMDocumentType $other, bool $expected)
+    public function testDocumentType(DocumentType $doctype, DocumentType $other, bool $expected)
     {
         Assert::assertSame($expected, $doctype->isEqualNode($other));
     }

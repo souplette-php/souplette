@@ -4,5 +4,4 @@ namespace Souplette\Dom\Exception;
 
 class DomException extends \Exception
 {
-
 }

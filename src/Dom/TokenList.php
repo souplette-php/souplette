@@ -2,7 +2,7 @@
 
 namespace Souplette\Dom;
 
-use Souplette\Dom\Exception\InvalidCharacter;
+use Souplette\Dom\Exception\InvalidCharacterError;
 use Souplette\Dom\Exception\SyntaxError;
 use Souplette\Dom\Internal\OrderedTokenSet;
 use WeakReference;
@@ -131,7 +131,7 @@ final class TokenList implements \Countable, \IteratorAggregate
             if ($token === '') {
                 throw new SyntaxError('Empty token.');
             } else if (strcspn($token, " \n\t\f") !== \strlen($token)) {
-                throw new InvalidCharacter('Token contains whitespace.');
+                throw new InvalidCharacterError('Token contains whitespace.');
             }
         }
     }
