@@ -5,15 +5,13 @@ namespace Souplette\Dom\Node;
 use Souplette\Dom\Namespaces;
 use Souplette\Dom\Node\Traits\ChildNodeTrait;
 use Souplette\Dom\Node\Traits\NonDocumentTypeChildNodeTrait;
-use Souplette\Dom\Node\Traits\ParentNodeTrait;
 
 /**
  * @property string $id
  * @property string $className
  */
-final class Element extends Node
+final class Element extends ParentNode
 {
-    use ParentNodeTrait;
     use ChildNodeTrait;
     use NonDocumentTypeChildNodeTrait;
 
@@ -43,22 +41,9 @@ final class Element extends Node
     public function __get(string $prop)
     {
         return match ($prop) {
-            'textContent' => $this->getTextContent(),
-            'children' => $this->getChildren(),
-            'firstElementChild' => $this->getFirstElementChild(),
-            'lastElementChild' => $this->getLastElementChild(),
-            'childElementCount' => $this->getChildElementCount(),
             'nextElementSibling' => $this->getNextElementSibling(),
             'previousElementSibling' => $this->getPreviousElementSibling(),
             default => parent::__get($prop),
-        };
-    }
-
-    public function __set(string $prop, mixed $value)
-    {
-        match ($prop) {
-            'textContent' => $this->setTextContent($value),
-            default => parent::__set($prop, $value),
         };
     }
 

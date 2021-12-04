@@ -1,24 +1,41 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom\Node\Traits;
+namespace Souplette\Dom\Node;
 
 use Souplette\Dom\Exception\DomException;
 use Souplette\Dom\Exception\HierarchyRequestError;
 use Souplette\Dom\Exception\NotFoundError;
-use Souplette\Dom\Node\Element;
-use Souplette\Dom\Node\Node;
-use Souplette\Dom\Node\Text;
 
 /**
- * Used by Document, DocumentFragment & Element
+ * Extended by Document, DocumentFragment & Element
  *
  * @property-read Element[] $children
  * @property-read ?Element $firstElementChild
  * @property-read ?Element $lastElementChild
  * @property-read int $childElementCount
  */
-trait ParentNodeTrait
+abstract class ParentNode extends Node
 {
+    public function __get(string $prop)
+    {
+        return match ($prop) {
+            'textContent' => $this->getTextContent(),
+            'children' => $this->getChildren(),
+            'firstElementChild' => $this->getFirstElementChild(),
+            'lastElementChild' => $this->getLastElementChild(),
+            'childElementCount' => $this->getChildElementCount(),
+            default => parent::__get($prop),
+        };
+    }
+
+    public function __set(string $prop, mixed $value)
+    {
+        match ($prop) {
+            'textContent' => $this->setTextContent($value),
+            default => parent::__set($prop, $value),
+        };
+    }
+
     public function hasChildNodes(): bool
     {
         return $this->first !== null;
@@ -27,7 +44,7 @@ trait ParentNodeTrait
     /**
      * @return Element[]
      */
-    protected function getChildren(): array
+    public function getChildren(): array
     {
         $children = [];
         for ($child = $this->first; $child; $child = $child->next) {
@@ -38,7 +55,7 @@ trait ParentNodeTrait
         return $children;
     }
 
-    protected function getFirstElementChild(): ?Element
+    public function getFirstElementChild(): ?Element
     {
         for ($child = $this->first; $child; $child = $child->next) {
             if ($child->nodeType === Node::ELEMENT_NODE) {
@@ -48,7 +65,7 @@ trait ParentNodeTrait
         return null;
     }
 
-    protected function getLastElementChild(): ?Element
+    public function getLastElementChild(): ?Element
     {
         for ($child = $this->last; $child; $child = $child->prev) {
             if ($child->nodeType === Node::ELEMENT_NODE) {
@@ -140,7 +157,7 @@ trait ParentNodeTrait
         $this->replaceAllWithNode($node);
     }
 
-    protected function getTextContent(): string
+    public function getTextContent(): string
     {
         $text = '';
         foreach ($this->descendants() as $node) {
@@ -151,7 +168,7 @@ trait ParentNodeTrait
         return $text;
     }
 
-    protected function setTextContent(string $value): void
+    public function setTextContent(string $value): void
     {
         if (!$value) {
             $this->replaceAllWithNode(null);
@@ -170,7 +187,7 @@ trait ParentNodeTrait
         return $this->areChildrenEqual($otherNode);
     }
 
-    private function areChildrenEqual(?Node $other): bool
+    protected function areChildrenEqual(?Node $other): bool
     {
         for (
             $child = $this->first, $otherChild = $other->first;

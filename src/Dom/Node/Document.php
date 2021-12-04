@@ -5,7 +5,6 @@ namespace Souplette\Dom\Node;
 use Souplette\Dom\Exception\InvalidCharacterError;
 use Souplette\Dom\Exception\NamespaceError;
 use Souplette\Dom\Namespaces;
-use Souplette\Dom\Node\Traits\ParentNodeTrait;
 use Souplette\Xml\QName;
 
 /**
@@ -13,10 +12,8 @@ use Souplette\Xml\QName;
  * @property-read string $characterSet
  * @property-read string $contentType
  */
-final class Document extends Node
+final class Document extends ParentNode
 {
-    use ParentNodeTrait;
-
     public readonly int $nodeType;
     public readonly string $nodeName;
     public readonly bool $isHTML;
@@ -33,11 +30,6 @@ final class Document extends Node
     {
         return match ($prop) {
             'implementation' => $this->implementation ??= new Implementation(),
-            'textContent' => $this->getTextContent(),
-            'children' => $this->getChildren(),
-            'firstElementChild' => $this->getFirstElementChild(),
-            'lastElementChild' => $this->getLastElementChild(),
-            'childElementCount' => $this->getChildElementCount(),
             default => parent::__get($prop),
         };
     }

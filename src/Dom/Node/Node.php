@@ -11,8 +11,8 @@ use Souplette\Dom\Exception\NotFoundError;
  * @property ?string $textContent
  *
  * @property-read ?Document $ownerDocument
- * @property-read ?Node $parentNode
- * @property-read ?Node $parentElement
+ * @property-read ?ParentNode $parentNode
+ * @property-read ?Element $parentElement
  * @property-read ?Node $firstChild
  * @property-read ?Node $lastChild
  * @property-read ?Node $nextSibling
@@ -49,7 +49,7 @@ abstract class Node
 
     protected ?string $value = null;
     protected ?Document $document = null;
-    protected ?Node $parent = null;
+    protected ?ParentNode $parent = null;
     protected ?Node $next = null;
     protected ?Node $prev = null;
     protected ?Node $first = null;
@@ -101,8 +101,8 @@ abstract class Node
      */
     public function getRootNode(array $options = []): Node
     {
-        $root = $this->parent;
-        while ($root) $root = $root->parent;
+        $root = $this;
+        while ($root->parent) $root = $root->parent;
         return $root;
     }
 
