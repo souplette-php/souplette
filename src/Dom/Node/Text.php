@@ -62,4 +62,11 @@ class Text extends CharacterData
 
         return $text;
     }
+
+    public function cloneNode(bool $deep = false): static
+    {
+        $copy = new static($this->value);
+        $copy->document = $this->document;
+        return $copy;
+    }
 }

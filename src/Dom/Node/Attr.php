@@ -66,4 +66,12 @@ final class Attr extends Node
             && $this->namespaceURI === $otherNode->namespaceURI
         );
     }
+
+    public function cloneNode(bool $deep = false): static
+    {
+        $copy = new self($this->localName, $this->namespaceURI, $this->prefix);
+        $copy->document = $this->document;
+        $copy->value = $this->value;
+        return $copy;
+    }
 }

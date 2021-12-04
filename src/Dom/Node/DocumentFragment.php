@@ -12,4 +12,18 @@ final class DocumentFragment extends ParentNode
         $this->nodeType = Node::DOCUMENT_FRAGMENT_NODE;
         $this->nodeName = '#document-fragment';
     }
+
+    public function cloneNode(bool $deep = false): static
+    {
+        $copy = new self();
+        $copy->document = $this->document;
+        if ($deep) {
+            for ($child = $this->first; $child; $child = $this->next) {
+                $childCopy = $child->cloneNode(true);
+                $copy->adopt($childCopy);
+                $copy->uncheckedAppendChild($childCopy);
+            }
+        }
+        return $copy;
+    }
 }

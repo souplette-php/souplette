@@ -51,6 +51,7 @@ class Element extends ParentNode
     public function __get(string $prop)
     {
         return match ($prop) {
+            'attributes' => $this->attributeList,
             'nextElementSibling' => $this->getNextElementSibling(),
             'previousElementSibling' => $this->getPreviousElementSibling(),
             default => parent::__get($prop),
@@ -69,6 +70,25 @@ class Element extends ParentNode
             }
         }
         return $this->areChildrenEqual($otherNode);
+    }
+
+    public function cloneNode(bool $deep = false): static
+    {
+        $copy = new self($this->localName, $this->namespaceURI, $this->prefix);
+        $copy->document = $this->document;
+        foreach ($this->attributeList as $attr) {
+            $copyAttribute = $attr->cloneNode();
+            $copyAttribute->parent = $copy;
+            $copy->attributeList[] = $copyAttribute;
+        }
+        if ($deep) {
+            for ($child = $this->first; $child; $child = $this->next) {
+                $childCopy = $child->cloneNode(true);
+                $copy->adopt($childCopy);
+                $copy->uncheckedAppendChild($childCopy);
+            }
+        }
+        return $copy;
     }
 
     /**

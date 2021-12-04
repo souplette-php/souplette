@@ -41,6 +41,15 @@ abstract class ParentNode extends Node
         return $this->first !== null;
     }
 
+    public function getChildNodes(): array
+    {
+        $nodes = [];
+        for ($child = $this->first; $child; $child = $child->next) {
+            $nodes[] = $child;
+        }
+        return $nodes;
+    }
+
     /**
      * @return Element[]
      */

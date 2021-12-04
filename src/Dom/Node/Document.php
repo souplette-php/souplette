@@ -21,8 +21,9 @@ final class Document extends ParentNode
     public readonly bool $isHTML;
     private Implementation $implementation;
 
-    public function __construct(string $type)
-    {
+    public function __construct(
+        public readonly string $type,
+    ) {
         $this->nodeType = Node::DOCUMENT_NODE;
         $this->nodeName = '#document';
         $this->isHTML = $type !== 'xml';
@@ -118,6 +119,21 @@ final class Document extends ParentNode
         $node = new Comment($data);
         $node->document = $this;
         return $node;
+    }
+
+    public function cloneNode(bool $deep = false): static
+    {
+        // TODO: encoding, contentType, URL, origin, mode
+        $copy = new self($this->type);
+        $copy->document = $this->document;
+        if ($deep) {
+            for ($child = $this->first; $child; $child = $this->next) {
+                $childCopy = $child->cloneNode(true);
+                $copy->adopt($childCopy);
+                $copy->uncheckedAppendChild($childCopy);
+            }
+        }
+        return $copy;
     }
 
     protected function getDocument(): ?Document

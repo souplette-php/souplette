@@ -17,6 +17,7 @@ use Souplette\Dom\Exception\NotFoundError;
  * @property-read ?Node $lastChild
  * @property-read ?Node $nextSibling
  * @property-read ?Node $previousSibling
+ * @property-read Node[] $childNodes
  */
 abstract class Node
 {
@@ -65,6 +66,7 @@ abstract class Node
             'lastChild' => $this->last,
             'nextSibling' => $this->next,
             'previousSibling' => $this->prev,
+            'childNodes' => $this->getChildNodes(),
             'parentElement' => $this->getParentElement(),
             default => throw new \RuntimeException(sprintf(
                 'Undefined property %s::$%s',
@@ -93,6 +95,8 @@ abstract class Node
 
     abstract public function isEqualNode(?Node $otherNode): bool;
 
+    abstract public function cloneNode(bool $deep = false): static;
+
     /**
      * The getRootNode(options) method steps are to return this’s shadow-including root if options["composed"] is true;
      * otherwise this’s root.
@@ -109,6 +113,11 @@ abstract class Node
     public function hasChildNodes(): bool
     {
         return false;
+    }
+
+    public function getChildNodes(): array
+    {
+        return [];
     }
 
     /**
@@ -166,10 +175,11 @@ abstract class Node
 
     protected function adopt(Node $node): void
     {
-        if ($node->document === $this->document) {
+        $doc = $this->getDocument();
+        if ($node->document === $doc) {
             return;
         }
-        $node->document = $this->document;
+        $node->document = $doc;
         for ($child = $node->first; $child; $child = $child->next) {
             $this->adopt($node);
         }

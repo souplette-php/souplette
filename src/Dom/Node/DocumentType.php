@@ -26,4 +26,11 @@ final class DocumentType extends Node
             && $this->systemId === $otherNode->systemId
         );
     }
+
+    public function cloneNode(bool $deep = false): static
+    {
+        $copy = new self($this->name, $this->publicId, $this->systemId);
+        $copy->document = $this->document;
+        return $copy;
+    }
 }
