@@ -3,6 +3,7 @@
 namespace Souplette\Dom\Node\Traits;
 
 use Souplette\Dom\Exception\DomException;
+use Souplette\Dom\Exception\NotFoundError;
 use Souplette\Dom\Node\Node;
 
 /**
@@ -79,6 +80,9 @@ trait ChildNodeTrait
         }
     }
 
+    /**
+     * @throws NotFoundError
+     */
     public function remove(): void
     {
         // 1. If this’s parent is null, then return.

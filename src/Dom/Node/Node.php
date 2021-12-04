@@ -143,12 +143,14 @@ abstract class Node
         throw new HierarchyRequestError();
     }
 
+    /**
+     * https://dom.spec.whatwg.org/#parent-element
+     */
     public function getParentElement(): ?Element
     {
-        for ($node = $this->parent; $node; $node = $node->parent) {
-            if ($node->nodeType === self::ELEMENT_NODE) {
-                return $node;
-            }
+        $parent = $this->parent;
+        if ($parent && $parent->nodeType === self::ELEMENT_NODE) {
+            return $parent;
         }
         return null;
     }
@@ -161,60 +163,6 @@ abstract class Node
     // ==============================================================
     // Mutation algorithms
     // ==============================================================
-
-    /**
-     * https://dom.spec.whatwg.org/#concept-node-pre-insert
-     * @throws DomException
-     */
-    protected function preInsertNodeBeforeChild(Node $node, ?Node $child): Node
-    {
-        // To pre-insert a node into a parent before a child, run these steps:
-        // 1. Ensure pre-insertion validity of node into parent before child.
-        $this->ensurePreInsertionValidity($node, $child);
-        // 2. Let referenceChild be child.
-        $referenceChild = $child;
-        // 3. If referenceChild is node, then set referenceChild to node’s next sibling.
-        if ($referenceChild === $node) {
-            $referenceChild = $node->next;
-        }
-        // 4. Insert node into parent before referenceChild.
-        $this->insertNodeBeforeChild($node, $referenceChild);
-        // 5. Return node.
-        return $node;
-    }
-
-    /**
-     * https://dom.spec.whatwg.org/#concept-node-insert
-     */
-    protected function insertNodeBeforeChild(Node $node, ?Node $child): void
-    {
-        // 1. Let nodes be node’s children, if node is a DocumentFragment node; otherwise « node ».
-        $isFragment = $node->nodeType === self::DOCUMENT_FRAGMENT_NODE;
-        $nodes = $isFragment ? $node->collectChildNodes() : [$node];
-        // 2. Let count be nodes’s size.
-        // 3. If count is 0, then return.
-        if (!$nodes) return;
-        // 4. If node is a DocumentFragment node, then:
-        if ($isFragment) {
-            // 1. Remove its children with the suppress observers flag set.
-            // 2. Queue a tree mutation record for node with « », nodes, null, and null.
-        }
-        // skipping step 5 (live ranges)
-        // skipping step 6 (mutation records)
-        // 7. For each node in nodes, in tree order:
-        foreach ($nodes as $current) {
-            // 1. Adopt node into parent’s node document.
-            $this->adopt($current);
-            // 2. If child is null, then append node to parent’s children.
-            $current->unlink();
-            if (!$child) {
-                $this->uncheckedAppendChild($current);
-            } else {
-                // 3. Otherwise, insert node into parent’s children before child’s index.
-                $this->uncheckedInsertBefore($current, $child);
-            }
-        }
-    }
 
     protected function adopt(Node $node): void
     {
@@ -276,238 +224,9 @@ abstract class Node
         $this->next = $this->prev = null;
     }
 
-    /**
-     * https://dom.spec.whatwg.org/#concept-node-pre-remove
-     */
-    protected function preRemoveChild(Node $child): Node
-    {
-        // 1. If child’s parent is not parent, then throw a "NotFoundError" DOMException.
-        if ($child->parent !== $this) {
-            throw new NotFoundError();
-        }
-        // 2. Remove child.
-        $this->removeNode($child);
-        // 3. Return child.
-        return $child;
-    }
-
-    /**
-     * https://dom.spec.whatwg.org/#concept-node-remove
-     */
-    protected function removeNode(Node $node)
-    {
-        // 1. Let parent be node’s parent
-        $parent = $node->parent;
-        // 2. Assert: parent is non-null.
-        assert($parent !== null);
-        // 3. Let index be node’s index.
-        $node->unlink();
-        // blah blah live ranges...
-
-        // 8. For each NodeIterator object iterator whose root’s node document is node’s node document,
-        // run the NodeIterator pre-removing steps given node and iterator.
-
-        // blah blah shadow dom, mutation records, etc...
-    }
-
-    /**
-     * https://dom.spec.whatwg.org/#concept-node-replace
-     *
-     * @throws HierarchyRequestError|NotFoundError
-     */
-    protected function replaceChildWithNode(Node $child, Node $node): Node
-    {
-        // 1. If parent is not a Document, DocumentFragment, or Element node,
-        // then throw a "HierarchyRequestError" DOMException.
-        match ($this->nodeType) {
-            self::DOCUMENT_NODE, self::DOCUMENT_FRAGMENT_NODE, self::ELEMENT_NODE => null,
-            default => throw new HierarchyRequestError(),
-        };
-        // 2. If node is a host-including inclusive ancestor of parent,
-        // then throw a "HierarchyRequestError" DOMException.
-        for ($current = $this; $current; $current = $current->parent) {
-            if ($current === $node) {
-                throw new HierarchyRequestError();
-            }
-        }
-        // 3. If child’s parent is not parent, then throw a "NotFoundError" DOMException.
-        if ($child->parent !== $this) {
-            throw new NotFoundError();
-        }
-        // 4. If node is not a DocumentFragment, DocumentType, Element, or CharacterData node,
-        // then throw a "HierarchyRequestError" DOMException.
-        match ($this->nodeType) {
-            self::DOCUMENT_FRAGMENT_NODE, self::DOCUMENT_TYPE_NODE, self::ELEMENT_NODE,
-            self::TEXT_NODE, self::COMMENT_NODE, self::CDATA_SECTION_NODE, self::PROCESSING_INSTRUCTION_NODE
-            => null,
-            default => throw new HierarchyRequestError(),
-        };
-        // 5. If either node is a Text node and parent is a document,
-        // or node is a doctype and parent is not a document,
-        // then throw a "HierarchyRequestError" DOMException.
-        if (
-            ($node->nodeType === self::TEXT_NODE && $this->nodeType === self::DOCUMENT_NODE)
-            || ($node->nodeType === self::DOCUMENT_TYPE_NODE && $this->nodeType !== self::DOCUMENT_NODE)
-        ) {
-            throw new HierarchyRequestError();
-        }
-        // 6. If parent is a document, and any of the statements below,
-        // switched on the interface node implements, are true,
-        // then throw a "HierarchyRequestError" DOMException.
-        if ($this->nodeType === self::DOCUMENT_NODE) {
-            switch ($node->nodeType) {
-                case self::DOCUMENT_FRAGMENT_NODE:
-                    $nodeChildElementCount = $node->getChildElementCount();
-                    if ($nodeChildElementCount > 1
-                        || $node->hasChildOfType(self::TEXT_NODE)
-                        || ($nodeChildElementCount === 1 && (
-                                $this->hasChildOfTypeThatIsNotChild(self::ELEMENT_NODE, $child)
-                                || $child->hasFollowingSiblingOfType(self::DOCUMENT_TYPE_NODE)
-                            ))
-                    ) {
-                        throw new HierarchyRequestError();
-                    }
-                    break;
-                case self::ELEMENT_NODE:
-                    if ($this->hasChildOfTypeThatIsNotChild(self::ELEMENT_NODE, $child)
-                        || $child->hasFollowingSiblingOfType(self::DOCUMENT_TYPE_NODE)
-                    ) {
-                        throw new HierarchyRequestError();
-                    }
-                    break;
-                case self::DOCUMENT_TYPE_NODE:
-                    if ($this->hasChildOfTypeThatIsNotChild(self::DOCUMENT_TYPE_NODE, $child)
-                        || $child->hasPrecedingSiblingOfType(self::ELEMENT_NODE)
-                    ) {
-                        throw new HierarchyRequestError();
-                    }
-                    break;
-            }
-        }
-        // 7. Let referenceChild be child’s next sibling.
-        $referenceChild = $child->next;
-        // 8. If referenceChild is node, then set referenceChild to node’s next sibling.
-        if ($referenceChild === $node) $referenceChild = $node->next;
-        // 11. If child’s parent is non-null, then:
-        if ($child->parent) {
-            // 1. Set removedNodes to « child ».
-            // 2. Remove child with the suppress observers flag set.
-            $this->removeNode($child);
-        }
-        // 12. Let nodes be node’s children if node is a DocumentFragment node; otherwise « node ».
-        // 13. Insert node into parent before referenceChild with the suppress observers flag set.
-        $this->insertNodeBeforeChild($node, $referenceChild);
-        // 14. Queue a tree mutation record for parent with nodes, removedNodes, previousSibling, and referenceChild.
-        // 15. Return child.
-        return $child;
-    }
-
-    /**
-     * https://dom.spec.whatwg.org/#concept-node-replace-all
-     */
-    protected function replaceAllWithNode(?Node $node)
-    {
-        // 1. Let removedNodes be parent’s children.
-        // 2. Let addedNodes be the empty set.
-        // 3. If node is a DocumentFragment node, then set addedNodes to node’s children.
-        // 4. Otherwise, if node is non-null, set addedNodes to « node ».
-        // 5. Remove all parent’s children, in tree order, with the suppress observers flag set.
-        $current = $this->first;
-        while ($current) {
-            $next = $current->next;
-            $this->removeNode($current);
-            $current = $next;
-        }
-        // 6. If node is non-null, then insert node into parent before null with the suppress observers flag set.
-        if ($node) {
-            $this->insertNodeBeforeChild($node, null);
-        }
-        // 7. If either addedNodes or removedNodes is not empty,
-        // then queue a tree mutation record for parent with addedNodes, removedNodes, null, and null.
-    }
-
-    /**
-     * https://dom.spec.whatwg.org/#concept-node-ensure-pre-insertion-validity
-     * @throws HierarchyRequestError
-     * @throws NotFoundError
-     */
-    protected function ensurePreInsertionValidity(Node $node, ?Node $child)
-    {
-        // 1. If parent is not a Document, DocumentFragment, or Element node, then throw a "HierarchyRequestError" DOMException.
-        match ($this->nodeType) {
-            self::DOCUMENT_NODE, self::DOCUMENT_FRAGMENT_NODE, self::ELEMENT_NODE => null,
-            default => throw new HierarchyRequestError(),
-        };
-        // 2. If node is a host-including inclusive ancestor of parent, then throw a "HierarchyRequestError" DOMException.
-        for ($current = $this; $current; $current = $current->parent) {
-            if ($current === $node) {
-                throw new HierarchyRequestError();
-            }
-        }
-        // 3. If child is non-null and its parent is not parent, then throw a "NotFoundError" DOMException.
-        if ($child && $child->parent !== $this) {
-            throw new NotFoundError();
-        }
-        // 4. If node is not a DocumentFragment, DocumentType, Element, or CharacterData node, then throw a "HierarchyRequestError" DOMException.
-        match ($node->nodeType) {
-            self::DOCUMENT_FRAGMENT_NODE, self::DOCUMENT_TYPE_NODE, self::ELEMENT_NODE,
-            self::TEXT_NODE, self::COMMENT_NODE, self::CDATA_SECTION_NODE, self::PROCESSING_INSTRUCTION_NODE
-                => null,
-            default => throw new HierarchyRequestError(),
-        };
-        // 5. If either node is a Text node and parent is a document, or node is a doctype and parent is not a document,
-        // then throw a "HierarchyRequestError" DOMException.
-        if (
-            ($node->nodeType === self::TEXT_NODE && $this->nodeType === self::DOCUMENT_NODE)
-            || ($node->nodeType === self::DOCUMENT_TYPE_NODE && $this->nodeType !== self::DOCUMENT_NODE)
-        ) {
-            throw new HierarchyRequestError();
-        }
-        // 6. If parent is a document, and any of the statements below,
-        // switched on the interface node implements, are true,
-        // then throw a "HierarchyRequestError" DOMException.
-        if ($this->nodeType === self::DOCUMENT_NODE) {
-            switch ($node->nodeType) {
-                case self::DOCUMENT_FRAGMENT_NODE:
-                    // If node has more than one element child or has a Text node child.
-                    $nodeChildElementCount = $node->getChildElementCount();
-                    if ($nodeChildElementCount > 1 || $node->hasChildOfType(self::TEXT_NODE)) {
-                        throw new HierarchyRequestError();
-                    }
-                    // Otherwise, if node has one element child and either parent has an element child,
-                    //  child is a doctype, or child is non-null and a doctype is following child.
-                    if ($nodeChildElementCount === 1
-                        && (
-                            $this->getChildElementCount() > 0
-                            || ($child && $child->nodeType === self::DOCUMENT_TYPE_NODE)
-                            || ($child && $child->hasFollowingSiblingOfType(self::DOCUMENT_TYPE_NODE))
-                        )
-                    ) {
-                        throw new HierarchyRequestError();
-                    }
-                    break;
-                case self::ELEMENT_NODE:
-                    // parent has an element child, child is a doctype, or child is non-null and a doctype is following child.
-                    if ($this->getChildElementCount() > 0
-                        || ($child && $child->nodeType === self::DOCUMENT_TYPE_NODE)
-                        || ($child && $child->hasFollowingSiblingOfType(self::DOCUMENT_TYPE_NODE))
-                    ) {
-                        throw new HierarchyRequestError();
-                    }
-                    break;
-                case self::DOCUMENT_TYPE_NODE:
-                    // parent has a doctype child, child is non-null and an element is preceding child,
-                    // or child is null and parent has an element child.
-                    if ($this->hasChildOfType(self::DOCUMENT_TYPE_NODE)
-                        || ($child && $child->hasPrecedingSiblingOfType(self::ELEMENT_NODE))
-                        || (!$child && $this->hasChildOfType(self::ELEMENT_NODE))
-                    ) {
-                        throw new HierarchyRequestError();
-                    }
-                    break;
-            }
-        }
-    }
+    // ==============================================================
+    // Helper methods
+    // ==============================================================
 
     /**
      * @throws DomException
@@ -539,49 +258,7 @@ abstract class Node
         return $frag;
     }
 
-    // ==============================================================
-    // Helper methods
-    // ==============================================================
-
-    protected function getDocument(): ?Document
-    {
-        return $this->document;
-    }
-
-    /**
-     * @return iterable<Node>
-     */
-    protected function descendants(): iterable
-    {
-        $node = $this->first;
-        while ($node) {
-            yield $node;
-            if ($node->first) {
-                $node = $node->first;
-                continue;
-            }
-            while ($node) {
-                if ($node === $this) {
-                    break 2;
-                }
-                if ($node->next) {
-                    $node = $node->next;
-                    continue 2;
-                }
-                $node = $node->parent;
-            }
-        }
-    }
-
-    private function hasChildOfType(int $type): bool
-    {
-        for ($child = $this->first; $child; $child = $child->next) {
-            if ($child->nodeType === $type) return true;
-        }
-        return false;
-    }
-
-    private function hasPrecedingSiblingOfType(int $type): bool
+    protected function hasPrecedingSiblingOfType(int $type): bool
     {
         for ($prev = $this->prev; $prev; $prev = $prev->prev) {
             if ($prev->nodeType === $type) return true;
@@ -589,7 +266,7 @@ abstract class Node
         return false;
     }
 
-    private function hasFollowingSiblingOfType(int $type): bool
+    protected function hasFollowingSiblingOfType(int $type): bool
     {
         for ($next = $this->next; $next; $next = $next->next) {
             if ($next->nodeType === $type) return true;
@@ -597,23 +274,8 @@ abstract class Node
         return false;
     }
 
-    private function hasChildOfTypeThatIsNotChild(int $type, Node $child): bool
+    protected function getDocument(): ?Document
     {
-        for ($node = $this->first; $node; $node = $node->next) {
-            if ($node->nodeType === $type && $node !== $child) return true;
-        }
-        return false;
-    }
-
-    /**
-     * @return Node[]
-     */
-    private function collectChildNodes(): array
-    {
-        $children = [];
-        for ($child = $this->first; $child; $child = $child->next) {
-            $children[] = $child;
-        }
-        return $children;
+        return $this->document;
     }
 }

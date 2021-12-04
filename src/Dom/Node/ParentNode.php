@@ -200,4 +200,255 @@ abstract class ParentNode extends Node
         }
         return true;
     }
+
+    /**
+     * @return iterable<Node>
+     */
+    protected function descendants(): iterable
+    {
+        $node = $this->first;
+        while ($node) {
+            yield $node;
+            if ($node->first) {
+                $node = $node->first;
+                continue;
+            }
+            while ($node) {
+                if ($node === $this) {
+                    break 2;
+                }
+                if ($node->next) {
+                    $node = $node->next;
+                    continue 2;
+                }
+                $node = $node->parent;
+            }
+        }
+    }
+
+    // ==============================================================
+    // Mutation algorithms
+    // ==============================================================
+
+    /**
+     * https://dom.spec.whatwg.org/#concept-node-pre-insert
+     * @throws DomException
+     */
+    protected function preInsertNodeBeforeChild(Node $node, ?Node $child): Node
+    {
+        // To pre-insert a node into a parent before a child, run these steps:
+        // 1. Ensure pre-insertion validity of node into parent before child.
+        $this->ensurePreInsertionValidity($node, $child);
+        // 2. Let referenceChild be child.
+        $referenceChild = $child;
+        // 3. If referenceChild is node, then set referenceChild to node’s next sibling.
+        if ($referenceChild === $node) {
+            $referenceChild = $node->next;
+        }
+        // 4. Insert node into parent before referenceChild.
+        $this->insertNodeBeforeChild($node, $referenceChild);
+        // 5. Return node.
+        return $node;
+    }
+
+    /**
+     * https://dom.spec.whatwg.org/#concept-node-insert
+     */
+    protected function insertNodeBeforeChild(Node $node, ?Node $child): void
+    {
+        // 1. Let nodes be node’s children, if node is a DocumentFragment node; otherwise « node ».
+        $isFragment = $node->nodeType === self::DOCUMENT_FRAGMENT_NODE;
+        $nodes = $isFragment ? $node->collectChildNodes() : [$node];
+        // 2. Let count be nodes’s size.
+        // 3. If count is 0, then return.
+        if (!$nodes) return;
+        // 4. If node is a DocumentFragment node, then:
+        if ($isFragment) {
+            // 1. Remove its children with the suppress observers flag set.
+            // 2. Queue a tree mutation record for node with « », nodes, null, and null.
+        }
+        // skipping step 5 (live ranges)
+        // skipping step 6 (mutation records)
+        // 7. For each node in nodes, in tree order:
+        foreach ($nodes as $current) {
+            // 1. Adopt node into parent’s node document.
+            $this->adopt($current);
+            // 2. If child is null, then append node to parent’s children.
+            $current->unlink();
+            if (!$child) {
+                $this->uncheckedAppendChild($current);
+            } else {
+                // 3. Otherwise, insert node into parent’s children before child’s index.
+                $this->uncheckedInsertBefore($current, $child);
+            }
+        }
+    }
+
+    /**
+     * https://dom.spec.whatwg.org/#concept-node-replace
+     *
+     * @throws HierarchyRequestError|NotFoundError
+     */
+    protected function replaceChildWithNode(Node $child, Node $node): Node
+    {
+        $this->ensureReplacementValidity($child, $node);
+        // 7. Let referenceChild be child’s next sibling.
+        $referenceChild = $child->next;
+        // 8. If referenceChild is node, then set referenceChild to node’s next sibling.
+        if ($referenceChild === $node) $referenceChild = $node->next;
+        // 11. If child’s parent is non-null, then:
+        if ($child->parent) {
+            // 1. Set removedNodes to « child ».
+            // 2. Remove child with the suppress observers flag set.
+            $this->removeNode($child);
+        }
+        // 12. Let nodes be node’s children if node is a DocumentFragment node; otherwise « node ».
+        // 13. Insert node into parent before referenceChild with the suppress observers flag set.
+        $this->insertNodeBeforeChild($node, $referenceChild);
+        // 14. Queue a tree mutation record for parent with nodes, removedNodes, previousSibling, and referenceChild.
+        // 15. Return child.
+        return $child;
+    }
+
+
+    /**
+     * https://dom.spec.whatwg.org/#concept-node-pre-remove
+     */
+    protected function preRemoveChild(Node $child): Node
+    {
+        // 1. If child’s parent is not parent, then throw a "NotFoundError" DOMException.
+        if ($child->parent !== $this) {
+            throw new NotFoundError();
+        }
+        // 2. Remove child.
+        $this->removeNode($child);
+        // 3. Return child.
+        return $child;
+    }
+
+    /**
+     * https://dom.spec.whatwg.org/#concept-node-remove
+     */
+    protected function removeNode(Node $node)
+    {
+        // 1. Let parent be node’s parent
+        $parent = $node->parent;
+        // 2. Assert: parent is non-null.
+        assert($parent !== null);
+        // 3. Let index be node’s index.
+        $node->unlink();
+        // blah blah live ranges...
+
+        // 8. For each NodeIterator object iterator whose root’s node document is node’s node document,
+        // run the NodeIterator pre-removing steps given node and iterator.
+
+        // blah blah shadow dom, mutation records, etc...
+    }
+
+    /**
+     * https://dom.spec.whatwg.org/#concept-node-replace-all
+     */
+    protected function replaceAllWithNode(?Node $node)
+    {
+        // 1. Let removedNodes be parent’s children.
+        // 2. Let addedNodes be the empty set.
+        // 3. If node is a DocumentFragment node, then set addedNodes to node’s children.
+        // 4. Otherwise, if node is non-null, set addedNodes to « node ».
+        // 5. Remove all parent’s children, in tree order, with the suppress observers flag set.
+        $current = $this->first;
+        while ($current) {
+            $next = $current->next;
+            $this->removeNode($current);
+            $current = $next;
+        }
+        // 6. If node is non-null, then insert node into parent before null with the suppress observers flag set.
+        if ($node) {
+            $this->insertNodeBeforeChild($node, null);
+        }
+        // 7. If either addedNodes or removedNodes is not empty,
+        // then queue a tree mutation record for parent with addedNodes, removedNodes, null, and null.
+    }
+
+    protected const VALID_CHILD_TYPES = [
+        Node::DOCUMENT_FRAGMENT_NODE => true,
+        Node::ELEMENT_NODE => true,
+        Node::TEXT_NODE => true,
+        Node::COMMENT_NODE => true,
+        Node::CDATA_SECTION_NODE => true,
+        Node::PROCESSING_INSTRUCTION_NODE => true,
+    ];
+
+    /**
+     * https://dom.spec.whatwg.org/#concept-node-ensure-pre-insertion-validity
+     * @throws HierarchyRequestError
+     * @throws NotFoundError
+     */
+    protected function ensurePreInsertionValidity(Node $node, ?Node $child): void
+    {
+        // 1. If parent is not a Document, DocumentFragment, or Element node,
+        // then throw a "HierarchyRequestError" DOMException.
+        // NOTE: this step is ensured by the class hierarchy
+        // 2. If node is a host-including inclusive ancestor of parent, then throw a "HierarchyRequestError" DOMException.
+        for ($current = $this; $current; $current = $current->parent) {
+            if ($current === $node) {
+                throw new HierarchyRequestError();
+            }
+        }
+        // 3. If child is non-null and its parent is not parent, then throw a "NotFoundError" DOMException.
+        if ($child && $child->parent !== $this) {
+            throw new NotFoundError();
+        }
+        // 4. If node is not a DocumentFragment, DocumentType, Element, or CharacterData node,
+        // then throw a "HierarchyRequestError" DOMException.
+        if (!isset(static::VALID_CHILD_TYPES[$node->nodeType])) {
+            throw new HierarchyRequestError();
+        }
+        // 5. If either node is a Text node and parent is a document, or node is a doctype and parent is not a document,
+        // then throw a "HierarchyRequestError" DOMException.
+        // NOTE: this is handled by he VALID_CHILD_TYPE constant overridden by the Document class
+
+        // 6. If parent is a document, and any of the statements below,
+        // switched on the interface node implements, are true,
+        // then throw a "HierarchyRequestError" DOMException.
+        // NOTE: this step is ensured by the Document class
+    }
+
+    /**
+     * Handles validation steps for https://dom.spec.whatwg.org/#concept-node-replace
+     *
+     * @throws NotFoundError
+     * @throws HierarchyRequestError
+     */
+    protected function ensureReplacementValidity(Node $child, Node $node): void
+    {
+        $this->ensurePreInsertionValidity($node, $child);
+    }
+
+    /**
+     * @return Node[]
+     */
+    protected function collectChildNodes(): array
+    {
+        $children = [];
+        for ($child = $this->first; $child; $child = $child->next) {
+            $children[] = $child;
+        }
+        return $children;
+    }
+
+    protected function hasChildOfType(int $type): bool
+    {
+        for ($child = $this->first; $child; $child = $child->next) {
+            if ($child->nodeType === $type) return true;
+        }
+        return false;
+    }
+
+    protected function hasChildOfTypeThatIsNotChild(int $type, Node $child): bool
+    {
+        for ($node = $this->first; $node; $node = $node->next) {
+            if ($node->nodeType === $type && $node !== $child) return true;
+        }
+        return false;
+    }
 }
