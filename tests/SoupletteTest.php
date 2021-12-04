@@ -4,8 +4,8 @@ namespace Souplette\Tests;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Dom\Document;
-use Souplette\Dom\Implementation;
+use Souplette\Dom\Legacy\Document;
+use Souplette\Dom\Legacy\Implementation;
 use Souplette\Souplette;
 
 final class SoupletteTest extends TestCase

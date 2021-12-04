@@ -4,8 +4,8 @@ namespace Souplette\Dom\Api;
 
 
 use Souplette\Dom\Api\Native\DomElementInterface;
-use Souplette\Dom\Attr;
-use Souplette\Dom\Element;
+use Souplette\Dom\Legacy\Attr;
+use Souplette\Dom\Legacy\Element;
 use Souplette\Dom\TokenList;
 
 /**

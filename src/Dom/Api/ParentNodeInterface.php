@@ -3,7 +3,7 @@
 namespace Souplette\Dom\Api;
 
 use DOMNode;
-use Souplette\Dom\Element;
+use Souplette\Dom\Legacy\Element;
 
 /**
  * @see https://dom.spec.whatwg.org/#parentnode

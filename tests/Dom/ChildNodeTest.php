@@ -4,8 +4,7 @@ namespace Souplette\Tests\Dom;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Dom\Api\ChildNodeInterface;
-use Souplette\Dom\Document;
+use Souplette\Dom\Legacy\Document;
 
 final class ChildNodeTest extends TestCase
 {

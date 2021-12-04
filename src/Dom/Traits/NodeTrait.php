@@ -2,12 +2,11 @@
 
 namespace Souplette\Dom\Traits;
 
-use DOMElement;
 use DOMNode;
 use Souplette\Dom\Api\NodeInterface;
-use Souplette\Dom\Document;
-use Souplette\Dom\Element;
 use Souplette\Dom\Internal\DomIdioms;
+use Souplette\Dom\Legacy\Document;
+use Souplette\Dom\Legacy\Element;
 
 /**
  * @property-read Document|null $ownerDocument

@@ -4,9 +4,9 @@ namespace Souplette\Tests\Dom;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Dom\Element;
 use Souplette\Dom\Exception\InvalidCharacterError;
 use Souplette\Dom\Exception\SyntaxError;
+use Souplette\Dom\Legacy\Element;
 use Souplette\Dom\TokenList;
 
 final class TokenListTest extends TestCase

@@ -1,8 +1,7 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom;
+namespace Souplette\Dom\Legacy;
 
-use DOMNode;
 use Souplette\Dom\Api\NodeInterface;
 use Souplette\Dom\Traits\NodeTrait;
 

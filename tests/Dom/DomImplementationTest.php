@@ -5,9 +5,9 @@ namespace Souplette\Tests\Dom;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Dom\DocumentModes;
-use Souplette\Dom\Document;
-use Souplette\Dom\Implementation;
-use Souplette\Dom\Element;
+use Souplette\Dom\Legacy\Document;
+use Souplette\Dom\Legacy\Element;
+use Souplette\Dom\Legacy\Implementation;
 
 final class DomImplementationTest extends TestCase
 {

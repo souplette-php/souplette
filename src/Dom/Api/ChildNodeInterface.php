@@ -2,7 +2,7 @@
 
 namespace Souplette\Dom\Api;
 
-use Souplette\Dom\Element;
+use Souplette\Dom\Legacy\Element;
 
 /**
  * @see https://dom.spec.whatwg.org/#interface-childnode

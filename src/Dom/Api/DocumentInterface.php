@@ -3,8 +3,8 @@
 namespace Souplette\Dom\Api;
 
 use Souplette\Dom\Api\Native\DomDocumentInterface;
-use Souplette\Dom\Element;
-use Souplette\Dom\Implementation;
+use Souplette\Dom\Legacy\Element;
+use Souplette\Dom\Legacy\Implementation;
 
 /**
  * @see https://dom.spec.whatwg.org/#document

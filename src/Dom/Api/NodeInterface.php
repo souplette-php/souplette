@@ -4,8 +4,8 @@ namespace Souplette\Dom\Api;
 
 use DOMNode;
 use Souplette\Dom\Api\Native\DomNodeInterface;
-use Souplette\Dom\Document;
-use Souplette\Dom\Element;
+use Souplette\Dom\Legacy\Document;
+use Souplette\Dom\Legacy\Element;
 
 /**
  * @see https://dom.spec.whatwg.org/#interface-node

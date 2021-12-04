@@ -5,8 +5,8 @@ namespace Souplette\Css\Selectors\Query;
 use DOMDocument;
 use DOMElement;
 use Souplette\Css\Selectors\Node\ComplexSelector;
-use Souplette\Dom\Document;
 use Souplette\Dom\Internal\DomIdioms;
+use Souplette\Dom\Legacy\Document;
 
 final class QueryContext
 {

@@ -3,8 +3,8 @@
 namespace Souplette\Dom\Traits;
 
 use DOMNode;
-use Souplette\Dom\Element;
 use Souplette\Dom\Internal\DomIdioms;
+use Souplette\Dom\Legacy\Element;
 
 /**
  * @property-read Element|null $nextElementSibling

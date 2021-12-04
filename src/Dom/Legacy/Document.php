@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom;
+namespace Souplette\Dom\Legacy;
 
 use DOMAttr;
 use DOMComment;
@@ -13,7 +13,9 @@ use DOMText;
 use Souplette\Css\Selectors\SelectorQuery;
 use Souplette\Dom\Api\DocumentInterface;
 use Souplette\Dom\Api\NodeInterface;
+use Souplette\Dom\DocumentModes;
 use Souplette\Dom\Internal\PropertyMaps;
+use Souplette\Dom\Namespaces;
 use Souplette\Dom\Traits\NodeTrait;
 use Souplette\Dom\Traits\ParentNodeTrait;
 use Souplette\Encoding\EncodingLookup;

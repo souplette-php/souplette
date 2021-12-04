@@ -2,11 +2,10 @@
 
 namespace Souplette\Dom\Traits;
 
-use DOMElement;
 use DOMNode;
 use Souplette\Css\Selectors\SelectorQuery;
-use Souplette\Dom\Element;
 use Souplette\Dom\Internal\DomIdioms;
+use Souplette\Dom\Legacy\Element;
 
 /**
  * @property-read Element|null $firstElementChild

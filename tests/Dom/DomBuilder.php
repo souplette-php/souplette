@@ -2,7 +2,7 @@
 
 namespace Souplette\Tests\Dom;
 
-use Souplette\Dom\Document;
+use Souplette\Dom\Legacy\Document;
 use Souplette\Dom\Namespaces;
 use Souplette\Html\TreeBuilder\Elements;
 

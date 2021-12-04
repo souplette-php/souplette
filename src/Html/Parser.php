@@ -3,7 +3,7 @@
 namespace Souplette\Html;
 
 use JetBrains\PhpStorm\Pure;
-use Souplette\Dom\Implementation;
+use Souplette\Dom\Legacy\Implementation;
 use Souplette\Encoding\Encoding;
 use Souplette\Encoding\EncodingLookup;
 use Souplette\Encoding\Exception\EncodingChanged;

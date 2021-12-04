@@ -4,7 +4,7 @@ namespace Souplette\Tests\Dom;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Dom\Element;
+use Souplette\Dom\Legacy\Element;
 
 final class DocumentTest extends TestCase
 {

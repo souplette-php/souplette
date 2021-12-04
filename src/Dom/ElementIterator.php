@@ -4,6 +4,7 @@ namespace Souplette\Dom;
 
 use DOMElement;
 use DOMParentNode;
+use Souplette\Dom\Legacy\Element;
 
 final class ElementIterator
 {
