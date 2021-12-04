@@ -2,15 +2,20 @@
 
 namespace Souplette\Dom\Node;
 
+use Souplette\Dom\Exception\InvalidCharacterError;
+use Souplette\Dom\Exception\NamespaceError;
+use Souplette\Dom\Exception\NotFoundError;
+use Souplette\Dom\NamedNodeMap;
 use Souplette\Dom\Namespaces;
 use Souplette\Dom\Node\Traits\ChildNodeTrait;
 use Souplette\Dom\Node\Traits\NonDocumentTypeChildNodeTrait;
+use Souplette\Xml\QName;
 
 /**
  * @property string $id
  * @property string $className
  */
-final class Element extends ParentNode
+class Element extends ParentNode
 {
     use ChildNodeTrait;
     use NonDocumentTypeChildNodeTrait;
@@ -22,6 +27,11 @@ final class Element extends ParentNode
     public readonly ?string $namespaceURI;
     public readonly ?string $prefix;
     public readonly bool $isHTML;
+
+    /**
+     * @var Attr[]
+     */
+    protected array $attributeList = [];
 
     public function __construct(string $localName, ?string $namespace = null, ?string $prefix = null)
     {
@@ -52,12 +62,209 @@ final class Element extends ParentNode
         if (!$otherNode) return false;
         if ($otherNode === $this) return true;
         if ($otherNode->nodeType !== $this->nodeType) return false;
-        foreach ($this->attributes as $attribute) {
-            $otherAttr = $otherNode->attributes->getNamedItem($attribute->name);
+        foreach ($this->attributeList as $attribute) {
+            $otherAttr = $otherNode->getAttributeNS($attribute->namespaceURI, $attribute->localName);
             if (!$attribute->isEqualNode($otherAttr)) {
                 return false;
             }
         }
         return $this->areChildrenEqual($otherNode);
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getAttributeNames(): array
+    {
+        if (!$this->attributeList) return [];
+        return array_map(fn(Attr $attr) => $attr->name, $this->attributeList);
+    }
+
+    public function getAttribute(string $qualifiedName): ?string
+    {
+        $attr = $this->getAttributeNode($qualifiedName);
+        return $attr?->value;
+    }
+
+    public function getAttributeNS(?string $namespace, string $localName): ?string
+    {
+        $attr = $this->getAttributeNodeNS($namespace, $localName);
+        return $attr?->value;
+    }
+
+    public function setAttribute(string $qualifiedName, string $value): void
+    {
+        if (!QName::isValidName($qualifiedName)) {
+            throw new InvalidCharacterError();
+        }
+        if ($this->isHTML && $this->document?->isHTML) {
+            $qualifiedName = strtolower($qualifiedName);
+        }
+        $attribute = null;
+        foreach ($this->attributeList as $attr) {
+            if ($attr->name === $qualifiedName) {
+                $attribute = $attr;
+                break;
+            }
+        }
+        if (!$attribute) {
+            $attribute = new Attr($qualifiedName);
+            $attribute->document = $this->document;
+            $attribute->parent = $this;
+            $attribute->value = $value;
+            $this->attributeList[] = $attribute;
+            return;
+        }
+        $attribute->value = $value;
+    }
+
+    /**
+     * @throws InvalidCharacterError
+     * @throws NamespaceError
+     */
+    public function setAttributeNS(?string $namespace, string $qualifiedName, string $value): void
+    {
+        [$namespace, $prefix, $localName] = QName::validateAndExtract($qualifiedName, $namespace);
+        $attribute = $this->getAttributeNodeNS($namespace, $localName);
+        if (!$attribute) {
+            $attribute = new Attr($localName, $namespace, $prefix);
+            $attribute->document = $this->document;
+            $attribute->parent = $this;
+            $attribute->value = $value;
+            $this->attributeList[] = $attribute;
+            return;
+        }
+        $attribute->value = $value;
+    }
+
+    public function hasAttribute(string $qualifiedName): bool
+    {
+        return $this->getAttributeNode($qualifiedName) !== null;
+    }
+
+    public function hasAttributeNS(?string $namespace, string $localName): bool
+    {
+        return $this->getAttributeNodeNS($namespace, $localName) !== null;
+    }
+
+    /**
+     * @see https://dom.spec.whatwg.org/#dom-element-toggleattribute
+     * @throws InvalidCharacterError
+     */
+    public function toggleAttribute(string $qualifiedName, bool $force = null): bool
+    {
+        if (!QName::isValidName($qualifiedName)) {
+            throw new InvalidCharacterError();
+        }
+        if ($this->isHTML && $this->document?->isHTML) {
+            $qualifiedName = strtolower($qualifiedName);
+        }
+        $attr = $this->getAttributeNode($qualifiedName);
+        if (!$attr) {
+            // If force is not given or is true, create an attribute whose local name is qualifiedName,
+            // value is the empty string, and node document is this’s node document,
+            // then append this attribute to this, and then return true.
+            if ($force || $force === null) {
+                $attr = new Attr($qualifiedName);
+                $attr->document = $this->document;
+                $attr->parent = $this;
+                $this->attributeList[] = $attr;
+                return true;
+            }
+            return false;
+        }
+        // 5. Otherwise, if force is not given or is false,
+        // remove an attribute given qualifiedName and this, and then return false.
+        if (!$force) {
+            $this->removeAttributeNode($attr);
+            return false;
+        }
+        // 6.
+        return true;
+    }
+
+    /**
+     * https://dom.spec.whatwg.org/#concept-element-attributes-get-by-name
+     */
+    public function getAttributeNode(string $qualifiedName): ?Attr
+    {
+        if (!$this->attributeList) return null;
+
+        if ($this->isHTML && $this->document?->isHTML) {
+            $qualifiedName = strtolower($qualifiedName);
+        }
+        foreach ($this->attributeList as $attribute) {
+            if ($attribute->name === $qualifiedName) {
+                return $attribute;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * https://dom.spec.whatwg.org/#concept-element-attributes-get-by-namespace
+     */
+    public function getAttributeNodeNS(?string $namespace, string $localName): ?Attr
+    {
+        if (!$this->attributeList) return null;
+        if ($namespace === '') $namespace = null;
+        foreach ($this->attributeList as $attribute) {
+            if ($attribute->localName === $localName && $attribute->namespaceURI === $namespace) {
+                return $attribute;
+            }
+        }
+        return null;
+    }
+
+    public function removeAttribute(string $qualifiedName): ?Attr
+    {
+        if (!$this->attributeList) return null;
+        // 1. Let attr be the result of getting an attribute given qualifiedName and element.
+        if ($this->isHTML && $this->document?->isHTML) {
+            $qualifiedName = strtolower($qualifiedName);
+        }
+        foreach ($this->attributeList as $i => $attribute) {
+            if ($attribute->name === $qualifiedName) {
+                array_splice($this->attributeList, $i, 1);
+                $attribute->parent = null;
+                return $attribute;
+            }
+        }
+        return null;
+    }
+
+    public function removeAttributeNS(?string $namespace, string $localName): ?Attr
+    {
+        if (!$this->attributeList) return null;
+        if ($namespace === '') $namespace = null;
+        foreach ($this->attributeList as $i => $attribute) {
+            if ($attribute->localName === $localName && $attribute->namespaceURI === $namespace) {
+                array_splice($this->attributeList, $i, 1);
+                $attribute->parent = null;
+                return $attribute;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * https://dom.spec.whatwg.org/#dom-element-removeattributenode
+     * https://dom.spec.whatwg.org/#concept-element-attributes-remove
+     */
+    public function removeAttributeNode(Attr $attribute): Attr
+    {
+        if (!$this->attributeList) {
+            throw new NotFoundError();
+        }
+
+        $index = array_search($attribute, $this->attributeList, true);
+        if ($index === false) {
+            throw new NotFoundError();
+        }
+
+        array_splice($this->attributeList, $index, 1);
+        $attribute->parent = null;
+
+        return $attribute;
     }
 }

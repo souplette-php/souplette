@@ -80,7 +80,7 @@ abstract class CharacterData extends Node
     /**
      * @throws IndexSizeError
      */
-    public function deleteData(int $offset, int $count)
+    public function deleteData(int $offset, int $count): void
     {
         if ($offset > $this->length) {
             throw new IndexSizeError();
@@ -94,7 +94,7 @@ abstract class CharacterData extends Node
     /**
      * @throws IndexSizeError
      */
-    public function replaceData(int $offset, int $count, string $data)
+    public function replaceData(int $offset, int $count, string $data): void
     {
         if ($offset > $this->length) {
             throw new IndexSizeError();
@@ -104,9 +104,19 @@ abstract class CharacterData extends Node
         $this->setData($head . $data . $tail);
     }
 
-    protected function setData(string $data)
+    public function setData(string $data): void
     {
         $this->value = $data;
         $this->length = mb_strlen($data, 'utf-8');
+    }
+
+    public function getData(): string
+    {
+        return $this->value ?? '';
+    }
+
+    public function getLength(): int
+    {
+        return $this->length;
     }
 }

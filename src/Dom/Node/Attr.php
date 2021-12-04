@@ -2,12 +2,14 @@
 
 namespace Souplette\Dom\Node;
 
+/**
+ * @property-read ?Element $ownerElement
+ */
 final class Attr extends Node
 {
     public readonly int $nodeType;
     public readonly string $nodeName;
     public readonly string $name;
-    private ?Element $element = null;
 
     public function __construct(
         public readonly string $localName,
@@ -24,7 +26,7 @@ final class Attr extends Node
     {
         return match ($prop) {
             'value', 'nodeValue' => $this->value,
-            'ownerElement' => $this->element,
+            'ownerElement' => $this->parent,
             'parentNode', 'parentElement', 'firstChild', 'lastChild',
             'nextSibling', 'previousSibling' => null,
             default => parent::__get($prop),
@@ -51,7 +53,7 @@ final class Attr extends Node
 
     public function getOwnerElement(): ?Element
     {
-        return $this->element;
+        return $this->parent;
     }
 
     public function isEqualNode(?Node $otherNode): bool
