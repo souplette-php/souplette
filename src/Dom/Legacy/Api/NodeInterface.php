@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom\Api;
+namespace Souplette\Dom\Legacy\Api;
 
 use DOMNode;
-use Souplette\Dom\Api\Native\DomNodeInterface;
+use Souplette\Dom\Legacy\Api\Native\DomNodeInterface;
 use Souplette\Dom\Legacy\Document;
 use Souplette\Dom\Legacy\Element;
 

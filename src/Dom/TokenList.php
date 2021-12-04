@@ -4,8 +4,8 @@ namespace Souplette\Dom;
 
 use Souplette\Dom\Exception\InvalidCharacterError;
 use Souplette\Dom\Exception\SyntaxError;
-use Souplette\Dom\Internal\OrderedTokenSet;
 use Souplette\Dom\Legacy\Element;
+use Souplette\Dom\Legacy\Internal\OrderedTokenSet;
 use WeakReference;
 
 /**

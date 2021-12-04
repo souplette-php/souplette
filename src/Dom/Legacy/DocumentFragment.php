@@ -2,7 +2,7 @@
 
 namespace Souplette\Dom\Legacy;
 
-use Souplette\Dom\Traits\ParentNodeTrait;
+use Souplette\Dom\Legacy\Traits\ParentNodeTrait;
 
 final class DocumentFragment extends \DOMDocumentFragment implements \DOMParentNode
 {

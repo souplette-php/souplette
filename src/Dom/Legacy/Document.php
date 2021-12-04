@@ -11,13 +11,13 @@ use DOMElement;
 use DOMNode;
 use DOMText;
 use Souplette\Css\Selectors\SelectorQuery;
-use Souplette\Dom\Api\DocumentInterface;
-use Souplette\Dom\Api\NodeInterface;
 use Souplette\Dom\DocumentModes;
-use Souplette\Dom\Internal\PropertyMaps;
+use Souplette\Dom\Legacy\Api\DocumentInterface;
+use Souplette\Dom\Legacy\Api\NodeInterface;
+use Souplette\Dom\Legacy\Internal\PropertyMaps;
+use Souplette\Dom\Legacy\Traits\NodeTrait;
+use Souplette\Dom\Legacy\Traits\ParentNodeTrait;
 use Souplette\Dom\Namespaces;
-use Souplette\Dom\Traits\NodeTrait;
-use Souplette\Dom\Traits\ParentNodeTrait;
 use Souplette\Encoding\EncodingLookup;
 
 /**

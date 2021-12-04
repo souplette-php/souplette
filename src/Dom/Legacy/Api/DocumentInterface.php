@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom\Api;
+namespace Souplette\Dom\Legacy\Api;
 
-use Souplette\Dom\Api\Native\DomDocumentInterface;
+use Souplette\Dom\Legacy\Api\Native\DomDocumentInterface;
 use Souplette\Dom\Legacy\Element;
 use Souplette\Dom\Legacy\Implementation;
 

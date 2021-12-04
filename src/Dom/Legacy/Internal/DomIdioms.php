@@ -1,13 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom\Internal;
+namespace Souplette\Dom\Legacy\Internal;
 
 use DOMAttr;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
 use JetBrains\PhpStorm\Pure;
-use Souplette\Css\Selectors\SelectorQuery;
 use Souplette\Dom\Namespaces;
 
 final class DomIdioms

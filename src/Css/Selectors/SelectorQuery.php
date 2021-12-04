@@ -13,8 +13,8 @@ use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Syntax\Tokenizer\Tokenizer;
 use Souplette\Css\Syntax\TokenStream\TokenStream;
 use Souplette\Dom\ElementIterator;
-use Souplette\Dom\Internal\DomIdioms;
 use Souplette\Dom\Legacy\Element;
+use Souplette\Dom\Legacy\Internal\DomIdioms;
 
 final class SelectorQuery
 {

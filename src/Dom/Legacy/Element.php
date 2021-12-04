@@ -3,19 +3,19 @@
 namespace Souplette\Dom\Legacy;
 
 use Souplette\Css\Selectors\SelectorQuery;
-use Souplette\Dom\Api\ChildNodeInterface;
-use Souplette\Dom\Api\ElementInterface;
-use Souplette\Dom\Api\NodeInterface;
-use Souplette\Dom\Api\ParentNodeInterface;
 use Souplette\Dom\Exception\NoModificationAllowed;
 use Souplette\Dom\Exception\SyntaxError;
-use Souplette\Dom\Internal\DomIdioms;
-use Souplette\Dom\Internal\PropertyMaps;
+use Souplette\Dom\Legacy\Api\ChildNodeInterface;
+use Souplette\Dom\Legacy\Api\ElementInterface;
+use Souplette\Dom\Legacy\Api\NodeInterface;
+use Souplette\Dom\Legacy\Api\ParentNodeInterface;
+use Souplette\Dom\Legacy\Internal\DomIdioms;
+use Souplette\Dom\Legacy\Internal\PropertyMaps;
+use Souplette\Dom\Legacy\Traits\ChildNodeTrait;
+use Souplette\Dom\Legacy\Traits\NodeTrait;
+use Souplette\Dom\Legacy\Traits\ParentNodeTrait;
 use Souplette\Dom\Namespaces;
 use Souplette\Dom\TokenList;
-use Souplette\Dom\Traits\ChildNodeTrait;
-use Souplette\Dom\Traits\NodeTrait;
-use Souplette\Dom\Traits\ParentNodeTrait;
 use Souplette\Html\Parser;
 use Souplette\Html\Serializer;
 

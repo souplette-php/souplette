@@ -2,8 +2,8 @@
 
 namespace Souplette\Dom\Legacy;
 
-use Souplette\Dom\Api\NodeInterface;
-use Souplette\Dom\Traits\NodeTrait;
+use Souplette\Dom\Legacy\Api\NodeInterface;
+use Souplette\Dom\Legacy\Traits\NodeTrait;
 
 /**
  * @property-read Element $ownerElement

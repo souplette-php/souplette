@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom\Traits;
+namespace Souplette\Dom\Legacy\Traits;
 
 use DOMNode;
-use Souplette\Dom\Internal\DomIdioms;
 use Souplette\Dom\Legacy\Element;
+use Souplette\Dom\Legacy\Internal\DomIdioms;
 
 /**
  * @property-read Element|null $nextElementSibling

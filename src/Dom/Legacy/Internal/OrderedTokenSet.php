@@ -1,8 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom\Internal;
+namespace Souplette\Dom\Legacy\Internal;
 
 use JetBrains\PhpStorm\Pure;
+use function Souplette\Dom\Internal\array_key_last;
 
 /**
  * This class backs up the implementation of DOMTokenList interface.

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom\Api;
+namespace Souplette\Dom\Legacy\Api;
 
 use DOMNode;
 use Souplette\Dom\Legacy\Element;

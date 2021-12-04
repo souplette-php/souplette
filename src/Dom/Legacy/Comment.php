@@ -2,11 +2,11 @@
 
 namespace Souplette\Dom\Legacy;
 
-use Souplette\Dom\Api\ChildNodeInterface;
-use Souplette\Dom\Api\NodeInterface;
-use Souplette\Dom\Internal\PropertyMaps;
-use Souplette\Dom\Traits\ChildNodeTrait;
-use Souplette\Dom\Traits\NodeTrait;
+use Souplette\Dom\Legacy\Api\ChildNodeInterface;
+use Souplette\Dom\Legacy\Api\NodeInterface;
+use Souplette\Dom\Legacy\Internal\PropertyMaps;
+use Souplette\Dom\Legacy\Traits\ChildNodeTrait;
+use Souplette\Dom\Legacy\Traits\NodeTrait;
 
 final class Comment extends \DOMComment implements
     NodeInterface,

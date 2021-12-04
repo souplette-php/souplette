@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom\Internal;
+namespace Souplette\Dom\Legacy\Internal;
 
-use Souplette\Dom\Api\DocumentInterface;
-use Souplette\Dom\Api\ElementInterface;
-use Souplette\Dom\Api\NodeInterface;
-use Souplette\Dom\Api\ParentNodeInterface;
+use Souplette\Dom\Legacy\Api\DocumentInterface;
+use Souplette\Dom\Legacy\Api\ElementInterface;
+use Souplette\Dom\Legacy\Api\NodeInterface;
+use Souplette\Dom\Legacy\Api\ParentNodeInterface;
 
 final class PropertyMaps
 {

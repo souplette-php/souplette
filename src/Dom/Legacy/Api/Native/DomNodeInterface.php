@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom\Api\Native;
+namespace Souplette\Dom\Legacy\Api\Native;
 
 use DOMDocument;
 use DOMNamedNodeMap;
