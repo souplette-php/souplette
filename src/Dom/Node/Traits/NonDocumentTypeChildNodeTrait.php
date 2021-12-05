@@ -10,7 +10,7 @@ use Souplette\Dom\Node\Node;
  */
 trait NonDocumentTypeChildNodeTrait
 {
-    protected function getPreviousElementSibling(): ?Element
+    public function getPreviousElementSibling(): ?Element
     {
         for ($node = $this->prev; $node; $node = $node->prev) {
             if ($node->nodeType === Node::ELEMENT_NODE) {
@@ -20,7 +20,7 @@ trait NonDocumentTypeChildNodeTrait
         return null;
     }
 
-    protected function getNextElementSibling(): ?Element
+    public function getNextElementSibling(): ?Element
     {
         for ($node = $this->next; $node; $node = $node->next) {
             if ($node->nodeType === Node::ELEMENT_NODE) {

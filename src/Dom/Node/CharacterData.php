@@ -2,6 +2,8 @@
 
 namespace Souplette\Dom\Node;
 
+use Souplette\Dom\Api\ChildNodeInterface;
+use Souplette\Dom\Api\NonDocumentTypeChildNodeInterface;
 use Souplette\Dom\Exception\IndexSizeError;
 use Souplette\Dom\Node\Traits\ChildNodeTrait;
 use Souplette\Dom\Node\Traits\NonDocumentTypeChildNodeTrait;
@@ -10,7 +12,7 @@ use Souplette\Dom\Node\Traits\NonDocumentTypeChildNodeTrait;
  * @property string $data
  * @property-read int $length
  */
-abstract class CharacterData extends Node
+abstract class CharacterData extends Node implements ChildNodeInterface, NonDocumentTypeChildNodeInterface
 {
     use ChildNodeTrait;
     use NonDocumentTypeChildNodeTrait;

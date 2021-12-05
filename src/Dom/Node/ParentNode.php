@@ -2,6 +2,8 @@
 
 namespace Souplette\Dom\Node;
 
+use Souplette\Css\Selectors\SelectorQuery;
+use Souplette\Dom\Api\ParentNodeInterface;
 use Souplette\Dom\Exception\DomException;
 use Souplette\Dom\Exception\HierarchyRequestError;
 use Souplette\Dom\Exception\NotFoundError;
@@ -14,7 +16,7 @@ use Souplette\Dom\Exception\NotFoundError;
  * @property-read ?Element $lastElementChild
  * @property-read int $childElementCount
  */
-abstract class ParentNode extends Node
+abstract class ParentNode extends Node implements ParentNodeInterface
 {
     public function __get(string $prop)
     {
@@ -194,6 +196,17 @@ abstract class ParentNode extends Node
         if ($otherNode === $this) return true;
         if ($otherNode->nodeType !== $this->nodeType) return false;
         return $this->areChildrenEqual($otherNode);
+    }
+
+
+    public function querySelector(string $selector): ?Element
+    {
+        return SelectorQuery::first($this, $selector);
+    }
+
+    public function querySelectorAll(string $selector): array
+    {
+        return SelectorQuery::all($this, $selector);
     }
 
     protected function areChildrenEqual(?Node $other): bool

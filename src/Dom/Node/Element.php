@@ -2,10 +2,11 @@
 
 namespace Souplette\Dom\Node;
 
+use Souplette\Dom\Api\ChildNodeInterface;
+use Souplette\Dom\Api\NonDocumentTypeChildNodeInterface;
 use Souplette\Dom\Exception\InvalidCharacterError;
 use Souplette\Dom\Exception\NamespaceError;
 use Souplette\Dom\Exception\NotFoundError;
-use Souplette\Dom\NamedNodeMap;
 use Souplette\Dom\Namespaces;
 use Souplette\Dom\Node\Traits\ChildNodeTrait;
 use Souplette\Dom\Node\Traits\NonDocumentTypeChildNodeTrait;
@@ -15,7 +16,7 @@ use Souplette\Xml\QName;
  * @property string $id
  * @property string $className
  */
-class Element extends ParentNode
+class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeChildNodeInterface
 {
     use ChildNodeTrait;
     use NonDocumentTypeChildNodeTrait;

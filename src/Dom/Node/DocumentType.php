@@ -2,8 +2,13 @@
 
 namespace Souplette\Dom\Node;
 
-final class DocumentType extends Node
+use Souplette\Dom\Api\ChildNodeInterface;
+use Souplette\Dom\Node\Traits\ChildNodeTrait;
+
+final class DocumentType extends Node implements ChildNodeInterface
 {
+    use ChildNodeTrait;
+
     public readonly int $nodeType;
     public readonly string $nodeName;
 

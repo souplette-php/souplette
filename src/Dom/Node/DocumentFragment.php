@@ -2,7 +2,9 @@
 
 namespace Souplette\Dom\Node;
 
-final class DocumentFragment extends ParentNode
+use Souplette\Dom\Api\NonElementParentNodeInterface;
+
+final class DocumentFragment extends ParentNode implements NonElementParentNodeInterface
 {
     public readonly int $nodeType;
     public readonly string $nodeName;
@@ -11,6 +13,12 @@ final class DocumentFragment extends ParentNode
     {
         $this->nodeType = Node::DOCUMENT_FRAGMENT_NODE;
         $this->nodeName = '#document-fragment';
+    }
+
+    public function getElementById(string $elementId): ?Element
+    {
+        // TODO: Implement getElementById() method.
+        return null;
     }
 
     public function cloneNode(bool $deep = false): static
