@@ -25,7 +25,7 @@ final class Attr extends Node
     public function __get(string $prop)
     {
         return match ($prop) {
-            'value', 'nodeValue' => $this->value,
+            'value', 'nodeValue', 'textContent' => $this->value,
             'ownerElement' => $this->parent,
             'parentNode', 'parentElement', 'firstChild', 'lastChild',
             'nextSibling', 'previousSibling' => null,
@@ -47,6 +47,26 @@ final class Attr extends Node
     }
 
     public function setValue(string $value): void
+    {
+        $this->value = $value;
+    }
+
+    public function getNodeValue(): string
+    {
+        return $this->value;
+    }
+
+    public function setNodeValue(string $value): void
+    {
+        $this->value = $value;
+    }
+
+    public function getTextContent(): string
+    {
+        return $this->value;
+    }
+
+    public function setTextContent(string $value): void
     {
         $this->value = $value;
     }
@@ -73,5 +93,20 @@ final class Attr extends Node
         $copy->document = $this->document;
         $copy->value = $this->value;
         return $copy;
+    }
+
+    /**
+     * @see https://dom.spec.whatwg.org/#dom-node-lookupprefix
+     */
+    public function lookupPrefix(?string $namespace): ?string
+    {
+        if (!$namespace || !$this->parent) return null;
+        return $this->parent->locateNamespacePrefix($namespace);
+    }
+
+    protected function locateNamespace(?string $prefix): ?string
+    {
+        if (!$this->parent) return null;
+        return $this->parent->locateNamespace($prefix);
     }
 }

@@ -4,39 +4,44 @@ namespace Souplette\Tests\Dom;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Dom\Legacy\Document;
+use Souplette\Dom\Node\Document;
+use Souplette\Dom\Node\Node;
 
 final class ChildNodeTest extends TestCase
 {
     /**
      * @dataProvider removeProvider
      */
-    public function testRemove(Document $doc, \DOMChildNode $node)
+    public function testRemove(Document $doc, Node $node)
     {
+        $parent = $node->parentNode;
         $node->remove();
-        Assert::assertCount(0, $doc->childNodes);
+        Assert::assertCount(0, $parent->childNodes);
+        Assert::assertNull($node->parentNode);
+        Assert::assertNull($parent->firstChild);
+        Assert::assertNull($parent->lastChild);
     }
 
     public function removeProvider(): iterable
     {
         yield 'works on text nodes' => [
-            $doc = DomBuilder::create()->text('foo')->getDocument(),
-            $doc->firstChild,
+            $doc = DomBuilder::create()->tag('html')->text('foo')->getDocument(),
+            $doc->documentElement->firstChild,
         ];
         yield 'works on comment nodes' => [
-            $doc = DomBuilder::create()->comment('foo')->getDocument(),
-            $doc->firstChild,
+            $doc = DomBuilder::create()->tag('html')->comment('foo')->getDocument(),
+            $doc->documentElement->firstChild,
         ];
         yield 'works on element nodes' => [
             $doc = DomBuilder::create()->tag('foo')->getDocument(),
-            $doc->firstChild,
+            $doc->documentElement,
         ];
     }
 
     /**
      * @dataProvider beforeProvider
      */
-    public function testBefore(\DOMChildNode $target, array $nodes)
+    public function testBefore(Node $target, array $nodes)
     {
         $target->before(...$nodes);
         $expected = $target->previousSibling;
@@ -52,38 +57,38 @@ final class ChildNodeTest extends TestCase
 
     public function beforeProvider(): iterable
     {
-        $doc = DomBuilder::create()->tag('test')->getDocument();
+        $doc = DomBuilder::create()->tag('html')->tag('test')->getDocument();
         yield 'works on elements' => [
-            $doc->firstChild,
+            $doc->documentElement->firstChild,
             [$doc->createElement('foo'), 'bar', $doc->createComment('baz')],
         ];
         //
-        $doc = DomBuilder::create()->text('test')->getDocument();
+        $doc = DomBuilder::create()->tag('html')->text('test')->getDocument();
         yield 'works on text nodes' => [
-            $doc->firstChild,
+            $doc->documentElement->firstChild,
             [$doc->createElement('foo'), 'bar', $doc->createComment('baz')],
         ];
         //
-        $doc = DomBuilder::create()->comment('test')->getDocument();
+        $doc = DomBuilder::create()->tag('html')->comment('test')->getDocument();
         yield 'works on comment nodes' => [
-            $doc->firstChild,
+            $doc->documentElement->firstChild,
             [$doc->createElement('foo'), 'bar', $doc->createComment('baz')],
         ];
         //
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::create()->tag('html')
             ->text('foo')
             ->text('target')
             ->getDocument();
         yield 'works when previous sibling is in nodes' => [
-            $doc->lastChild,
-            ['bar', $doc->firstChild, 'baz']
+            $doc->documentElement->lastChild,
+            ['bar', $doc->documentElement->firstChild, 'baz']
         ];
     }
 
     /**
      * @dataProvider afterProvider
      */
-    public function testAfter(\DOMChildNode $target, array $nodes)
+    public function testAfter(Node $target, array $nodes)
     {
         $target->after(...$nodes);
         $expected = $target->nextSibling;
@@ -99,38 +104,38 @@ final class ChildNodeTest extends TestCase
 
     public function afterProvider(): iterable
     {
-        $doc = DomBuilder::create()->tag('test')->getDocument();
+        $doc = DomBuilder::create()->tag('html')->tag('test')->getDocument();
         yield 'works on elements' => [
-            $doc->firstChild,
+            $doc->documentElement->firstChild,
             [$doc->createElement('foo'), 'bar', $doc->createComment('baz')],
         ];
         //
-        $doc = DomBuilder::create()->text('test')->getDocument();
+        $doc = DomBuilder::create()->tag('html')->text('test')->getDocument();
         yield 'works on text nodes' => [
-            $doc->firstChild,
+            $doc->documentElement->firstChild,
             [$doc->createElement('foo'), 'bar', $doc->createComment('baz')],
         ];
         //
-        $doc = DomBuilder::create()->comment('test')->getDocument();
+        $doc = DomBuilder::create()->tag('html')->comment('test')->getDocument();
         yield 'works on comment nodes' => [
-            $doc->firstChild,
+            $doc->documentElement->firstChild,
             [$doc->createElement('foo'), 'bar', $doc->createComment('baz')],
         ];
         //
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::create()->tag('html')
             ->text('target')
             ->text('foo')
             ->getDocument();
         yield 'works when next sibling is in nodes' => [
-            $doc->firstChild,
-            ['bar', $doc->lastChild, 'baz']
+            $doc->documentElement->firstChild,
+            ['bar', $doc->documentElement->lastChild, 'baz']
         ];
     }
 
     /**
      * @dataProvider replaceWithProvider
      */
-    public function testReplaceWith(\DOMChildNode $target, array $nodes)
+    public function testReplaceWith(Node $target, array $nodes)
     {
         $parent = $target->parentNode;
         $target->replaceWith(...$nodes);
@@ -148,28 +153,36 @@ final class ChildNodeTest extends TestCase
 
     public function replaceWithProvider(): iterable
     {
-        $doc = DomBuilder::create()->tag('test')->getDocument();
+        $doc = DomBuilder::create()->tag('html')
+            ->tag('test')
+            ->getDocument();
         yield 'works on elements' => [
-            $doc->firstChild,
+            $doc->documentElement->firstChild,
             ['foo', $doc->createElement('bar'), $doc->createComment('baz')],
         ];
         //
-        $doc = DomBuilder::create()->text('test')->getDocument();
+        $doc = DomBuilder::create()->tag('html')
+            ->text('test')
+            ->getDocument();
         yield 'works on text nodes' => [
-            $doc->firstChild,
+            $doc->documentElement->firstChild,
             ['foo', $doc->createElement('bar'), $doc->createComment('baz')],
         ];
         //
-        $doc = DomBuilder::create()->comment('test')->getDocument();
+        $doc = DomBuilder::create()->tag('html')
+            ->comment('test')
+            ->getDocument();
         yield 'works on comment nodes' => [
-            $doc->firstChild,
+            $doc->documentElement->firstChild,
             ['foo', $doc->createElement('bar'), $doc->createComment('baz')],
         ];
         //
-        $doc = DomBuilder::create()->tag('test')->getDocument();
+        $doc = DomBuilder::create()->tag('html')
+            ->tag('test')
+            ->getDocument();
         yield 'works when target is in nodes' => [
-            $doc->firstChild,
-            ['foo', $doc->firstChild, $doc->createComment('baz')],
+            $doc->documentElement->firstChild,
+            ['foo', $doc->documentElement->firstChild, $doc->createComment('baz')],
         ];
     }
 }

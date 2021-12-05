@@ -5,23 +5,24 @@ namespace Souplette\Tests\Dom;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Dom\DocumentModes;
-use Souplette\Dom\Legacy\Document;
-use Souplette\Dom\Legacy\Element;
-use Souplette\Dom\Legacy\Implementation;
+use Souplette\Dom\Node\Document;
+use Souplette\Dom\Node\DocumentType;
+use Souplette\Dom\Node\Element;
+use Souplette\Dom\Node\Implementation;
 
 final class DomImplementationTest extends TestCase
 {
-    public function testCreateShell()
+    public function testCreateHTMLDocument()
     {
         $dom = new Implementation();
-        $doc = $dom->createShell();
+        $doc = $dom->createHTMLDocument();
         // document
         Assert::assertInstanceOf(Document::class, $doc);
         Assert::assertSame(DocumentModes::NO_QUIRKS, $doc->mode);
         Assert::assertSame(Document::COMPAT_MODE_CSS1, $doc->compatMode);
         // doctype
         $doctype = $doc->firstChild;
-        Assert::assertInstanceOf(\DOMDocumentType::class, $doctype);
+        Assert::assertInstanceOf(DocumentType::class, $doctype);
         Assert::assertSame('html', $doctype->name);
         Assert::assertSame($doc->doctype, $doctype);
         // document element

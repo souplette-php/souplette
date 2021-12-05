@@ -22,7 +22,7 @@ final class DocumentTest extends TestCase
 
     public function testGetElementById()
     {
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::create()->tag('html')
             ->tag('div')->id('foo')->close()
             ->tag('div')->id('bar')->close()
             ->getDocument();
@@ -36,7 +36,7 @@ final class DocumentTest extends TestCase
 
     public function testGetElementsByClassName()
     {
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::create()->tag('html')
             ->tag('div')->class('foo')->close()
             ->tag('div')->class('bar')->close()
             ->tag('div')->class('bar baz')->close()
@@ -45,11 +45,11 @@ final class DocumentTest extends TestCase
         $rs = $doc->getElementsByClassName('foo');
         Assert::assertCount(1, $rs);
         Assert::assertInstanceOf(Element::class, $rs[0]);
-        Assert::assertSame($doc->firstChild, $rs[0]);
+        Assert::assertSame($doc->documentElement->firstChild, $rs[0]);
 
         $rs = $doc->getElementsByClassName('bar baz');
         Assert::assertCount(1, $rs);
         Assert::assertInstanceOf(Element::class, $rs[0]);
-        Assert::assertSame($doc->lastChild, $rs[0]);
+        Assert::assertSame($doc->documentElement->lastChild, $rs[0]);
     }
 }

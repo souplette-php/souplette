@@ -287,4 +287,56 @@ class Element extends ParentNode
 
         return $attribute;
     }
+
+    /**
+     * @see https://dom.spec.whatwg.org/#dom-node-lookupprefix
+     */
+    public function lookupPrefix(?string $namespace): ?string
+    {
+        if (!$namespace) return null;
+        return $this->locateNamespacePrefix($namespace);
+    }
+
+    /**
+     * @see https://dom.spec.whatwg.org/#locate-a-namespace
+     */
+    protected function locateNamespace(?string $prefix): ?string
+    {
+        if ($this->namespaceURI && $this->prefix === $prefix) {
+            return $this->namespaceURI;
+        }
+        foreach ($this->attributeList as $attr) {
+            if ($attr->prefix === 'xmlns' && $attr->namespaceURI === Namespaces::XMLNS && $attr->localName === $prefix) {
+                return $attr->localName;
+            } else if (
+                $prefix === null
+                && $attr->localName === 'xmlns' && !$attr->prefix && $attr->namespaceURI === Namespaces::XMLNS
+            ) {
+                return $attr->value ?: null;
+            }
+        }
+        if ($this->parent?->nodeType === Node::ELEMENT_NODE) {
+            return $this->parent->locateNamespace($prefix);
+        }
+        return null;
+    }
+
+    /**
+     * @see https://dom.spec.whatwg.org/#locate-a-namespace-prefix
+     */
+    protected function locateNamespacePrefix(string $namespace): ?string
+    {
+        if ($this->prefix && $this->namespaceURI === $namespace) {
+            return $this->prefix;
+        }
+        foreach ($this->attributeList as $attr) {
+            if ($attr->prefix === 'xmlns' && $attr->value === $namespace) {
+                return $attr->localName;
+            }
+        }
+        if ($this->parent?->nodeType === Node::ELEMENT_NODE) {
+            return $this->parent->locateNamespacePrefix($namespace);
+        }
+        return null;
+    }
 }

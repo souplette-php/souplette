@@ -5,13 +5,15 @@ namespace Souplette\Tests\Dom;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Dom\Legacy\Api\NodeInterface;
+use Souplette\Dom\Node\Element;
+use Souplette\Dom\Node\Node;
 
 final class NodeTest extends TestCase
 {
     /**
      * @dataProvider containsProvider
      */
-    public function testContains(NodeInterface $parent, ?\DOMNode $target, bool $expected)
+    public function testContains(Node $parent, ?Node $target, bool $expected)
     {
         Assert::assertSame($expected, $parent->contains($target));
     }
@@ -63,7 +65,7 @@ final class NodeTest extends TestCase
     /**
      * @dataProvider parentElementProvider
      */
-    public function testParentElement(NodeInterface $node, ?\DOMElement $expected)
+    public function testParentElement(Node $node, ?Element $expected)
     {
         Assert::assertSame($expected, $node->parentElement);
     }
@@ -80,10 +82,6 @@ final class NodeTest extends TestCase
         ];
         yield 'returns null for document child comment' => [
             DomBuilder::create()->comment('nope')->getDocument()->firstChild,
-            null,
-        ];
-        yield 'returns null for document child text' => [
-            DomBuilder::create()->text('nope')->getDocument()->firstChild,
             null,
         ];
         //

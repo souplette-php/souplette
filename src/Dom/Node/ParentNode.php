@@ -166,7 +166,7 @@ abstract class ParentNode extends Node
         $this->replaceAllWithNode($node);
     }
 
-    public function getTextContent(): string
+    public function getTextContent(): ?string
     {
         $text = '';
         foreach ($this->descendants() as $node) {
@@ -184,7 +184,7 @@ abstract class ParentNode extends Node
             return;
         }
         $node = new Text($value);
-        $node->document = $this->getDocument();
+        $node->document = $this->getDocumentNode();
         $this->replaceAllWithNode($node);
     }
 
@@ -240,27 +240,6 @@ abstract class ParentNode extends Node
     // ==============================================================
 
     /**
-     * https://dom.spec.whatwg.org/#concept-node-pre-insert
-     * @throws DomException
-     */
-    protected function preInsertNodeBeforeChild(Node $node, ?Node $child): Node
-    {
-        // To pre-insert a node into a parent before a child, run these steps:
-        // 1. Ensure pre-insertion validity of node into parent before child.
-        $this->ensurePreInsertionValidity($node, $child);
-        // 2. Let referenceChild be child.
-        $referenceChild = $child;
-        // 3. If referenceChild is node, then set referenceChild to node’s next sibling.
-        if ($referenceChild === $node) {
-            $referenceChild = $node->next;
-        }
-        // 4. Insert node into parent before referenceChild.
-        $this->insertNodeBeforeChild($node, $referenceChild);
-        // 5. Return node.
-        return $node;
-    }
-
-    /**
      * https://dom.spec.whatwg.org/#concept-node-insert
      */
     protected function insertNodeBeforeChild(Node $node, ?Node $child): void
@@ -292,33 +271,6 @@ abstract class ParentNode extends Node
             }
         }
     }
-
-    /**
-     * https://dom.spec.whatwg.org/#concept-node-replace
-     *
-     * @throws HierarchyRequestError|NotFoundError
-     */
-    protected function replaceChildWithNode(Node $child, Node $node): Node
-    {
-        $this->ensureReplacementValidity($child, $node);
-        // 7. Let referenceChild be child’s next sibling.
-        $referenceChild = $child->next;
-        // 8. If referenceChild is node, then set referenceChild to node’s next sibling.
-        if ($referenceChild === $node) $referenceChild = $node->next;
-        // 11. If child’s parent is non-null, then:
-        if ($child->parent) {
-            // 1. Set removedNodes to « child ».
-            // 2. Remove child with the suppress observers flag set.
-            $this->removeNode($child);
-        }
-        // 12. Let nodes be node’s children if node is a DocumentFragment node; otherwise « node ».
-        // 13. Insert node into parent before referenceChild with the suppress observers flag set.
-        $this->insertNodeBeforeChild($node, $referenceChild);
-        // 14. Queue a tree mutation record for parent with nodes, removedNodes, previousSibling, and referenceChild.
-        // 15. Return child.
-        return $child;
-    }
-
 
     /**
      * https://dom.spec.whatwg.org/#concept-node-pre-remove
@@ -400,17 +352,23 @@ abstract class ParentNode extends Node
         // 2. If node is a host-including inclusive ancestor of parent, then throw a "HierarchyRequestError" DOMException.
         for ($current = $this; $current; $current = $current->parent) {
             if ($current === $node) {
-                throw new HierarchyRequestError();
+                throw new HierarchyRequestError('The new child element contains the parent.');
             }
         }
         // 3. If child is non-null and its parent is not parent, then throw a "NotFoundError" DOMException.
         if ($child && $child->parent !== $this) {
-            throw new NotFoundError();
+            throw new NotFoundError(
+                'The node before which the new node is to be inserted is not a child of this node.'
+            );
         }
         // 4. If node is not a DocumentFragment, DocumentType, Element, or CharacterData node,
         // then throw a "HierarchyRequestError" DOMException.
         if (!isset(static::VALID_CHILD_TYPES[$node->nodeType])) {
-            throw new HierarchyRequestError();
+            throw new HierarchyRequestError(sprintf(
+                'Nodes of type `%s` may not be inserted inside nodes of type `%s`',
+                $node->getDebugType(),
+                $this->getDebugType(),
+            ));
         }
         // 5. If either node is a Text node and parent is a document, or node is a doctype and parent is not a document,
         // then throw a "HierarchyRequestError" DOMException.

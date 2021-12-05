@@ -4,32 +4,31 @@ namespace Souplette\Tests\Dom;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Dom\Legacy\Api\ParentNodeInterface;
+use Souplette\Dom\Node\Element;
+use Souplette\Dom\Node\ParentNode;
 
 final class ParentNodeTest extends TestCase
 {
     /**
      * @dataProvider childrenProvider
      */
-    public function testChildren(ParentNodeInterface $parent, array $expected)
+    public function testChildren(ParentNode $parent, array $expected)
     {
         $children = $parent->children;
         Assert::assertCount(\count($expected), $children);
         foreach ($expected as $i => $child) {
-            Assert::assertSame($child, $children[$i]->tagName);
+            Assert::assertSame($child, $children[$i]->nodeName);
         }
     }
 
     public function childrenProvider(): iterable
     {
         $doc = DomBuilder::create()
-            ->text('foo')
+            ->comment('bar')
             ->tag('a')->close()
             ->comment('bar')
-            ->tag('b')->close()
-            ->text('baz')
             ->getDocument();
-        yield 'works on document' => [$doc, ['a', 'b']];
+        yield 'works on document' => [$doc, ['A']];
         //
         $doc = DomBuilder::create()
             ->tag('html')
@@ -39,13 +38,13 @@ final class ParentNodeTest extends TestCase
                 ->tag('b')->close()
                 ->text('baz')
             ->getDocument();
-        yield 'works on element' => [$doc->firstChild, ['a', 'b']];
+        yield 'works on element' => [$doc->firstChild, ['A', 'B']];
     }
 
     /**
      * @dataProvider firstElementChildProvider
      */
-    public function testFirstElementChild(ParentNodeInterface $parent, \DOMElement $expected)
+    public function testFirstElementChild(ParentNode $parent, Element $expected)
     {
         Assert::assertSame($expected, $parent->firstElementChild);
     }
@@ -53,10 +52,9 @@ final class ParentNodeTest extends TestCase
     public function firstElementChildProvider(): iterable
     {
         $doc = DomBuilder::create()
-            ->text('foo')
-            ->comment('bar')
+            ->comment('foo')
             ->tag('baz')->close()
-            ->tag('qux')->close()
+            ->comment('bar')
             ->getDocument();
         yield 'works on document' => [$doc, $doc->lastChild->previousSibling];
         //
@@ -72,7 +70,7 @@ final class ParentNodeTest extends TestCase
     /**
      * @dataProvider lastElementChildProvider
      */
-    public function testLastElementChild(ParentNodeInterface $parent, \DOMElement $expected)
+    public function testLastElementChild(ParentNode $parent, Element $expected)
     {
         Assert::assertSame($expected, $parent->lastElementChild);
     }
@@ -80,10 +78,9 @@ final class ParentNodeTest extends TestCase
     public function lastElementChildProvider(): iterable
     {
         $doc = DomBuilder::create()
-            ->tag('foo')->close()
-            ->text('bar')
-            ->tag('baz')->close()
-            ->comment('qux')
+            ->comment('foo')
+            ->tag('bar')->close()
+            ->comment('baz')
             ->getDocument();
         yield 'works on document' => [$doc, $doc->lastChild->previousSibling];
         //
@@ -118,7 +115,7 @@ final class ParentNodeTest extends TestCase
     {
         $doc = DomBuilder::create()
             ->tag('a')->close()
-            ->text('foo')
+            ->comment('foo')
             ->getDocument();
         yield 'works on document' => [
             $doc,

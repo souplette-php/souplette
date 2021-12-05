@@ -35,6 +35,26 @@ abstract class CharacterData extends Node
         };
     }
 
+    public function getNodeValue(): ?string
+    {
+        return $this->value ?? '';
+    }
+
+    public function setNodeValue(string $value): void
+    {
+        $this->setData($value);
+    }
+
+    public function getTextContent(): ?string
+    {
+        return $this->value ?? '';
+    }
+
+    public function setTextContent(string $value): void
+    {
+        $this->setData($value);
+    }
+
     public function isEqualNode(?Node $otherNode): bool
     {
         if (!$otherNode) return false;

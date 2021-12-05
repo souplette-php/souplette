@@ -26,4 +26,16 @@ final class DocumentFragment extends ParentNode
         }
         return $copy;
     }
+    /**
+     * @see https://dom.spec.whatwg.org/#dom-node-lookupprefix
+     */
+    public function lookupPrefix(?string $namespace): ?string
+    {
+        return null;
+    }
+
+    protected function locateNamespace(?string $prefix): ?string
+    {
+        return null;
+    }
 }
