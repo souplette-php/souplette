@@ -2,7 +2,6 @@
 
 namespace Souplette\Tests\Css\Selectors\Node\Simple;
 
-use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\Simple\AttributeSelector;
 use Souplette\Css\Selectors\Specificity;
 use Souplette\Tests\Css\Selectors\QueryAssert;

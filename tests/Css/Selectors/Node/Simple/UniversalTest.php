@@ -2,10 +2,7 @@
 
 namespace Souplette\Tests\Css\Selectors\Node\Simple;
 
-use PHPUnit\Framework\Assert;
-use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\Simple\UniversalSelector;
-use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Selectors\Specificity;
 use Souplette\Dom\Namespaces;
 use Souplette\Tests\Css\Selectors\QueryAssert;

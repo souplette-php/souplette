@@ -2,9 +2,6 @@
 
 namespace Souplette\Css\Selectors\Query;
 
-use Souplette\Css\Selectors\Node\RelationType;
-use Souplette\Css\Selectors\Node\SimpleSelector;
-
 /**
  * Subtree traversal iterator for ':has' argument matching.
  * To solve the following problems, this traversal uses the right-to-left postorder tree traversal,

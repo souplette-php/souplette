@@ -6,6 +6,7 @@ use Souplette\Dom\Api\NodeInterface;
 use Souplette\Dom\Exception\DomException;
 use Souplette\Dom\Exception\HierarchyRequestError;
 use Souplette\Dom\Exception\NotFoundError;
+use Souplette\Dom\Traversal\NodeTraversal;
 
 /**
  * @see https://dom.spec.whatwg.org/#interface-node
@@ -189,7 +190,7 @@ abstract class Node implements NodeInterface
             if ($node->nodeType === self::TEXT_NODE) {
                 $node = $this->mergeAdjacentTextNodes($node);
             } else {
-                $node = $this->nextPostOrder($node);
+                $node = NodeTraversal::nextPostOrder($node);
             }
         }
     }
@@ -558,22 +559,6 @@ abstract class Node implements NodeInterface
         return $frag;
     }
 
-    protected function hasPrecedingSiblingOfType(int $type): bool
-    {
-        for ($prev = $this->prev; $prev; $prev = $prev->prev) {
-            if ($prev->nodeType === $type) return true;
-        }
-        return false;
-    }
-
-    protected function hasFollowingSiblingOfType(int $type): bool
-    {
-        for ($next = $this->next; $next; $next = $next->next) {
-            if ($next->nodeType === $type) return true;
-        }
-        return false;
-    }
-
     protected function locateNamespace(?string $prefix): ?string
     {
         if (!$this->parent) return null;
@@ -599,19 +584,10 @@ abstract class Node implements NodeInterface
         };
     }
 
-    private function nextPostOrder(Node $current, ?Node $bounds = null): ?Node
-    {
-        if ($current === $bounds) return null;
-        if (!$current->next) return $current->parent;
-        $next = $current->next;
-        while ($child = $next->first) $next = $child;
-        return $next;
-    }
-
     private function mergeAdjacentTextNodes(Text $node): ?Node
     {
         if (!$node->getLength()) {
-            $next = $this->nextPostOrder($node);
+            $next = NodeTraversal::nextPostOrder($node);
             $node->remove();
             return $next;
         }
@@ -625,6 +601,6 @@ abstract class Node implements NodeInterface
             $node->appendData($next->value);
             $next->remove();
         }
-        return $this->nextPostOrder($node);
+        return NodeTraversal::nextPostOrder($node);
     }
 }

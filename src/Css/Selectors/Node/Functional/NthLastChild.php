@@ -7,7 +7,7 @@ use Souplette\Css\Selectors\Node\SelectorList;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Selectors\Specificity;
 use Souplette\Css\Syntax\Node\AnPlusB;
-use Souplette\Dom\ElementIterator;
+use Souplette\Dom\Traversal\ElementTraversal;
 
 final class NthLastChild extends FunctionalSelector
 {
@@ -49,7 +49,7 @@ final class NthLastChild extends FunctionalSelector
     private function getChildIndex(QueryContext $context, \DOMElement $element): int
     {
         $index = 1;
-        foreach (ElementIterator::following($element) as $sibling) {
+        foreach (ElementTraversal::following($element) as $sibling) {
             if (!$this->selectorList || $this->selectorList->matches($context, $sibling)) {
                 $index++;
             }

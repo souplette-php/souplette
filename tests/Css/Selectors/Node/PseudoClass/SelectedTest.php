@@ -4,7 +4,7 @@ namespace Souplette\Tests\Css\Selectors\Node\PseudoClass;
 
 use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\Simple\PseudoClassSelector;
-use Souplette\Dom\ElementIterator;
+use Souplette\Dom\Traversal\ElementTraversal;
 use Souplette\Tests\Css\Selectors\QueryAssert;
 use Souplette\Tests\Dom\DomBuilder;
 
@@ -18,7 +18,7 @@ final class SelectedTest extends TestCase
             ->tag('foo')->attr('selected')->close()
             ->getDocument();
         $selector = PseudoClassSelector::of('selected');
-        foreach (ElementIterator::descendants($doc) as $element) {
+        foreach (ElementTraversal::descendantsOf($doc) as $element) {
             $mustMatch = $element->hasAttribute('match');
             QueryAssert::elementMatchesSelector($element, $selector, $mustMatch);
         }

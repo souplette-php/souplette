@@ -6,7 +6,7 @@ use Souplette\Css\Selectors\Node\FunctionalSelector;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Selectors\Query\TypeMatcher;
 use Souplette\Css\Syntax\Node\AnPlusB;
-use Souplette\Dom\ElementIterator;
+use Souplette\Dom\Traversal\ElementTraversal;
 
 final class NthLastOfType extends FunctionalSelector
 {
@@ -27,7 +27,7 @@ final class NthLastOfType extends FunctionalSelector
     {
         $type = $element->localName;
         $index = 1;
-        foreach (ElementIterator::following($element) as $sibling) {
+        foreach (ElementTraversal::following($element) as $sibling) {
             if (TypeMatcher::isOfType($sibling, $type, $context->caseInsensitiveTypes)) {
                 $index++;
             }

@@ -4,7 +4,7 @@ namespace Souplette\Tests\Css\Selectors\Node\PseudoClass;
 
 use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\Simple\PseudoClassSelector;
-use Souplette\Dom\ElementIterator;
+use Souplette\Dom\Traversal\ElementTraversal;
 use Souplette\Tests\Css\Selectors\QueryAssert;
 use Souplette\Tests\Dom\DomBuilder;
 
@@ -27,7 +27,7 @@ final class ReadOnlyTest extends TestCase
             ->getDocument();
         $readOnly = PseudoClassSelector::of('read-only');
         $readWrite = PseudoClassSelector::of('read-write');
-        foreach (ElementIterator::descendants($doc) as $element) {
+        foreach (ElementTraversal::descendantsOf($doc) as $element) {
             $mustMatch = $element->hasAttribute('match');
             QueryAssert::elementMatchesSelector($element, $readOnly, $mustMatch);
             QueryAssert::elementMatchesSelector($element, $readWrite, !$mustMatch);

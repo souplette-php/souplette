@@ -14,7 +14,6 @@ use Souplette\Css\Syntax\Tokenizer\Token\Functional;
 use Souplette\Css\Syntax\Tokenizer\Token\Hash;
 use Souplette\Css\Syntax\Tokenizer\Token\Identifier;
 use Souplette\Css\Syntax\Tokenizer\Token\Number;
-use Souplette\Css\Syntax\Tokenizer\Token\NumericToken;
 use Souplette\Css\Syntax\Tokenizer\Token\Percentage;
 use Souplette\Css\Syntax\Tokenizer\Token\SingleCharToken;
 use Souplette\Css\Syntax\Tokenizer\Token\Str;

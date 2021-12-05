@@ -3,7 +3,6 @@
 namespace Souplette\Encoding;
 
 use Souplette\Encoding\Exception\ConversionException;
-use Souplette\Encoding\Exception\UnsupportedEncoding;
 use UConverter;
 
 final class Utf8Converter

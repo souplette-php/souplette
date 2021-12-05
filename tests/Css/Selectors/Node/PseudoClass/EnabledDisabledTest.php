@@ -4,7 +4,7 @@ namespace Souplette\Tests\Css\Selectors\Node\PseudoClass;
 
 use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\Node\Simple\PseudoClassSelector;
-use Souplette\Dom\ElementIterator;
+use Souplette\Dom\Traversal\ElementTraversal;
 use Souplette\Tests\Css\Selectors\QueryAssert;
 use Souplette\Tests\Dom\DomBuilder;
 
@@ -24,7 +24,7 @@ final class EnabledDisabledTest extends TestCase
             ->getDocument();
         $disabled = PseudoClassSelector::of('disabled');
         $enabled = PseudoClassSelector::of('enabled');
-        foreach (ElementIterator::descendants($doc) as $node) {
+        foreach (ElementTraversal::descendantsOf($doc) as $node) {
             $mustMatch = $node->hasAttribute('match');
             QueryAssert::elementMatchesSelector($node, $disabled, $mustMatch);
             QueryAssert::elementMatchesSelector($node, $enabled, !$mustMatch);
@@ -46,7 +46,7 @@ final class EnabledDisabledTest extends TestCase
             ->getDocument();
         $disabled = PseudoClassSelector::of('disabled');
         $enabled = PseudoClassSelector::of('enabled');
-        foreach (ElementIterator::descendants($doc) as $node) {
+        foreach (ElementTraversal::descendantsOf($doc) as $node) {
             $mustMatch = $node->hasAttribute('match');
             QueryAssert::elementMatchesSelector($node, $disabled, $mustMatch);
             QueryAssert::elementMatchesSelector($node, $enabled, !$mustMatch);
@@ -65,7 +65,7 @@ final class EnabledDisabledTest extends TestCase
             ->getDocument();
         $disabled = PseudoClassSelector::of('disabled');
         $enabled = PseudoClassSelector::of('enabled');
-        foreach (ElementIterator::descendants($doc) as $node) {
+        foreach (ElementTraversal::descendantsOf($doc) as $node) {
             $mustMatch = $node->hasAttribute('match');
             QueryAssert::elementMatchesSelector($node, $disabled, $mustMatch);
             QueryAssert::elementMatchesSelector($node, $enabled, !$mustMatch);

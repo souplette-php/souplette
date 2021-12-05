@@ -12,9 +12,9 @@ use Souplette\Css\Selectors\Node\Simple\IdSelector;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Syntax\Tokenizer\Tokenizer;
 use Souplette\Css\Syntax\TokenStream\TokenStream;
-use Souplette\Dom\ElementIterator;
 use Souplette\Dom\Legacy\Element;
 use Souplette\Dom\Legacy\Internal\DomIdioms;
+use Souplette\Dom\Traversal\ElementTraversal;
 
 final class SelectorQuery
 {
@@ -64,7 +64,7 @@ final class SelectorQuery
         // 4. For each `element` in `elements`, if match a selector against an element,
         // using `s`, `element`, and :scope element `this`, returns success, return `element`.
         $ctx = QueryContext::of($element);
-        foreach (ElementIterator::ancestors($element) as $candidate) {
+        foreach (ElementTraversal::ancestorsOf($element) as $candidate) {
             if ($selector->matches($ctx, $candidate)) {
                 return $candidate;
             }
@@ -84,7 +84,7 @@ final class SelectorQuery
             $selector = self::compile($selector);
         }
         $ctx = QueryContext::of($node);
-        foreach (ElementIterator::descendants($node) as $candidate) {
+        foreach (ElementTraversal::descendantsOf($node) as $candidate) {
             if ($selector->matches($ctx, $candidate)) {
                 return $candidate;
             }
@@ -110,7 +110,7 @@ final class SelectorQuery
         // with `s` and node’s root using scoping root `node`.
         $ctx = QueryContext::of($node);
         $results = [];
-        foreach (ElementIterator::descendants($node) as $candidate) {
+        foreach (ElementTraversal::descendantsOf($node) as $candidate) {
             if ($selector->matches($ctx, $candidate)) {
                 $results[] = $candidate;
             }
