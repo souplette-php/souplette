@@ -7,12 +7,15 @@ use Souplette\Dom\Exception\HierarchyRequestError;
 use Souplette\Dom\Exception\InvalidCharacterError;
 use Souplette\Dom\Exception\NamespaceError;
 use Souplette\Dom\Exception\NotFoundError;
+use Souplette\Dom\Exception\NotSupportedError;
 use Souplette\Xml\QName;
 
 /**
+ * @property-read string $mode
  * @property-read string $compatMode
  * @property-read string $characterSet
  * @property-read string $contentType
+ * @property-read ?DocumentType $doctype
  * @property-read ?Element $documentElement
  */
 class Document extends ParentNode implements NonElementParentNodeInterface
@@ -40,6 +43,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
         return match ($prop) {
             'mode' => $this->mode,
             'compatMode' => $this->getCompatMode(),
+            'doctype' => $this->getDoctype(),
             'documentElement' => $this->getFirstElementChild(),
             'implementation' => $this->implementation ??= new Implementation(),
             default => parent::__get($prop),
@@ -64,6 +68,16 @@ class Document extends ParentNode implements NonElementParentNodeInterface
         return $this->mode === DocumentModes::QUIRKS ? self::COMPAT_MODE_BACK : self::COMPAT_MODE_CSS1;
     }
 
+    public function getDoctype(): ?DocumentType
+    {
+        for ($child = $this->first; $child; $child = $this->next) {
+            if ($child->nodeType === Node::DOCUMENT_TYPE_NODE) {
+                return $child;
+            }
+        }
+        return null;
+    }
+
     public function getDocumentElement(): ?Element
     {
         return $this->getFirstElementChild();
@@ -82,7 +96,10 @@ class Document extends ParentNode implements NonElementParentNodeInterface
     public function createElement(string $localName): Element
     {
         if (!QName::isValidName($localName)) {
-            throw new InvalidCharacterError();
+            throw new InvalidCharacterError(sprintf(
+                'Provided element local name "%s" is not a valid name.',
+                $localName
+            ));
         }
         $namespace = null;
         if ($this->isHTML) {
@@ -111,7 +128,10 @@ class Document extends ParentNode implements NonElementParentNodeInterface
     public function createAttribute(string $localName): Attr
     {
         if (!QName::isValidName($localName)) {
-            throw new InvalidCharacterError();
+            throw new InvalidCharacterError(sprintf(
+                'Provided attribute local name "%s" is not a valid name.',
+                $localName
+            ));
         }
         if ($this->isHTML) {
             $localName = strtolower($localName);
@@ -141,6 +161,14 @@ class Document extends ParentNode implements NonElementParentNodeInterface
 
     public function createCDATASection(string $data): CDATASection
     {
+        if ($this->isHTML) {
+            throw new NotSupportedError('CDATA sections are not supported for HTML documents.');
+        }
+        if (str_contains($data, ']]>')) {
+            throw new InvalidCharacterError(
+                'Data cannot contain "]]>" since that is the end delimiter of a CDATA section.'
+            );
+        }
         $node = new CDATASection($data);
         $node->document = $this;
         return $node;
@@ -149,6 +177,24 @@ class Document extends ParentNode implements NonElementParentNodeInterface
     public function createComment(string $data): Comment
     {
         $node = new Comment($data);
+        $node->document = $this;
+        return $node;
+    }
+
+    public function createProcessingInstruction(string $target, string $data): ProcessingInstruction
+    {
+        if (!QName::isValidName($target)) {
+            throw new InvalidCharacterError(sprintf(
+                'Provided target "%s" is not a valid name.',
+                $target,
+            ));
+        }
+        if (str_contains($data, '?>')) {
+            throw new InvalidCharacterError(
+                'Data cannot contain "?>" since that is the end delimiter of a processing instruction.'
+            );
+        }
+        $node = new ProcessingInstruction($target, $data);
         $node->document = $this;
         return $node;
     }
@@ -218,57 +264,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
         // 6. If parent is a document, and any of the statements below,
         // switched on the interface node implements, are true,
         // then throw a "HierarchyRequestError" DOMException.
-        switch ($node->nodeType) {
-            case Node::TEXT_NODE:
-            case Node::CDATA_SECTION_NODE:
-                // first half of step 5: If node is a Text node and parent is a document
-                throw new HierarchyRequestError(sprintf(
-                    'Nodes of type `%s` may not be inserted inside nodes of type `%s`',
-                    $node->getDebugType(),
-                    $this->getDebugType(),
-                ));
-            case Node::DOCUMENT_FRAGMENT_NODE:
-                // If node has more than one element child or has a Text node child.
-                $nodeChildElementCount = $node->getChildElementCount();
-                if ($nodeChildElementCount > 1 || $node->hasChildOfType(self::TEXT_NODE)) {
-                    throw new HierarchyRequestError();
-                }
-                // Otherwise, if node has one element child and either parent has an element child,
-                //  child is a doctype, or child is non-null and a doctype is following child.
-                if ($nodeChildElementCount === 1
-                    && (
-                        $this->getChildElementCount() > 0
-                        || ($child && $child->nodeType === self::DOCUMENT_TYPE_NODE)
-                        || ($child && $child->hasFollowingSiblingOfType(self::DOCUMENT_TYPE_NODE))
-                    )
-                ) {
-                    throw new HierarchyRequestError();
-                }
-                break;
-            case Node::ELEMENT_NODE:
-                // parent has an element child, child is a doctype, or child is non-null and a doctype is following child.
-                if ($this->getChildElementCount() > 0
-                    || ($child && $child->nodeType === self::DOCUMENT_TYPE_NODE)
-                    || ($child && $child->hasFollowingSiblingOfType(self::DOCUMENT_TYPE_NODE))
-                ) {
-                    throw new HierarchyRequestError(
-                        'Cannot insert element before #doctype node.',
-                    );
-                }
-                break;
-            case Node::DOCUMENT_TYPE_NODE:
-                // parent has a doctype child, child is non-null and an element is preceding child,
-                // or child is null and parent has an element child.
-                if ($this->hasChildOfType(self::DOCUMENT_TYPE_NODE)
-                    || ($child && $child->hasPrecedingSiblingOfType(self::ELEMENT_NODE))
-                    || (!$child && $this->hasChildOfType(self::ELEMENT_NODE))
-                ) {
-                    throw new HierarchyRequestError();
-                }
-                break;
-            default:
-                break;
-        }
+        $this->canAcceptChild($node, $child, null);
     }
 
     /**
@@ -280,41 +276,109 @@ class Document extends ParentNode implements NonElementParentNodeInterface
     protected function ensureReplacementValidity(Node $child, Node $node): void
     {
         parent::ensurePreInsertionValidity($node, $child);
-        // 6. If parent is a document, and any of the statements below,
-        // switched on the interface node implements, are true,
-        // then throw a "HierarchyRequestError" DOMException.
-        switch ($node->nodeType) {
-            case self::DOCUMENT_FRAGMENT_NODE:
-                // If node has more than one element child or has a Text node child.
-                // Otherwise, if node has one element child and either parent has an element child
-                // that is not child or a doctype is following child.
-                $nodeChildElementCount = $node->getChildElementCount();
-                if ($nodeChildElementCount > 1
-                    || $node->hasChildOfType(self::TEXT_NODE)
-                    || ($nodeChildElementCount === 1 && (
-                        $this->hasChildOfTypeThatIsNotChild(self::ELEMENT_NODE, $child)
-                        || $child->hasFollowingSiblingOfType(self::DOCUMENT_TYPE_NODE)
-                    ))
-                ) {
-                    throw new HierarchyRequestError();
-                }
-                break;
-            case self::ELEMENT_NODE:
-                // parent has an element child that is not child or a doctype is following child.
-                if ($this->hasChildOfTypeThatIsNotChild(self::ELEMENT_NODE, $child)
-                    || $child->hasFollowingSiblingOfType(self::DOCUMENT_TYPE_NODE)
-                ) {
-                    throw new HierarchyRequestError();
-                }
-                break;
-            case self::DOCUMENT_TYPE_NODE:
-                // parent has a doctype child that is not child, or an element is preceding child.
-                if ($this->hasChildOfTypeThatIsNotChild(self::DOCUMENT_TYPE_NODE, $child)
-                    || $child->hasPrecedingSiblingOfType(self::ELEMENT_NODE)
-                ) {
-                    throw new HierarchyRequestError();
-                }
-                break;
+        $this->canAcceptChild($node, null, $child);
+    }
+
+    private function canAcceptChild(Node $newChild, ?Node $next, ?Node $oldChild): bool
+    {
+        if ($oldChild?->nodeType === $newChild->nodeType) {
+            return true;
         }
+        $numDoctypes = 0;
+        $numElements = 0;
+        $hasDoctypeAfterReferenceNode = false;
+        $hasElementAfterReferenceNode = false;
+        // First, check how many doctypes and elements we have, not counting the child we're about to remove.
+        $sawReferenceNode = false;
+        for ($child = $this->first; $child; $child = $child->next) {
+            if ($oldChild && $oldChild === $child) {
+                $sawReferenceNode = true;
+                continue;
+            }
+            if ($child === $next) {
+                $sawReferenceNode = true;
+            }
+            switch ($child->nodeType) {
+                case Node::DOCUMENT_TYPE_NODE:
+                    $numDoctypes++;
+                    $hasDoctypeAfterReferenceNode = $sawReferenceNode;
+                    break;
+                case Node::ELEMENT_NODE:
+                    $numElements++;
+                    $hasElementAfterReferenceNode = $sawReferenceNode;
+                    break;
+                default:
+                    break;
+            }
+        }
+        // Then, see how many doctypes and elements might be added by the new child.
+        if ($newChild->nodeType === Node::DOCUMENT_FRAGMENT_NODE) {
+            for ($child = $newChild->first; $child; $child = $child->next) {
+                switch ($child->nodeType) {
+                    case Node::ATTRIBUTE_NODE:
+                    case Node::CDATA_SECTION_NODE:
+                    case Node::DOCUMENT_FRAGMENT_NODE:
+                    case Node::DOCUMENT_NODE:
+                    case Node::TEXT_NODE:
+                        throw new HierarchyRequestError(sprintf(
+                            'Nodes of type `%s` may not be inserted inside nodes of type `%s`.',
+                            $newChild->getDebugType(),
+                            $this->getDebugType(),
+                        ));
+                    case Node::DOCUMENT_TYPE_NODE:
+                        $numDoctypes++;
+                        break;
+                    case Node::ELEMENT_NODE:
+                        $numElements++;
+                        if ($hasDoctypeAfterReferenceNode) {
+                            throw new HierarchyRequestError(
+                                'Cannot insert an element before a doctype.'
+                            );
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        } else {
+            switch ($newChild->nodeType) {
+                case Node::ATTRIBUTE_NODE:
+                case Node::CDATA_SECTION_NODE:
+                case Node::DOCUMENT_FRAGMENT_NODE:
+                case Node::DOCUMENT_NODE:
+                case Node::TEXT_NODE:
+                    throw new HierarchyRequestError(sprintf(
+                        'Nodes of type `%s` may not be inserted inside nodes of type `%s`.',
+                        $newChild->getDebugType(),
+                        $this->getDebugType(),
+                    ));
+                case Node::COMMENT_NODE:
+                case Node::PROCESSING_INSTRUCTION_NODE:
+                    return true;
+                case Node::DOCUMENT_TYPE_NODE:
+                    $numDoctypes++;
+                    if ($numElements > 0 && !$hasElementAfterReferenceNode) {
+                        throw new HierarchyRequestError(
+                            'Cannot insert a doctype before the document element.'
+                        );
+                    }
+                    break;
+                case Node::ELEMENT_NODE:
+                    $numElements++;
+                    if ($hasDoctypeAfterReferenceNode) {
+                        throw new HierarchyRequestError(
+                            'Cannot insert an element before a doctype.'
+                        );
+                    }
+                    break;
+            }
+        }
+        if ($numElements > 1 || $numDoctypes > 1) {
+            throw new HierarchyRequestError(sprintf(
+                'Document only allows one %s child.',
+                $numElements ? 'element' : 'doctype',
+            ));
+        }
+        return true;
     }
 }

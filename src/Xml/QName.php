@@ -58,7 +58,10 @@ final class QName
         // To validate a qualifiedName,
         // throw an "InvalidCharacterError" DOMException if qualifiedName does not match the QName production.
         if (!preg_match(self::QNAME_PATTERN, $qualifiedName, $matches)) {
-            throw new InvalidCharacterError();
+            throw new InvalidCharacterError(sprintf(
+                'Provided qualified name "%s" is not a valid name.',
+                $qualifiedName,
+            ));
         }
         // 3. Let prefix be null.
         // 4. Let localName be qualifiedName.
