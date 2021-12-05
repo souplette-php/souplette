@@ -4,8 +4,8 @@ namespace Souplette\Tests;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Dom\Legacy\Document;
-use Souplette\Dom\Legacy\Implementation;
+use Souplette\Dom\node\Document;
+use Souplette\Dom\node\Implementation;
 use Souplette\Souplette;
 
 final class SoupletteTest extends TestCase
@@ -19,8 +19,8 @@ final class SoupletteTest extends TestCase
 
     public function testSerializeDocument()
     {
-        $expected = '<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body></body></html>';
-        $doc = (new Implementation)->createShell();
+        $expected = '<!DOCTYPE html><html><head><title>title</title></head><body></body></html>';
+        $doc = (new Implementation)->createHTMLDocument('title');
         $html = Souplette::serializeDocument($doc);
         Assert::assertSame($expected, $html);
     }

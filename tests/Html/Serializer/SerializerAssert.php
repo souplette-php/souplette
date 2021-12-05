@@ -3,11 +3,12 @@
 namespace Souplette\Tests\Html\Serializer;
 
 use PHPUnit\Framework\Assert;
+use Souplette\Dom\Node\Node;
 use Souplette\Html\Serializer;
 
 final class SerializerAssert
 {
-    public static function assertSerializationEquals(\DOMNode $input, string $expected)
+    public static function assertSerializationEquals(Node $input, string $expected)
     {
         $serializer = new Serializer();
         $result = $serializer->serialize($input);

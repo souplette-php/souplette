@@ -3,6 +3,7 @@
 namespace Souplette\Html\TreeBuilder;
 
 use Souplette\Dom\Namespaces;
+use Souplette\Dom\Node\Element;
 
 final class OpenElementsStack extends Stack
 {
@@ -127,11 +128,8 @@ final class OpenElementsStack extends Stack
 
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#has-an-element-in-scope
-     *
-     * @param \DOMElement $target
-     * @return bool
      */
-    public function hasElementInScope(\DOMElement $target): bool
+    public function hasElementInScope(Element $target): bool
     {
         $scope = self::SCOPE_BASE;
         foreach ($this as $node) {
@@ -271,9 +269,11 @@ final class OpenElementsStack extends Stack
 
     /**
      * Helper method for adoption agency algorithm, section 4.7
-     * @return array{\DOMElement, int}|null
+     *
+     * @param Element $formattingElement
+     * @return array{Element, int}|null
      */
-    public function furthestBlockForFormattingElement(\DOMElement $formattingElement): ?array
+    public function furthestBlockForFormattingElement(Element $formattingElement): ?array
     {
         // 4.7 Let furthest block be the topmost node in the stack of open elements
         //     that is lower in the stack than formatting element, and is an element in the special category.
@@ -296,13 +296,8 @@ final class OpenElementsStack extends Stack
      * @codeCoverageIgnore
      *
      * @see https://html.spec.whatwg.org/multipage/parsing.html#has-an-element-in-the-specific-scope
-     *
-     * @param \DOMElement $targetNode
-     * @param array $scope
-     * @param bool $invert
-     * @return bool
      */
-    private function hasElementInSpecificScope(\DOMElement $targetNode, array $scope, bool $invert = false): bool
+    private function hasElementInSpecificScope(Element $targetNode, array $scope, bool $invert = false): bool
     {
         foreach ($this as $node) {
             // If node is the target node, terminate in a match state.
@@ -324,12 +319,6 @@ final class OpenElementsStack extends Stack
      * @codeCoverageIgnore
      *
      * @see https://html.spec.whatwg.org/multipage/parsing.html#has-an-element-in-the-specific-scope
-     *
-     * @param array $scope
-     * @param string $tagName
-     * @param string $namespace
-     * @param bool $invert
-     * @return bool
      */
     private function hasTagInSpecificScope(
         array $scope,

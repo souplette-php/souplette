@@ -3,7 +3,7 @@
 namespace Souplette\Tests\Html5Lib\TreeConstruction;
 
 use PHPUnit\Framework\Assert;
-use Souplette\Dom\Legacy\Document;
+use Souplette\Dom\Node\Document;
 use Souplette\Html\Parser;
 
 final class TreeConstructionAssert
@@ -13,13 +13,13 @@ final class TreeConstructionAssert
         $parser = new Parser($test->scriptingEnabled);
         $serializer = new Serializer();
         if ($test->contextElement) {
-            $doc = new Document();
+            $doc = new Document('html');
             [$ns, $localName] = $test->contextElement;
             $context = $doc->createElementNS($ns, $localName);
             $nodes = $parser->parseFragment($context, $test->input, 'utf-8');
             $frag = $doc->createDocumentFragment();
             foreach ($nodes as $node) {
-                $node = $doc->importNode($node, true);
+                //$node = $doc->importNode($node, true);
                 $frag->appendChild($node);
             }
             $result = $serializer->serialize($frag);

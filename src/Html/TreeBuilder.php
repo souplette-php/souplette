@@ -6,7 +6,14 @@ use DOMDocument;
 use DOMElement;
 use DOMImplementation;
 use Souplette\Dom\DocumentModes;
+use Souplette\Dom\Exception\DomException;
 use Souplette\Dom\Namespaces;
+use Souplette\Dom\Node\Attr;
+use Souplette\Dom\Node\Document;
+use Souplette\Dom\Node\DocumentType;
+use Souplette\Dom\Node\Element;
+use Souplette\Dom\Node\Implementation;
+use Souplette\Dom\Node\Node;
 use Souplette\Encoding\Encoding;
 use Souplette\Encoding\EncodingLookup;
 use Souplette\Encoding\Exception\EncodingChanged;
@@ -17,6 +24,7 @@ use Souplette\Html\Tokenizer\TokenType;
 use Souplette\Html\TreeBuilder\ActiveFormattingElementList;
 use Souplette\Html\TreeBuilder\Attributes;
 use Souplette\Html\TreeBuilder\DomExceptionHandler;
+use Souplette\Html\TreeBuilder\ElementFactory;
 use Souplette\Html\TreeBuilder\Elements;
 use Souplette\Html\TreeBuilder\InsertionLocation;
 use Souplette\Html\TreeBuilder\InsertionModes;
@@ -59,8 +67,10 @@ final class TreeBuilder
 
     public Tokenizer $tokenizer;
     public Encoding $encoding;
-    private DOMImplementation $dom;
-    public DOMDocument $document;
+    private Implementation $dom;
+    public Document $document;
+    public readonly ElementFactory $elementFactory;
+
     /**
      * @see https://dom.spec.whatwg.org/#concept-document-mode
      */
@@ -93,15 +103,15 @@ final class TreeBuilder
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#concept-frag-parse-context
      */
-    private ?DOMElement $contextElement = null;
+    private ?Element $contextElement = null;
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#head-element-pointer
      */
-    public ?DOMElement $headElement = null;
+    public ?Element $headElement = null;
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#form-element-pointer
      */
-    public ?DOMElement $formElement = null;
+    public ?Element $formElement = null;
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#foster-parent
      */
@@ -115,38 +125,33 @@ final class TreeBuilder
      */
     public bool $scriptingEnabled = false;
     public bool $shouldSkipNextNewLine = false;
-    private \DOMDocumentType $blankDoctype;
 
-    public function __construct(DOMImplementation $dom, bool $scriptingEnabled = false)
+    public function __construct(Implementation $dom, bool $scriptingEnabled = false)
     {
         $this->dom = $dom;
         $this->scriptingEnabled = $scriptingEnabled;
+        $this->elementFactory = new ElementFactory();
     }
 
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing
-     * @param Tokenizer $tokenizer
-     * @param Encoding $encoding
-     * @return DOMDocument
      */
-    public function buildDocument(Tokenizer $tokenizer, Encoding $encoding): DOMDocument
+    public function buildDocument(Tokenizer $tokenizer, Encoding $encoding): Document
     {
         $this->tokenizer = $tokenizer;
         $this->encoding = $encoding;
         $this->reset();
         $this->run(TokenizerState::DATA);
-        $this->document->normalize();
+        // TODO: do we need to normalize ?
+        //$this->document->normalize();
         return $this->document;
     }
 
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-html-fragments
-     * @param Tokenizer $tokenizer
-     * @param Encoding $encoding
-     * @param DOMElement $contextElement
-     * @return \DOMNode[]
+     * @return Node[]
      */
-    public function buildFragment(Tokenizer $tokenizer, Encoding $encoding, DOMElement $contextElement): array
+    public function buildFragment(Tokenizer $tokenizer, Encoding $encoding, Element $contextElement): array
     {
         $this->tokenizer = $tokenizer;
         $this->encoding = $encoding;
@@ -208,9 +213,11 @@ final class TreeBuilder
         $encoding->makeIrrelevant();
         // 13. Start the parser and let it run until it has consumed all the characters just inserted into the input stream.
         $this->run($tokenizerState);
-        $root->normalize();
+        // TODO: do we need to normalize ?
+        //$root->normalize();
         // 14. Return the child nodes of root, in tree order.
-        return iterator_to_array($root->childNodes);
+        // TODO: change this when we implement NodeList
+        return $root->getChildNodes();
     }
 
     private function reset(): void
@@ -416,7 +423,7 @@ final class TreeBuilder
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#adjusted-current-node
      */
-    public function getAdjustedCurrentNode(): ?DOMElement
+    public function getAdjustedCurrentNode(): ?Element
     {
         $openElementsCount = $this->openElements->count();
         if (!$openElementsCount) {
@@ -428,12 +435,12 @@ final class TreeBuilder
         return $this->openElements->top();
     }
 
-    public function appropriatePlaceForInsertingANode(?DOMElement $overrideTarget = null): InsertionLocation
+    public function appropriatePlaceForInsertingANode(?Element $overrideTarget = null): InsertionLocation
     {
         // @see https://html.spec.whatwg.org/multipage/parsing.html#creating-and-inserting-nodes
         // 1. If there was an override target specified, then let target be the override target.
         // Otherwise, let target be the current node.
-        /** @var DOMElement $target */
+        /** @var Element $target */
         $target = $overrideTarget ?: $this->openElements->top();
         // 2. Determine the adjusted insertion location using the first matching steps from the following list:
         if ($this->fosterParenting && isset(Elements::TABLE_INSERT_MODE_ELEMENTS[$target->localName])) {
@@ -464,14 +471,14 @@ final class TreeBuilder
                 // NOTE: we can't support the template->content property,
                 // because of the PHP DOM implementation details.
                 //$adjustedInsertionLocation = new InsertionLocation($lastTemplate->content);
-                $adjustedInsertionLocation = new InsertionLocation($lastTemplate, $lastTemplate->lastChild);
+                $adjustedInsertionLocation = new InsertionLocation($lastTemplate);
             } else if (!$lastTable) {
                 // 4. If there is no last table,
                 // then let adjusted insertion location be inside the first element in the stack of open elements (the html element),
                 // after its last child (if any),
                 // and abort these steps. (fragment case)
                 $parent = $this->openElements->bottom();
-                $adjustedInsertionLocation = new InsertionLocation($parent, $parent->lastChild);
+                $adjustedInsertionLocation = new InsertionLocation($parent);
             } else if ($lastTable && $lastTable->parentNode) {
                 // 5. If last table has a parent node,
                 // then let adjusted insertion location be inside last table's parent node,
@@ -481,12 +488,12 @@ final class TreeBuilder
                 // 6. Let previous element be the element immediately above last table in the stack of open elements.
                 $previousElement = $this->openElements[$lastTablePosition + 1];
                 // 7. Let adjusted insertion location be inside previous element, after its last child (if any).
-                $adjustedInsertionLocation = new InsertionLocation($previousElement, $previousElement->lastChild);
+                $adjustedInsertionLocation = new InsertionLocation($previousElement);
             }
         } else {
             // Otherwise
             // Let adjusted insertion location be inside target, after its last child (if any).
-            $adjustedInsertionLocation = new InsertionLocation($target, $target->lastChild);
+            $adjustedInsertionLocation = new InsertionLocation($target);
         }
         // 3. If the adjusted insertion location is inside a template element,
         //    let it instead be inside the template element's template contents, after its last child (if any).
@@ -499,99 +506,29 @@ final class TreeBuilder
         return $adjustedInsertionLocation;
     }
 
-    private function createDocument(): DOMDocument
+    private function createDocument(): Document
     {
-        $doc = $this->dom->createDocument();
-        // This seems to be the only way to create a doctype with an empty name...
-        $doc->loadHTML('<!DOCTYPE>', \LIBXML_NOERROR);
-        $this->blankDoctype = $doc->removeChild($doc->doctype);
-
-        return $doc;
+        return $this->dom->createDocument();
     }
 
-    public function createDoctype(Token\Doctype $token): \DOMDocumentType
+    public function createDoctype(Token\Doctype $token): DocumentType
     {
-        if ($token->name === '') {
-            return $this->blankDoctype;
-        }
         return $this->dom->createDocumentType($token->name, $token->publicIdentifier ?: '', $token->systemIdentifier ?: '');
-    }
-
-    public function createElement(
-        Token\Tag $token,
-        string $namespace,
-        \DOMNode $intendedParent,
-        bool $inForeignContent = false
-    ): DOMElement {
-        // 1. Let document be intended parent's node document.
-        $doc = match ($intendedParent->nodeType) {
-            XML_HTML_DOCUMENT_NODE, XML_DOCUMENT_NODE => $intendedParent,
-            default => $intendedParent->ownerDocument,
-        };
-        // 2. Let local name be the tag name of the token.
-        $localName = $token->name;
-        // 7. Let element be the result of creating an element given document, localName, given namespace, null, and is.
-        // If will execute script is true, set the synchronous custom elements flag; otherwise, leave it unset.
-        try {
-            $element = $doc->createElementNS($namespace, $localName);
-        } catch (\DOMException $err) {
-            $element = DomExceptionHandler::handleCreateElementException($err, $token, $namespace, $doc);
-        }
-        // 8. Append each attribute in the given token to element.
-        if ($token->attributes) {
-            foreach ($token->attributes as $name => $value) {
-                if ($value instanceof \DOMAttr) {
-                    $element->appendChild($value);
-                } else {
-                    $name = (string)$name;
-                    try {
-                        $this->setAttribute($element, $name, $value);
-                    } catch (\DOMException $err) {
-                        $this->setAttribute($element, XmlNameEscaper::escape($name), $value);
-                    }
-                }
-            }
-        }
-
-        return $element;
-    }
-
-    private function setAttribute(DOMElement $element, string $name, string $value): void
-    {
-        // don't use setAttribute here to avoid lower-casing the name.
-        $attr = $element->ownerDocument->createAttribute($name);
-        $attr->value = htmlspecialchars($value, ENT_NOQUOTES|ENT_HTML5, $this->encoding->name, false);
-        $element->appendChild($attr);
     }
 
     public function insertCharacter(Token\Character $token, ?string $data = null)
     {
         // 1. Let data be the characters passed to the algorithm, or,
         // if no characters were explicitly specified, the character of the character token being processed.
-        if ($data === null) {
-            $data = $token->data;
-        }
+        $data ??= $token->data;
         // 2. Let the adjusted insertion location be the appropriate place for inserting a node.
         $location = $this->appropriatePlaceForInsertingANode();
         // 3. If the adjusted insertion location is in a Document node, then return.
-        // TODO: check this
-        if ($location->parent->nodeType === XML_HTML_DOCUMENT_NODE || $location->parent->nodeType === XML_DOCUMENT_NODE) {
+        if ($location->parent->nodeType === Node::DOCUMENT_NODE) {
             return;
         }
-        $target = $location->target;
-        // 4. If there is a Text node immediately before the adjusted insertion location,
-        // then append data to that Text node's data.
-        if ($target && $target->nodeType === XML_TEXT_NODE) {
-            $target->nodeValue .= $data;
-        } else if ($target && $location->beforeTarget && $target->previousSibling && $target->previousSibling->nodeType === XML_TEXT_NODE) {
-            $target->previousSibling->nodeValue .= $data;
-        } else {
-            // Otherwise, create a new Text node whose data is data
-            // and whose node document is the same as that of the element in which the adjusted insertion location finds itself,
-            $node = $location->document->createTextNode($data);
-            // and insert the newly created node at the adjusted insertion location.
-            $location->insert($node);
-        }
+        // further steps are handled by the insertion location object
+        $location->insertCharacter($data);
     }
 
     public function insertComment(Token\Comment $token, ?InsertionLocation $position = null)
@@ -612,12 +549,12 @@ final class TreeBuilder
         Token\Tag $token,
         string $namespace = Namespaces::HTML,
         bool $inForeignContent = false
-    ): DOMElement {
+    ): Element {
         // 1. Let the adjusted insertion location be the appropriate place for inserting a node.
         $location = $this->appropriatePlaceForInsertingANode();
         // 2. Let element be the result of creating an element for the token in the given namespace,
         // with the intended parent being the element in which the adjusted insertion location finds itself.
-        $element = $this->createElement($token, $namespace, $location->parent, $inForeignContent);
+        $element = $this->elementFactory::forToken($token, $namespace, $location->parent, $inForeignContent);
         // 3. TODO: If it is possible to insert element at the adjusted insertion location, then:
         $canInsert = match ($location->parent) {
             $this->document => !$this->document->documentElement,
@@ -640,22 +577,6 @@ final class TreeBuilder
 
         // 5. Return element.
         return $element;
-    }
-
-    public function mergeAttributes(Token\StartTag $fromToken, DOMElement $toElement): void
-    {
-        foreach ($fromToken->attributes as $name => $value) {
-            $name = (string)$name;
-            try {
-                if (!$toElement->hasAttribute($name)) {
-                    $this->setAttribute($toElement, $name, $value);
-                }
-            } catch (\DOMException $err) {
-                if (!$toElement->hasAttribute($name)) {
-                    $this->setAttribute($toElement, XmlNameEscaper::escape($name), $value);
-                }
-            }
-        }
     }
 
     /**

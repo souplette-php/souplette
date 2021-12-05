@@ -43,7 +43,10 @@ abstract class AbstractTokenizer
 
     abstract public function nextToken(): bool;
 
-    final public function tokenize(TokenizerState $startState = TokenizerState::DATA, ?string $appropriateEndTag = null)
+    /**
+     * @return iterable<Token>
+     */
+    final public function tokenize(TokenizerState $startState = TokenizerState::DATA, ?string $appropriateEndTag = null): iterable
     {
         $this->reset();
         $this->state = $startState;

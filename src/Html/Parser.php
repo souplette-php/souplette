@@ -3,7 +3,10 @@
 namespace Souplette\Html;
 
 use JetBrains\PhpStorm\Pure;
-use Souplette\Dom\Legacy\Implementation;
+use Souplette\Dom\Node\Document;
+use Souplette\Dom\Node\Element;
+use Souplette\Dom\Node\Implementation;
+use Souplette\Dom\Node\Node;
 use Souplette\Encoding\Encoding;
 use Souplette\Encoding\EncodingLookup;
 use Souplette\Encoding\Exception\EncodingChanged;
@@ -21,7 +24,7 @@ final class Parser
         $this->treeBuilder = new TreeBuilder(new Implementation(), $scriptingEnabled);
     }
 
-    public function parse(string $input, ?string $encoding = null): \DOMDocument
+    public function parse(string $input, ?string $encoding = null): Document
     {
         $encoding = $this->detectEncoding($input, $encoding);
         $converted = $this->preprocessInput($input, $encoding);
@@ -37,9 +40,9 @@ final class Parser
     }
 
     /**
-     * @return \DOMNode[]
+     * @return Node[]
      */
-    public function parseFragment(\DOMElement $contextElement, string $input, ?string $encoding = null): array
+    public function parseFragment(Element $contextElement, string $input, ?string $encoding = null): array
     {
         $encoding = $this->detectEncoding($input, $encoding);
         $converted = $this->preprocessInput($input, $encoding);

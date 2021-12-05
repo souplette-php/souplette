@@ -3,6 +3,7 @@
 namespace Souplette\Html\TreeBuilder;
 
 use Souplette\Dom\Namespaces;
+use Souplette\Dom\Node\Element;
 
 final class Elements
 {
@@ -243,16 +244,16 @@ final class Elements
         'textpath' => 'textPath',
     ];
 
-    public static function isHtmlIntegrationPoint(\DOMElement $element): bool
+    public static function isHtmlIntegrationPoint(Element $element): bool
     {
         if ($element->localName === 'annotation-xml' && $element->namespaceURI === Namespaces::MATHML) {
-            $encoding = strtolower($element->getAttribute('encoding'));
+            $encoding = strtolower($element->getAttribute('encoding') ?? '');
             return $encoding === 'text/html' || $encoding === 'application/xhtml+xml';
         }
         return isset(self::HTML_INTEGRATION_POINTS[$element->namespaceURI][$element->localName]);
     }
 
-    public static function isMathMlTextIntegrationPoint(\DOMElement $element): bool
+    public static function isMathMlTextIntegrationPoint(Element $element): bool
     {
         return (
             isset(self::MATHML_TEXT_INTEGRATION_POINTS[$element->localName])

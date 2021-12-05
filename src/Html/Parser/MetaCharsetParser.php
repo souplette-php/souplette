@@ -162,31 +162,17 @@ final class MetaCharsetParser
 
     private function updateTokenizerState(StartTag $token): void
     {
-        switch ($token->name) {
-            case 'textarea':
-            case 'title':
-                $this->tokenizer->state = TokenizerState::RCDATA;
-                break;
-            case 'plaintext':
-                $this->tokenizer->state = TokenizerState::PLAINTEXT;
-                break;
-            case 'script':
-                $this->tokenizer->state = TokenizerState::SCRIPT_DATA;
-                break;
-            case 'style':
-            case 'iframe':
-            case 'xmp':
-            case 'noembed':
-            case 'noframes':
-                $this->tokenizer->state = TokenizerState::RAWTEXT;
-                break;
-            case 'noscript':
-                if (true /* scripting enabled */) {
-                    $this->tokenizer->state = TokenizerState::RAWTEXT;
-                }
-                break;
-            default:
-                break;
+        $scriptingEnabled = true;
+        $newState = match ($token->name) {
+            'title', 'textarea' => TokenizerState::RCDATA,
+            'plaintext' => TokenizerState::PLAINTEXT,
+            'script' => TokenizerState::SCRIPT_DATA,
+            'style', 'iframe', 'xmp', 'noembed', 'noframes' => TokenizerState::RAWTEXT,
+            'noscript' => $scriptingEnabled ? TokenizerState::RAWTEXT : null,
+            default => null,
+        };
+        if ($newState) {
+            $this->tokenizer->state = $newState;
         }
     }
 }

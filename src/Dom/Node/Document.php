@@ -2,6 +2,7 @@
 
 namespace Souplette\Dom\Node;
 
+use Souplette\Dom\DocumentModes;
 use Souplette\Dom\Exception\HierarchyRequestError;
 use Souplette\Dom\Exception\InvalidCharacterError;
 use Souplette\Dom\Exception\NamespaceError;
@@ -13,12 +14,18 @@ use Souplette\Xml\QName;
  * @property-read string $compatMode
  * @property-read string $characterSet
  * @property-read string $contentType
+ * @property-read ?Element $documentElement
  */
-final class Document extends ParentNode
+class Document extends ParentNode
 {
+    const COMPAT_MODE_BACK = 'BackCompat';
+    const COMPAT_MODE_CSS1 = 'CSS1Compat';
+
     public readonly int $nodeType;
     public readonly string $nodeName;
     public readonly bool $isHTML;
+
+    protected string $mode = DocumentModes::NO_QUIRKS;
     private Implementation $implementation;
 
     public function __construct(
@@ -32,9 +39,27 @@ final class Document extends ParentNode
     public function __get(string $prop)
     {
         return match ($prop) {
+            'mode' => $this->mode,
+            'compatMode' => $this->getCompatMode(),
+            'documentElement' => $this->getFirstElementChild(),
             'implementation' => $this->implementation ??= new Implementation(),
             default => parent::__get($prop),
         };
+    }
+
+    public function getMode(): string
+    {
+        return $this->mode;
+    }
+
+    public function getCompatMode(): string
+    {
+        return $this->mode === DocumentModes::QUIRKS ? self::COMPAT_MODE_BACK : self::COMPAT_MODE_CSS1;
+    }
+
+    public function getDocumentElement(): ?Element
+    {
+        return $this->getFirstElementChild();
     }
 
     public function createDocumentFragment(): DocumentFragment

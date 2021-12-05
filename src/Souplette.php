@@ -2,7 +2,7 @@
 
 namespace Souplette;
 
-use Souplette\Dom\Legacy\Document;
+use Souplette\Dom\Node\Document;
 
 final class Souplette
 {

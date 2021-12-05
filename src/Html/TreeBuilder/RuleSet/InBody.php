@@ -133,7 +133,7 @@ final class InBody extends RuleSet
                 // check to see if the attribute is already present on the top element of the stack of open elements.
                 // If it is not, add the attribute and its corresponding value to that element.
                 if ($token->attributes) {
-                    $tree->mergeAttributes($token, $tree->openElements->bottom());
+                    $tree->elementFactory::mergeAttributes($token, $tree->openElements->bottom());
                 }
                 return;
             } else if (isset(self::IN_HEAD_START_TAGS[$tagName])) {
@@ -162,7 +162,7 @@ final class InBody extends RuleSet
                 // and if it is not, add the attribute and its corresponding value to that element.
                 if ($token->attributes) {
                     $body = $tree->openElements[$count - 2];
-                    $tree->mergeAttributes($token, $body);
+                    $tree->elementFactory::mergeAttributes($token, $body);
                 }
                 return;
             } else if ($tagName === 'frameset') {
@@ -897,7 +897,7 @@ final class InBody extends RuleSet
     public static function anyOtherEndTag(TreeBuilder $tree, Token\EndTag $token)
     {
         foreach ($tree->openElements as $node) {
-            if ($node->tagName === $token->name && $node->namespaceURI === Namespaces::HTML) {
+            if ($node->localName === $token->name && $node->namespaceURI === Namespaces::HTML) {
                 // Generate implied end tags, except for HTML elements with the same tag name as the token.
                 $tree->generateImpliedEndTags($node->localName);
                 // If node is not the current node, then this is a parse error.
@@ -1074,9 +1074,14 @@ final class InBody extends RuleSet
             // TODO: check if we need to build a new element from scratch because of namespace
             $element = $formattingElement->cloneNode();
             // 4.16 Take all of the child nodes of furthest block and append them to the element created in the last step.
-            for ($i = $furthestBlock->childNodes->length - 1; $i >= 0; $i--) {
-                $childNode = $furthestBlock->childNodes->item($i);
-                $element->insertBefore($childNode, $element->lastChild);
+            //$childNodes = $furthestBlock->childNodes;
+            //for ($i = \count($childNodes) - 1; $i >= 0; $i--) {
+            //    $childNode = $childNodes[$i];
+            //    $element->insertBefore($childNode, $element->lastChild);
+            //}
+            $childNodes = $furthestBlock->childNodes;
+            foreach ($childNodes as $childNode) {
+                $element->appendChild($childNode);
             }
             // 4.17 Append that new element to furthest block.
             $furthestBlock->appendChild($element);

@@ -4,16 +4,16 @@ namespace Souplette\Tests\Html\Serializer;
 
 use PHPUnit\Framework\TestCase;
 use Souplette\Dom\Namespaces;
+use Souplette\Dom\Node\Document;
+use Souplette\Dom\Node\Node;
 use Souplette\Tests\Dom\DomBuilder;
 
 final class SerializerTest extends TestCase
 {
     /**
      * @dataProvider doctypeProvider
-     * @param \DOMDocument $input
-     * @param string $expected
      */
-    public function testDoctype(\DOMDocument $input, string $expected)
+    public function testDoctype(Document $input, string $expected)
     {
         SerializerAssert::assertSerializationEquals($input, $expected);
     }
@@ -40,10 +40,8 @@ final class SerializerTest extends TestCase
 
     /**
      * @dataProvider commentsProvider
-     * @param \DOMDocument $input
-     * @param string $expected
      */
-    public function testComments(\DOMDocument $input, string $expected)
+    public function testComments(Document $input, string $expected)
     {
         SerializerAssert::assertSerializationEquals($input, $expected);
     }
@@ -58,10 +56,8 @@ final class SerializerTest extends TestCase
 
     /**
      * @dataProvider elementsProvider
-     * @param \DOMDocument $input
-     * @param string $expected
      */
-    public function testElements(\DOMNode $input, string $expected)
+    public function testElements(Node $input, string $expected)
     {
         SerializerAssert::assertSerializationEquals($input, $expected);
     }
@@ -76,8 +72,9 @@ final class SerializerTest extends TestCase
             DomBuilder::create()->tag('input')->getDocument(),
             '<input>',
         ];
-        $doc = new \DOMDocument();
-        $doc->appendChild($doc->createElementNS(Namespaces::HTML, 'input', 'foo'));
+        $doc = new Document('html');
+        $doc->appendChild($input = $doc->createElement('input'));
+        $input->textContent = 'foo';
         yield '<input>foo</input>' => [
             $doc,
             '<input>',
@@ -90,10 +87,8 @@ final class SerializerTest extends TestCase
 
     /**
      * @dataProvider attributesProvider
-     * @param \DOMDocument $input
-     * @param string $expected
      */
-    public function testAttributes(\DOMDocument $input, string $expected)
+    public function testAttributes(Document $input, string $expected)
     {
         SerializerAssert::assertSerializationEquals($input, $expected);
     }
@@ -123,13 +118,12 @@ final class SerializerTest extends TestCase
                 ->getDocument(),
             '<div xml:lang="en" xlink:href="#foo"></div>',
         ];
-        // TODO: xmlns attributes
-        //yield 'xmlns attributes' => [
-        //    DomBuilder::create()->tag('div')
-        //        ->attr('xmlns:foo', 'http://example.com', Namespaces::XMLNS)
-        //        ->getDocument(),
-        //    '<div xmlns:foo="http://example.com"></div>',
-        //];
+        yield 'xmlns attributes' => [
+            DomBuilder::create()->tag('div')
+                ->attr('xmlns:foo', 'http://example.com', Namespaces::XMLNS)
+                ->getDocument(),
+            '<div xmlns:foo="http://example.com"></div>',
+        ];
         yield 'random foreign attributes' => [
             DomBuilder::create()->tag('div')
                 ->attr('foo:bar', 'baz', 'http://example.com')
@@ -140,10 +134,8 @@ final class SerializerTest extends TestCase
 
     /**
      * @dataProvider characterDataEscapingProvider
-     * @param \DOMDocument $input
-     * @param string $expected
      */
-    public function testCharacterDataEscaping(\DOMDocument $input, string $expected)
+    public function testCharacterDataEscaping(Document $input, string $expected)
     {
         SerializerAssert::assertSerializationEquals($input, $expected);
     }
@@ -162,10 +154,8 @@ final class SerializerTest extends TestCase
 
     /**
      * @dataProvider booleanAttributesProvider
-     * @param \DOMDocument $input
-     * @param string $expected
      */
-    public function testBooleanAttributes(\DOMDocument $input, string $expected)
+    public function testBooleanAttributes(Document $input, string $expected)
     {
         SerializerAssert::assertSerializationEquals($input, $expected);
     }

@@ -3,11 +3,19 @@
 namespace Souplette\Tests\Html5Lib\TreeConstruction;
 
 use Souplette\Dom\Namespaces;
+use Souplette\Dom\Node\Attr;
+use Souplette\Dom\Node\Comment;
+use Souplette\Dom\Node\Document;
+use Souplette\Dom\Node\DocumentFragment;
+use Souplette\Dom\Node\DocumentType;
+use Souplette\Dom\Node\Element;
+use Souplette\Dom\Node\Node;
+use Souplette\Dom\Node\Text;
 use Souplette\Xml\XmlNameEscaper;
 
 final class Serializer
 {
-    public function serialize(\DOMNode $doc): string
+    public function serialize(Node $doc): string
     {
         $output = [];
         $this->serializeNode($doc, $output);
@@ -15,14 +23,14 @@ final class Serializer
         return implode("\n", $output);
     }
 
-    private function serializeNode(\DOMNode $node, array &$output, int $depth = 0)
+    private function serializeNode(Node $node, array &$output, int $depth = 0)
     {
         $indent = str_repeat('  ', $depth);
-        if ($node instanceof \DOMDocument) {
+        if ($node instanceof Document) {
             $output[] = '#document';
-        } else if ($node instanceof \DOMDocumentFragment) {
+        } else if ($node instanceof DocumentFragment) {
             $output[] = '#document-fragment';
-        } else if ($node instanceof \DOMDocumentType) {
+        } else if ($node instanceof DocumentType) {
             if ($node->name) {
                 if ($node->publicId || $node->systemId) {
                     $output[] = sprintf(
@@ -38,14 +46,14 @@ final class Serializer
             } else {
                 $output[] = sprintf('|%s<!DOCTYPE >', $indent);
             }
-        } else if ($node instanceof \DOMComment) {
+        } else if ($node instanceof Comment) {
             $output[] = sprintf('|%s<!-- %s -->', $indent, $node->data);
-        } else if ($node instanceof \DOMText) {
+        } else if ($node instanceof Text) {
             $output[] = sprintf('|%s"%s"', $indent, $node->data);
         } else {
             $output[] = sprintf('|%s<%s>', $indent, $this->serializeTagName($node));
             $attributes = [];
-            /** @var \DOMAttr $attr */
+            /** @var Attr $attr */
             foreach ($node->attributes as $attr) {
                 $name = $this->serializeAttributeName($node, $attr);
                 $attributes[$name] = $attr->value;
@@ -84,18 +92,18 @@ final class Serializer
         }, []);
     }
 
-    private function serializeTagName(\DOMElement $node): string
+    private function serializeTagName(Element $node): string
     {
         if ($node->namespaceURI && $node->namespaceURI !== Namespaces::HTML) {
             $localName = XmlNameEscaper::unescape($node->localName);
             $name = sprintf('%s %s', Namespaces::TO_PREFIX[$node->namespaceURI], $localName);
         } else {
-            $name = XmlNameEscaper::unescape($node->tagName);
+            $name = XmlNameEscaper::unescape($node->localName);
         }
         return $name;
     }
 
-    private function serializeAttributeName(\DOMElement $node, \DOMAttr $attr): string
+    private function serializeAttributeName(Element $node, Attr $attr): string
     {
         if ($node->namespaceURI === Namespaces::HTML && $attr->namespaceURI === Namespaces::XML) {
             $name = XmlNameEscaper::escape($attr->nodeName);

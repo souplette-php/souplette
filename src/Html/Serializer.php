@@ -3,6 +3,13 @@
 namespace Souplette\Html;
 
 use Souplette\Dom\Namespaces;
+use Souplette\Dom\Node\Attr;
+use Souplette\Dom\Node\Comment;
+use Souplette\Dom\Node\DocumentType;
+use Souplette\Dom\Node\Element;
+use Souplette\Dom\Node\Node;
+use Souplette\Dom\Node\ProcessingInstruction;
+use Souplette\Dom\Node\Text;
 use Souplette\Html\Serializer\Elements;
 use Souplette\Xml\XmlNameEscaper;
 
@@ -17,17 +24,16 @@ final class Serializer
         Namespaces::SVG => true,
     ];
 
-    public function serialize(\DOMNode $node): string
+    public function serialize(Node $node): string
     {
         // 1. If the node serializes as void, then return the empty string.
-        if (isset(Elements::VOID_ELEMENTS[$node->localName])) {
+        if ($node instanceof Element && isset(Elements::VOID_ELEMENTS[$node->localName])) {
             return '';
         }
         // 2. Let s be a string, and initialize it to the empty string.
         $s = '';
-        // 3. If the node is a template element,
+        // TODO: 3. If the node is a template element,
         // then let the node instead be the template element's template contents (a DocumentFragment node).
-        // NOTE: we cannot support this.
         if (!$node->hasChildNodes()) {
             return $s;
         }
@@ -35,9 +41,9 @@ final class Serializer
         foreach ($node->childNodes as $currentNode) {
             // 4.1. Let current node be the child node being processed.
             // 4.2 Append the appropriate string from the following list to s:
-            if ($currentNode instanceof \DOMElement) {
+            if ($currentNode instanceof Element) {
                 $s .= $this->serializeElement($currentNode);
-            } else if ($currentNode instanceof \DOMText) {
+            } else if ($currentNode instanceof Text) {
                 // If the parent of current node is a style, script, xmp, iframe, noembed, noframes, or plaintext element,
                 // or if the parent of current node is a noscript element and scripting is enabled for the node,
                 // then append the value of current node's data IDL attribute literally.
@@ -49,19 +55,19 @@ final class Serializer
                     // Otherwise, append the value of current node's data IDL attribute, escaped as described below.
                     $s .= $this->escapeString($currentNode->data);
                 }
-            } else if ($currentNode instanceof \DOMComment) {
+            } else if ($currentNode instanceof Comment) {
                 // Append the literal string "<!--" ,
                 // followed by the value of current node's data IDL attribute,
                 // followed by the literal string "-->".
                 $s .= "<!--{$currentNode->data}-->";
-            } else if ($currentNode instanceof \DOMProcessingInstruction) {
+            } else if ($currentNode instanceof ProcessingInstruction) {
                 // Append the literal string "<?",
                 // followed by the value of current node's target IDL attribute,
                 // followed by a single U+0020 SPACE character,
                 // followed by the value of current node's data IDL attribute,
                 // followed by a single U+003E GREATER-THAN SIGN character (>).
                 $s .= "<?{$currentNode->target} {$currentNode->data}>";
-            } else if ($currentNode instanceof \DOMDocumentType) {
+            } else if ($currentNode instanceof DocumentType) {
                 // Append the literal string "<!DOCTYPE",
                 // followed by a space (U+0020 SPACE),
                 // followed by the value of current node's name IDL attribute,
@@ -73,7 +79,7 @@ final class Serializer
         return $s;
     }
 
-    public function serializeElement(\DOMElement $node): string
+    public function serializeElement(Element $node): string
     {
         $s = '';
         // If current node is an element in the HTML namespace, the MathML namespace, or the SVG namespace,
@@ -113,7 +119,7 @@ final class Serializer
         return $s;
     }
 
-    private function serializeAttribute(string $tagName, \DOMAttr $attr): string
+    private function serializeAttribute(string $tagName, Attr $attr): string
     {
         $name = $this->serializeAttributeName($attr);
         $canonicalName = strtolower($name);
@@ -134,24 +140,16 @@ final class Serializer
 
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#attribute's-serialised-name
-     * @param \DOMAttr $attr
-     * @return string
      */
-    private function serializeAttributeName(\DOMAttr $attr): string
+    private function serializeAttributeName(Attr $attr): string
     {
-        $ns = $attr->namespaceURI;
-        if (!$ns) {
-            return $attr->localName;
-        } else if ($ns === Namespaces::XML) {
-            return "xml:{$attr->localName}" ;
-        } else if ($ns === Namespaces::XMLNS) {
-            // FIXME: there's no such thing as xmlns attributes when using DOMNode objects
-            return $attr->localName === 'xmlns' ? 'xmlns' : "xmlns:{$attr->localName}";
-        } else if ($ns === Namespaces::XLINK) {
-            return "xlink:{$attr->localName}";
-        } else {
-            return $attr->nodeName;
-        }
+        return match ($attr->namespaceURI) {
+            Namespaces::XML => "xml:{$attr->localName}",
+            Namespaces::XMLNS => $attr->localName === 'xmlns' ? 'xmlns' : "xmlns:{$attr->localName}",
+            Namespaces::XLINK => "xlink:{$attr->localName}",
+            null, '' => $attr->localName,
+            default => $attr->nodeName,
+        };
     }
 
     /**

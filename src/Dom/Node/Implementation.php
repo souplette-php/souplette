@@ -19,14 +19,13 @@ final class Implementation
     public function createHTMLDocument(string $title = ''): Document
     {
         $doc = new Document('html');
-        $html = $doc->createElement('html');
-        $head = $doc->createElement('head');
+        $doc->appendChild($this->createDocumentType('html'));
+        $doc->appendChild($html = $doc->createElement('html'));
+        $html->appendChild($head = $doc->createElement('head'));
         $titleNode = $doc->createElement('title');
-        $titleNode->textContent = 'title';
+        $titleNode->textContent = $title;
         $head->appendChild($titleNode);
-        $body = $doc->createElement('body');
-        $doc->appendChild($html);
-        $html->append($head, $body);
+        $html->appendChild($doc->createElement('body'));
 
         return $doc;
     }

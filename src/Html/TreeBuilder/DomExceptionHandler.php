@@ -2,28 +2,32 @@
 
 namespace Souplette\Html\TreeBuilder;
 
+use Souplette\Dom\Exception\DomException;
 use Souplette\Dom\Exception\ErrorCodes;
+use Souplette\Dom\Node\Attr;
+use Souplette\Dom\Node\Document;
+use Souplette\Dom\Node\Element;
 use Souplette\Html\Tokenizer\Token\Tag;
 use Souplette\Xml\XmlNameEscaper;
 
 final class DomExceptionHandler
 {
     public static function handleCreateElementException(
-        \DOMException $err,
+        DomException $err,
         Tag $token,
         string $namespace,
-        \DOMDocument $doc
-    ): ?\DOMElement {
+        Document $doc
+    ): ?Element {
         $errorCode = $err->getCode();
         if ($errorCode === ErrorCodes::INVALID_CHARACTER_ERROR || $errorCode === ErrorCodes::NAMESPACE_ERROR) {
             $token->name = XmlNameEscaper::escape($token->name);
             return $doc->createElementNS($namespace, $token->name);
         } else {
-            throw new \LogicException("Unknown DOMException error code: {$errorCode}", 0, $err);
+            throw new \LogicException("Unknown DomException error code: {$errorCode}", 0, $err);
         }
     }
 
-    public static function handleCreateAttributeException(\DOMException $err, \DOMDocument $doc, string $name, ?string $namespace = null): ?\DOMAttr
+    public static function handleCreateAttributeException(DomException $err, Document $doc, string $name, ?string $namespace = null): ?Attr
     {
         $errorCode = $err->getCode();
         if ($errorCode === ErrorCodes::INVALID_CHARACTER_ERROR || $errorCode === ErrorCodes::NAMESPACE_ERROR) {
@@ -33,7 +37,7 @@ final class DomExceptionHandler
             }
             return $doc->createAttribute($name);
         } else {
-            throw new \LogicException("Unknown DOMException error code: {$errorCode}", 0, $err);
+            throw new \LogicException("Unknown DomException error code: {$errorCode}", 0, $err);
         }
     }
 }

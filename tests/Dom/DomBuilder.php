@@ -2,8 +2,9 @@
 
 namespace Souplette\Tests\Dom;
 
-use Souplette\Dom\Legacy\Document;
+use Souplette\Dom\Node\Document;
 use Souplette\Dom\Namespaces;
+use Souplette\Dom\Node\Node;
 use Souplette\Html\TreeBuilder\Elements;
 
 final class DomBuilder
@@ -13,7 +14,7 @@ final class DomBuilder
 
     private function __construct()
     {
-        $this->document = new Document();
+        $this->document = new Document('html');
         $this->openElements = new \SplStack();
     }
 
@@ -98,7 +99,7 @@ final class DomBuilder
         return $this;
     }
 
-    private function getParent(): \DOMNode
+    private function getParent(): Node
     {
         return $this->openElements->isEmpty() ? $this->document : $this->openElements->top();
     }

@@ -4,14 +4,15 @@ namespace Souplette\Html\TreeBuilder;
 
 use DOMElement;
 use Souplette\Dom\Namespaces;
+use Souplette\Dom\Node\Element;
 
 /**
  * @see https://html.spec.whatwg.org/multipage/parsing.html#the-list-of-active-formatting-elements
- * @extends Stack<DOMElement>
+ * @extends Stack<Element>
  */
 final class ActiveFormattingElementList extends Stack
 {
-    public static function areNodesEqual(DOMElement $node, DOMElement $other): bool
+    public static function areNodesEqual(Element $node, Element $other): bool
     {
         if ($node->localName !== $other->localName) {
             return false;
@@ -19,18 +20,18 @@ final class ActiveFormattingElementList extends Stack
         if ($node->namespaceURI !== $other->namespaceURI) {
             return false;
         }
-        if ($node->attributes->length !== $other->attributes->length) {
+        if (\count($node->attributes) !== \count($other->attributes)) {
             return false;
         }
         foreach ($node->attributes as $attr) {
-            $otherAttr = $other->attributes->getNamedItem($attr->name);
+            $otherAttr = $other->getAttributeNode($attr->name);
             if (!$otherAttr) {
                 return false;
             }
             if ($attr->namespaceURI !== $otherAttr->namespaceURI) {
                 return false;
             }
-            if ($attr->nodeValue !== $otherAttr->nodeValue) {
+            if ($attr->value !== $otherAttr->value) {
                 return false;
             }
         }
@@ -40,7 +41,7 @@ final class ActiveFormattingElementList extends Stack
 
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#push-onto-the-list-of-active-formatting-elements
-     * @param DOMElement|null $value
+     * @param Element|null $value
      */
     public function push($value): void
     {
@@ -80,7 +81,7 @@ final class ActiveFormattingElementList extends Stack
      * Check if an element exists between the end of the active formatting elements and the last marker.
      * If it does, return it, else return false
      *
-     * @param DOMElement $value
+     * @param Element $value
      * @return bool
      */
     public function contains($value): bool
@@ -100,7 +101,7 @@ final class ActiveFormattingElementList extends Stack
      * Check if an element exists between the end of the active formatting elements and the last marker.
      * If it does, return it, else return false
      */
-    public function containsTag(string $tagName, string $namespace = Namespaces::HTML): DOMElement|false
+    public function containsTag(string $tagName, string $namespace = Namespaces::HTML): Element|false
     {
         foreach ($this as $entry) {
             if ($entry === null) {

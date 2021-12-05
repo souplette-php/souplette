@@ -101,7 +101,7 @@ final class InHead extends RuleSet
                 return;
             } else if ($name === 'script') {
                 $location = $tree->appropriatePlaceForInsertingANode();
-                $node = $tree->createElement($token, Namespaces::HTML, $location->parent);
+                $node = $tree->elementFactory::forToken($token, Namespaces::HTML, $location->parent);
                 $location->insert($node);
                 $tree->openElements->push($node);
                 $tree->tokenizer->state = TokenizerState::SCRIPT_DATA;
