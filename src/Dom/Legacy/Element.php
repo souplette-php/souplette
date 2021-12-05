@@ -5,6 +5,7 @@ namespace Souplette\Dom\Legacy;
 use Souplette\Css\Selectors\SelectorQuery;
 use Souplette\Dom\Exception\NoModificationAllowed;
 use Souplette\Dom\Exception\SyntaxError;
+use Souplette\Dom\Internal\TokenList;
 use Souplette\Dom\Legacy\Api\ChildNodeInterface;
 use Souplette\Dom\Legacy\Api\ElementInterface;
 use Souplette\Dom\Legacy\Api\NodeInterface;
@@ -15,7 +16,6 @@ use Souplette\Dom\Legacy\Traits\ChildNodeTrait;
 use Souplette\Dom\Legacy\Traits\NodeTrait;
 use Souplette\Dom\Legacy\Traits\ParentNodeTrait;
 use Souplette\Dom\Namespaces;
-use Souplette\Dom\TokenList;
 use Souplette\Html\Parser;
 use Souplette\Html\Serializer;
 

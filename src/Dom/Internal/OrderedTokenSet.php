@@ -1,9 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom\Legacy\Internal;
+namespace Souplette\Dom\Internal;
 
 use JetBrains\PhpStorm\Pure;
-use function Souplette\Dom\Internal\array_key_last;
 
 /**
  * This class backs up the implementation of DOMTokenList interface.
@@ -26,7 +25,7 @@ final class OrderedTokenSet implements \Countable, \IteratorAggregate, \ArrayAcc
     {
         $this->tokens = [];
         $this->indices = [];
-        foreach (DomIdioms::splitInputOnAsciiWhitespace($value) as $i => $token) {
+        foreach (Idioms::splitInputOnAsciiWhitespace($value) as $i => $token) {
             $this->tokens[] = $token;
             $this->indices[$token] = $i;
         }
@@ -62,7 +61,7 @@ final class OrderedTokenSet implements \Countable, \IteratorAggregate, \ArrayAcc
         if ($this->contains($token)) {
             return false;
         }
-        $index = array_key_last($this->tokens) ?? -1;
+        $index = \array_key_last($this->tokens) ?? -1;
         $index++;
         $this->tokens[$index] = $token;
         $this->indices[$token] = $index;

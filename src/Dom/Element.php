@@ -2,18 +2,27 @@
 
 namespace Souplette\Dom;
 
+use Souplette\Css\Selectors\SelectorQuery;
 use Souplette\Dom\Api\ChildNodeInterface;
 use Souplette\Dom\Api\NonDocumentTypeChildNodeInterface;
 use Souplette\Dom\Exception\InvalidCharacterError;
 use Souplette\Dom\Exception\NamespaceError;
+use Souplette\Dom\Exception\NoModificationAllowed;
 use Souplette\Dom\Exception\NotFoundError;
+use Souplette\Dom\Exception\SyntaxError;
+use Souplette\Dom\Internal\TokenList;
 use Souplette\Dom\Traits\ChildNodeTrait;
 use Souplette\Dom\Traits\NonDocumentTypeChildNodeTrait;
+use Souplette\Html\Parser;
+use Souplette\Html\Serializer;
 use Souplette\Xml\QName;
 
 /**
  * @property string $id
  * @property string $className
+ * @property string $innerHTML
+ * @property string $outerHTML
+ * @property-read TokenList $classList
  */
 class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeChildNodeInterface
 {
@@ -32,6 +41,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
      * @var Attr[]
      */
     protected array $attributeList = [];
+    protected TokenList $classList;
 
     public function __construct(string $localName, ?string $namespace = null, ?string $prefix = null)
     {
@@ -54,8 +64,65 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
             'attributes' => $this->attributeList,
             'nextElementSibling' => $this->getNextElementSibling(),
             'previousElementSibling' => $this->getPreviousElementSibling(),
+            'id' => $this->getId(),
+            'className' => $this->getClassName(),
+            'classList' => $this->getClassList(),
+            'innerHTML' => $this->getInnerHTML(),
+            'outerHTML' => $this->getOuterHTML(),
             default => parent::__get($prop),
         };
+    }
+
+    public function __set(string $prop, mixed $value)
+    {
+        match ($prop) {
+            'id' => $this->setId($value),
+            'className' => $this->setClassName($value),
+            'innerHTML' => $this->setInnerHTML($value),
+            'outerHTML' => $this->setOuterHTML($value),
+            default => parent::__set($prop, $value),
+        };
+    }
+
+
+    public function getId(): string
+    {
+        return $this->getAttribute('id') ?? '';
+    }
+
+    public function setId(string $id): void
+    {
+        $this->setAttribute('id', $id);
+    }
+
+    public function getClassName(): string
+    {
+        return $this->getAttribute('class') ?? '';
+    }
+
+    public function setClassName(string $className): void
+    {
+        $this->setAttribute('class', $className);
+    }
+
+    public function getClassList(): TokenList
+    {
+        return $this->classList ??= new TokenList($this, 'class');
+    }
+
+    public function getElementsByClassName(string $classNames): array
+    {
+        return SelectorQuery::byClassNames($this, $classNames);
+    }
+
+    public function matches(string $selector): bool
+    {
+        return SelectorQuery::matches($this, $selector);
+    }
+
+    public function closest(string $selector): ?Element
+    {
+        return SelectorQuery::closest($this, $selector);
     }
 
     public function isEqualNode(?Node $otherNode): bool
@@ -286,6 +353,85 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
         $attribute->parent = null;
 
         return $attribute;
+    }
+
+    public function getInnerHTML(): string
+    {
+        // https://w3c.github.io/DOM-Parsing/#the-innerhtml-mixin
+        $serializer = new Serializer();
+        return $serializer->serialize($this);
+    }
+
+    public function setInnerHTML(string $html): void
+    {
+        // https://w3c.github.io/DOM-Parsing/#the-innerhtml-mixin
+        $parser = new Parser();
+        $children = $parser->parseFragment($this, $html, $this->document?->encoding ?? 'utf-8');
+        $this->replaceChildren(...$children);
+    }
+
+    public function getOuterHTML(): string
+    {
+        // https://w3c.github.io/DOM-Parsing/#dom-element-outerhtml
+        $serializer = new Serializer();
+        return $serializer->serializeElement($this);
+    }
+
+    public function setOuterHTML(string $html): void
+    {
+        // https://w3c.github.io/DOM-Parsing/#dom-element-outerhtml
+        $parent = $this->parent;
+        if (!$parent) return;
+        if ($parent->nodeType === Node::DOCUMENT_NODE) {
+            throw new NoModificationAllowed(sprintf(
+                'Failed to execute %s: The element has no parent.',
+                __METHOD__,
+            ));
+        }
+        if ($parent->nodeType === Node::DOCUMENT_FRAGMENT_NODE) {
+            $parent = new Element('body', Namespaces::HTML);
+            $parent->document = $this->document;
+        }
+        $parser = new Parser();
+        $children = $parser->parseFragment($parent, $html, $this->document?->encoding ?? 'utf-8');
+        $this->replaceWith(...$children);
+    }
+
+    public function insertAdjacentHTML(string $position, string $html): void
+    {
+        // https://w3c.github.io/DOM-Parsing/#dom-element-insertadjacenthtml
+        $position = strtolower($position);
+        $context = match ($position) {
+            'beforebegin', 'afterend' => $this->parent,
+            'afterbegin', 'beforeend' => $this,
+            default => throw new SyntaxError(sprintf(
+                'Failed to execute %s: The value provided ("%s") is not one of "beforebegin", "afterend", "afterbegin", or "beforeend".',
+                __METHOD__,
+                $position
+            )),
+        };
+        if (!$context || $context === $this->document) {
+            throw new NoModificationAllowed(sprintf(
+                'Failed to execute %s: The element has no parent.',
+                __METHOD__,
+            ));
+        }
+        if ($context->nodeType !== Node::ELEMENT_NODE || (
+            $context->document?->isHTML
+            && $context->isHTML
+            && $context->localName === 'html'
+        )) {
+            $context = new Element('body', Namespaces::HTML);
+            $context->document = $this->document;
+        }
+        $parser = new Parser();
+        $children = $parser->parseFragment($context, $html, $this->document?->encoding ?? 'utf-8');
+        match ($position) {
+            'beforebegin' => $this->before(...$children),
+            'afterbegin' => $this->prepend(...$children),
+            'beforeend' => $this->append(...$children),
+            'afterend' => $this->after(...$children),
+        };
     }
 
     /**

@@ -3,10 +3,10 @@
 namespace Souplette\Dom\Legacy\Api;
 
 
+use Souplette\Dom\Internal\TokenList;
 use Souplette\Dom\Legacy\Api\Native\DomElementInterface;
 use Souplette\Dom\Legacy\Attr;
 use Souplette\Dom\Legacy\Element;
-use Souplette\Dom\TokenList;
 
 /**
  * @property string $id

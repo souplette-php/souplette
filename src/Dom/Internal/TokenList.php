@@ -1,11 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom;
+namespace Souplette\Dom\Internal;
 
+use Souplette\Dom\Element;
 use Souplette\Dom\Exception\InvalidCharacterError;
 use Souplette\Dom\Exception\SyntaxError;
-use Souplette\Dom\Legacy\Element;
-use Souplette\Dom\Legacy\Internal\OrderedTokenSet;
 use WeakReference;
 
 /**
@@ -33,20 +32,19 @@ final class TokenList implements \Countable, \IteratorAggregate
         $this->tokenSet->parse($this->previousValue);
     }
 
-    public function __get($name)
+    public function __get(string $name)
     {
-        if ($name === 'value') {
-            return $this->getValue();
-        } else if ($name === 'length') {
-            return $this->count();
-        }
+        return match ($name) {
+            'value' => $this->getValue(),
+            'length' => $this->count(),
+        };
     }
 
-    public function __set($name, $value)
+    public function __set(string $name, string $value)
     {
-        if ($name === 'value') {
-            $this->setValue($value);
-        }
+        match ($name) {
+            'value' => $this->setValue($value),
+        };
     }
 
     public function setValue(string $value): void
