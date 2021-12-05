@@ -4,6 +4,7 @@ namespace Souplette\Css\Selectors\Node\Simple;
 
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Selectors\Specificity;
+use Souplette\Dom\Element;
 
 final class UniversalSelector extends TypeSelector
 {
@@ -17,7 +18,7 @@ final class UniversalSelector extends TypeSelector
         return new Specificity();
     }
 
-    public function matches(QueryContext $context, \DOMElement $element): bool
+    public function matches(QueryContext $context, Element $element): bool
     {
         return true;
     }

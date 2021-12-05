@@ -20,7 +20,7 @@ use Souplette\Tests\Utils;
 
 final class SimpleSelectorProvider
 {
-    public static function typeSelectors(): \Generator
+    public static function typeSelectors(): iterable
     {
         yield 'element in any namespace' => [
             '*|foo',
@@ -49,7 +49,7 @@ final class SimpleSelectorProvider
         ];
     }
 
-    public static function namespacedTypeSelectors(): \Generator
+    public static function namespacedTypeSelectors(): iterable
     {
         $namespaces = [
             'foo' => 'https://example.org/foo',
@@ -66,7 +66,7 @@ final class SimpleSelectorProvider
         ];
     }
 
-    public static function simpleFunctionalPseudoClasses(): \Generator
+    public static function simpleFunctionalPseudoClasses(): iterable
     {
         // An+B syntax is tested separately so we just ensure the correct classes are returned
         // TODO: test nth(-last)?-child(An+B of S) when selector list is implemented
@@ -85,7 +85,7 @@ final class SimpleSelectorProvider
         ])];
     }
 
-    public static function attributeSelectors(): \Generator
+    public static function attributeSelectors(): iterable
     {
         $names = ['foo'];
         $prefixes = [null, 'ns', '*'];

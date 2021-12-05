@@ -3,8 +3,8 @@
 namespace Souplette\Css\Selectors\Node\Functional;
 
 use Souplette\Css\Selectors\Node\SelectorList;
-use Souplette\Css\Selectors\Query\AnPlusBMatcher;
 use Souplette\Css\Selectors\Query\QueryContext;
+use Souplette\Dom\Element;
 
 trait NthFilteredMatcher
 {
@@ -12,7 +12,7 @@ trait NthFilteredMatcher
 
     public ?SelectorList $selectorList = null;
 
-    public function matches(QueryContext $context, \DOMElement $element): bool
+    public function matches(QueryContext $context, Element $element): bool
     {
         if ($this->selectorList && !$this->selectorList->matches($context, $element)) {
             return false;

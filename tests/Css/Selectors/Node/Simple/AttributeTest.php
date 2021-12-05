@@ -2,6 +2,7 @@
 
 namespace Souplette\Tests\Css\Selectors\Node\Simple;
 
+use Souplette\Dom\Element;
 use Souplette\Css\Selectors\Node\Simple\AttributeSelector;
 use Souplette\Css\Selectors\Specificity;
 use Souplette\Tests\Css\Selectors\QueryAssert;
@@ -43,7 +44,7 @@ final class AttributeTest extends SelectorTestCase
     /**
      * @dataProvider existsProvider
      */
-    public function testExists(\DOMElement $element, AttributeSelector $selector, bool $expected)
+    public function testExists(Element $element, AttributeSelector $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
@@ -74,7 +75,7 @@ final class AttributeTest extends SelectorTestCase
     /**
      * @dataProvider equalsProvider
      */
-    public function testEquals(\DOMElement $element, AttributeSelector $selector, bool $expected)
+    public function testEquals(Element $element, AttributeSelector $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
@@ -110,35 +111,36 @@ final class AttributeTest extends SelectorTestCase
     /**
      * @dataProvider dashMatchProvider
      */
-    public function testDashMatch(\DOMElement $element, AttributeSelector $selector, bool $expected)
+    public function testDashMatch(Element $element, AttributeSelector $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
     public function dashMatchProvider(): iterable
     {
-        $dom = DomBuilder::create()
+        $dom = DomBuilder::create()->tag('html')
             ->tag('foo')->attr('lang', 'en')->close()
             ->tag('bar')->attr('lang', 'en-us')->close()
             ->getDocument();
+        $root = $dom->documentElement;
 
         yield 'matches' => [
-            $dom->firstElementChild,
+            $root->firstElementChild,
             AttributeSelector::dashMatch('lang', 'en'),
             true,
         ];
         yield 'dash matches' => [
-            $dom->lastElementChild,
+            $root->lastElementChild,
             AttributeSelector::dashMatch('lang', 'en'),
             true,
         ];
         yield 'matches case-insensitive' => [
-            $dom->firstElementChild,
+            $root->firstElementChild,
             AttributeSelector::dashMatch('lang', 'EN', '*', 'i'),
             true,
         ];
         yield 'dash matches case-insensitive' => [
-            $dom->lastElementChild,
+            $root->lastElementChild,
             AttributeSelector::dashMatch('lang', 'EN', '*', 'i'),
             true,
         ];
@@ -147,7 +149,7 @@ final class AttributeTest extends SelectorTestCase
     /**
      * @dataProvider includesProvider
      */
-    public function testIncludes(\DOMElement $element, AttributeSelector $selector, bool $expected)
+    public function testIncludes(Element $element, AttributeSelector $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
@@ -196,7 +198,7 @@ final class AttributeTest extends SelectorTestCase
     /**
      * @dataProvider prefixProvider
      */
-    public function testPrefix(\DOMElement $element, AttributeSelector $selector, bool $expected)
+    public function testPrefix(Element $element, AttributeSelector $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
@@ -227,7 +229,7 @@ final class AttributeTest extends SelectorTestCase
     /**
      * @dataProvider suffixProvider
      */
-    public function testSuffix(\DOMElement $element, AttributeSelector $selector, bool $expected)
+    public function testSuffix(Element $element, AttributeSelector $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
@@ -258,7 +260,7 @@ final class AttributeTest extends SelectorTestCase
     /**
      * @dataProvider substringProvider
      */
-    public function testSubstring(\DOMElement $element, AttributeSelector $selector, bool $expected)
+    public function testSubstring(Element $element, AttributeSelector $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }

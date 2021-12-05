@@ -6,6 +6,7 @@ use Souplette\Css\Selectors\Node\FunctionalSelector;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Selectors\Query\TypeMatcher;
 use Souplette\Css\Syntax\Node\AnPlusB;
+use Souplette\Dom\Element;
 use Souplette\Dom\Traversal\ElementTraversal;
 
 final class NthLastOfType extends FunctionalSelector
@@ -23,7 +24,7 @@ final class NthLastOfType extends FunctionalSelector
         return ":nth-last-of-type({$this->anPlusB})";
     }
 
-    protected function getChildIndex(QueryContext $context, \DOMElement $element): int
+    protected function getChildIndex(QueryContext $context, Element $element): int
     {
         $type = $element->localName;
         $index = 1;

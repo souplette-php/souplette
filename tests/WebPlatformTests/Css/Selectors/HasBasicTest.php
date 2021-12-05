@@ -4,8 +4,8 @@ namespace Souplette\Tests\WebPlatformTests\Css\Selectors;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Dom\Legacy\Document;
-use Souplette\Dom\Legacy\Element;
+use Souplette\Dom\Document;
+use Souplette\Dom\Element;
 use Souplette\Souplette;
 
 /**
@@ -64,7 +64,7 @@ final class HasBasicTest extends TestCase
     public function testQuerySelectorAll(string $selector, array $expected)
     {
         /** @var Element $main */
-        $main = self::$document->getElementsByTagName('main')->item(0);
+        $main = self::$document->getElementsByTagName('main')[0];
         $actual = $main->querySelectorAll($selector);
         Assert::assertEquals($expected, $this->formatElements($actual));
     }
@@ -99,7 +99,7 @@ final class HasBasicTest extends TestCase
     public function testQuerySelector(string $selector, string $expected)
     {
         /** @var Element $main */
-        $main = self::$document->getElementsByTagName('main')->item(0);
+        $main = self::$document->getElementsByTagName('main')[0];
         $actual = $main->querySelector($selector);
         Assert::assertEquals($expected, $actual->id);
     }

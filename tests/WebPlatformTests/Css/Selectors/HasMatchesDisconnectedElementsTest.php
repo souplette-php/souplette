@@ -4,8 +4,8 @@ namespace Souplette\Tests\WebPlatformTests\Css\Selectors;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Dom\Legacy\Document;
-use Souplette\Dom\Legacy\Element;
+use Souplette\Dom\Document;
+use Souplette\Dom\Element;
 
 /**
  * Ported from web-platform-tests
@@ -24,7 +24,7 @@ final class HasMatchesDisconnectedElementsTest extends TestCase
 
     public function itMatchesDisconnectedElementsProvider(): iterable
     {
-        $doc = new Document();
+        $doc = new Document('html');
 
         $subject = $doc->createElement('subject');
         $subject->appendChild($doc->createElement('child'));

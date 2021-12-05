@@ -2,6 +2,8 @@
 
 namespace Souplette\Css\Selectors\Query;
 
+use Souplette\Dom\Element;
+
 /**
  * Subtree traversal iterator for ':has' argument matching.
  * To solve the following problems, this traversal uses the right-to-left postorder tree traversal,
@@ -45,13 +47,13 @@ namespace Souplette\Css\Selectors\Query;
  */
 final class HasMatchingSubtreeIterator implements \Iterator
 {
-    private ?\DOMElement $current = null;
-    private ?\DOMElement $traversalEnd = null;
+    private ?Element $current = null;
+    private ?Element $traversalEnd = null;
     private int $depth = 0;
     private int $depthLimit = 0;
 
     public function __construct(
-        private \DOMElement $scopeElement,
+        private Element $scopeElement,
         private HasMatchingContext $context,
     ) {
     }
@@ -71,7 +73,7 @@ final class HasMatchingSubtreeIterator implements \Iterator
         return $this->current !== null;
     }
 
-    public function current(): ?\DOMElement
+    public function current(): ?Element
     {
         return $this->current;
     }
@@ -139,7 +141,7 @@ final class HasMatchingSubtreeIterator implements \Iterator
         $this->traversalEnd = $traversalEnd;
     }
 
-    private function lastDescendantOf(\DOMElement $element): ?\DOMElement
+    private function lastDescendantOf(Element $element): ?Element
     {
         if ($this->depth === $this->depthLimit) return null;
         // Return the rightmost bottom element of the element without exceeding the depth limit.

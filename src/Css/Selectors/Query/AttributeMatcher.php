@@ -2,6 +2,8 @@
 
 namespace Souplette\Css\Selectors\Query;
 
+use Souplette\Dom\Element;
+
 /**
  * @see https://www.w3.org/TR/selectors-4/#attribute-selectors
  */
@@ -115,7 +117,7 @@ final class AttributeMatcher
         };
     }
 
-    public static function boolean(\DOMElement $element, string $attr): bool
+    public static function boolean(Element $element, string $attr): bool
     {
         if (!$element->hasAttribute($attr)) {
             return false;
@@ -124,7 +126,7 @@ final class AttributeMatcher
         return !$value || strcasecmp($attr, $value) === 0;
     }
 
-    public static function hasAttributeInAnyNamespace(\DOMElement $element, string $localName): bool
+    public static function hasAttributeInAnyNamespace(Element $element, string $localName): bool
     {
         foreach ($element->attributes as $attribute) {
             if ($attribute->localName === $localName) return true;
@@ -132,7 +134,7 @@ final class AttributeMatcher
         return false;
     }
 
-    public static function getAttributeInAnyNamespace(\DOMElement $element, string $localName): ?string
+    public static function getAttributeInAnyNamespace(Element $element, string $localName): ?string
     {
         foreach ($element->attributes as $attribute) {
             if ($attribute->localName === $localName) return $attribute->value;

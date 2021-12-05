@@ -68,13 +68,16 @@ final class InsertionLocation extends Node
         return null;
     }
 
+    // @codeCoverageIgnoreStart
+
     public function isEqualNode(?Node $otherNode): bool
     {
         return true;
     }
 
-    public function cloneNode(bool $deep = false): static
+    protected function clone(?Document $document, bool $deep = false): static
     {
-        return new self();
     }
+
+    // @codeCoverageIgnoreEnd
 }

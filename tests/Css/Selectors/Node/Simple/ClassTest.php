@@ -2,6 +2,7 @@
 
 namespace Souplette\Tests\Css\Selectors\Node\Simple;
 
+use Souplette\Dom\Element;
 use PHPUnit\Framework\Assert;
 use Souplette\Css\Selectors\Node\Simple\ClassSelector;
 use Souplette\Css\Selectors\Query\QueryContext;
@@ -24,7 +25,7 @@ final class ClassTest extends SelectorTestCase
     /**
      * @dataProvider matchesProvider
      */
-    public function testItMatches(\DOMElement $element, string $class, bool $caseInsensitive, bool $expected)
+    public function testItMatches(Element $element, string $class, bool $caseInsensitive, bool $expected)
     {
         $ctx = QueryContext::of($element);
         $ctx->caseInsensitiveClasses = $caseInsensitive;

@@ -152,8 +152,9 @@ final class PreInsertionValidationTest extends TestCase
             $impl->createDocumentType('html'),
             $doc->createTextNode('text'),
             $doc->createComment('comment'),
-            //$doc->createProcessingInstruction('foo', 'bar'),
-            $doc->createCDATASection('cdata'),
+            $doc->createProcessingInstruction('foo', 'bar'),
+            // TODO: test CDATA sections in XML documents
+            //$doc->createCDATASection('cdata'),
         ];
         $child = $doc->createElement('div');
         $node = $doc->createElement('div');

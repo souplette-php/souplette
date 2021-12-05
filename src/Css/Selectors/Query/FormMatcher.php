@@ -2,14 +2,17 @@
 
 namespace Souplette\Css\Selectors\Query;
 
+use Souplette\Dom\Element;
+use Souplette\Dom\Node;
+
 final class FormMatcher
 {
-    public static function isEnabled(\DOMElement $element, QueryContext $ctx): bool
+    public static function isEnabled(Element $element, QueryContext $ctx): bool
     {
         return !self::isDisabled($element, $ctx);
     }
 
-    public static function isDisabled(\DOMElement $element, QueryContext $ctx): bool
+    public static function isDisabled(Element $element, QueryContext $ctx): bool
     {
         $caseInsensitive = $ctx->caseInsensitiveTypes;
         $type = $caseInsensitive ? strtolower($element->localName) : $element->localName;
@@ -38,12 +41,12 @@ final class FormMatcher
         }
     }
 
-    public static function isReadOnly(\DOMElement $element, QueryContext $ctx): bool
+    public static function isReadOnly(Element $element, QueryContext $ctx): bool
     {
         return !self::isReadWrite($element, $ctx);
     }
 
-    public static function isReadWrite(\DOMElement $element, QueryContext $ctx): bool
+    public static function isReadWrite(Element $element, QueryContext $ctx): bool
     {
         $caseInsensitive = $ctx->caseInsensitiveTypes;
         $type = $caseInsensitive ? strtolower($element->localName) : $element->localName;
@@ -53,12 +56,12 @@ final class FormMatcher
         };
     }
 
-    private static function inDisabledFieldset(\DOMElement $element, QueryContext $ctx): bool
+    private static function inDisabledFieldset(Element $element, QueryContext $ctx): bool
     {
         $node = $element;
         $lastLegendAncestor = null;
         $caseInsensitive = $ctx->caseInsensitiveTypes;
-        while (($node = $node->parentNode) && $node->nodeType === XML_ELEMENT_NODE) {
+        while (($node = $node->parentNode) && $node->nodeType === Node::ELEMENT_NODE) {
             if (TypeMatcher::isOfType($node, 'legend', $caseInsensitive)) {
                 $lastLegendAncestor = $node;
                 continue;

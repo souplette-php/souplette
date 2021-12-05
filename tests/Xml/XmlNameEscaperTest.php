@@ -2,6 +2,7 @@
 
 namespace Souplette\Tests\Xml;
 
+use Souplette\Dom\Element;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Dom\Namespaces;
@@ -19,7 +20,7 @@ final class XmlNameEscaperTest extends TestCase
         $name = XmlNameEscaper::escape($input);
         Assert::assertSame($expected, $name);
         // Should not throw exception
-        $element = new \DOMElement($name, Namespaces::HTML);
+        $element = new Element($name, Namespaces::HTML);
     }
 
     public function escapeElementNameProvider(): iterable

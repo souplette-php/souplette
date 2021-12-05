@@ -2,12 +2,15 @@
 
 namespace Souplette\Dom;
 
+use Souplette\Css\Selectors\SelectorQuery;
 use Souplette\Dom\Api\NonElementParentNodeInterface;
 use Souplette\Dom\Exception\HierarchyRequestError;
 use Souplette\Dom\Exception\InvalidCharacterError;
 use Souplette\Dom\Exception\NamespaceError;
 use Souplette\Dom\Exception\NotFoundError;
 use Souplette\Dom\Exception\NotSupportedError;
+use Souplette\Dom\Traits\GetsElementsByTrait;
+use Souplette\Dom\Traversal\ElementTraversal;
 use Souplette\Xml\QName;
 
 /**
@@ -17,15 +20,22 @@ use Souplette\Xml\QName;
  * @property-read string $contentType
  * @property-read ?DocumentType $doctype
  * @property-read ?Element $documentElement
+ * @property-read ?Element $head
+ * @property-read ?Element $body
+ * @property string $title
  */
 class Document extends ParentNode implements NonElementParentNodeInterface
 {
+    use GetsElementsByTrait;
+
     const COMPAT_MODE_BACK = 'BackCompat';
     const COMPAT_MODE_CSS1 = 'CSS1Compat';
 
     public readonly int $nodeType;
     public readonly string $nodeName;
     public readonly bool $isHTML;
+
+    public string $encoding = 'UTF-8';
 
     protected string $mode = DocumentModes::NO_QUIRKS;
     private Implementation $implementation;
@@ -41,11 +51,14 @@ class Document extends ParentNode implements NonElementParentNodeInterface
     public function __get(string $prop)
     {
         return match ($prop) {
+            'implementation' => $this->implementation ??= new Implementation(),
             'mode' => $this->mode,
             'compatMode' => $this->getCompatMode(),
             'doctype' => $this->getDoctype(),
             'documentElement' => $this->getFirstElementChild(),
-            'implementation' => $this->implementation ??= new Implementation(),
+            'head' => $this->getHead(),
+            'body' => $this->getBody(),
+            'title' => $this->getTitle(),
             default => parent::__get($prop),
         };
     }
@@ -54,6 +67,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
     {
         match ($prop) {
             'textContent', 'nodeValue' => null,
+            'title' => $this->setTitle($value),
             default => parent::__set($prop, $value),
         };
     }
@@ -81,6 +95,45 @@ class Document extends ParentNode implements NonElementParentNodeInterface
     public function getDocumentElement(): ?Element
     {
         return $this->getFirstElementChild();
+    }
+
+    public function getHead(): ?Element
+    {
+        return ElementTraversal::firstChild(
+            $this->getDocumentElement(),
+            fn(Element $el) => $el->localName === 'head' && $el->isHTML,
+        );
+    }
+
+    public function getBody(): ?Element
+    {
+        return ElementTraversal::firstChild(
+            $this->getDocumentElement(),
+            fn(Element $el) => $el->localName === 'body' && $el->isHTML,
+        );
+    }
+
+    public function getTitle(): string
+    {
+        $title = ElementTraversal::firstChild(
+            $this->getHead(),
+            fn(Element $el) => $el->localName === 'title' && $el->isHTML,
+        );
+        return $title?->getTextContent() ?? '';
+    }
+
+    public function setTitle(string $value): void
+    {
+        $head = $this->getHead();
+        if (!$head) return;
+        $title = ElementTraversal::firstChild(
+            $head,
+            fn(Element $el) => $el->localName === 'title' && $el->isHTML,
+        );
+        if (!$title) {
+            $title = $head->appendChild($this->createElement('title'));
+        }
+        $title->setTextContent($value);
     }
 
     public function createDocumentFragment(): DocumentFragment
@@ -201,8 +254,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
 
     public function getElementById(string $elementId): ?Element
     {
-        // TODO: Implement getElementById() method.
-        return null;
+        return SelectorQuery::byId($this, $elementId);
     }
 
     public function getTextContent(): ?string
@@ -214,19 +266,39 @@ class Document extends ParentNode implements NonElementParentNodeInterface
     {
     }
 
-    public function cloneNode(bool $deep = false): static
+    /**
+     * @see https://dom.spec.whatwg.org/#dom-document-importnode
+     * @throws NotSupportedError
+     */
+    public function importNode(Node $node, bool $deep = false): Node
     {
-        // TODO: encoding, contentType, URL, origin, mode
-        $copy = new self($this->type);
-        $copy->document = $this->document;
-        if ($deep) {
-            for ($child = $this->first; $child; $child = $this->next) {
-                $childCopy = $child->cloneNode(true);
-                $copy->adopt($childCopy);
-                $copy->uncheckedAppendChild($childCopy);
-            }
+        // 1. If node is a document or shadow root, then throw a "NotSupportedError" DOMException.
+        if ($node->nodeType === Node::DOCUMENT_NODE) {
+            throw new NotSupportedError(
+                'The node provided is of type `#document`, which may not be adopted.'
+            );
         }
-        return $copy;
+        // 2. Return a clone of node, with this and the clone children flag set if deep is true.
+        return $node->clone($this, $deep);
+    }
+
+    /**
+     * @see https://dom.spec.whatwg.org/#dom-document-adoptnode
+     * @throws NotSupportedError
+     */
+    public function adoptNode(Node $node): ?Node
+    {
+        // 1. If node is a document, then throw a "NotSupportedError" DOMException.
+        if ($node->nodeType === Node::DOCUMENT_NODE) {
+            throw new NotSupportedError(
+                'The node provided is of type `#document`, which may not be adopted.'
+            );
+        }
+        // 2. If node is a shadow root, then throw a "HierarchyRequestError" DOMException.
+        // 3. TODO: If node is a DocumentFragment node whose host is non-null, then return.
+        // 4. Adopt node into this.
+        $this->adopt($node);
+        return $node;
     }
 
     /**
@@ -241,9 +313,22 @@ class Document extends ParentNode implements NonElementParentNodeInterface
         return null;
     }
 
-    protected function getDocumentNode(): ?Document
+    public function getDocumentNode(): ?Document
     {
         return $this;
+    }
+
+    protected function clone(?Document $document, bool $deep = false): static
+    {
+        // TODO: encoding, contentType, URL, origin, mode
+        $copy = new self($this->type);
+        if ($deep) {
+            for ($child = $this->first; $child; $child = $this->next) {
+                $childCopy = $child->clone($this,true);
+                $copy->uncheckedAppendChild($childCopy);
+            }
+        }
+        return $copy;
     }
 
     protected function locateNamespace(?string $prefix): ?string
@@ -322,7 +407,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
                     case Node::TEXT_NODE:
                         throw new HierarchyRequestError(sprintf(
                             'Nodes of type `%s` may not be inserted inside nodes of type `%s`.',
-                            $newChild->getDebugType(),
+                            $child->getDebugType(),
                             $this->getDebugType(),
                         ));
                     case Node::DOCUMENT_TYPE_NODE:

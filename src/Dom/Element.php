@@ -12,6 +12,7 @@ use Souplette\Dom\Exception\NotFoundError;
 use Souplette\Dom\Exception\SyntaxError;
 use Souplette\Dom\Internal\TokenList;
 use Souplette\Dom\Traits\ChildNodeTrait;
+use Souplette\Dom\Traits\GetsElementsByTrait;
 use Souplette\Dom\Traits\NonDocumentTypeChildNodeTrait;
 use Souplette\Html\Parser;
 use Souplette\Html\Serializer;
@@ -28,10 +29,12 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
 {
     use ChildNodeTrait;
     use NonDocumentTypeChildNodeTrait;
+    use GetsElementsByTrait;
 
     public readonly int $nodeType;
     public readonly string $nodeName;
     public readonly string $localName;
+    public readonly string $qualifiedName;
     public readonly string $tagName;
     public readonly ?string $namespaceURI;
     public readonly ?string $prefix;
@@ -49,11 +52,12 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
         $this->localName = $localName;
         $this->namespaceURI = $namespace;
         $this->prefix = $prefix;
+        $this->qualifiedName = $prefix ? "{$prefix}:{$localName}" : $localName;
         $this->isHTML = $namespace === Namespaces::HTML;
         if ($this->isHTML) {
-            $this->tagName = strtoupper($localName);
+            $this->tagName = strtoupper($this->qualifiedName);
         } else {
-            $this->tagName = $prefix ? "{$prefix}:{$localName}" : $localName;
+            $this->tagName = $this->qualifiedName;
         }
         $this->nodeName = $this->tagName;
     }
@@ -110,11 +114,6 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
         return $this->classList ??= new TokenList($this, 'class');
     }
 
-    public function getElementsByClassName(string $classNames): array
-    {
-        return SelectorQuery::byClassNames($this, $classNames);
-    }
-
     public function matches(string $selector): bool
     {
         return SelectorQuery::matches($this, $selector);
@@ -139,23 +138,9 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
         return $this->areChildrenEqual($otherNode);
     }
 
-    public function cloneNode(bool $deep = false): static
+    public function getAttributes(): array
     {
-        $copy = new self($this->localName, $this->namespaceURI, $this->prefix);
-        $copy->document = $this->document;
-        foreach ($this->attributeList as $attr) {
-            $copyAttribute = $attr->cloneNode();
-            $copyAttribute->parent = $copy;
-            $copy->attributeList[] = $copyAttribute;
-        }
-        if ($deep) {
-            for ($child = $this->first; $child; $child = $this->next) {
-                $childCopy = $child->cloneNode(true);
-                $copy->adopt($childCopy);
-                $copy->uncheckedAppendChild($childCopy);
-            }
-        }
-        return $copy;
+        return $this->attributeList;
     }
 
     /**
@@ -484,5 +469,23 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
             return $this->parent->locateNamespacePrefix($namespace);
         }
         return null;
+    }
+
+    protected function clone(?Document $document, bool $deep = false): static
+    {
+        $copy = new self($this->localName, $this->namespaceURI, $this->prefix);
+        $copy->document = $document ?? $this->document;
+        foreach ($this->attributeList as $attr) {
+            $copyAttribute = $attr->clone($copy->document);
+            $copyAttribute->parent = $copy;
+            $copy->attributeList[] = $copyAttribute;
+        }
+        if ($deep) {
+            for ($child = $this->first; $child; $child = $this->next) {
+                $childCopy = $child->clone($copy->document, true);
+                $copy->uncheckedAppendChild($childCopy);
+            }
+        }
+        return $copy;
     }
 }

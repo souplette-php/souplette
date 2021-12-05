@@ -28,7 +28,7 @@ final class TokenList implements \Countable, \IteratorAggregate
         $this->tokenSet = new OrderedTokenSet();
         $this->elementRef = WeakReference::create($element);
         $this->attributeName = $attributeName;
-        $this->previousValue = $element->getAttribute($attributeName);
+        $this->previousValue = $element->getAttribute($attributeName) ?? '';
         $this->tokenSet->parse($this->previousValue);
     }
 
@@ -139,7 +139,7 @@ final class TokenList implements \Countable, \IteratorAggregate
     {
         /** @var Element $element */
         $element = $this->elementRef->get();
-        return $element->getAttribute($this->attributeName);
+        return $element->getAttribute($this->attributeName) ?? '';
     }
 
     private function synchronize()

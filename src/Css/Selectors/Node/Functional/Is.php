@@ -6,6 +6,7 @@ use Souplette\Css\Selectors\Node\FunctionalSelector;
 use Souplette\Css\Selectors\Node\SelectorList;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Selectors\Specificity;
+use Souplette\Dom\Element;
 
 final class Is extends FunctionalSelector
 {
@@ -24,7 +25,7 @@ final class Is extends FunctionalSelector
         return $this->selectorList->getSpecificity();
     }
 
-    public function matches(QueryContext $context, \DOMElement $element): bool
+    public function matches(QueryContext $context, Element $element): bool
     {
         return $this->selectorList->matches($context, $element);
     }

@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 use Souplette\Dom\Exception\InvalidCharacterError;
 use Souplette\Dom\Exception\SyntaxError;
 use Souplette\Dom\Internal\TokenList;
-use Souplette\Dom\Legacy\Element;
+use Souplette\Dom\Element;
 
 final class TokenListTest extends TestCase
 {

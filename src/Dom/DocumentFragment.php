@@ -21,19 +21,20 @@ final class DocumentFragment extends ParentNode implements NonElementParentNodeI
         return null;
     }
 
-    public function cloneNode(bool $deep = false): static
+    protected function clone(?Document $document, bool $deep = false): static
     {
         $copy = new self();
-        $copy->document = $this->document;
+        $copy->document = $document ?? $this->document;
         if ($deep) {
             for ($child = $this->first; $child; $child = $this->next) {
-                $childCopy = $child->cloneNode(true);
+                $childCopy = $child->clone($copy->document, true);
                 $copy->adopt($childCopy);
                 $copy->uncheckedAppendChild($childCopy);
             }
         }
         return $copy;
     }
+
     /**
      * @see https://dom.spec.whatwg.org/#dom-node-lookupprefix
      */

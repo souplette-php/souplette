@@ -12,15 +12,15 @@ final class DomBuilder
     protected Document $document;
     protected \SplStack $openElements;
 
-    private function __construct()
+    private function __construct(string $type)
     {
-        $this->document = new Document('html');
+        $this->document = new Document($type);
         $this->openElements = new \SplStack();
     }
 
-    public static function create(): self
+    public static function create(string $type = 'html'): self
     {
-        return new self();
+        return new self($type);
     }
 
     public function getDocument(): Document

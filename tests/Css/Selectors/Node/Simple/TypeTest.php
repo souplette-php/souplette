@@ -2,9 +2,12 @@
 
 namespace Souplette\Tests\Css\Selectors\Node\Simple;
 
+use Souplette\Dom\Document;
+use Souplette\Dom\Element;
 use Souplette\Css\Selectors\Node\Simple\TypeSelector;
 use Souplette\Css\Selectors\Specificity;
 use Souplette\Dom\Namespaces;
+use Souplette\Dom\XmlDocument;
 use Souplette\Tests\Css\Selectors\QueryAssert;
 use Souplette\Tests\Css\Selectors\SelectorAssert;
 use Souplette\Tests\Css\Selectors\SelectorTestCase;
@@ -30,7 +33,7 @@ final class TypeTest extends SelectorTestCase
     /**
      * @dataProvider anyNamespaceProvider
      */
-    public function testAnyNamespace(\DOMElement $element, TypeSelector $selector, bool $expected)
+    public function testAnyNamespace(Element $element, TypeSelector $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
@@ -61,7 +64,7 @@ final class TypeTest extends SelectorTestCase
     /**
      * @dataProvider explicitNamespaceProvider
      */
-    public function testExplicitNamespace(\DOMElement $element, TypeSelector $selector, bool $expected)
+    public function testExplicitNamespace(Element $element, TypeSelector $selector, bool $expected)
     {
         $this->markTestSkipped('Namespaces in CSS are a lie.');
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
@@ -93,7 +96,7 @@ final class TypeTest extends SelectorTestCase
     /**
      * @dataProvider nullNamespaceProvider
      */
-    public function testNullNamespace(\DOMElement $element, TypeSelector $selector, bool $expected)
+    public function testNullNamespace(Element $element, TypeSelector $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
@@ -123,19 +126,14 @@ final class TypeTest extends SelectorTestCase
 
     public function testXmlDocumentIsCaseSensitive()
     {
-        $xml = <<<'XML'
-        <html>
-          <a/>
-          <A/>
-          <p>
-            <A/>
-            <a/>
-          </p>
-        </html>
-        XML;
-
-        $doc = new \DOMDocument();
-        $doc->loadXML($xml);
+        $doc = DomBuilder::create('xml')->tag('html')
+            ->tag('a')->close()
+            ->tag('A')->close()
+            ->tag('p')
+                ->tag('A')->close()
+                ->tag('a')->close()
+            ->close()
+            ->getDocument();
         SelectorAssert::assertQueryAll($doc, 'a', [
             '/html/a',
             '/html/p/a',

@@ -1,9 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom;
+namespace Souplette\Dom\Collections;
 
+use Souplette\Dom\Attr;
+use Souplette\Dom\Element;
 use Souplette\Dom\Exception\InUseAttributeError;
 
+/**
+ * @codeCoverageIgnore
+ */
 final class NamedNodeMap
 {
     private Element $element;

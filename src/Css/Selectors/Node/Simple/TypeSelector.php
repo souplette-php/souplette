@@ -6,6 +6,7 @@ use Souplette\Css\Selectors\Namespaces;
 use Souplette\Css\Selectors\Node\SimpleSelector;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Selectors\Specificity;
+use Souplette\Dom\Element;
 
 /**
  * @see https://drafts.csswg.org/selectors-4/#type-selectors
@@ -35,7 +36,7 @@ class TypeSelector extends SimpleSelector
         return new Specificity(0, 0, 1);
     }
 
-    public function matches(QueryContext $context, \DOMElement $element): bool
+    public function matches(QueryContext $context, Element $element): bool
     {
         return match ($this->namespace) {
             '*' => $this->matchesLocalName($element, $context),
@@ -44,7 +45,7 @@ class TypeSelector extends SimpleSelector
         };
     }
 
-    private function matchesLocalName(\DOMElement $element, QueryContext $ctx): bool
+    private function matchesLocalName(Element $element, QueryContext $ctx): bool
     {
         return match ($ctx->caseInsensitiveTypes) {
             true => strcasecmp($element->localName, $this->tagName) === 0,

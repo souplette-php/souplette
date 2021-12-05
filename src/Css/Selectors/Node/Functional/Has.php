@@ -10,6 +10,8 @@ use Souplette\Css\Selectors\Query\HasMatchingContext;
 use Souplette\Css\Selectors\Query\HasMatchingSubtreeIterator;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Selectors\Specificity;
+use Souplette\Dom\Element;
+use Souplette\Dom\Node;
 
 final class Has extends FunctionalSelector
 {
@@ -28,7 +30,7 @@ final class Has extends FunctionalSelector
         return $this->selectorList->getSpecificity();
     }
 
-    public function matches(QueryContext $context, \DOMElement $element): bool
+    public function matches(QueryContext $context, Element $element): bool
     {
         // unstable implementation ported from Blink
         // TODO: Need to clarify the :scope dependency in relative selector definition.
@@ -160,10 +162,10 @@ final class Has extends FunctionalSelector
         return false;
     }
 
-    private function getRootElement(\DOMElement $element): \DOMElement
+    private function getRootElement(Element $element): Element
     {
         $node = $element;
-        while ($node->parentNode && $node->parentNode->nodeType === XML_ELEMENT_NODE) {
+        while ($node->parentNode && $node->parentNode->nodeType === Node::ELEMENT_NODE) {
             $node = $node->parentNode;
         }
 

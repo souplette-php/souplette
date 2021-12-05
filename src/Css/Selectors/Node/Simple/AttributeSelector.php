@@ -8,6 +8,7 @@ use Souplette\Css\Selectors\Node\SimpleSelector;
 use Souplette\Css\Selectors\Query\AttributeMatcher;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Selectors\Specificity;
+use Souplette\Dom\Element;
 use Souplette\Dom\Namespaces as DomNamespaces;
 
 final class AttributeSelector extends SimpleSelector
@@ -101,7 +102,7 @@ final class AttributeSelector extends SimpleSelector
         return new Specificity(0, 1);
     }
 
-    public function matches(QueryContext $context, \DOMElement $element): bool
+    public function matches(QueryContext $context, Element $element): bool
     {
         $attr = $this->attribute;
         $hasAttribute = match ($this->namespace) {

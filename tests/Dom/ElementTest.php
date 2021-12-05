@@ -4,9 +4,9 @@ namespace Souplette\Tests\Dom;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Dom\Legacy\Comment;
-use Souplette\Dom\Legacy\Element;
-use Souplette\Dom\Legacy\Text;
+use Souplette\Dom\Comment;
+use Souplette\Dom\Element;
+use Souplette\Dom\Text;
 
 final class ElementTest extends TestCase
 {
@@ -37,7 +37,7 @@ final class ElementTest extends TestCase
         //
         $p = $comment->nextSibling;
         Assert::assertInstanceOf(Element::class, $p);
-        Assert::assertSame('bar', $p->nodeValue);
+        Assert::assertSame('bar', $p->textContent);
         //
         $text = $p->nextSibling;
         Assert::assertInstanceOf(Text::class, $text);
@@ -68,7 +68,7 @@ final class ElementTest extends TestCase
         //
         $article = $body->firstChild;
         Assert::assertInstanceOf(Element::class, $article);
-        Assert::assertSame('article', $article->tagName);
+        Assert::assertSame('article', $article->localName);
         //
         $comment = $article->firstChild;
         Assert::assertInstanceOf(Comment::class, $comment);
@@ -76,7 +76,7 @@ final class ElementTest extends TestCase
         //
         $p = $comment->nextSibling;
         Assert::assertInstanceOf(Element::class, $p);
-        Assert::assertSame('foo', $p->nodeValue);
+        Assert::assertSame('foo', $p->textContent);
         //
         $text = $p->nextSibling;
         Assert::assertInstanceOf(Text::class, $text);

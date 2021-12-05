@@ -7,6 +7,7 @@ use Souplette\Css\Selectors\Node\SelectorList;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Selectors\Specificity;
 use Souplette\Css\Syntax\Node\AnPlusB;
+use Souplette\Dom\Element;
 use Souplette\Dom\Traversal\ElementTraversal;
 
 final class NthChild extends FunctionalSelector
@@ -46,7 +47,7 @@ final class NthChild extends FunctionalSelector
         return $spec;
     }
 
-    private function getChildIndex(QueryContext $context, \DOMElement $element): int
+    private function getChildIndex(QueryContext $context, Element $element): int
     {
         $index = 1;
         foreach (ElementTraversal::preceding($element) as $sibling) {

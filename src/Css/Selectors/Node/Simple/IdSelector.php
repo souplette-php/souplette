@@ -5,6 +5,7 @@ namespace Souplette\Css\Selectors\Node\Simple;
 use Souplette\Css\Selectors\Node\SimpleSelector;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Selectors\Specificity;
+use Souplette\Dom\Element;
 
 final class IdSelector extends SimpleSelector
 {
@@ -23,7 +24,7 @@ final class IdSelector extends SimpleSelector
         return new Specificity(1);
     }
 
-    public function matches(QueryContext $context, \DOMElement $element): bool
+    public function matches(QueryContext $context, Element $element): bool
     {
         $id = $element->getAttribute('id');
         return match ($context->caseInsensitiveIds) {

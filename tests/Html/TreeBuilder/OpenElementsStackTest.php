@@ -2,6 +2,7 @@
 
 namespace Souplette\Tests\Html\TreeBuilder;
 
+use Souplette\Dom\Element;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Dom\Namespaces;
@@ -13,7 +14,7 @@ class OpenElementsStackTest extends TestCase
     {
         $stack = new OpenElementsStack();
         foreach ($tagNames as $tagName) {
-            $el = new \DOMElement($tagName,'', Namespaces::HTML);
+            $el = new Element($tagName,Namespaces::HTML, null);
             $stack->push($el);
         }
 
@@ -30,10 +31,10 @@ class OpenElementsStackTest extends TestCase
     public function testPopUntilTag()
     {
         $stack = new OpenElementsStack();
-        $stack->push($a = new \DOMElement('a', '', Namespaces::HTML));
-        $stack->push($b = new \DOMElement('b', '', Namespaces::HTML));
-        $stack->push($c = new \DOMElement('c', '', Namespaces::HTML));
-        $stack->push($d = new \DOMElement('d', '', Namespaces::HTML));
+        $stack->push($a = new Element('a', Namespaces::HTML));
+        $stack->push($b = new Element('b', Namespaces::HTML));
+        $stack->push($c = new Element('c', Namespaces::HTML));
+        $stack->push($d = new Element('d', Namespaces::HTML));
         $stack->popUntilTag('c');
         Assert::assertSame([1 => $b, 0 => $a], iterator_to_array($stack));
     }
@@ -41,10 +42,10 @@ class OpenElementsStackTest extends TestCase
     public function testPopUntilOneOf()
     {
         $stack = new OpenElementsStack();
-        $stack->push($a = new \DOMElement('a', '', Namespaces::HTML));
-        $stack->push($b = new \DOMElement('b', '', Namespaces::HTML));
-        $stack->push($c = new \DOMElement('c', '', Namespaces::HTML));
-        $stack->push($d = new \DOMElement('d', '', Namespaces::HTML));
+        $stack->push($a = new Element('a', Namespaces::HTML));
+        $stack->push($b = new Element('b', Namespaces::HTML));
+        $stack->push($c = new Element('c', Namespaces::HTML));
+        $stack->push($d = new Element('d', Namespaces::HTML));
         $stack->popUntilOneOf(['a', 'b', 'c']);
         Assert::assertSame([1 => $b, 0 => $a], iterator_to_array($stack));
     }

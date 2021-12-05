@@ -114,6 +114,11 @@ abstract class Node implements NodeInterface
         return $this->document;
     }
 
+    public function getDocumentNode(): ?Document
+    {
+        return $this->document;
+    }
+
     public function getParentNode(): ?ParentNode
     {
         return $this->parent;
@@ -198,6 +203,11 @@ abstract class Node implements NodeInterface
     public function isSameNode(?Node $otherNode): bool
     {
         return $this === $otherNode;
+    }
+
+    public function cloneNode(bool $deep = false): static
+    {
+        return $this->clone(null, $deep);
     }
 
     /**
@@ -371,10 +381,15 @@ abstract class Node implements NodeInterface
         ));
     }
 
+    abstract protected function clone(?Document $document, bool $deep = false): static;
+
     // ==============================================================
     // Mutation algorithms
     // ==============================================================
 
+    /**
+     * @see https://dom.spec.whatwg.org/#concept-node-adopt
+     */
     protected function adopt(Node $node): void
     {
         $doc = $this->getDocumentNode();
@@ -382,8 +397,13 @@ abstract class Node implements NodeInterface
             return;
         }
         $node->document = $doc;
+        if ($node->nodeType === Node::ELEMENT_NODE) {
+            foreach ($node->getAttributes() as $attribute) {
+                $attribute->document = $doc;
+            }
+        }
         for ($child = $node->first; $child; $child = $child->next) {
-            $this->adopt($node);
+            $this->adopt($child);
         }
     }
 
@@ -488,11 +508,6 @@ abstract class Node implements NodeInterface
     // Helper methods
     // ==============================================================
 
-    protected function getDocumentNode(): ?Document
-    {
-        return $this->document;
-    }
-
     protected function isInclusiveDescendantOf(?Node $parent): bool
     {
         if (!$parent) return false;
@@ -580,6 +595,7 @@ abstract class Node implements NodeInterface
             self::ATTRIBUTE_NODE => '#attribute',
             self::TEXT_NODE => '#text',
             self::CDATA_SECTION_NODE => '#cdata-section',
+            self::COMMENT_NODE => '#comment',
             self::PROCESSING_INSTRUCTION_NODE => '#processing-instruction',
         };
     }

@@ -2,6 +2,8 @@
 
 namespace Souplette\Tests\Css\Selectors;
 
+use Souplette\Dom\Document;
+use Souplette\Dom\Element;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Css\Selectors\SelectorQuery;
@@ -10,7 +12,7 @@ use Souplette\Tests\Utils;
 class SelectorQueryTestCase extends TestCase
 {
     protected static function assertMatches(
-        \DOMDocument $doc,
+        Document $doc,
         string $selectorText,
         array $matchingPaths,
     ) {
@@ -29,10 +31,10 @@ class SelectorQueryTestCase extends TestCase
     }
 
     protected static function assertQueryFirst(
-        \DOMDocument $doc,
+        Document $doc,
         string $selectorText,
         string $expectedPath,
-        ?\DOMElement $root = null,
+        ?Element $root = null,
     ) {
         if (!$root) $root = $doc;
         $result = SelectorQuery::first($root, $selectorText);
@@ -40,7 +42,7 @@ class SelectorQueryTestCase extends TestCase
     }
 
     protected static function assertClosest(
-        \DOMElement $root,
+        Element $root,
         string $selectorText,
         ?string $expectedPath = null,
     ) {
@@ -48,17 +50,17 @@ class SelectorQueryTestCase extends TestCase
         Assert::assertSame($expectedPath, $result ? Utils::elementPath($result) : null);
     }
 
-    protected static function loadXml(string $xml): \DOMDocument
+    protected static function loadXml(string $xml): Document
     {
-        $doc = new \DOMDocument();
+        $doc = new Document();
         $doc->loadXML($xml);
         return $doc;
     }
 
     /**
-     * @return iterable<\DOMElement>
+     * @return iterable<Element>
      */
-    private static function elements(\DOMDocument $doc): iterable
+    private static function elements(Document $doc): iterable
     {
         $xpath = new \DOMXPath($doc);
         yield from $xpath->query('//*');

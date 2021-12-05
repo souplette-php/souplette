@@ -119,7 +119,7 @@ final class ParentNodeTest extends TestCase
             ->getDocument();
         yield 'works on document' => [
             $doc,
-            $nodes = ['bar', $doc->createElement('b'), $doc->createComment('baz')],
+            $nodes = [$doc->createComment('baz')],
             [...$nodes, $doc->firstChild, $doc->lastChild],
         ];
         //
@@ -155,12 +155,12 @@ final class ParentNodeTest extends TestCase
     public function appendProvider(): iterable
     {
         $doc = DomBuilder::create()
+            ->comment('foo')
             ->tag('a')->close()
-            ->text('foo')
             ->getDocument();
         yield 'works on document' => [
             $doc,
-            $nodes = ['bar', $doc->createElement('b'), $doc->createComment('baz')],
+            $nodes = [$doc->createComment('bar')],
             [$doc->firstChild, $doc->lastChild, ...$nodes],
         ];
         //

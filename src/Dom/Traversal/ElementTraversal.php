@@ -8,6 +8,17 @@ use Souplette\Dom\ParentNode;
 
 abstract class ElementTraversal extends Node
 {
+    public static function firstChild(?Node $parent, ?callable $filter = null): ?Element
+    {
+        if (!$parent) return null;
+        for ($node = $parent->first; $node; $node = $node->next) {
+            if ($node->nodeType === Node::ELEMENT_NODE && (!$filter || $filter($node))) {
+                return $node;
+            }
+        }
+        return null;
+    }
+
     /**
      * @return iterable<Element>
      */

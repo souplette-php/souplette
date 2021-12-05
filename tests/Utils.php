@@ -2,9 +2,12 @@
 
 namespace Souplette\Tests;
 
+use Souplette\Dom\Element;
+use Souplette\Dom\Node;
+
 final class Utils
 {
-    public static function cartesianProduct(array $set): \Generator
+    public static function cartesianProduct(array $set): iterable
     {
         if (!$set) return;
 
@@ -26,22 +29,22 @@ final class Utils
         yield from $iterator($set);
     }
 
-    public static function elementPath(\DOMElement $element): string
+    public static function elementPath(Element $element): string
     {
         $path = '';
         $node = $element;
-        while ($node && $node->nodeType === XML_ELEMENT_NODE) {
-            $name = $node->tagName;
+        while ($node && $node->nodeType === Node::ELEMENT_NODE) {
+            $name = $node->qualifiedName;
             $index = 1;
             $showIndex = false;
             $sibling = $node;
             while ($sibling = $sibling->previousElementSibling) {
-                if ($sibling->tagName === $name) $index++;
+                if ($sibling->qualifiedName === $name) $index++;
             }
             if ($index === 1) {
                 $sibling = $node;
                 while ($sibling = $sibling->nextElementSibling) {
-                    if ($sibling->tagName === $name) {
+                    if ($sibling->qualifiedName === $name) {
                         $showIndex = true;
                         break;
                     }

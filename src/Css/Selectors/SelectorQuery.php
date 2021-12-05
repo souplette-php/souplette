@@ -2,8 +2,9 @@
 
 namespace Souplette\Css\Selectors;
 
-use DOMElement;
-use DOMParentNode;
+use Souplette\Dom\Element;
+use Souplette\Dom\Internal\Idioms;
+use Souplette\Dom\ParentNode;
 use Souplette\Css\Selectors\Node\ComplexSelector;
 use Souplette\Css\Selectors\Node\Selector;
 use Souplette\Css\Selectors\Node\SelectorList;
@@ -12,21 +13,19 @@ use Souplette\Css\Selectors\Node\Simple\IdSelector;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Syntax\Tokenizer\Tokenizer;
 use Souplette\Css\Syntax\TokenStream\TokenStream;
-use Souplette\Dom\Legacy\Element;
-use Souplette\Dom\Legacy\Internal\DomIdioms;
 use Souplette\Dom\Traversal\ElementTraversal;
 
 final class SelectorQuery
 {
-    public static function byId(DOMParentNode $element, string $id): DOMElement|Element|null
+    public static function byId(ParentNode $element, string $id): Element|null
     {
         return self::first($element, new IdSelector($id));
     }
 
-    public static function byClassNames(DOMParentNode $element, string $classNames): array
+    public static function byClassNames(ParentNode $element, string $classNames): array
     {
         $compound = null;
-        foreach (DomIdioms::splitInputOnAsciiWhitespace($classNames) as $class) {
+        foreach (Idioms::splitInputOnAsciiWhitespace($classNames) as $class) {
             $selector = new ClassSelector($class);
             $compound = $compound ? $compound->append($selector) : $selector;
         }
@@ -37,7 +36,7 @@ final class SelectorQuery
     /**
      * @link https://dom.spec.whatwg.org/#dom-element-matches
      */
-    public static function matches(DOMElement $element, Selector|string $selector): bool
+    public static function matches(Element $element, Selector|string $selector): bool
     {
         // 1. Let `s` be the result of parse a selector from selectors.
         // 2. If `s` is failure, then throw a "SyntaxError" DOMException.
@@ -53,7 +52,7 @@ final class SelectorQuery
     /**
      * @see https://dom.spec.whatwg.org/#dom-element-closest
      */
-    public static function closest(DOMElement $element, Selector|string $selector): DOMElement|Element|null
+    public static function closest(Element $element, Selector|string $selector): Element|null
     {
         // 1. Let `s` be the result of parse a selector from selectors.
         // 2. If `s` is failure, then throw a "SyntaxError" DOMException.
@@ -78,7 +77,7 @@ final class SelectorQuery
      * {@link https://dom.spec.whatwg.org/#scope-match-a-selectors-string scope-match a selectors string}
      *  selectors against this, if the result is not an empty list; otherwise null.
      */
-    public static function first(DOMParentNode $node, Selector|string $selector): DOMElement|Element|null
+    public static function first(ParentNode $node, Selector|string $selector): Element|null
     {
         if (\is_string($selector)) {
             $selector = self::compile($selector);
@@ -97,7 +96,7 @@ final class SelectorQuery
      * {@link https://dom.spec.whatwg.org/#scope-match-a-selectors-string scope-match a selectors string}
      * selectors against this.
      */
-    public static function all(DOMParentNode $node, Selector|string $selector): array
+    public static function all(ParentNode $node, Selector|string $selector): array
     {
         // To scope-match a selectors string selectors against a `node`, run these steps:
         // Let `s` be the result of parse a selector selectors.

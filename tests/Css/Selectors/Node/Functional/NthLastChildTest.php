@@ -2,6 +2,7 @@
 
 namespace Souplette\Tests\Css\Selectors\Node\Functional;
 
+use Souplette\Dom\Element;
 use Souplette\Css\Selectors\Node\Functional\NthLastChild;
 use Souplette\Css\Selectors\Node\Simple\ClassSelector;
 use Souplette\Css\Selectors\Node\Simple\IdSelector;
@@ -47,19 +48,19 @@ final class NthLastChildTest extends SelectorTestCase
     /**
      * @dataProvider simpleAnPlusBProvider
      */
-    public function testSimpleAnPlusB(\DOMElement $element, NthLastChild $selector, bool $expected)
+    public function testSimpleAnPlusB(Element $element, NthLastChild $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
     public function simpleAnPlusBProvider(): iterable
     {
-        $dom = DomBuilder::create()
+        $dom = DomBuilder::create()->tag('html')
             ->tag('a')->close()
             ->tag('a')->close()
             ->tag('a')->close()
             ->getDocument();
-        $nodes = iterator_to_array($dom->childNodes);
+        $nodes = $dom->documentElement->children;
         foreach (array_reverse($nodes) as $i => $node) {
             $b = $i + 1;
             yield "matches :nth-last-child({$b})" => [
@@ -73,14 +74,14 @@ final class NthLastChildTest extends SelectorTestCase
     /**
      * @dataProvider aNPlusBProvider
      */
-    public function testAnPlusB(\DOMElement $element, NthLastChild $selector, bool $expected)
+    public function testAnPlusB(Element $element, NthLastChild $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
     public function aNPlusBProvider(): iterable
     {
-        $dom = DomBuilder::create()
+        $dom = DomBuilder::create()->tag('html')
             ->tag('a')->close()
             ->tag('a')->close()
             ->tag('a')->close()
@@ -91,7 +92,7 @@ final class NthLastChildTest extends SelectorTestCase
 
         $provider = static function(int $a, int $b, array $indices) use ($dom) {
             $selector = new NthLastChild(new AnPlusB($a, $b));
-            foreach ($dom->childNodes as $index => $node) {
+            foreach ($dom->documentElement->children as $index => $node) {
                 $mustMatch = \in_array($index, $indices, true);
                 $key = sprintf(
                     'child n°%d %s %s',

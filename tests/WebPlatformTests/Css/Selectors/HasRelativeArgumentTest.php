@@ -4,8 +4,8 @@ namespace Souplette\Tests\WebPlatformTests\Css\Selectors;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Dom\Legacy\Document;
-use Souplette\Dom\Legacy\Element;
+use Souplette\Dom\Document;
+use Souplette\Dom\Element;
 use Souplette\Souplette;
 
 /**

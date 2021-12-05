@@ -2,6 +2,8 @@
 
 namespace Souplette\Tests\Css\Selectors;
 
+use Souplette\Dom\Document;
+use Souplette\Dom\Element;
 use PHPUnit\Framework\Assert;
 use Souplette\Css\Selectors\Node\ComplexSelector;
 use Souplette\Css\Selectors\Node\Selector;
@@ -36,10 +38,10 @@ final class SelectorAssert
     }
 
     public static function assertQueryAll(
-        \DOMDocument $doc,
+        Document $doc,
         string $selectorText,
         array $expectedPaths,
-        ?\DOMElement $root = null,
+        ?Element $root = null,
     ) {
         if (!$root) $root = $doc;
         $results = SelectorQuery::all($root, $selectorText) ?? [];

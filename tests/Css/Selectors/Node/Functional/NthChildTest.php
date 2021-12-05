@@ -2,6 +2,7 @@
 
 namespace Souplette\Tests\Css\Selectors\Node\Functional;
 
+use Souplette\Dom\Element;
 use Souplette\Css\Selectors\Node\Functional\NthChild;
 use Souplette\Css\Selectors\Node\Simple\ClassSelector;
 use Souplette\Css\Selectors\Node\Simple\IdSelector;
@@ -47,19 +48,19 @@ final class NthChildTest extends SelectorTestCase
     /**
      * @dataProvider simpleAnPlusBProvider
      */
-    public function testSimpleAnPlusB(\DOMElement $element, NthChild $selector, bool $expected)
+    public function testSimpleAnPlusB(Element $element, NthChild $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
     public function simpleAnPlusBProvider(): iterable
     {
-        $dom = DomBuilder::create()
+        $dom = DomBuilder::create()->tag('html')
             ->tag('a')->close()
             ->tag('a')->close()
             ->tag('a')->close()
             ->getDocument();
-        foreach ($dom->childNodes as $i => $node) {
+        foreach ($dom->documentElement->children as $i => $node) {
             $b = $i + 1;
             yield "matches :nth-child({$b})" => [
                 $node,
@@ -72,14 +73,14 @@ final class NthChildTest extends SelectorTestCase
     /**
      * @dataProvider aNPlusBProvider
      */
-    public function testAnPlusB(\DOMElement $element, NthChild $selector, bool $expected)
+    public function testAnPlusB(Element $element, NthChild $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
     public function aNPlusBProvider(): iterable
     {
-        $dom = DomBuilder::create()
+        $dom = DomBuilder::create()->tag('html')
             ->tag('a')->close()
             ->tag('a')->close()
             ->tag('a')->close()
@@ -90,7 +91,7 @@ final class NthChildTest extends SelectorTestCase
 
         $provider = function(int $a, int $b, array $indices) use ($dom) {
             $selector = new NthChild(new AnPlusB($a, $b));
-            foreach ($dom->childNodes as $index => $node) {
+            foreach ($dom->documentElement->children as $index => $node) {
                 $mustMatch = \in_array($index, $indices, true);
                 $key = sprintf(
                     'child n°%d %s %s',

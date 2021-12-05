@@ -26,10 +26,11 @@ final class ProcessingInstruction extends CharacterData
             && $this->value === $otherNode->value;
     }
 
-    public function cloneNode(bool $deep = false): static
+    protected function clone(?Document $document, bool $deep = false): static
     {
         $copy = new self($this->target, $this->value);
-        $copy->document = $this->document;
+        $copy->document = $document ?? $this->document;
         return $copy;
     }
+
 }

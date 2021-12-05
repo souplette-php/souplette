@@ -15,10 +15,10 @@ final class Comment extends CharacterData
         $this->length = mb_strlen($data, 'utf-8');
     }
 
-    public function cloneNode(bool $deep = false): static
+    protected function clone(?Document $document, bool $deep = false): static
     {
         $copy = new self($this->value);
-        $copy->document = $this->document;
+        $copy->document = $document ?? $this->document;
         return $copy;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Souplette\Tests\Css\Selectors\Node\Functional;
 
+use Souplette\Dom\Element;
 use Souplette\Css\Selectors\Node\Functional\Not;
 use Souplette\Css\Selectors\Node\SelectorList;
 use Souplette\Css\Selectors\Node\Simple\ClassSelector;
@@ -41,22 +42,22 @@ final class NotTest extends SelectorTestCase
     /**
      * @dataProvider matchesProvider
      */
-    public function testMatches(\DOMElement $element, Not $selector, bool $expected)
+    public function testMatches(Element $element, Not $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
     public function matchesProvider(): iterable
     {
-        $dom = DomBuilder::create()
+        $dom = DomBuilder::create()->tag('html')
             ->tag('a')->close()
             ->tag('b')->close()
             ->tag('a')->close()
             ->tag('b')->close()
             ->getDocument();
-        foreach ($dom->childNodes as $i => $node) {
+        foreach ($dom->documentElement->children as $i => $node) {
             foreach (['a', 'b'] as $tagName) {
-                $mustMatch = $node->tagName !== $tagName;
+                $mustMatch = $node->localName !== $tagName;
                 $selector = new Not(new SelectorList([
                     new TypeSelector($tagName, '*'),
                 ]));

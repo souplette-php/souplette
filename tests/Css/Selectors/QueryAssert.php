@@ -2,6 +2,7 @@
 
 namespace Souplette\Tests\Css\Selectors;
 
+use Souplette\Dom\Element;
 use PHPUnit\Framework\Assert;
 use Souplette\Css\Selectors\Node\Selector;
 use Souplette\Css\Selectors\Query\QueryContext;
@@ -10,7 +11,7 @@ use Souplette\Tests\Utils;
 final class QueryAssert
 {
     public static function elementMatchesSelector(
-        \DOMElement $element,
+        Element $element,
         Selector $selector,
         bool $mustMatch = true,
         string $message = ''

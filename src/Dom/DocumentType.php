@@ -32,10 +32,10 @@ final class DocumentType extends Node implements ChildNodeInterface
         );
     }
 
-    public function cloneNode(bool $deep = false): static
+    protected function clone(?Document $document, bool $deep = false): static
     {
         $copy = new self($this->name, $this->publicId, $this->systemId);
-        $copy->document = $this->document;
+        $copy->document = $document ?? $this->document;
         return $copy;
     }
 

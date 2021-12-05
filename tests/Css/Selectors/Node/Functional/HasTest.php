@@ -2,6 +2,8 @@
 
 namespace Souplette\Tests\Css\Selectors\Node\Functional;
 
+use Souplette\Dom\Document;
+use Souplette\Dom\Element;
 use Souplette\Css\Selectors\Node\Functional\Has;
 use Souplette\Css\Selectors\Node\Simple\ClassSelector;
 use Souplette\Css\Selectors\Node\Simple\IdSelector;
@@ -40,7 +42,7 @@ final class HasTest extends SelectorTestCase
     /**
      * @dataProvider matchesProvider
      */
-    public function testMatches(\DOMElement $element, string $selectorText, bool $expected)
+    public function testMatches(Element $element, string $selectorText, bool $expected)
     {
         $selector = SelectorUtils::parseSelectorList($selectorText);
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
@@ -48,7 +50,7 @@ final class HasTest extends SelectorTestCase
 
     public function matchesProvider(): iterable
     {
-        $dom = DomBuilder::create()
+        $dom = DomBuilder::create()->tag('html')
             ->tag('a')
                 ->tag('b')->close()
             ->close()
@@ -64,21 +66,22 @@ final class HasTest extends SelectorTestCase
                 ->close()
             ->close()
             ->getDocument();
+        $root = $dom->documentElement;
         foreach (['b', 'c', 'd', 'e'] as $i => $tagName) {
             $selector = ":has({$tagName})";
             yield "node {$i} matches {$selector}" => [
-                $dom->childNodes->item($i),
+                $root->childNodes[$i],
                 $selector,
                 true,
             ];
         }
         yield "node 0 matches :has(a, b)" => [
-            $dom->childNodes->item(0),
+            $root->childNodes[0],
             ':has(a, b)',
             true,
         ];
         yield "node 1 does not matches :has(a, b)" => [
-            $dom->childNodes->item(1),
+            $root->childNodes[1],
             ':has(a, b)',
             false,
         ];
@@ -87,7 +90,7 @@ final class HasTest extends SelectorTestCase
     /**
      * @dataProvider scopeProvider
      */
-    public function testScope(\DOMDocument $doc, string $selector, array $matchingPaths)
+    public function testScope(Document $doc, string $selector, array $matchingPaths)
     {
         SelectorAssert::assertQueryAll($doc, $selector, $matchingPaths, $doc->documentElement);
     }

@@ -5,6 +5,10 @@ namespace Souplette\Css\Selectors\Node;
 use Souplette\Css\Selectors\Node\PseudoClass\ScopePseudo;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Selectors\Specificity;
+use Souplette\Dom\Element;
+use Souplette\Dom\Node;
+use Souplette\Dom\Traversal\ElementTraversal;
+use Traversable;
 
 final class ComplexSelector extends Selector implements \IteratorAggregate
 {
@@ -14,9 +18,9 @@ final class ComplexSelector extends Selector implements \IteratorAggregate
     }
 
     /**
-     * @return iterable<SimpleSelector>
+     * @return Traversable<SimpleSelector>
      */
-    public function getIterator(): iterable
+    public function getIterator(): Traversable
     {
         for ($selector = $this->selector; $selector; $selector = $selector->next) {
             yield $selector;
@@ -43,12 +47,12 @@ final class ComplexSelector extends Selector implements \IteratorAggregate
         return $spec;
     }
 
-    public function matches(QueryContext $context, \DOMElement $element): bool
+    public function matches(QueryContext $context, Element $element): bool
     {
         return $this->matchSelector($this->selector, $context, $element);
     }
 
-    private function matchSelector(SimpleSelector $selector, QueryContext $context, \DOMElement $element)
+    private function matchSelector(SimpleSelector $selector, QueryContext $context, Element $element): bool
     {
         if (!$selector->matches($context, $element)) {
             return false;
@@ -64,7 +68,7 @@ final class ComplexSelector extends Selector implements \IteratorAggregate
         };
     }
 
-    private function matchRelation(SimpleSelector $selector, QueryContext $context, \DOMElement $element)
+    private function matchRelation(SimpleSelector $selector, QueryContext $context, Element $element): bool
     {
         $relationType = $selector->relationType;
         $nextSelector = $selector->next;
@@ -74,18 +78,20 @@ final class ComplexSelector extends Selector implements \IteratorAggregate
             // fallthrough
             case RelationType::CHILD:
                 if ($this->isLeftMostScopeForFragment($context, $selector)) return true;
-                $parent = $element->parentNode;
-                if (!$parent || $parent->nodeType !== XML_ELEMENT_NODE) return false;
+                $parent = $element->parentElement;
+                if (!$parent) return false;
                 return $this->matchSelector($nextSelector, $context, $parent);
             case RelationType::RELATIVE_DESCENDANT:
                 $context->hasArgumentLeftMostCompoundMatches[] = $element;
             // fallthrough
             case RelationType::DESCENDANT:
-                if ($this->isLeftMostScopeForFragment($context, $selector)) return true;
-                $parent = $element->parentNode;
-                while ($parent && $parent->nodeType === XML_ELEMENT_NODE) {
-                    if ($this->matchSelector($nextSelector, $context, $parent)) return true;
-                    $parent = $parent->parentNode;
+                if ($this->isLeftMostScopeForFragment($context, $selector)) {
+                    return true;
+                }
+                foreach (ElementTraversal::ancestorsOf($element) as $ancestor) {
+                    if ($this->matchSelector($nextSelector, $context, $ancestor)) {
+                        return true;
+                    }
                 }
                 return false;
             case RelationType::RELATIVE_ADJACENT:
@@ -99,10 +105,10 @@ final class ComplexSelector extends Selector implements \IteratorAggregate
                 $context->hasArgumentLeftMostCompoundMatches[] = $element;
             // fallthrough
             case RelationType::FOLLOWING:
-                $previous = $element->previousElementSibling;
-                while ($previous) {
-                    if ($this->matchSelector($nextSelector, $context, $previous)) return true;
-                    $previous = $previous->previousElementSibling;
+                foreach (ElementTraversal::preceding($element) as $previous) {
+                    if ($this->matchSelector($nextSelector, $context, $previous)) {
+                        return true;
+                    }
                 }
                 return false;
             default:
@@ -116,7 +122,7 @@ final class ComplexSelector extends Selector implements \IteratorAggregate
         return (
             $selector instanceof ScopePseudo
             && !$selector->next
-            && $context->scopingRoot->nodeType === XML_DOCUMENT_FRAG_NODE
+            && $context->scopingRoot->nodeType === Node::DOCUMENT_FRAGMENT_NODE
         );
     }
 

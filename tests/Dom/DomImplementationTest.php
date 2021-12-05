@@ -27,21 +27,16 @@ final class DomImplementationTest extends TestCase
         Assert::assertSame($doc->doctype, $doctype);
         // document element
         Assert::assertInstanceOf(Element::class, $doc->documentElement);
-        Assert::assertSame('html', $doc->documentElement->tagName);
+        Assert::assertSame('html', $doc->documentElement->localName);
         // head
         $head = $doc->documentElement->firstChild;
         Assert::assertInstanceOf(Element::class, $head);
-        Assert::assertSame('head', $head->tagName);
+        Assert::assertSame('head', $head->localName);
         Assert::assertSame($doc->head, $head);
-        // <meta charset="UTF-8">
-        $meta = $head->firstChild;
-        Assert::assertInstanceOf(Element::class, $meta);
-        Assert::assertSame('meta', $meta->tagName);
-        Assert::assertSame('UTF-8', $meta->getAttribute('charset'));
         // body
         $body = $head->nextSibling;
         Assert::assertInstanceOf(Element::class, $body);
-        Assert::assertSame('body', $body->tagName);
+        Assert::assertSame('body', $body->localName);
         Assert::assertSame($doc->body, $body);
     }
 }

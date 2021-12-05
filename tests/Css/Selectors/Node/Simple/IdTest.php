@@ -2,6 +2,7 @@
 
 namespace Souplette\Tests\Css\Selectors\Node\Simple;
 
+use Souplette\Dom\Element;
 use PHPUnit\Framework\Assert;
 use Souplette\Css\Selectors\Node\Simple\IdSelector;
 use Souplette\Css\Selectors\Query\QueryContext;
@@ -24,7 +25,7 @@ final class IdTest extends SelectorTestCase
     /**
      * @dataProvider matchesProvider
      */
-    public function testItMatches(\DOMElement $element, string $id, bool $caseInsensitive, bool $expected)
+    public function testItMatches(Element $element, string $id, bool $caseInsensitive, bool $expected)
     {
         $evaluator = new IdSelector($id);
         $ctx = QueryContext::of($element);

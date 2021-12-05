@@ -5,6 +5,7 @@ namespace Souplette\Css\Selectors\Node\PseudoClass\Internal;
 use Souplette\Css\Selectors\Node\Simple\PseudoClassSelector;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Selectors\Specificity;
+use Souplette\Dom\Element;
 
 final class LeftMostRelativeSelectorMarker extends PseudoClassSelector
 {
@@ -23,7 +24,7 @@ final class LeftMostRelativeSelectorMarker extends PseudoClassSelector
         return new Specificity(0, 0, 0);
     }
 
-    public function matches(QueryContext $context, \DOMElement $element): bool
+    public function matches(QueryContext $context, Element $element): bool
     {
         return $context->relativeLeftMostElement === $element;
     }

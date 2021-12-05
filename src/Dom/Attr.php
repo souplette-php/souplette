@@ -87,10 +87,10 @@ final class Attr extends Node
         );
     }
 
-    public function cloneNode(bool $deep = false): static
+    protected function clone(?Document $document, bool $deep = false): static
     {
         $copy = new self($this->localName, $this->namespaceURI, $this->prefix);
-        $copy->document = $this->document;
+        $copy->document = $document ?? $this->document;
         $copy->value = $this->value;
         return $copy;
     }

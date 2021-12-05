@@ -2,9 +2,11 @@
 
 namespace Souplette\Css\Selectors\Query;
 
+use Souplette\Dom\Element;
+
 final class TypeMatcher
 {
-    public static function isOfType(\DOMElement $element, string $type, bool $caseInsensitive = true): bool
+    public static function isOfType(Element $element, string $type, bool $caseInsensitive = true): bool
     {
         return match ($caseInsensitive) {
             true => strcasecmp($element->localName, $type) === 0,

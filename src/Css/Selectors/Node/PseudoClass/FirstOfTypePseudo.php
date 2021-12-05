@@ -5,13 +5,14 @@ namespace Souplette\Css\Selectors\Node\PseudoClass;
 use Souplette\Css\Selectors\Node\Simple\PseudoClassSelector;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Selectors\Query\TypeMatcher;
+use Souplette\Dom\Element;
 
 /**
  * @see https://drafts.csswg.org/selectors-4/#the-first-of-type-pseudo
  */
 final class FirstOfTypePseudo extends PseudoClassSelector
 {
-    public function matches(QueryContext $context, \DOMElement $element): bool
+    public function matches(QueryContext $context, Element $element): bool
     {
         $type = $element->localName;
         for ($prev = $element->previousElementSibling; $prev; $prev = $prev->previousElementSibling) {

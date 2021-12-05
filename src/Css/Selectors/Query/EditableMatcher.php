@@ -2,6 +2,9 @@
 
 namespace Souplette\Css\Selectors\Query;
 
+use Souplette\Dom\Element;
+use Souplette\Dom\Node;
+
 final class EditableMatcher
 {
     private const STATES = [
@@ -10,18 +13,18 @@ final class EditableMatcher
         'false' => false,
     ];
 
-    public static function isEditable(\DOMElement $element, QueryContext $ctx): bool
+    public static function isEditable(Element $element, QueryContext $ctx): bool
     {
         $state = self::getContentEditableState($element);
         if ($state !== null) return $state;
-        for ($node = $element->parentNode; $node && $node->nodeType === XML_ELEMENT_NODE; $node = $node->parentNode) {
+        for ($node = $element->parentNode; $node && $node->nodeType === Node::ELEMENT_NODE; $node = $node->parentNode) {
             $state = self::getContentEditableState($node);
             if ($state !== null) return $state;
         }
         return false;
     }
 
-    private static function getContentEditableState(\DOMElement $element): ?bool
+    private static function getContentEditableState(Element $element): ?bool
     {
         if ($element->hasAttribute('contenteditable')) {
             $value = $element->getAttribute('contenteditable');

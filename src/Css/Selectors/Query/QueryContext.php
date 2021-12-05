@@ -2,15 +2,14 @@
 
 namespace Souplette\Css\Selectors\Query;
 
-use DOMDocument;
-use DOMElement;
+use Souplette\Dom\Document;
+use Souplette\Dom\Element;
 use Souplette\Css\Selectors\Node\ComplexSelector;
-use Souplette\Dom\Internal\DomIdioms;
-use Souplette\Dom\Legacy\Document;
+use Souplette\Dom\ParentNode;
 
 final class QueryContext
 {
-    public ?\DOMParentNode $relativeLeftMostElement = null;
+    public ?ParentNode $relativeLeftMostElement = null;
     /**
      * From the shortest argument selector match, we need to get the element that matches
      * the leftmost compound selector to mark the correct scope elements of :has() pseudo class
@@ -53,42 +52,44 @@ final class QueryContext
      * So the selector checker will return the #d2 and #d3 element so that
      * #d1 and #d2 can be marked as matched with ':has(:scope > .a .b)'
      *
-     * @var DOMElement[]|null
+     * @var Element[]|null
      */
     public ?array $hasArgumentLeftMostCompoundMatches = null;
     public ?array $hasMatchedCache = null;
 
     public static function of(
-        \DOMParentNode $scopingRoot,
+        ParentNode $scopingRoot,
     ): self {
-        $document = DomIdioms::getOwnerDocument($scopingRoot);
+        $document = $scopingRoot->getDocumentNode();
         if ($document === null) {
             throw new \RuntimeException('HierarchyRequestError');
         }
-        $isHtml = self::isHtmlDocument($document);
-        $isQuirksMode = $isHtml && self::isQuirksMode($document);
+        $isHtmlDoc = $document->isHTML;
+        $isQuirksMode = $isHtmlDoc && self::isQuirksMode($document);
 
         return new self(
             $document,
             $scopingRoot,
+            isHtml: $isHtmlDoc,
             caseInsensitiveClasses: $isQuirksMode,
             caseInsensitiveIds: $isQuirksMode,
-            caseInsensitiveTypes: $isHtml,
+            caseInsensitiveTypes: $isHtmlDoc,
         );
     }
 
     private function __construct(
-        public DOMDocument $document,
-        public \DOMParentNode $scopingRoot,
+        public Document $document,
+        public ParentNode $scopingRoot,
+        public bool $isHtml = true,
         public bool $caseInsensitiveClasses = false,
         public bool $caseInsensitiveIds = false,
         public bool $caseInsensitiveTypes = true,
     ) {
     }
 
-    public function withScope(DOMElement $element): self
+    public function withScope(Element $element): self
     {
-        if ($element->ownerDocument !== $this->document) {
+        if ($element->getDocumentNode() !== $this->document) {
             throw new \RuntimeException('HierarchyRequestError');
         }
         $ctx = clone $this;
@@ -106,22 +107,8 @@ final class QueryContext
         return $this->hasMatchedCache[$key] = new \SplObjectStorage();
     }
 
-    private static function isQuirksMode(DOMDocument $document): bool
+    private static function isQuirksMode(Document $document): bool
     {
-        if ($document instanceof Document) {
-            return $document->getCompatMode() === Document::COMPAT_MODE_BACK;
-        }
-        return true;
-    }
-
-    private static function isHtmlDocument(DOMDocument $document): bool
-    {
-        if ($document instanceof Document) {
-            return true;
-        }
-        return match ($document->nodeType) {
-            XML_HTML_DOCUMENT_NODE => true,
-            XML_DOCUMENT_NODE => false,
-        };
+        return $document->getCompatMode() === Document::COMPAT_MODE_BACK;
     }
 }
