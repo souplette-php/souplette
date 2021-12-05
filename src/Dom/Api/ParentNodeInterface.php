@@ -2,8 +2,8 @@
 
 namespace Souplette\Dom\Api;
 
-use Souplette\Dom\Node\Element;
-use Souplette\Dom\Node\Node;
+use Souplette\Dom\Element;
+use Souplette\Dom\Node;
 
 interface ParentNodeInterface extends NodeInterface
 {

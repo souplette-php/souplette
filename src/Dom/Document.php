@@ -1,14 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom\Node;
+namespace Souplette\Dom;
 
 use Souplette\Dom\Api\NonElementParentNodeInterface;
-use Souplette\Dom\DocumentModes;
 use Souplette\Dom\Exception\HierarchyRequestError;
 use Souplette\Dom\Exception\InvalidCharacterError;
 use Souplette\Dom\Exception\NamespaceError;
 use Souplette\Dom\Exception\NotFoundError;
-use Souplette\Dom\Namespaces;
 use Souplette\Xml\QName;
 
 /**

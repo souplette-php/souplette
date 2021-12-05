@@ -2,11 +2,11 @@
 
 namespace Souplette\Html\TreeBuilder;
 
+use Souplette\Dom\Attr;
+use Souplette\Dom\Document;
+use Souplette\Dom\Element;
 use Souplette\Dom\Exception\DomException;
 use Souplette\Dom\Exception\ErrorCodes;
-use Souplette\Dom\Node\Attr;
-use Souplette\Dom\Node\Document;
-use Souplette\Dom\Node\Element;
 use Souplette\Html\Tokenizer\Token\Tag;
 use Souplette\Xml\XmlNameEscaper;
 

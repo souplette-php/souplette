@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom\Node;
+namespace Souplette\Dom;
 
 use Souplette\Css\Selectors\SelectorQuery;
 use Souplette\Dom\Api\ParentNodeInterface;

@@ -1,15 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom\Node;
+namespace Souplette\Dom;
 
 use Souplette\Dom\Api\ChildNodeInterface;
 use Souplette\Dom\Api\NonDocumentTypeChildNodeInterface;
 use Souplette\Dom\Exception\InvalidCharacterError;
 use Souplette\Dom\Exception\NamespaceError;
 use Souplette\Dom\Exception\NotFoundError;
-use Souplette\Dom\Namespaces;
-use Souplette\Dom\Node\Traits\ChildNodeTrait;
-use Souplette\Dom\Node\Traits\NonDocumentTypeChildNodeTrait;
+use Souplette\Dom\Traits\ChildNodeTrait;
+use Souplette\Dom\Traits\NonDocumentTypeChildNodeTrait;
 use Souplette\Xml\QName;
 
 /**

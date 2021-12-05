@@ -2,18 +2,13 @@
 
 namespace Souplette\Html;
 
-use DOMDocument;
-use DOMElement;
-use DOMImplementation;
+use Souplette\Dom\Document;
 use Souplette\Dom\DocumentModes;
-use Souplette\Dom\Exception\DomException;
+use Souplette\Dom\DocumentType;
+use Souplette\Dom\Element;
+use Souplette\Dom\Implementation;
 use Souplette\Dom\Namespaces;
-use Souplette\Dom\Node\Attr;
-use Souplette\Dom\Node\Document;
-use Souplette\Dom\Node\DocumentType;
-use Souplette\Dom\Node\Element;
-use Souplette\Dom\Node\Implementation;
-use Souplette\Dom\Node\Node;
+use Souplette\Dom\Node;
 use Souplette\Encoding\Encoding;
 use Souplette\Encoding\EncodingLookup;
 use Souplette\Encoding\Exception\EncodingChanged;
@@ -23,7 +18,6 @@ use Souplette\Html\Tokenizer\TokenizerState;
 use Souplette\Html\Tokenizer\TokenType;
 use Souplette\Html\TreeBuilder\ActiveFormattingElementList;
 use Souplette\Html\TreeBuilder\Attributes;
-use Souplette\Html\TreeBuilder\DomExceptionHandler;
 use Souplette\Html\TreeBuilder\ElementFactory;
 use Souplette\Html\TreeBuilder\Elements;
 use Souplette\Html\TreeBuilder\InsertionLocation;
@@ -31,7 +25,6 @@ use Souplette\Html\TreeBuilder\InsertionModes;
 use Souplette\Html\TreeBuilder\OpenElementsStack;
 use Souplette\Html\TreeBuilder\RuleSet;
 use Souplette\Html\TreeBuilder\RuleSet\InForeignContent;
-use Souplette\Xml\XmlNameEscaper;
 use SplStack;
 
 final class TreeBuilder

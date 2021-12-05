@@ -2,8 +2,8 @@
 
 namespace Souplette\Html\TreeBuilder;
 
+use Souplette\Dom\Element;
 use Souplette\Dom\Namespaces;
-use Souplette\Dom\Node\Element;
 
 final class Elements
 {

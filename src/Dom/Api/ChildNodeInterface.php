@@ -2,7 +2,7 @@
 
 namespace Souplette\Dom\Api;
 
-use Souplette\Dom\Node\Node;
+use Souplette\Dom\Node;
 
 /**
  * Implemented by DocumentType, Element and CharacterData

@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom\Node;
+namespace Souplette\Dom;
 
 use Souplette\Dom\Api\ChildNodeInterface;
-use Souplette\Dom\Node\Traits\ChildNodeTrait;
+use Souplette\Dom\Traits\ChildNodeTrait;
 
 final class DocumentType extends Node implements ChildNodeInterface
 {

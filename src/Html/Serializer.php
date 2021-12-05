@@ -2,14 +2,14 @@
 
 namespace Souplette\Html;
 
+use Souplette\Dom\Attr;
+use Souplette\Dom\Comment;
+use Souplette\Dom\DocumentType;
+use Souplette\Dom\Element;
 use Souplette\Dom\Namespaces;
-use Souplette\Dom\Node\Attr;
-use Souplette\Dom\Node\Comment;
-use Souplette\Dom\Node\DocumentType;
-use Souplette\Dom\Node\Element;
-use Souplette\Dom\Node\Node;
-use Souplette\Dom\Node\ProcessingInstruction;
-use Souplette\Dom\Node\Text;
+use Souplette\Dom\Node;
+use Souplette\Dom\ProcessingInstruction;
+use Souplette\Dom\Text;
 use Souplette\Html\Serializer\Elements;
 use Souplette\Xml\XmlNameEscaper;
 

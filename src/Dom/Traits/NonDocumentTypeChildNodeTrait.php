@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom\Node\Traits;
+namespace Souplette\Dom\Traits;
 
-use Souplette\Dom\Node\Element;
-use Souplette\Dom\Node\Node;
+use Souplette\Dom\Element;
+use Souplette\Dom\Node;
 
 /**
  * Used by Element & CharacterData

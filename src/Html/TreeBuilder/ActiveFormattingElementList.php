@@ -2,9 +2,8 @@
 
 namespace Souplette\Html\TreeBuilder;
 
-use DOMElement;
+use Souplette\Dom\Element;
 use Souplette\Dom\Namespaces;
-use Souplette\Dom\Node\Element;
 
 /**
  * @see https://html.spec.whatwg.org/multipage/parsing.html#the-list-of-active-formatting-elements

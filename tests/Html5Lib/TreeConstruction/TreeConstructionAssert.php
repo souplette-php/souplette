@@ -3,7 +3,7 @@
 namespace Souplette\Tests\Html5Lib\TreeConstruction;
 
 use PHPUnit\Framework\Assert;
-use Souplette\Dom\Node\Document;
+use Souplette\Dom\Document;
 use Souplette\Html\Parser;
 
 final class TreeConstructionAssert

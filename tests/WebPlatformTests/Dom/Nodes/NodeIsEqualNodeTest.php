@@ -4,8 +4,8 @@ namespace Souplette\Tests\WebPlatformTests\Dom\Nodes;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Dom\Node\DocumentType;
-use Souplette\Dom\Node\Implementation;
+use Souplette\Dom\DocumentType;
+use Souplette\Dom\Implementation;
 
 /**
  * Ported from web-platform-tests

@@ -3,10 +3,10 @@
 namespace Souplette\Html;
 
 use JetBrains\PhpStorm\Pure;
-use Souplette\Dom\Node\Document;
-use Souplette\Dom\Node\Element;
-use Souplette\Dom\Node\Implementation;
-use Souplette\Dom\Node\Node;
+use Souplette\Dom\Document;
+use Souplette\Dom\Element;
+use Souplette\Dom\Implementation;
+use Souplette\Dom\Node;
 use Souplette\Encoding\Encoding;
 use Souplette\Encoding\EncodingLookup;
 use Souplette\Encoding\Exception\EncodingChanged;

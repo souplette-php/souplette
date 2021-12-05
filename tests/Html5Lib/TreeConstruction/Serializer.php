@@ -2,15 +2,15 @@
 
 namespace Souplette\Tests\Html5Lib\TreeConstruction;
 
+use Souplette\Dom\Attr;
+use Souplette\Dom\Comment;
+use Souplette\Dom\Document;
+use Souplette\Dom\DocumentFragment;
+use Souplette\Dom\DocumentType;
+use Souplette\Dom\Element;
 use Souplette\Dom\Namespaces;
-use Souplette\Dom\Node\Attr;
-use Souplette\Dom\Node\Comment;
-use Souplette\Dom\Node\Document;
-use Souplette\Dom\Node\DocumentFragment;
-use Souplette\Dom\Node\DocumentType;
-use Souplette\Dom\Node\Element;
-use Souplette\Dom\Node\Node;
-use Souplette\Dom\Node\Text;
+use Souplette\Dom\Node;
+use Souplette\Dom\Text;
 use Souplette\Xml\XmlNameEscaper;
 
 final class Serializer

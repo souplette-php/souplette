@@ -2,9 +2,9 @@
 
 namespace Souplette\Html\TreeBuilder;
 
-use Souplette\Dom\Node\Attr;
-use Souplette\Dom\Node\Element;
-use Souplette\Dom\Node\Node;
+use Souplette\Dom\Attr;
+use Souplette\Dom\Element;
+use Souplette\Dom\Node;
 use Souplette\Html\Tokenizer\Token\StartTag;
 use Souplette\Html\Tokenizer\Token\Tag;
 

@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom\Node\Traits;
+namespace Souplette\Dom\Traits;
 
 use Souplette\Dom\Exception\DomException;
 use Souplette\Dom\Exception\NotFoundError;
-use Souplette\Dom\Node\Node;
+use Souplette\Dom\Node;
 
 /**
  * Used by DocumentType, Element and CharacterData

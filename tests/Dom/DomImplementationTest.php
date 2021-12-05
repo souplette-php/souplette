@@ -4,11 +4,11 @@ namespace Souplette\Tests\Dom;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
+use Souplette\Dom\Document;
 use Souplette\Dom\DocumentModes;
-use Souplette\Dom\Node\Document;
-use Souplette\Dom\Node\DocumentType;
-use Souplette\Dom\Node\Element;
-use Souplette\Dom\Node\Implementation;
+use Souplette\Dom\DocumentType;
+use Souplette\Dom\Element;
+use Souplette\Dom\Implementation;
 
 final class DomImplementationTest extends TestCase
 {

@@ -3,12 +3,12 @@
 namespace Souplette\Tests\WebPlatformTests\Dom\Nodes;
 
 use PHPUnit\Framework\TestCase;
+use Souplette\Dom\Comment;
+use Souplette\Dom\DocumentType;
 use Souplette\Dom\Exception\HierarchyRequestError;
 use Souplette\Dom\Exception\NotFoundError;
-use Souplette\Dom\Node\Comment;
-use Souplette\Dom\Node\DocumentType;
-use Souplette\Dom\Node\Implementation;
-use Souplette\Dom\Node\Text;
+use Souplette\Dom\Implementation;
+use Souplette\Dom\Text;
 
 final class PreInsertionValidationTest extends TestCase
 {

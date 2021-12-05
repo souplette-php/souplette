@@ -2,9 +2,9 @@
 
 namespace Souplette\Tests\Dom;
 
-use Souplette\Dom\Node\Document;
+use Souplette\Dom\Document;
 use Souplette\Dom\Namespaces;
-use Souplette\Dom\Node\Node;
+use Souplette\Dom\Node;
 use Souplette\Html\TreeBuilder\Elements;
 
 final class DomBuilder

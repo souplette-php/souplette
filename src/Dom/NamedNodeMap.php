@@ -3,8 +3,6 @@
 namespace Souplette\Dom;
 
 use Souplette\Dom\Exception\InUseAttributeError;
-use Souplette\Dom\Node\Attr;
-use Souplette\Dom\Node\Element;
 
 final class NamedNodeMap
 {

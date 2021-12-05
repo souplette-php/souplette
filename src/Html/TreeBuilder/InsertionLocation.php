@@ -2,12 +2,12 @@
 
 namespace Souplette\Html\TreeBuilder;
 
+use Souplette\Dom\Document;
+use Souplette\Dom\Element;
 use Souplette\Dom\Namespaces;
-use Souplette\Dom\Node\Document;
-use Souplette\Dom\Node\Element;
-use Souplette\Dom\Node\Node;
-use Souplette\Dom\Node\ParentNode;
-use Souplette\Dom\Node\Text;
+use Souplette\Dom\Node;
+use Souplette\Dom\ParentNode;
+use Souplette\Dom\Text;
 
 final class InsertionLocation extends Node
 {
