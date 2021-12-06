@@ -4,12 +4,13 @@ namespace Souplette\Html\TreeBuilder;
 
 use Souplette\Dom\Document;
 use Souplette\Dom\Element;
+use Souplette\Dom\Internal\BaseNode;
 use Souplette\Dom\Namespaces;
 use Souplette\Dom\Node;
 use Souplette\Dom\ParentNode;
 use Souplette\Dom\Text;
 
-final class InsertionLocation extends Node
+final class InsertionLocation extends BaseNode
 {
     public ?Node $target;
     public ?Document $document;
@@ -67,17 +68,4 @@ final class InsertionLocation extends Node
         }
         return null;
     }
-
-    // @codeCoverageIgnoreStart
-
-    public function isEqualNode(?Node $otherNode): bool
-    {
-        return true;
-    }
-
-    protected function clone(?Document $document, bool $deep = false): static
-    {
-    }
-
-    // @codeCoverageIgnoreEnd
 }

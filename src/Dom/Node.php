@@ -6,6 +6,8 @@ use Souplette\Dom\Api\NodeInterface;
 use Souplette\Dom\Exception\DomException;
 use Souplette\Dom\Exception\HierarchyRequestError;
 use Souplette\Dom\Exception\NotFoundError;
+use Souplette\Dom\Exception\UndefinedProperty;
+use Souplette\Dom\Internal\BaseNode;
 use Souplette\Dom\Traversal\NodeTraversal;
 
 /**
@@ -29,7 +31,7 @@ use Souplette\Dom\Traversal\NodeTraversal;
  * @property-read ?string $nodeValue
  * @property ?string $textContent
  */
-abstract class Node implements NodeInterface
+abstract class Node extends BaseNode implements NodeInterface
 {
     const ELEMENT_NODE = 1;
     const ATTRIBUTE_NODE = 2;
@@ -55,17 +57,6 @@ abstract class Node implements NodeInterface
     const DOCUMENT_POSITION_CONTAINED_BY = 0x10;
     const DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 0x20;
 
-    public readonly int $nodeType;
-    public readonly string $nodeName;
-
-    protected ?string $value = null;
-    protected ?Document $document = null;
-    protected ?ParentNode $parent = null;
-    protected ?Node $next = null;
-    protected ?Node $prev = null;
-    protected ?Node $first = null;
-    protected ?Node $last = null;
-
     public function __get(string $prop)
     {
         return match ($prop) {
@@ -80,11 +71,7 @@ abstract class Node implements NodeInterface
             'previousSibling' => $this->prev,
             'nextSibling' => $this->next,
             'nodeValue', 'textContent' => null,
-            default => throw new \RuntimeException(sprintf(
-                'Undefined property %s::$%s',
-                $this::class,
-                $prop,
-            ))
+            default => throw UndefinedProperty::forRead($this, $prop),
         };
     }
 
@@ -92,11 +79,7 @@ abstract class Node implements NodeInterface
     {
         match ($prop) {
             'nodeValue', 'textContent' => null,
-            default => throw new \RuntimeException(sprintf(
-                'Undefined property %s::$%s',
-                $this::class,
-                $prop,
-            ))
+            default => throw UndefinedProperty::forWrite($this, $prop),
         };
     }
 
@@ -226,13 +209,13 @@ abstract class Node implements NodeInterface
         // 4. If node1 is an attribute, then set attr1 to node1 and node1 to attr1’s element.
         if ($node1->nodeType === self::ATTRIBUTE_NODE) {
             $attr1 = $node1;
-            $node1 = $attr1->ownerElement;
+            $node1 = $attr1->parent;
         }
         // 5. If node2 is an attribute, then:
         if ($node2->nodeType === self::ATTRIBUTE_NODE) {
             // 1. Set attr2 to node2 and node2 to attr2’s element.
             $attr2 = $node2;
-            $node2 = $attr2->ownerElement;
+            $node2 = $attr2->parent;
             // 2. If attr1 and node1 are non-null, and node2 is node1, then:
             if ($attr1 && $node1 && $node2 === $node1) {
                 // 1. For each attr in node2’s attribute list:
@@ -386,75 +369,6 @@ abstract class Node implements NodeInterface
     // ==============================================================
     // Mutation algorithms
     // ==============================================================
-
-    /**
-     * @see https://dom.spec.whatwg.org/#concept-node-adopt
-     */
-    protected function adopt(Node $node): void
-    {
-        $doc = $this->getDocumentNode();
-        if ($node->document === $doc) {
-            return;
-        }
-        $node->document = $doc;
-        if ($node->nodeType === Node::ELEMENT_NODE) {
-            foreach ($node->getAttributes() as $attribute) {
-                $attribute->document = $doc;
-            }
-        }
-        for ($child = $node->first; $child; $child = $child->next) {
-            $this->adopt($child);
-        }
-    }
-
-    protected function unlink(): void
-    {
-        if ($parent = $this->parent) {
-            if ($parent->first === $this) {
-                $parent->first = $this->next;
-            }
-            if ($parent->last === $this) {
-                $parent->last = $this->prev;
-            }
-            $this->parent = null;
-        }
-        if ($this->next) {
-            $this->next->prev = $this->prev;
-        }
-        if ($this->prev) {
-            $this->prev->next = $this->next;
-        }
-        $this->next = $this->prev = null;
-    }
-
-    protected function uncheckedAppendChild(Node $node): void
-    {
-        $node->parent = $this;
-        $node->next = $node->prev = null;
-        if ($this->first === null) {
-            $this->first = $node;
-            $this->last = $node;
-        } else {
-            $last = $this->last;
-            $last->next = $node;
-            $node->prev = $last;
-            $this->last = $node;
-        }
-    }
-
-    protected function uncheckedInsertBefore(Node $node, Node $child): void
-    {
-        $node->parent = $this;
-        $node->next = $child;
-        $node->prev = $child->prev;
-        $child->prev = $node;
-        if ($node->prev) {
-            $node->prev->next = $node;
-        }
-        if ($this->first === $child) {
-            $this->first = $node;
-        }
-    }
 
     /**
      * https://dom.spec.whatwg.org/#concept-node-pre-insert

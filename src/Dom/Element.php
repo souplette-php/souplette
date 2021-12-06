@@ -5,6 +5,7 @@ namespace Souplette\Dom;
 use Souplette\Css\Selectors\SelectorQuery;
 use Souplette\Dom\Api\ChildNodeInterface;
 use Souplette\Dom\Api\NonDocumentTypeChildNodeInterface;
+use Souplette\Dom\Exception\InUseAttributeError;
 use Souplette\Dom\Exception\InvalidCharacterError;
 use Souplette\Dom\Exception\NamespaceError;
 use Souplette\Dom\Exception\NoModificationAllowed;
@@ -42,10 +43,6 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
     public readonly ?string $prefix;
     public readonly bool $isHTML;
 
-    /**
-     * @var Attr[]
-     */
-    protected array $attributeList = [];
     protected TokenList $classList;
 
     public function __construct(string $localName, ?string $namespace = null, ?string $prefix = null)
@@ -67,7 +64,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
     public function __get(string $prop)
     {
         return match ($prop) {
-            'attributes' => $this->attributeList,
+            'attributes' => $this->attributes,
             'nextElementSibling' => $this->getNextElementSibling(),
             'previousElementSibling' => $this->getPreviousElementSibling(),
             'id' => $this->getId(),
@@ -89,7 +86,6 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
             default => parent::__set($prop, $value),
         };
     }
-
 
     public function getId(): string
     {
@@ -131,7 +127,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
         if (!$otherNode) return false;
         if ($otherNode === $this) return true;
         if ($otherNode->nodeType !== $this->nodeType) return false;
-        foreach ($this->attributeList as $attribute) {
+        foreach ($this->attributes as $attribute) {
             $otherAttr = $otherNode->getAttributeNS($attribute->namespaceURI, $attribute->localName);
             if (!$attribute->isEqualNode($otherAttr)) {
                 return false;
@@ -142,7 +138,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
 
     public function getAttributes(): array
     {
-        return $this->attributeList;
+        return $this->attributes;
     }
 
     /**
@@ -150,8 +146,8 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
      */
     public function getAttributeNames(): array
     {
-        if (!$this->attributeList) return [];
-        return array_map(fn(Attr $attr) => $attr->name, $this->attributeList);
+        if (!$this->attributes) return [];
+        return array_map(fn(Attr $attr) => $attr->name, $this->attributes);
     }
 
     public function getAttribute(string $qualifiedName): ?string
@@ -174,22 +170,17 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
         if ($this->isHTML && $this->document?->isHTML) {
             $qualifiedName = strtolower($qualifiedName);
         }
-        $attribute = null;
-        foreach ($this->attributeList as $attr) {
+        foreach ($this->attributes as $attr) {
             if ($attr->name === $qualifiedName) {
-                $attribute = $attr;
-                break;
+                $attr->value = $value;
+                return;
             }
         }
-        if (!$attribute) {
-            $attribute = new Attr($qualifiedName);
-            $attribute->document = $this->document;
-            $attribute->parent = $this;
-            $attribute->value = $value;
-            $this->attributeList[] = $attribute;
-            return;
-        }
-        $attribute->value = $value;
+        $attr = new Attr($qualifiedName);
+        $attr->document = $this->document;
+        $attr->parent = $this;
+        $attr->value = $value;
+        $this->attributes[] = $attr;
     }
 
     /**
@@ -205,25 +196,46 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
             $attribute->document = $this->document;
             $attribute->parent = $this;
             $attribute->value = $value;
-            $this->attributeList[] = $attribute;
+            $this->attributes[] = $attribute;
             return;
         }
         $attribute->value = $value;
     }
 
-    public function hasAttribute(string $qualifiedName): bool
+    public function removeAttribute(string $qualifiedName): ?Attr
     {
-        return $this->getAttributeNode($qualifiedName) !== null;
+        if (!$this->attributes) return null;
+        // 1. Let attr be the result of getting an attribute given qualifiedName and element.
+        if ($this->isHTML && $this->document?->isHTML) {
+            $qualifiedName = strtolower($qualifiedName);
+        }
+        foreach ($this->attributes as $i => $attr) {
+            if ($attr->name === $qualifiedName) {
+                array_splice($this->attributes, $i, 1);
+                $attr->parent = null;
+                return $attr;
+            }
+        }
+        return null;
     }
 
-    public function hasAttributeNS(?string $namespace, string $localName): bool
+    public function removeAttributeNS(?string $namespace, string $localName): ?Attr
     {
-        return $this->getAttributeNodeNS($namespace, $localName) !== null;
+        if (!$this->attributes) return null;
+        if ($namespace === '') $namespace = null;
+        foreach ($this->attributes as $i => $attr) {
+            if ($attr->localName === $localName && $attr->namespaceURI === $namespace) {
+                array_splice($this->attributes, $i, 1);
+                $attr->parent = null;
+                return $attr;
+            }
+        }
+        return null;
     }
 
     /**
      * @see https://dom.spec.whatwg.org/#dom-element-toggleattribute
-     * @throws InvalidCharacterError
+     * @throws InvalidCharacterError|NotFoundError
      */
     public function toggleAttribute(string $qualifiedName, bool $force = null): bool
     {
@@ -242,7 +254,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
                 $attr = new Attr($qualifiedName);
                 $attr->document = $this->document;
                 $attr->parent = $this;
-                $this->attributeList[] = $attr;
+                $this->attributes[] = $attr;
                 return true;
             }
             return false;
@@ -257,17 +269,27 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
         return true;
     }
 
+    public function hasAttribute(string $qualifiedName): bool
+    {
+        return $this->getAttributeNode($qualifiedName) !== null;
+    }
+
+    public function hasAttributeNS(?string $namespace, string $localName): bool
+    {
+        return $this->getAttributeNodeNS($namespace, $localName) !== null;
+    }
+
     /**
      * https://dom.spec.whatwg.org/#concept-element-attributes-get-by-name
      */
     public function getAttributeNode(string $qualifiedName): ?Attr
     {
-        if (!$this->attributeList) return null;
+        if (!$this->attributes) return null;
 
         if ($this->isHTML && $this->document?->isHTML) {
             $qualifiedName = strtolower($qualifiedName);
         }
-        foreach ($this->attributeList as $attribute) {
+        foreach ($this->attributes as $attribute) {
             if ($attribute->name === $qualifiedName) {
                 return $attribute;
             }
@@ -280,41 +302,10 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
      */
     public function getAttributeNodeNS(?string $namespace, string $localName): ?Attr
     {
-        if (!$this->attributeList) return null;
+        if (!$this->attributes) return null;
         if ($namespace === '') $namespace = null;
-        foreach ($this->attributeList as $attribute) {
+        foreach ($this->attributes as $attribute) {
             if ($attribute->localName === $localName && $attribute->namespaceURI === $namespace) {
-                return $attribute;
-            }
-        }
-        return null;
-    }
-
-    public function removeAttribute(string $qualifiedName): ?Attr
-    {
-        if (!$this->attributeList) return null;
-        // 1. Let attr be the result of getting an attribute given qualifiedName and element.
-        if ($this->isHTML && $this->document?->isHTML) {
-            $qualifiedName = strtolower($qualifiedName);
-        }
-        foreach ($this->attributeList as $i => $attribute) {
-            if ($attribute->name === $qualifiedName) {
-                array_splice($this->attributeList, $i, 1);
-                $attribute->parent = null;
-                return $attribute;
-            }
-        }
-        return null;
-    }
-
-    public function removeAttributeNS(?string $namespace, string $localName): ?Attr
-    {
-        if (!$this->attributeList) return null;
-        if ($namespace === '') $namespace = null;
-        foreach ($this->attributeList as $i => $attribute) {
-            if ($attribute->localName === $localName && $attribute->namespaceURI === $namespace) {
-                array_splice($this->attributeList, $i, 1);
-                $attribute->parent = null;
                 return $attribute;
             }
         }
@@ -322,21 +313,53 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
     }
 
     /**
+     * @throws InUseAttributeError
+     */
+    public function setAttributeNode(Attr $attr): ?Attr
+    {
+        if ($attr->parent && $attr->parent !== $this) {
+            throw new InUseAttributeError();
+        }
+        foreach ($this->attributes as $i => $oldAttr) {
+            if ($oldAttr->localName === $attr->localName && $oldAttr->namespaceURI === $attr->namespaceURI) {
+                if ($oldAttr === $attr) return $attr;
+                $attr->document = $this->document;
+                $attr->parent = $this;
+                $this->attributes[$i] = $attr;
+                return $oldAttr;
+            }
+        }
+        $attr->document = $this->document;
+        $attr->parent = $this;
+        $this->attributes[] = $attr;
+        return null;
+    }
+
+    /**
+     * @throws InUseAttributeError
+     */
+    public function setAttributeNodeNS(Attr $attr): ?Attr
+    {
+        return $this->setAttributeNode($attr);
+    }
+
+    /**
      * https://dom.spec.whatwg.org/#dom-element-removeattributenode
      * https://dom.spec.whatwg.org/#concept-element-attributes-remove
+     * @throws NotFoundError
      */
     public function removeAttributeNode(Attr $attribute): Attr
     {
-        if (!$this->attributeList) {
+        if (!$this->attributes) {
             throw new NotFoundError();
         }
 
-        $index = array_search($attribute, $this->attributeList, true);
+        $index = array_search($attribute, $this->attributes, true);
         if ($index === false) {
             throw new NotFoundError();
         }
 
-        array_splice($this->attributeList, $index, 1);
+        array_splice($this->attributes, $index, 1);
         $attribute->parent = null;
 
         return $attribute;
@@ -438,7 +461,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
         if ($this->namespaceURI && $this->prefix === $prefix) {
             return $this->namespaceURI;
         }
-        foreach ($this->attributeList as $attr) {
+        foreach ($this->attributes as $attr) {
             if ($attr->prefix === 'xmlns' && $attr->namespaceURI === Namespaces::XMLNS && $attr->localName === $prefix) {
                 return $attr->localName;
             } else if (
@@ -462,7 +485,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
         if ($this->prefix && $this->namespaceURI === $namespace) {
             return $this->prefix;
         }
-        foreach ($this->attributeList as $attr) {
+        foreach ($this->attributes as $attr) {
             if ($attr->prefix === 'xmlns' && $attr->value === $namespace) {
                 return $attr->localName;
             }
@@ -477,10 +500,10 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
     {
         $copy = new self($this->localName, $this->namespaceURI, $this->prefix);
         $copy->document = $document ?? $this->document;
-        foreach ($this->attributeList as $attr) {
+        foreach ($this->attributes as $attr) {
             $copyAttribute = $attr->clone($copy->document);
             $copyAttribute->parent = $copy;
-            $copy->attributeList[] = $copyAttribute;
+            $copy->attributes[] = $copyAttribute;
         }
         if ($deep) {
             for ($child = $this->first; $child; $child = $this->next) {

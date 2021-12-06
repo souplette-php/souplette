@@ -4,14 +4,13 @@ namespace Souplette\Html\TreeBuilder;
 
 use Souplette\Dom\Attr;
 use Souplette\Dom\Element;
+use Souplette\Dom\Internal\BaseNode;
 use Souplette\Dom\Node;
 use Souplette\Html\Tokenizer\Token\StartTag;
 use Souplette\Html\Tokenizer\Token\Tag;
 
-final class ElementFactory extends Element
+final class ElementFactory extends BaseNode
 {
-    public function __construct() {}
-
     public static function forToken(
         Tag $token,
         string $namespace,
@@ -33,14 +32,14 @@ final class ElementFactory extends Element
         if ($token->attributes) {
             foreach ($token->attributes as $name => $value) {
                 if ($value instanceof Attr) {
-                    $element->attributeList[] = $value;
+                    $element->attributes[] = $value;
                     $value->parent = $element;
                 } else {
                     $attr = new Attr((string)$name);
                     $attr->value = $value;
                     $attr->document = $doc;
                     $attr->parent = $element;
-                    $element->attributeList[] = $attr;
+                    $element->attributes[] = $attr;
                 }
             }
         }
@@ -52,7 +51,7 @@ final class ElementFactory extends Element
     {
         // For each attribute on the token, check to see if the attribute is already present on the element.
         // If it is not, add the attribute and its corresponding value to that element.
-        foreach ($toElement->attributeList as $attr) {
+        foreach ($toElement->attributes as $attr) {
             unset($fromToken->attributes[$attr->localName]);
         }
         foreach ($fromToken->attributes as $name => $value) {
@@ -60,7 +59,7 @@ final class ElementFactory extends Element
             $attr->value = $value;
             $attr->document = $toElement->document;
             $attr->parent = $toElement;
-            $toElement->attributeList[] = $attr;
+            $toElement->attributes[] = $attr;
         }
     }
 }
