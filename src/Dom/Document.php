@@ -9,7 +9,9 @@ use Souplette\Dom\Exception\InvalidCharacterError;
 use Souplette\Dom\Exception\NamespaceError;
 use Souplette\Dom\Exception\NotFoundError;
 use Souplette\Dom\Exception\NotSupportedError;
-use Souplette\Dom\Traits\GetsElementsByTrait;
+use Souplette\Dom\Traits\GetElementsByClassNameTrait;
+use Souplette\Dom\Traits\GetElementsByTagNameTrait;
+use Souplette\Dom\Traits\NonElementParentNodeTrait;
 use Souplette\Dom\Traversal\ElementTraversal;
 use Souplette\Xml\QName;
 
@@ -26,7 +28,9 @@ use Souplette\Xml\QName;
  */
 class Document extends ParentNode implements NonElementParentNodeInterface
 {
-    use GetsElementsByTrait;
+    use NonElementParentNodeTrait;
+    use GetElementsByTagNameTrait;
+    use GetElementsByClassNameTrait;
 
     const COMPAT_MODE_BACK = 'BackCompat';
     const COMPAT_MODE_CSS1 = 'CSS1Compat';
@@ -250,11 +254,6 @@ class Document extends ParentNode implements NonElementParentNodeInterface
         $node = new ProcessingInstruction($target, $data);
         $node->document = $this;
         return $node;
-    }
-
-    public function getElementById(string $elementId): ?Element
-    {
-        return SelectorQuery::byId($this, $elementId);
     }
 
     public function getTextContent(): ?string

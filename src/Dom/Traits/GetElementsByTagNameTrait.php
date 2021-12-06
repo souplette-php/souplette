@@ -2,17 +2,11 @@
 
 namespace Souplette\Dom\Traits;
 
-use Souplette\Css\Selectors\SelectorQuery;
 use Souplette\Dom\Element;
 use Souplette\Dom\Traversal\ElementTraversal;
 
-trait GetsElementsByTrait
+trait GetElementsByTagNameTrait
 {
-    public function getElementsByClassName(string $classNames): array
-    {
-        return SelectorQuery::byClassNames($this, $classNames);
-    }
-
     /**
      * @see https://dom.spec.whatwg.org/#concept-getelementsbytagname
      * @return Element[]

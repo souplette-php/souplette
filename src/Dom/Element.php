@@ -12,7 +12,8 @@ use Souplette\Dom\Exception\NotFoundError;
 use Souplette\Dom\Exception\SyntaxError;
 use Souplette\Dom\Internal\TokenList;
 use Souplette\Dom\Traits\ChildNodeTrait;
-use Souplette\Dom\Traits\GetsElementsByTrait;
+use Souplette\Dom\Traits\GetElementsByClassNameTrait;
+use Souplette\Dom\Traits\GetElementsByTagNameTrait;
 use Souplette\Dom\Traits\NonDocumentTypeChildNodeTrait;
 use Souplette\Html\Parser;
 use Souplette\Html\Serializer;
@@ -29,7 +30,8 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
 {
     use ChildNodeTrait;
     use NonDocumentTypeChildNodeTrait;
-    use GetsElementsByTrait;
+    use GetElementsByTagNameTrait;
+    use GetElementsByClassNameTrait;
 
     public readonly int $nodeType;
     public readonly string $nodeName;

@@ -3,9 +3,12 @@
 namespace Souplette\Dom;
 
 use Souplette\Dom\Api\NonElementParentNodeInterface;
+use Souplette\Dom\Traits\NonElementParentNodeTrait;
 
 final class DocumentFragment extends ParentNode implements NonElementParentNodeInterface
 {
+    use NonElementParentNodeTrait;
+
     public readonly int $nodeType;
     public readonly string $nodeName;
 
@@ -13,12 +16,6 @@ final class DocumentFragment extends ParentNode implements NonElementParentNodeI
     {
         $this->nodeType = Node::DOCUMENT_FRAGMENT_NODE;
         $this->nodeName = '#document-fragment';
-    }
-
-    public function getElementById(string $elementId): ?Element
-    {
-        // TODO: Implement getElementById() method.
-        return null;
     }
 
     protected function clone(?Document $document, bool $deep = false): static
