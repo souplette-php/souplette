@@ -156,7 +156,7 @@ abstract class Node extends BaseNode implements NodeInterface
         return null;
     }
 
-    public function setNodeValue(string $value): void
+    public function setNodeValue(?string $value): void
     {
     }
 
@@ -165,7 +165,7 @@ abstract class Node extends BaseNode implements NodeInterface
         return null;
     }
 
-    public function setTextContent(string $value): void
+    public function setTextContent(?string $value): void
     {
     }
 

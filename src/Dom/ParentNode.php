@@ -179,7 +179,7 @@ abstract class ParentNode extends Node implements ParentNodeInterface
         return $text;
     }
 
-    public function setTextContent(string $value): void
+    public function setTextContent(?string $value): void
     {
         if (!$value) {
             $this->replaceAllWithNode(null);

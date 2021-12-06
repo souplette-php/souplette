@@ -261,7 +261,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
         return null;
     }
 
-    public function setTextContent(string $value): void
+    public function setTextContent(?string $value): void
     {
     }
 

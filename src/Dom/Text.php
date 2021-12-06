@@ -28,10 +28,13 @@ class Text extends CharacterData
         };
     }
 
+    /**
+     * @throws IndexSizeError
+     */
     public function splitText(int $offset): self
     {
         if ($offset > $this->length) {
-            throw new IndexSizeError();
+            throw $this->createInvalidOffsetError($offset);
         }
         $newData = mb_substr($this->value, $offset, null, 'utf-8');
         $newNode = new self($newData);

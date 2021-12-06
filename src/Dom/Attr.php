@@ -56,7 +56,7 @@ final class Attr extends Node
         return $this->value;
     }
 
-    public function setNodeValue(string $value): void
+    public function setNodeValue(?string $value): void
     {
         $this->value = $value;
     }
@@ -66,7 +66,7 @@ final class Attr extends Node
         return $this->value;
     }
 
-    public function setTextContent(string $value): void
+    public function setTextContent(?string $value): void
     {
         $this->value = $value;
     }

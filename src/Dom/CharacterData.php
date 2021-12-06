@@ -37,12 +37,28 @@ abstract class CharacterData extends Node implements ChildNodeInterface, NonDocu
         };
     }
 
+    public function setData(?string $data): void
+    {
+        $this->value = $data ?? '';
+        $this->length = mb_strlen($this->value, 'utf-8');
+    }
+
+    public function getData(): string
+    {
+        return $this->value ?? '';
+    }
+
+    public function getLength(): int
+    {
+        return $this->length;
+    }
+
     public function getNodeValue(): ?string
     {
         return $this->value ?? '';
     }
 
-    public function setNodeValue(string $value): void
+    public function setNodeValue(?string $value): void
     {
         $this->setData($value);
     }
@@ -52,7 +68,7 @@ abstract class CharacterData extends Node implements ChildNodeInterface, NonDocu
         return $this->value ?? '';
     }
 
-    public function setTextContent(string $value): void
+    public function setTextContent(?string $value): void
     {
         $this->setData($value);
     }
@@ -72,7 +88,7 @@ abstract class CharacterData extends Node implements ChildNodeInterface, NonDocu
     public function substringData(int $offset, int $count): string
     {
         if ($offset > $this->length) {
-            throw new IndexSizeError();
+            throw $this->createInvalidOffsetError($offset);
         }
         return mb_substr($this->value ?? '', $offset, $count, 'utf-8');
     }
@@ -89,7 +105,7 @@ abstract class CharacterData extends Node implements ChildNodeInterface, NonDocu
     public function insertData(int $offset, string $data): void
     {
         if ($offset > $this->length) {
-            throw new IndexSizeError();
+            throw $this->createInvalidOffsetError($offset);
         }
 
         $head = mb_substr($this->value, 0, $offset, 'utf-8');
@@ -105,7 +121,7 @@ abstract class CharacterData extends Node implements ChildNodeInterface, NonDocu
     public function deleteData(int $offset, int $count): void
     {
         if ($offset > $this->length) {
-            throw new IndexSizeError();
+            throw $this->createInvalidOffsetError($offset);
         }
         if ($count === 0) return;
         $head = mb_substr($this->value, 0, $offset, 'utf-8');
@@ -119,26 +135,19 @@ abstract class CharacterData extends Node implements ChildNodeInterface, NonDocu
     public function replaceData(int $offset, int $count, string $data): void
     {
         if ($offset > $this->length) {
-            throw new IndexSizeError();
+            throw $this->createInvalidOffsetError($offset);
         }
         $head = mb_substr($this->value, 0, $offset, 'utf-8');
         $tail = mb_substr($this->value, $offset + $count, null, 'utf-8');
         $this->setData($head . $data . $tail);
     }
 
-    public function setData(string $data): void
+    protected function createInvalidOffsetError(int $offset): IndexSizeError
     {
-        $this->value = $data;
-        $this->length = mb_strlen($data, 'utf-8');
-    }
-
-    public function getData(): string
-    {
-        return $this->value ?? '';
-    }
-
-    public function getLength(): int
-    {
-        return $this->length;
+        return new IndexSizeError(sprintf(
+            "The offset %d is greater thant the node's length (%d).",
+            $offset,
+            $this->length,
+        ));
     }
 }
