@@ -4,6 +4,7 @@ namespace Souplette\Dom;
 
 /**
  * @property-read ?Element $ownerElement
+ * @property string $value
  */
 final class Attr extends Node
 {

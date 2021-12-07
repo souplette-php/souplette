@@ -25,6 +25,7 @@ use Souplette\Xml\QName;
  * @property string $className
  * @property string $innerHTML
  * @property string $outerHTML
+ * @property-read Attr[] $attributes
  * @property-read TokenList $classList
  */
 class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeChildNodeInterface

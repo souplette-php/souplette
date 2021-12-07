@@ -2,9 +2,10 @@
 
 namespace Souplette\Dom\Traversal;
 
+use Souplette\Dom\Internal\BaseNode;
 use Souplette\Dom\Node;
 
-abstract class NodeTraversal extends Node
+abstract class NodeTraversal extends BaseNode
 {
     public static function nextPostOrder(Node $current, ?Node $bounds = null): ?Node
     {
@@ -13,6 +14,16 @@ abstract class NodeTraversal extends Node
         $next = $current->next;
         while ($child = $next->first) $next = $child;
         return $next;
+    }
+
+    /**
+     * @return iterable<Node>
+     */
+    public static function childrenOf(Node $parent): iterable
+    {
+        for ($child = $parent->first; $child; $child = $child->next) {
+            yield $child;
+        }
     }
 
     /**

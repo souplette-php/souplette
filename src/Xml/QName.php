@@ -8,7 +8,7 @@ use Souplette\Dom\Namespaces;
 
 final class QName
 {
-    private const QNAME_PATTERN = <<<'REGEXP'
+    const QNAME_PATTERN = <<<'REGEXP'
     /
     (?(DEFINE)
         (?<NCNameStartChar> [A-Z_a-z]
@@ -29,7 +29,7 @@ final class QName
     /**
      * @see https://www.w3.org/TR/xml/#NT-Name
      */
-    private const NAME_PATTERN = <<<'REGEXP'
+    const NAME_PATTERN = <<<'REGEXP'
     /
     (?(DEFINE)
         (?<NameStartChar> : | [A-Z] | _ | [a-z] | [\x{C0}-\x{D6}] | [\x{D8}-\x{F6}] | [\x{F8}-\x{2FF}]
@@ -57,7 +57,7 @@ final class QName
         // 2. Validate qualifiedName.
         // To validate a qualifiedName,
         // throw an "InvalidCharacterError" DOMException if qualifiedName does not match the QName production.
-        if (!preg_match(self::QNAME_PATTERN, $qualifiedName, $matches)) {
+        if (!preg_match(self::QNAME_PATTERN, $qualifiedName, $matches, \PREG_UNMATCHED_AS_NULL)) {
             throw new InvalidCharacterError(sprintf(
                 'Provided qualified name "%s" is not a valid name.',
                 $qualifiedName,

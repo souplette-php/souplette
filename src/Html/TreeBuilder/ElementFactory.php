@@ -20,7 +20,7 @@ final class ElementFactory extends BaseNode
         // 3. Let document be intended parent's node document.
         $doc = match ($intendedParent->nodeType) {
             Node::DOCUMENT_NODE => $intendedParent,
-            default => $intendedParent->ownerDocument,
+            default => $intendedParent->document,
         };
         // 4. Let local name be the tag name of the token.
         $localName = $token->name;

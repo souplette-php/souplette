@@ -3,10 +3,11 @@
 namespace Souplette\Dom\Traversal;
 
 use Souplette\Dom\Element;
+use Souplette\Dom\Internal\BaseNode;
 use Souplette\Dom\Node;
 use Souplette\Dom\ParentNode;
 
-abstract class ElementTraversal extends Node
+abstract class ElementTraversal extends BaseNode
 {
     public static function firstChild(?Node $parent, ?callable $filter = null): ?Element
     {
