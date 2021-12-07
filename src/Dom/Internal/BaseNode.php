@@ -28,7 +28,7 @@ abstract class BaseNode
     /**
      * @var Attr[]
      */
-    protected array $attributes = [];
+    protected array $attrs = [];
 
     /**
      * @see https://dom.spec.whatwg.org/#concept-node-adopt
@@ -41,7 +41,7 @@ abstract class BaseNode
         }
         $node->document = $doc;
         if ($node->nodeType === Node::ELEMENT_NODE) {
-            foreach ($node->attributes as $attribute) {
+            foreach ($node->attrs as $attribute) {
                 $attribute->document = $doc;
             }
         }

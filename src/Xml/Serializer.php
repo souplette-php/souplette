@@ -256,7 +256,7 @@ final class Serializer extends BaseNode
         $result = '';
         $localNameSet = [];
         // 3.
-        foreach ($node->attributes as $attr) {
+        foreach ($node->attrs as $attr) {
             // 3.1
             if ($this->requireWellFormed && isset($localNameSet[$attr->namespaceURI][$attr->localName])) {
                 throw new DomException('Duplicate attribute.');
@@ -474,7 +474,7 @@ final class Serializer extends BaseNode
     private function recordNamespaceInformation(Element $element, PrefixMap $map, array &$localMap): ?string
     {
         $defaultNamespace = null;
-        foreach ($element->attributes as $attr) {
+        foreach ($element->attrs as $attr) {
             if ($attr->namespaceURI === Namespaces::XMLNS) {
                 if (!$attr->prefix) {
                     $defaultNamespace = $attr->value;

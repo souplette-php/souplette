@@ -50,7 +50,7 @@ final class Serializer
             $output[] = sprintf('|%s<!-- %s -->', $indent, $node->data);
         } else if ($node instanceof Text) {
             $output[] = sprintf('|%s"%s"', $indent, $node->data);
-        } else {
+        } else if ($node instanceof Element) {
             $output[] = sprintf('|%s<%s>', $indent, $this->serializeTagName($node));
             $attributes = [];
             /** @var Attr $attr */

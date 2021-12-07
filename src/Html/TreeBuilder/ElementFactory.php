@@ -32,14 +32,14 @@ final class ElementFactory extends BaseNode
         if ($token->attributes) {
             foreach ($token->attributes as $name => $value) {
                 if ($value instanceof Attr) {
-                    $element->attributes[] = $value;
+                    $element->attrs[] = $value;
                     $value->parent = $element;
                 } else {
                     $attr = new Attr((string)$name);
                     $attr->value = $value;
                     $attr->document = $doc;
                     $attr->parent = $element;
-                    $element->attributes[] = $attr;
+                    $element->attrs[] = $attr;
                 }
             }
         }
@@ -51,7 +51,7 @@ final class ElementFactory extends BaseNode
     {
         // For each attribute on the token, check to see if the attribute is already present on the element.
         // If it is not, add the attribute and its corresponding value to that element.
-        foreach ($toElement->attributes as $attr) {
+        foreach ($toElement->attrs as $attr) {
             unset($fromToken->attributes[$attr->localName]);
         }
         foreach ($fromToken->attributes as $name => $value) {
@@ -59,7 +59,7 @@ final class ElementFactory extends BaseNode
             $attr->value = $value;
             $attr->document = $toElement->document;
             $attr->parent = $toElement;
-            $toElement->attributes[] = $attr;
+            $toElement->attrs[] = $attr;
         }
     }
 }

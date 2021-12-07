@@ -219,7 +219,7 @@ abstract class Node extends BaseNode implements NodeInterface
             // 2. If attr1 and node1 are non-null, and node2 is node1, then:
             if ($attr1 && $node1 && $node2 === $node1) {
                 // 1. For each attr in node2’s attribute list:
-                foreach ($node2->attributes as $attr) {
+                foreach ($node2->attrs as $attr) {
                     // 1. If attr equals attr1, then return the result of adding DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC and DOCUMENT_POSITION_PRECEDING.
                     if ($attr === $attr1) {
                         return self::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC + self::DOCUMENT_POSITION_PRECEDING;

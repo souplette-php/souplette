@@ -25,14 +25,14 @@ final class NamedNodeMap extends BaseNode implements \Countable, \IteratorAggreg
     public function __get(string $prop)
     {
         return match ($prop) {
-            'length' => \count($this->element->attributes),
+            'length' => \count($this->element->attrs),
             default => throw UndefinedProperty::forRead($this, $prop),
         };
     }
 
     public function item(int $index): ?Attr
     {
-        return $this->element->attributes[$index] ?? null;
+        return $this->element->attrs[$index] ?? null;
     }
 
     public function getNamedItem(string $qualifiedName): ?Attr
@@ -87,29 +87,29 @@ final class NamedNodeMap extends BaseNode implements \Countable, \IteratorAggreg
 
     public function getLength(): int
     {
-        return \count($this->element->attributes);
+        return \count($this->element->attrs);
     }
 
     public function count(): int
     {
-        return \count($this->element->attributes);
+        return \count($this->element->attrs);
     }
 
     public function getIterator(): Traversable
     {
-        yield from $this->element->attributes;
+        yield from $this->element->attrs;
     }
 
     public function offsetExists(mixed $offset): bool
     {
-        if (\is_int($offset)) return isset($this->element->attributes[$offset]);
+        if (\is_int($offset)) return isset($this->element->attrs[$offset]);
         if (\is_string($offset)) return $this->element->hasAttribute($offset);
         return false;
     }
 
     public function offsetGet(mixed $offset): ?Attr
     {
-        if (\is_int($offset)) return $this->element->attributes[$offset] ?? null;
+        if (\is_int($offset)) return $this->element->attrs[$offset] ?? null;
         if (\is_string($offset)) return $this->element->getAttributeNode($offset);
         return null;
     }
