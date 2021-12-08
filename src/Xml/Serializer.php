@@ -387,7 +387,7 @@ final class Serializer extends BaseNode
             throw new DomException('Comment node contains invalid characters.');
         }
 
-        return "<!-- {$markup} -->";
+        return "<!--{$markup}-->";
     }
 
     /**

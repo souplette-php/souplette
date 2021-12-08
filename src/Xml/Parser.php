@@ -103,7 +103,7 @@ final class Parser extends BaseNode
     private function handleProcessingInstruction(XMLReader $reader)
     {
         $parent = $this->openElements->top();
-        $node = $this->document->createProcessingInstruction($reader->target, $reader->value);
+        $node = $this->document->createProcessingInstruction($reader->name, $reader->value);
         $parent->appendChild($node);
     }
 

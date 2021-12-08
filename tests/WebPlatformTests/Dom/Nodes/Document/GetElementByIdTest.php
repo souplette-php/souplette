@@ -11,7 +11,7 @@ use Souplette\Souplette;
 /**
  * Ported from web-platform-tests
  * wpt/dom/nodes/Document-getElementById.html
- * 
+ *
  * @todo namespaced id attributes
  * @todo SVG + MathML elements
  */
