@@ -11,7 +11,7 @@ final class RootTest extends TestCase
 {
     public function testItMatches()
     {
-        $doc = DomBuilder::create()->tag('html')
+        $doc = DomBuilder::html()->tag('html')
             ->tag('div')->close()
             ->getDocument();
         $selector = PseudoClassSelector::of('root');

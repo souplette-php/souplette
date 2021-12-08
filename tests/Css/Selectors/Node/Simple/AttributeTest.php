@@ -51,7 +51,7 @@ final class AttributeTest extends SelectorTestCase
 
     public function existsProvider(): iterable
     {
-        $dom = DomBuilder::create()
+        $dom = DomBuilder::html()
             ->tag('foo')->attr('bar', 'baz')->close()
             ->getDocument();
 
@@ -82,7 +82,7 @@ final class AttributeTest extends SelectorTestCase
 
     public function equalsProvider(): iterable
     {
-        $dom = DomBuilder::create()
+        $dom = DomBuilder::html()
             ->tag('foo')->attr('foo', 'bar')
             ->getDocument();
 
@@ -118,7 +118,7 @@ final class AttributeTest extends SelectorTestCase
 
     public function dashMatchProvider(): iterable
     {
-        $dom = DomBuilder::create()->tag('html')
+        $dom = DomBuilder::html()->tag('html')
             ->tag('foo')->attr('lang', 'en')->close()
             ->tag('bar')->attr('lang', 'en-us')->close()
             ->getDocument();
@@ -156,7 +156,7 @@ final class AttributeTest extends SelectorTestCase
 
     public function includesProvider(): iterable
     {
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::html()
             ->tag('foo')->attr('rel', 'nofollow noopener noreferer')->close()
             ->getDocument();
 
@@ -185,7 +185,7 @@ final class AttributeTest extends SelectorTestCase
             AttributeSelector::includes('rel', 'NoOpener', '*', 'i'),
             true,
         ];
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::html()
             ->tag('foo')->attr('title')->close()
             ->getDocument();
         yield 'empty value matches nothing' => [
@@ -205,7 +205,7 @@ final class AttributeTest extends SelectorTestCase
 
     public function prefixProvider(): iterable
     {
-        $dom = DomBuilder::create()
+        $dom = DomBuilder::html()
             ->tag('foo')->attr('bar', 'bazqux')->close()
             ->getDocument();
 
@@ -236,7 +236,7 @@ final class AttributeTest extends SelectorTestCase
 
     public function suffixProvider(): iterable
     {
-        $dom = DomBuilder::create()
+        $dom = DomBuilder::html()
             ->tag('foo')->attr('bar', 'bazqux')->close()
             ->getDocument();
 
@@ -267,7 +267,7 @@ final class AttributeTest extends SelectorTestCase
 
     public function substringProvider(): iterable
     {
-        $dom = DomBuilder::create()
+        $dom = DomBuilder::html()
             ->tag('a')->attr('b', 'foobarbaz')->close()
             ->getDocument();
 

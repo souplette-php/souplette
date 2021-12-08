@@ -11,7 +11,7 @@ final class LastChildTest extends TestCase
 {
     public function testItMatches()
     {
-        $doc = DomBuilder::create()->tag('html')
+        $doc = DomBuilder::html()->tag('html')
             ->tag('div')->close()
             ->tag('div')->close()
             ->tag('div')->close()
@@ -25,7 +25,7 @@ final class LastChildTest extends TestCase
 
     public function testItMatchesWithoutParentNode()
     {
-        $doc = DomBuilder::create()->tag('html')->getDocument();
+        $doc = DomBuilder::html()->tag('html')->getDocument();
         $selector = PseudoClassSelector::of('last-child');
         QueryAssert::elementMatchesSelector($doc->documentElement, $selector);
     }

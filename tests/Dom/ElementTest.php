@@ -12,7 +12,7 @@ final class ElementTest extends TestCase
 {
     public function testGetInnerHtml()
     {
-        $doc = DomBuilder::create()->tag('html')
+        $doc = DomBuilder::html()->tag('html')
             ->comment(' inner html! ')
             ->tag('p')
                 ->text('foo')
@@ -23,7 +23,7 @@ final class ElementTest extends TestCase
 
     public function testSetInnerHtml()
     {
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::html()
             ->tag('body')
                 ->tag('remove')->text('this!')
             ->getDocument();
@@ -46,7 +46,7 @@ final class ElementTest extends TestCase
 
     public function testGetOuterHtml()
     {
-        $doc = DomBuilder::create()->tag('html')
+        $doc = DomBuilder::html()->tag('html')
             ->comment(' outer html! ')
             ->tag('p')
                 ->text('foo')
@@ -57,7 +57,7 @@ final class ElementTest extends TestCase
 
     public function testSetOuterHtml()
     {
-        $doc = DomBuilder::create()->tag('html')->tag('body')
+        $doc = DomBuilder::html()->tag('html')->tag('body')
             ->tag('div')
             ->getDocument();
         /** @var Element $body */
@@ -85,7 +85,7 @@ final class ElementTest extends TestCase
 
     public function testId()
     {
-        $doc = DomBuilder::create()->tag('html')->getDocument();
+        $doc = DomBuilder::html()->tag('html')->getDocument();
         /** @var Element $html */
         $html = $doc->documentElement;
         Assert::assertSame('', $html->id);
@@ -97,7 +97,7 @@ final class ElementTest extends TestCase
 
     public function testClassName()
     {
-        $doc = DomBuilder::create()->tag('html')->getDocument();
+        $doc = DomBuilder::html()->tag('html')->getDocument();
         /** @var Element $html */
         $html = $doc->documentElement;
         Assert::assertSame('', $html->className);
@@ -109,7 +109,7 @@ final class ElementTest extends TestCase
 
     public function testHasAttributeIsCaseInsensitive()
     {
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::html()
             ->tag('foo')->attr('bar', 'baz')
             ->getDocument();
         $el = $doc->documentElement;
@@ -118,7 +118,7 @@ final class ElementTest extends TestCase
 
     public function testGetAttributeIsCaseInsensitive()
     {
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::html()
             ->tag('foo')->attr('bar', 'baz')
             ->getDocument();
         $el = $doc->documentElement;

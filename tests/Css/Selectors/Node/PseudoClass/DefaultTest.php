@@ -12,7 +12,7 @@ final class DefaultTest extends TestCase
 {
     public function testItMatches()
     {
-        $doc = DomBuilder::create()->tag('html')
+        $doc = DomBuilder::html()->tag('html')
             ->tag('input')
                 ->attr('type', 'checkbox')
                 ->attr('checked')

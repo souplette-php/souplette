@@ -11,7 +11,7 @@ final class AnyLinkTest extends TestCase
 {
     public function testItMatches()
     {
-        $doc = DomBuilder::create()->tag('html')
+        $doc = DomBuilder::html()->tag('html')
             ->tag('a')->attr('href', '#foo')->close()
             ->tag('a')->close()
             ->tag('area')->attr('href', '#foo')

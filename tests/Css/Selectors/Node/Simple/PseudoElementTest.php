@@ -22,7 +22,7 @@ final class PseudoElementTest extends SelectorTestCase
 
     public function testPseudoElementsAreNotSupported()
     {
-        $doc = DomBuilder::create()->tag('html')->getDocument();
+        $doc = DomBuilder::html()->tag('html')->getDocument();
         $selector = new PseudoElementSelector('before');
         QueryAssert::elementMatchesSelector($doc->documentElement, $selector, false);
     }

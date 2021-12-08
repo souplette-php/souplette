@@ -55,7 +55,7 @@ final class NthChildTest extends SelectorTestCase
 
     public function simpleAnPlusBProvider(): iterable
     {
-        $dom = DomBuilder::create()->tag('html')
+        $dom = DomBuilder::html()->tag('html')
             ->tag('a')->close()
             ->tag('a')->close()
             ->tag('a')->close()
@@ -80,7 +80,7 @@ final class NthChildTest extends SelectorTestCase
 
     public function aNPlusBProvider(): iterable
     {
-        $dom = DomBuilder::create()->tag('html')
+        $dom = DomBuilder::html()->tag('html')
             ->tag('a')->close()
             ->tag('a')->close()
             ->tag('a')->close()

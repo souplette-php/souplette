@@ -40,7 +40,7 @@ final class TypeTest extends SelectorTestCase
 
     public function anyNamespaceProvider(): iterable
     {
-        $dom = DomBuilder::create()
+        $dom = DomBuilder::html()
             ->tag('g', Namespaces::SVG)->close()
             ->getDocument();
 
@@ -72,7 +72,7 @@ final class TypeTest extends SelectorTestCase
 
     public function explicitNamespaceProvider(): iterable
     {
-        $dom = DomBuilder::create()
+        $dom = DomBuilder::html()
             ->tag('svg:g', Namespaces::SVG)->close()
             ->getDocument();
 
@@ -103,7 +103,7 @@ final class TypeTest extends SelectorTestCase
 
     public function nullNamespaceProvider(): iterable
     {
-        $dom = DomBuilder::create()
+        $dom = DomBuilder::html()
             ->tag('foo', '')->close()
             ->getDocument();
 
@@ -126,7 +126,7 @@ final class TypeTest extends SelectorTestCase
 
     public function testXmlDocumentIsCaseSensitive()
     {
-        $doc = DomBuilder::create('xml')->tag('html')
+        $doc = DomBuilder::xml()->tag('html')
             ->tag('a')->close()
             ->tag('A')->close()
             ->tag('p')

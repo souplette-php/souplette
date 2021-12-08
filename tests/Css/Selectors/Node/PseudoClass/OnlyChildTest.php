@@ -11,7 +11,7 @@ final class OnlyChildTest extends TestCase
 {
     public function testItMatches()
     {
-        $doc = DomBuilder::create()->tag('html')
+        $doc = DomBuilder::html()->tag('html')
             ->text('Ignore me plz!')
             ->tag('div')->close()
             ->comment('Ignore me plz!')
@@ -22,7 +22,7 @@ final class OnlyChildTest extends TestCase
 
     public function testItDoesntMatch()
     {
-        $doc = DomBuilder::create()->tag('html')
+        $doc = DomBuilder::html()->tag('html')
             ->tag('foo')->close()
             ->tag('bar')->close()
             ->getDocument();
@@ -32,7 +32,7 @@ final class OnlyChildTest extends TestCase
 
     public function testItMatchesWithoutParentNode()
     {
-        $doc = DomBuilder::create()->tag('html')->getDocument();
+        $doc = DomBuilder::html()->tag('html')->getDocument();
         $selector = PseudoClassSelector::of('only-child');
         QueryAssert::elementMatchesSelector($doc->documentElement, $selector);
     }

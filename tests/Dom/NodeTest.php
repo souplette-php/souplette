@@ -20,26 +20,26 @@ final class NodeTest extends TestCase
     public function containsProvider(): iterable
     {
         yield 'returns true when document contains element' => [
-            $doc = DomBuilder::create()
+            $doc = DomBuilder::html()
                 ->tag('a')
                 ->getDocument(),
             $doc->firstChild,
             true,
         ];
         yield 'returns false when document does not contain element' => [
-            $doc = DomBuilder::create()
+            $doc = DomBuilder::html()
                 ->tag('a')
                 ->getDocument(),
             $doc->createElement('nope'),
             false,
         ];
         yield 'returns false when called with null' => [
-            DomBuilder::create()->getDocument(),
+            DomBuilder::html()->getDocument(),
             null,
             false,
         ];
         //
-        $doc = DomBuilder::create()->tag('html')
+        $doc = DomBuilder::html()->tag('html')
             ->text('yep')
             ->getDocument();
         yield 'returns true when element contains node' => [
@@ -48,7 +48,7 @@ final class NodeTest extends TestCase
             true,
         ];
         //
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::html()
             ->tag('html')
                 ->comment('yep')
             ->close()
@@ -72,37 +72,37 @@ final class NodeTest extends TestCase
     public function parentElementProvider(): iterable
     {
         yield 'returns null for document' => [
-            DomBuilder::create()->getDocument(),
+            DomBuilder::html()->getDocument(),
             null,
         ];
         yield 'returns null for document element' => [
-            DomBuilder::create()->tag('html')->getDocument()->firstChild,
+            DomBuilder::html()->tag('html')->getDocument()->firstChild,
             null,
         ];
         yield 'returns null for document child comment' => [
-            DomBuilder::create()->comment('nope')->getDocument()->firstChild,
+            DomBuilder::html()->comment('nope')->getDocument()->firstChild,
             null,
         ];
         //
-        $doc = DomBuilder::create()->tag('html')->tag('yep')->getDocument();
+        $doc = DomBuilder::html()->tag('html')->tag('yep')->getDocument();
         yield 'returns an element parent element' => [
             $doc->firstChild->firstChild,
             $doc->firstChild,
         ];
         //
-        $doc = DomBuilder::create()->tag('html')->text('yep')->getDocument();
+        $doc = DomBuilder::html()->tag('html')->text('yep')->getDocument();
         yield 'returns a text node parent element' => [
             $doc->firstChild->firstChild,
             $doc->firstChild,
         ];
         //
-        $doc = DomBuilder::create()->tag('html')->comment('yep')->getDocument();
+        $doc = DomBuilder::html()->tag('html')->comment('yep')->getDocument();
         yield 'returns a comment node parent element' => [
             $doc->firstChild->firstChild,
             $doc->firstChild,
         ];
         //
-        $doc = DomBuilder::create()->tag('html')->tag('head')->tag('meta')->getDocument();
+        $doc = DomBuilder::html()->tag('html')->tag('head')->tag('meta')->getDocument();
         yield 'also works nested' => [
             $doc->firstChild->firstChild->firstChild,
             $doc->firstChild->firstChild,

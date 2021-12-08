@@ -12,7 +12,7 @@ final class SelectedTest extends TestCase
 {
     public function testItMatches()
     {
-        $doc = DomBuilder::create()->tag('select')
+        $doc = DomBuilder::html()->tag('select')
             ->tag('option')->attr('selected')->attr('match')->close()
             ->tag('option')->close()
             ->tag('foo')->attr('selected')->close()

@@ -11,13 +11,13 @@ final class EmptyTest extends TestCase
 {
     public function testItMatchesElementsWithNoChildren()
     {
-        $doc = DomBuilder::create()->tag('html')->getDocument();
+        $doc = DomBuilder::html()->tag('html')->getDocument();
         QueryAssert::elementMatchesSelector($doc->documentElement, PseudoClassSelector::of('empty'));
     }
 
     public function testItMatchesElementsContainingTextOnly()
     {
-        $doc = DomBuilder::create()->tag('html')
+        $doc = DomBuilder::html()->tag('html')
             ->comment('I do not count')
             ->text(" \n\t")
             ->getDocument();

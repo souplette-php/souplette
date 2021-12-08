@@ -23,7 +23,7 @@ final class NthColTest extends SelectorTestCase
 
     public function testItNeverMatches()
     {
-        $doc = DomBuilder::create()->tag('html')->getDocument();
+        $doc = DomBuilder::html()->tag('html')->getDocument();
         $selector = new NthCol(new AnPlusB(1, 0));
         QueryAssert::elementMatchesSelector($doc->documentElement, $selector, false);
     }

@@ -11,7 +11,7 @@ final class OnlyOfTypeTest extends TestCase
 {
     public function testItMatches()
     {
-        $doc = DomBuilder::create()->tag('html')
+        $doc = DomBuilder::html()->tag('html')
             ->tag('foo')->close()
             ->tag('bar')->close()
             ->tag('foo')->close()
@@ -26,7 +26,7 @@ final class OnlyOfTypeTest extends TestCase
 
     public function testItMatchesWithoutParentNode()
     {
-        $doc = DomBuilder::create()->tag('html')->getDocument();
+        $doc = DomBuilder::html()->tag('html')->getDocument();
         $selector = PseudoClassSelector::of('only-of-type');
         QueryAssert::elementMatchesSelector($doc->documentElement, $selector);
     }

@@ -25,15 +25,15 @@ final class ChildNodeTest extends TestCase
     public function removeProvider(): iterable
     {
         yield 'works on text nodes' => [
-            $doc = DomBuilder::create()->tag('html')->text('foo')->getDocument(),
+            $doc = DomBuilder::html()->tag('html')->text('foo')->getDocument(),
             $doc->documentElement->firstChild,
         ];
         yield 'works on comment nodes' => [
-            $doc = DomBuilder::create()->tag('html')->comment('foo')->getDocument(),
+            $doc = DomBuilder::html()->tag('html')->comment('foo')->getDocument(),
             $doc->documentElement->firstChild,
         ];
         yield 'works on element nodes' => [
-            $doc = DomBuilder::create()->tag('foo')->getDocument(),
+            $doc = DomBuilder::html()->tag('foo')->getDocument(),
             $doc->documentElement,
         ];
     }
@@ -57,25 +57,25 @@ final class ChildNodeTest extends TestCase
 
     public function beforeProvider(): iterable
     {
-        $doc = DomBuilder::create()->tag('html')->tag('test')->getDocument();
+        $doc = DomBuilder::html()->tag('html')->tag('test')->getDocument();
         yield 'works on elements' => [
             $doc->documentElement->firstChild,
             [$doc->createElement('foo'), 'bar', $doc->createComment('baz')],
         ];
         //
-        $doc = DomBuilder::create()->tag('html')->text('test')->getDocument();
+        $doc = DomBuilder::html()->tag('html')->text('test')->getDocument();
         yield 'works on text nodes' => [
             $doc->documentElement->firstChild,
             [$doc->createElement('foo'), 'bar', $doc->createComment('baz')],
         ];
         //
-        $doc = DomBuilder::create()->tag('html')->comment('test')->getDocument();
+        $doc = DomBuilder::html()->tag('html')->comment('test')->getDocument();
         yield 'works on comment nodes' => [
             $doc->documentElement->firstChild,
             [$doc->createElement('foo'), 'bar', $doc->createComment('baz')],
         ];
         //
-        $doc = DomBuilder::create()->tag('html')
+        $doc = DomBuilder::html()->tag('html')
             ->text('foo')
             ->text('target')
             ->getDocument();
@@ -104,25 +104,25 @@ final class ChildNodeTest extends TestCase
 
     public function afterProvider(): iterable
     {
-        $doc = DomBuilder::create()->tag('html')->tag('test')->getDocument();
+        $doc = DomBuilder::html()->tag('html')->tag('test')->getDocument();
         yield 'works on elements' => [
             $doc->documentElement->firstChild,
             [$doc->createElement('foo'), 'bar', $doc->createComment('baz')],
         ];
         //
-        $doc = DomBuilder::create()->tag('html')->text('test')->getDocument();
+        $doc = DomBuilder::html()->tag('html')->text('test')->getDocument();
         yield 'works on text nodes' => [
             $doc->documentElement->firstChild,
             [$doc->createElement('foo'), 'bar', $doc->createComment('baz')],
         ];
         //
-        $doc = DomBuilder::create()->tag('html')->comment('test')->getDocument();
+        $doc = DomBuilder::html()->tag('html')->comment('test')->getDocument();
         yield 'works on comment nodes' => [
             $doc->documentElement->firstChild,
             [$doc->createElement('foo'), 'bar', $doc->createComment('baz')],
         ];
         //
-        $doc = DomBuilder::create()->tag('html')
+        $doc = DomBuilder::html()->tag('html')
             ->text('target')
             ->text('foo')
             ->getDocument();
@@ -153,7 +153,7 @@ final class ChildNodeTest extends TestCase
 
     public function replaceWithProvider(): iterable
     {
-        $doc = DomBuilder::create()->tag('html')
+        $doc = DomBuilder::html()->tag('html')
             ->tag('test')
             ->getDocument();
         yield 'works on elements' => [
@@ -161,7 +161,7 @@ final class ChildNodeTest extends TestCase
             ['foo', $doc->createElement('bar'), $doc->createComment('baz')],
         ];
         //
-        $doc = DomBuilder::create()->tag('html')
+        $doc = DomBuilder::html()->tag('html')
             ->text('test')
             ->getDocument();
         yield 'works on text nodes' => [
@@ -169,7 +169,7 @@ final class ChildNodeTest extends TestCase
             ['foo', $doc->createElement('bar'), $doc->createComment('baz')],
         ];
         //
-        $doc = DomBuilder::create()->tag('html')
+        $doc = DomBuilder::html()->tag('html')
             ->comment('test')
             ->getDocument();
         yield 'works on comment nodes' => [
@@ -177,7 +177,7 @@ final class ChildNodeTest extends TestCase
             ['foo', $doc->createElement('bar'), $doc->createComment('baz')],
         ];
         //
-        $doc = DomBuilder::create()->tag('html')
+        $doc = DomBuilder::html()->tag('html')
             ->tag('test')
             ->getDocument();
         yield 'works when target is in nodes' => [

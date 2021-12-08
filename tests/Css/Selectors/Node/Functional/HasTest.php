@@ -50,7 +50,7 @@ final class HasTest extends SelectorTestCase
 
     public function matchesProvider(): iterable
     {
-        $dom = DomBuilder::create()->tag('html')
+        $dom = DomBuilder::html()->tag('html')
             ->tag('a')
                 ->tag('b')->close()
             ->close()
@@ -97,7 +97,7 @@ final class HasTest extends SelectorTestCase
 
     public function scopeProvider(): iterable
     {
-        $doc = DomBuilder::create()->tag('main')
+        $doc = DomBuilder::html()->tag('main')
             ->tag('div')
                 ->tag('div')->class('a')
                     ->tag('div')->class('a')
@@ -112,7 +112,7 @@ final class HasTest extends SelectorTestCase
                 '/main/div/div',
             ]
         ];
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::html()
             ->tag('main')->class('a')
                 ->tag('div')->class('b')
                     ->tag('div')->class('a')
@@ -125,7 +125,7 @@ final class HasTest extends SelectorTestCase
             ['/main/div/div/div/div'],
         ];
         // examples from https://drafts.csswg.org/selectors-4/#relational
-        $doc = DomBuilder::create()->tag('body')
+        $doc = DomBuilder::html()->tag('body')
             ->tag('a')->text('Nope')->close()
             ->tag('a')
                 ->tag('img')
@@ -142,7 +142,7 @@ final class HasTest extends SelectorTestCase
             ['/body/a[2]'],
         ];
 
-        $doc = DomBuilder::create()->tag('body')
+        $doc = DomBuilder::html()->tag('body')
             ->tag('h1')->close()
             ->tag('h1')->close()
             ->tag('p')->close()
@@ -153,7 +153,7 @@ final class HasTest extends SelectorTestCase
             ['/body/h1[2]'],
         ];
 
-        $doc = DomBuilder::create()->tag(('body'))
+        $doc = DomBuilder::html()->tag(('body'))
             ->tag('section')
                 ->tag('h1')->close()
             ->close()

@@ -23,14 +23,14 @@ final class ParentNodeTest extends TestCase
 
     public function childrenProvider(): iterable
     {
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::html()
             ->comment('bar')
             ->tag('a')->close()
             ->comment('bar')
             ->getDocument();
         yield 'works on document' => [$doc, ['A']];
         //
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::html()
             ->tag('html')
                 ->text('foo')
                 ->tag('a')->close()
@@ -51,14 +51,14 @@ final class ParentNodeTest extends TestCase
 
     public function firstElementChildProvider(): iterable
     {
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::html()
             ->comment('foo')
             ->tag('baz')->close()
             ->comment('bar')
             ->getDocument();
         yield 'works on document' => [$doc, $doc->lastChild->previousSibling];
         //
-        $doc = DomBuilder::create()->tag('html')
+        $doc = DomBuilder::html()->tag('html')
             ->text('foo')
             ->comment('bar')
             ->tag('baz')->close()
@@ -77,14 +77,14 @@ final class ParentNodeTest extends TestCase
 
     public function lastElementChildProvider(): iterable
     {
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::html()
             ->comment('foo')
             ->tag('bar')->close()
             ->comment('baz')
             ->getDocument();
         yield 'works on document' => [$doc, $doc->lastChild->previousSibling];
         //
-        $doc = DomBuilder::create()->tag('html')
+        $doc = DomBuilder::html()->tag('html')
             ->tag('foo')->close()
             ->text('bar')
             ->tag('baz')->close()
@@ -113,7 +113,7 @@ final class ParentNodeTest extends TestCase
 
     public function prependProvider(): iterable
     {
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::html()
             ->tag('a')->close()
             ->comment('foo')
             ->getDocument();
@@ -123,7 +123,7 @@ final class ParentNodeTest extends TestCase
             [...$nodes, $doc->firstChild, $doc->lastChild],
         ];
         //
-        $doc = DomBuilder::create()->tag('html')
+        $doc = DomBuilder::html()->tag('html')
             ->tag('a')->close()
             ->text('foo')
             ->getDocument();
@@ -154,7 +154,7 @@ final class ParentNodeTest extends TestCase
 
     public function appendProvider(): iterable
     {
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::html()
             ->comment('foo')
             ->tag('a')->close()
             ->getDocument();
@@ -164,7 +164,7 @@ final class ParentNodeTest extends TestCase
             [$doc->firstChild, $doc->lastChild, ...$nodes],
         ];
         //
-        $doc = DomBuilder::create()->tag('html')
+        $doc = DomBuilder::html()->tag('html')
             ->tag('a')->close()
             ->text('foo')
             ->getDocument();

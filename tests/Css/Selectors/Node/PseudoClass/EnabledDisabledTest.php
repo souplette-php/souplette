@@ -12,7 +12,7 @@ final class EnabledDisabledTest extends TestCase
 {
     public function testItMatches()
     {
-        $doc = DomBuilder::create()->tag('form')
+        $doc = DomBuilder::html()->tag('form')
             ->tag('input')->attr('disabled')->attr('match')
             ->tag('button')->attr('disabled')->attr('match')->close()
             ->tag('select')->attr('disabled')->attr('match')->close()
@@ -33,7 +33,7 @@ final class EnabledDisabledTest extends TestCase
 
     public function testItMatchesInsideDisabledContainers()
     {
-        $doc = DomBuilder::create()->tag('form')
+        $doc = DomBuilder::html()->tag('form')
             ->tag('fieldset')->attr('disabled')->attr('match')
                 ->tag('input')->attr('match')
                 ->tag('button')->attr('match')->close()
@@ -55,7 +55,7 @@ final class EnabledDisabledTest extends TestCase
 
     public function testItDoesntMatchInsideLegend()
     {
-        $doc = DomBuilder::create()->tag('form')
+        $doc = DomBuilder::html()->tag('form')
             ->tag('fieldset')->attr('disabled')->attr('match')
                 ->tag('legend')
                     ->tag('input')

@@ -49,7 +49,7 @@ final class NotTest extends SelectorTestCase
 
     public function matchesProvider(): iterable
     {
-        $dom = DomBuilder::create()->tag('html')
+        $dom = DomBuilder::html()->tag('html')
             ->tag('a')->close()
             ->tag('b')->close()
             ->tag('a')->close()

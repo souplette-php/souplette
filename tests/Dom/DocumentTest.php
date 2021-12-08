@@ -11,7 +11,7 @@ final class DocumentTest extends TestCase
     public function testGetAndSetTitle()
     {
         $titleText = 'This is the title';
-        $doc = DomBuilder::create()->tag('html')
+        $doc = DomBuilder::html()->tag('html')
             ->tag('head')
                 ->tag('title')->text($titleText)
             ->getDocument();
@@ -22,7 +22,7 @@ final class DocumentTest extends TestCase
 
     public function testGetElementById()
     {
-        $doc = DomBuilder::create()->tag('html')
+        $doc = DomBuilder::html()->tag('html')
             ->tag('div')->id('foo')->close()
             ->tag('div')->id('bar')->close()
             ->getDocument();
@@ -36,7 +36,7 @@ final class DocumentTest extends TestCase
 
     public function testGetElementsByClassName()
     {
-        $doc = DomBuilder::create()->tag('html')
+        $doc = DomBuilder::html()->tag('html')
             ->tag('div')->class('foo')->close()
             ->tag('div')->class('bar')->close()
             ->tag('div')->class('bar baz')->close()

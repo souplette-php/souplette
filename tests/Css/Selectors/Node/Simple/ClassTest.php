@@ -35,7 +35,7 @@ final class ClassTest extends SelectorTestCase
 
     public function matchesProvider(): iterable
     {
-        $dom = DomBuilder::create()
+        $dom = DomBuilder::html()
             ->tag('foo')->class('foo bar baz qux')
             ->getDocument();
 

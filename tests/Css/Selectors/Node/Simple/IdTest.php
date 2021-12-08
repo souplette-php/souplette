@@ -35,7 +35,7 @@ final class IdTest extends SelectorTestCase
 
     public function matchesProvider(): iterable
     {
-        $dom = DomBuilder::create()
+        $dom = DomBuilder::html()
             ->tag('foo')->id('yep')
             ->getDocument();
         yield 'matches' => [$dom->documentElement, 'yep', false, true];

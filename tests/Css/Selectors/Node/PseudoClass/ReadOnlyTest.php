@@ -12,7 +12,7 @@ final class ReadOnlyTest extends TestCase
 {
     public function testItMatches()
     {
-        $doc = DomBuilder::create()->tag('form')->attr('match')
+        $doc = DomBuilder::html()->tag('form')->attr('match')
             ->tag('input')
             ->tag('input')->attr('readonly')->attr('match')
             ->tag('input')->attr('disabled')->attr('match')

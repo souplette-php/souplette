@@ -24,7 +24,7 @@ final class CompoundSelectorTest extends TestCase
 
     public function itMatchesClassesProvider(): iterable
     {
-        $dom = DomBuilder::create()->tag('html')
+        $dom = DomBuilder::html()->tag('html')
             ->tag('a')->class('a')->close()
             ->tag('a')->class('a b')->close()
             ->tag('a')->class('a b c')->close()

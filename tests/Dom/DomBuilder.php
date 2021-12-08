@@ -5,6 +5,7 @@ namespace Souplette\Tests\Dom;
 use Souplette\Dom\Document;
 use Souplette\Dom\Namespaces;
 use Souplette\Dom\Node;
+use Souplette\Dom\XmlDocument;
 use Souplette\Html\TreeBuilder\Elements;
 
 final class DomBuilder
@@ -12,15 +13,20 @@ final class DomBuilder
     protected Document $document;
     protected \SplStack $openElements;
 
-    private function __construct(string $type)
+    private function __construct(Document $document)
     {
-        $this->document = new Document($type);
+        $this->document = $document;
         $this->openElements = new \SplStack();
     }
 
-    public static function create(string $type = 'html'): self
+    public static function html(): self
     {
-        return new self($type);
+        return new self(new Document('html'));
+    }
+
+    public static function xml(): self
+    {
+        return new self(new XmlDocument());
     }
 
     public function getDocument(): Document
@@ -106,7 +112,7 @@ final class DomBuilder
 
     private function closeVoidElements()
     {
-        if ($this->openElements->isEmpty()) {
+        if (!$this->document->isHTML || $this->openElements->isEmpty()) {
             return;
         }
         $node = $this->openElements->top();

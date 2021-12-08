@@ -25,7 +25,7 @@ final class UniversalTest extends SelectorTestCase
 
     public function testItMatchesAnything()
     {
-        $dom = DomBuilder::create()->tag('html')
+        $dom = DomBuilder::html()->tag('html')
             ->tag('foo')->close()
             ->tag('bar', Namespaces::SVG)->close()
             ->tag('baz', Namespaces::XML)->close()

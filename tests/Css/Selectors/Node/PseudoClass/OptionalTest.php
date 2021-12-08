@@ -12,7 +12,7 @@ final class OptionalTest extends TestCase
 {
     public function testItMatches()
     {
-        $doc = DomBuilder::create()->tag('form')
+        $doc = DomBuilder::html()->tag('form')
             ->tag('input')->attr('required')
             ->tag('input')->attr('match')
             ->tag('select')->attr('required')

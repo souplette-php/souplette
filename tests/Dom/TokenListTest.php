@@ -13,7 +13,7 @@ final class TokenListTest extends TestCase
 {
     public function testTokenListConstruction()
     {
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::html()
             ->tag('html')
                 ->class('foo bar baz')
             ->getDocument();
@@ -30,7 +30,7 @@ final class TokenListTest extends TestCase
 
     public function testSetValue()
     {
-        $doc = DomBuilder::create()->tag('html')->getDocument();
+        $doc = DomBuilder::html()->tag('html')->getDocument();
         $node = $doc->documentElement;
         $node->classList->value = 'foo bar baz';
         Assert::assertSame('foo bar baz', $node->getAttribute('class'));
@@ -38,7 +38,7 @@ final class TokenListTest extends TestCase
 
     public function testGetItem()
     {
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::html()
             ->tag('html')->class('foo bar baz')
             ->getDocument();
         $node = $doc->documentElement;
@@ -49,7 +49,7 @@ final class TokenListTest extends TestCase
 
     public function testContains()
     {
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::html()
             ->tag('html')
                 ->class('foo bar baz')
             ->getDocument();
@@ -63,7 +63,7 @@ final class TokenListTest extends TestCase
 
     public function testAdd()
     {
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::html()
             ->tag('html')
                 ->class('foo')
             ->getDocument();
@@ -79,7 +79,7 @@ final class TokenListTest extends TestCase
 
     public function testRemove()
     {
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::html()
             ->tag('html')
                 ->class('foo bar baz qux')
             ->getDocument();
@@ -91,7 +91,7 @@ final class TokenListTest extends TestCase
 
     public function testAddAfterRemove()
     {
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::html()
             ->tag('html')
                 ->class('foo bar baz')
             ->getDocument();
@@ -104,7 +104,7 @@ final class TokenListTest extends TestCase
 
     public function testReplace()
     {
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::html()
             ->tag('html')
                 ->class('foo bar baz')
             ->getDocument();
@@ -116,7 +116,7 @@ final class TokenListTest extends TestCase
 
     public function testToggle()
     {
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::html()
             ->tag('html')
                 ->class('foo bar baz')
             ->getDocument();
@@ -134,7 +134,7 @@ final class TokenListTest extends TestCase
 
     public function testToggleForceParameter()
     {
-        $doc = DomBuilder::create()
+        $doc = DomBuilder::html()
             ->tag('html')
                 ->class('foo bar baz')
             ->getDocument();
@@ -152,7 +152,7 @@ final class TokenListTest extends TestCase
 
     public function testValueReflectsAttributeChanges()
     {
-        $doc = DomBuilder::create()->tag('html')->getDocument();
+        $doc = DomBuilder::html()->tag('html')->getDocument();
         /** @var Element $node */
         $node = $doc->documentElement;
         $classList = $node->classList;
@@ -166,7 +166,7 @@ final class TokenListTest extends TestCase
     public function testWhitespaceInToken()
     {
         $this->expectException(InvalidCharacterError::class);
-        $doc = DomBuilder::create()->tag('html')->getDocument();
+        $doc = DomBuilder::html()->tag('html')->getDocument();
         /** @var Element $node */
         $node = $doc->documentElement;
         $node->classList->add('foo bar');
@@ -175,7 +175,7 @@ final class TokenListTest extends TestCase
     public function testEmptyToken()
     {
         $this->expectException(SyntaxError::class);
-        $doc = DomBuilder::create()->tag('html')->getDocument();
+        $doc = DomBuilder::html()->tag('html')->getDocument();
         /** @var Element $node */
         $node = $doc->documentElement;
         $node->classList->add('');
