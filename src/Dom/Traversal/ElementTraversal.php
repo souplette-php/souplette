@@ -23,10 +23,10 @@ abstract class ElementTraversal extends BaseNode
     /**
      * @return iterable<Element>
      */
-    public static function childrenOf(ParentNode $parent): iterable
+    public static function childrenOf(ParentNode $parent, ?callable $filter = null): iterable
     {
         for ($node = $parent->first; $node; $node = $node->next) {
-            if ($node->nodeType === Node::ELEMENT_NODE) {
+            if ($node->nodeType === Node::ELEMENT_NODE && (!$filter || $filter($node))) {
                 yield $node;
             }
         }
@@ -35,11 +35,11 @@ abstract class ElementTraversal extends BaseNode
     /**
      * @return iterable<Element>
      */
-    public static function descendantsOf(ParentNode $parent): iterable
+    public static function descendantsOf(ParentNode $parent, ?callable $filter = null): iterable
     {
         $node = $parent->first;
         while ($node) {
-            if ($node->nodeType === Node::ELEMENT_NODE) {
+            if ($node->nodeType === Node::ELEMENT_NODE && (!$filter || $filter($node))) {
                 yield $node;
             }
             if ($node->first) {
@@ -62,20 +62,10 @@ abstract class ElementTraversal extends BaseNode
     /**
      * @return iterable<Element>
      */
-    public static function ancestorsOf(Node $node): iterable
+    public static function ancestorsOf(Node $node, ?callable $filter = null): iterable
     {
-        while (($node = $node->parent) && $node->nodeType === Node::ELEMENT_NODE) {
-            yield $node;
-        }
-    }
-
-    /**
-     * @return iterable<Element>
-     */
-    public static function following(Node $node): iterable
-    {
-        while ($node = $node->next) {
-            if ($node->nodeType === Node::ELEMENT_NODE) {
+        while ($node = $node->parent) {
+            if ($node->nodeType === Node::ELEMENT_NODE && (!$filter || $filter($node))) {
                 yield $node;
             }
         }
@@ -84,10 +74,22 @@ abstract class ElementTraversal extends BaseNode
     /**
      * @return iterable<Element>
      */
-    public static function preceding(Node $node): iterable
+    public static function following(Node $node, ?callable $filter = null): iterable
+    {
+        while ($node = $node->next) {
+            if ($node->nodeType === Node::ELEMENT_NODE && (!$filter || $filter($node))) {
+                yield $node;
+            }
+        }
+    }
+
+    /**
+     * @return iterable<Element>
+     */
+    public static function preceding(Node $node, ?callable $filter = null): iterable
     {
         while ($node = $node->prev) {
-            if ($node->nodeType === Node::ELEMENT_NODE) {
+            if ($node->nodeType === Node::ELEMENT_NODE && (!$filter || $filter($node))) {
                 yield $node;
             }
         }

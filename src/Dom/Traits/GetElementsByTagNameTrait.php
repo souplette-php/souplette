@@ -5,6 +5,9 @@ namespace Souplette\Dom\Traits;
 use Souplette\Dom\Element;
 use Souplette\Dom\Traversal\ElementTraversal;
 
+/**
+ * Used by Document & Element
+ */
 trait GetElementsByTagNameTrait
 {
     /**
@@ -13,29 +16,19 @@ trait GetElementsByTagNameTrait
      */
     public function getElementsByTagName(string $qualifiedName): array
     {
-        $collection = [];
         if ($qualifiedName === '*') {
-            foreach (ElementTraversal::descendantsOf($this) as $element) {
-                $collection[] = $element;
-            }
-            return $collection;
+            return iterator_to_array(ElementTraversal::descendantsOf($this));
         }
         if ($this->isHTML) {
             $lowerName = strtolower($qualifiedName);
-            foreach (ElementTraversal::descendantsOf($this) as $element) {
-                if (
-                    ($element->isHTML && $element->qualifiedName === $lowerName)
-                    || (!$element->isHTML && $element->qualifiedName === $qualifiedName)
-                ) {
-                    $collection[] = $element;
-                }
-            }
-            return $collection;
+            return iterator_to_array(ElementTraversal::descendantsOf($this, fn($el) => (
+                ($el->isHTML && $el->qualifiedName === $lowerName)
+                || (!$el->isHTML && $el->qualifiedName === $qualifiedName)
+            )));
         }
-        foreach (ElementTraversal::descendantsOf($this) as $element) {
-            if ($element->tagName === $qualifiedName) $collection[] = $element;
-        }
-        return $collection;
+        return iterator_to_array(ElementTraversal::descendantsOf($this, fn($el) => (
+            $el->tagName === $qualifiedName
+        )));
     }
 
     /**
@@ -45,30 +38,21 @@ trait GetElementsByTagNameTrait
     public function getElementsByTagNameNS(?string $namespace, string $localName): array
     {
         $namespace = $namespace ?: null;
-        $collection = [];
         if ($namespace === '*' && $localName === '*') {
-            foreach (ElementTraversal::descendantsOf($this) as $element) {
-                $collection[] = $element;
-            }
-            return $collection;
+            return iterator_to_array(ElementTraversal::descendantsOf($this));
         }
         if ($namespace === '*') {
-            foreach (ElementTraversal::descendantsOf($this) as $element) {
-                if ($element->localName === $localName) $collection[] = $element;
-            }
-            return $collection;
+            return iterator_to_array(ElementTraversal::descendantsOf($this, fn($el) => (
+                $el->localName === $localName
+            )));
         }
         if ($localName === '*') {
-            foreach (ElementTraversal::descendantsOf($this) as $element) {
-                if ($element->namespaceURI === $namespace) $collection[] = $element;
-            }
-            return $collection;
+            return iterator_to_array(ElementTraversal::descendantsOf($this, fn($el) => (
+                $el->namespaceURI === $namespace
+            )));
         }
-        foreach (ElementTraversal::descendantsOf($this) as $element) {
-            if ($element->localName === $localName && $element->namespaceURI === $namespace) {
-                $collection[] = $element;
-            }
-        }
-        return $collection;
+        return iterator_to_array(ElementTraversal::descendantsOf($this, fn($el) => (
+            $el->localName === $localName && $el->namespaceURI === $namespace
+        )));
     }
 }

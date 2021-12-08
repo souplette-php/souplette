@@ -153,14 +153,12 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
 
     public function getAttribute(string $qualifiedName): ?string
     {
-        $attr = $this->getAttributeNode($qualifiedName);
-        return $attr?->value;
+        return $this->getAttributeNode($qualifiedName)?->value;
     }
 
     public function getAttributeNS(?string $namespace, string $localName): ?string
     {
-        $attr = $this->getAttributeNodeNS($namespace, $localName);
-        return $attr?->value;
+        return $this->getAttributeNodeNS($namespace, $localName)?->value;
     }
 
     public function setAttribute(string $qualifiedName, string $value): void
@@ -375,6 +373,10 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
 
     public function setInnerHTML(string $html): void
     {
+        if (!$html) {
+            $this->replaceAllWithNode(null);
+            return;
+        }
         // https://w3c.github.io/DOM-Parsing/#the-innerhtml-mixin
         $parser = new Parser();
         $children = $parser->parseFragment($this, $html, $this->document?->encoding ?? 'utf-8');
@@ -398,6 +400,10 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
                 'Failed to execute %s: The element has no parent.',
                 __METHOD__,
             ));
+        }
+        if (!$html) {
+            $parent->removeChild($this);
+            return;
         }
         if ($parent->nodeType === Node::DOCUMENT_FRAGMENT_NODE) {
             $parent = new Element('body', Namespaces::HTML);

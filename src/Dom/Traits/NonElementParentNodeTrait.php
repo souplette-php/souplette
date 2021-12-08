@@ -2,8 +2,8 @@
 
 namespace Souplette\Dom\Traits;
 
-use Souplette\Css\Selectors\SelectorQuery;
 use Souplette\Dom\Element;
+use Souplette\Dom\Traversal\ElementTraversal;
 
 /**
  * @see https://dom.spec.whatwg.org/#interface-nonelementparentnode
@@ -12,6 +12,12 @@ trait NonElementParentNodeTrait
 {
     public function getElementById(string $elementId): ?Element
     {
-        return SelectorQuery::byId($this, $elementId);
+        if (!$elementId) return null;
+        foreach (ElementTraversal::descendantsOf($this) as $node) {
+            if ($node->getAttribute('id') === $elementId) {
+                return $node;
+            }
+        }
+        return null;
     }
 }
