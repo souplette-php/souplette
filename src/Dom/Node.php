@@ -45,7 +45,6 @@ abstract class Node extends BaseNode implements NodeInterface
     const DOCUMENT_TYPE_NODE = 10;
     const DOCUMENT_FRAGMENT_NODE = 11;
     const NOTATION_NODE = 12; // historical
-    const HTML_DOCUMENT_NODE = 13;
 
     /**
      * @see https://dom.spec.whatwg.org/#dom-node-comparedocumentposition

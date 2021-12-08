@@ -2,7 +2,7 @@
 
 namespace Souplette\Codegen;
 
-final class EntityLookupGenerator extends AbstractCodeGenerator
+class EntityLookupGenerator extends AbstractCodeGenerator
 {
     const DATA_URL = 'https://html.spec.whatwg.org/entities.json';
 
@@ -23,7 +23,7 @@ final class EntityLookupGenerator extends AbstractCodeGenerator
         ];
     }
 
-    private function generateLookupTable(): array
+    protected function generateLookupTable(): array
     {
         $spec = $this->fetchSpecData();
         $lookup = [];
@@ -35,7 +35,7 @@ final class EntityLookupGenerator extends AbstractCodeGenerator
         return $lookup;
     }
 
-    private function fetchSpecData()
+    protected function fetchSpecData()
     {
         $cacheDir = $this->getCacheDirectory();
         $dataFile = sprintf('%s/entities.json', $cacheDir);
