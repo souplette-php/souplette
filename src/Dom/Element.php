@@ -132,10 +132,16 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
     {
         if (!$otherNode) return false;
         if ($otherNode === $this) return true;
-        if ($otherNode->nodeType !== $this->nodeType) return false;
-        foreach ($this->_attrs as $attribute) {
-            $otherAttr = $otherNode->getAttributeNS($attribute->namespaceURI, $attribute->localName);
-            if (!$attribute->isEqualNode($otherAttr)) {
+        if ($this->nodeType !== $otherNode->nodeType) return false;
+        if ($this->localName !== $otherNode->localName
+            || $this->prefix !== $otherNode->prefix
+            || $this->namespaceURI !== $otherNode->namespaceURI
+        ) {
+            return false;
+        }
+        foreach ($this->_attrs as $attr) {
+            $otherAttr = $otherNode->getAttributeNodeNS($attr->namespaceURI, $attr->localName);
+            if (!$otherAttr || !$attr->isEqualNode($otherAttr)) {
                 return false;
             }
         }
