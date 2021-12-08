@@ -10,6 +10,7 @@ use Souplette\Dom\Element;
 use Souplette\Dom\Implementation;
 use Souplette\Dom\Namespaces;
 use Souplette\Dom\Node;
+use Souplette\Dom\Text;
 use Souplette\Encoding\Encoding;
 use Souplette\Encoding\EncodingLookup;
 use Souplette\Encoding\Exception\EncodingChanged;
@@ -135,8 +136,6 @@ final class TreeBuilder
         $this->encoding = $encoding;
         $this->reset();
         $this->run(TokenizerState::DATA);
-        // TODO: do we need to normalize ?
-        //$this->document->normalize();
         return $this->document;
     }
 
@@ -195,19 +194,17 @@ final class TreeBuilder
         // (If there is no such form element, the form element pointer keeps its initial value, null.)
         $node = $contextElement;
         while ($node) {
-            if ($node->nodeName === 'form') {
+            if ($node->localName === 'form') {
                 $this->formElement = $node;
                 break;
             }
-            $node = $node->parentNode;
+            $node = $node->_parent;
         }
         // 12. Place the input into the input stream for the HTML parser just created.
         // The encoding confidence is irrelevant.
         $encoding->makeIrrelevant();
         // 13. Start the parser and let it run until it has consumed all the characters just inserted into the input stream.
         $this->run($tokenizerState);
-        // TODO: do we need to normalize ?
-        //$root->normalize();
         // 14. Return the child nodes of root, in tree order.
         // TODO: change this when we implement NodeList
         return $root->getChildNodes();
@@ -520,8 +517,19 @@ final class TreeBuilder
         if ($location->parent->nodeType === Node::DOCUMENT_NODE) {
             return;
         }
-        // further steps are handled by the insertion location object
-        $location->insertCharacter($data);
+        // 4. If there is a Text node immediately before the adjusted insertion location,
+        // then append data to that Text node's data.
+        $target = $location->target;
+        if ($target?->nodeType === Node::TEXT_NODE) {
+            $target->appendData($data);
+        } else if ($location->beforeTarget && $target?->_prev?->nodeType === Node::TEXT_NODE) {
+            $target->_prev->appendData($data);
+        } else {
+            // Otherwise, create a new Text node whose data is data
+            // and whose node document is the same as that of the element in which the adjusted insertion location finds itself,
+            // and insert the newly created node at the adjusted insertion location.
+            $location->insert(new Text($data));
+        }
     }
 
     public function insertComment(Token\Comment $token, ?InsertionLocation $position = null)

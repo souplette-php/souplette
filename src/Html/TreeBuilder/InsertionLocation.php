@@ -33,23 +33,6 @@ final class InsertionLocation
         $this->parent->parserInsertBefore($node, $target);
     }
 
-    public function insertCharacter(string $data)
-    {
-        $target = $this->target;
-        // 4. If there is a Text node immediately before the adjusted insertion location,
-        // then append data to that Text node's data.
-        if ($target?->nodeType === Node::TEXT_NODE) {
-            $target->appendData($data);
-        } else if ($this->beforeTarget && $target?->_prev?->nodeType === Node::TEXT_NODE) {
-            $target->_prev->appendData($data);
-        } else {
-            // Otherwise, create a new Text node whose data is data
-            // and whose node document is the same as that of the element in which the adjusted insertion location finds itself,
-            // and insert the newly created node at the adjusted insertion location.
-            $this->insert(new Text($data));
-        }
-    }
-
     public function closestAncestor(string $tagName, string $namespaceURI = Namespaces::HTML): ?Element
     {
         $node = $this->parent;
