@@ -14,7 +14,7 @@ final class CDATASection extends Text
     {
         $this->nodeType = Node::CDATA_SECTION_NODE;
         $this->nodeName = '#cdata-section';
-        $this->value = $data;
+        $this->_value = $data;
         $this->length = mb_strlen($data, 'utf-8');
     }
 }

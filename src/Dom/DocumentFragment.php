@@ -21,10 +21,10 @@ final class DocumentFragment extends ParentNode implements NonElementParentNodeI
     protected function clone(?Document $document, bool $deep = false): static
     {
         $copy = new self();
-        $copy->document = $document ?? $this->document;
+        $copy->_doc = $document ?? $this->_doc;
         if ($deep) {
-            for ($child = $this->first; $child; $child = $this->next) {
-                $childCopy = $child->clone($copy->document, true);
+            for ($child = $this->_first; $child; $child = $this->_next) {
+                $childCopy = $child->clone($copy->_doc, true);
                 $copy->adopt($childCopy);
                 $copy->uncheckedAppendChild($childCopy);
             }

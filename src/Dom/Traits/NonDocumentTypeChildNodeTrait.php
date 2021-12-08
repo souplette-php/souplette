@@ -12,7 +12,7 @@ trait NonDocumentTypeChildNodeTrait
 {
     public function getPreviousElementSibling(): ?Element
     {
-        for ($node = $this->prev; $node; $node = $node->prev) {
+        for ($node = $this->_prev; $node; $node = $node->_prev) {
             if ($node->nodeType === Node::ELEMENT_NODE) {
                 return $node;
             }
@@ -22,7 +22,7 @@ trait NonDocumentTypeChildNodeTrait
 
     public function getNextElementSibling(): ?Element
     {
-        for ($node = $this->next; $node; $node = $node->next) {
+        for ($node = $this->_next; $node; $node = $node->_next) {
             if ($node->nodeType === Node::ELEMENT_NODE) {
                 return $node;
             }

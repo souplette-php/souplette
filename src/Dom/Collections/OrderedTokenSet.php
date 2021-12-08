@@ -1,8 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom\Internal;
+namespace Souplette\Dom\Collections;
 
 use JetBrains\PhpStorm\Pure;
+use Souplette\Dom\Internal\Idioms;
 
 /**
  * This class backs up the implementation of DOMTokenList interface.
@@ -13,11 +14,11 @@ use JetBrains\PhpStorm\Pure;
 final class OrderedTokenSet implements \Countable, \IteratorAggregate, \ArrayAccess
 {
     /**
-     * @var string[]
+     * @var array<int, string>
      */
     private array $tokens = [];
     /**
-     * @var int[]
+     * @var array<string, int>
      */
     private array $indices = [];
 
@@ -117,7 +118,7 @@ final class OrderedTokenSet implements \Countable, \IteratorAggregate, \ArrayAcc
 
     public function getIterator(): \Traversable
     {
-        return new \ArrayIterator(array_values($this->tokens));
+        yield from array_values($this->tokens);
     }
 
     public function offsetExists($offset): bool

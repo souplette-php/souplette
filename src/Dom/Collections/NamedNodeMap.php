@@ -5,83 +5,52 @@ namespace Souplette\Dom\Collections;
 use Souplette\Dom\Attr;
 use Souplette\Dom\Element;
 use Souplette\Dom\Exception\InUseAttributeError;
+use Souplette\Dom\Exception\NotFoundError;
+use Souplette\Dom\Exception\UndefinedProperty;
+use Traversable;
 
 /**
+ * Work-in-progress, so just
  * @codeCoverageIgnore
+ *
+ * @property-read int $length
  */
-final class NamedNodeMap
+final class NamedNodeMap implements \Countable, \IteratorAggregate, \ArrayAccess
 {
-    private Element $element;
+    public function __construct(
+        private readonly Element $element,
+    ) {
+    }
 
-    /**
-     * @var Attr[]
-     */
-    private array $attributes = [];
-
-    public function getLength(): int
+    public function __get(string $prop)
     {
-        return 0;
+        return match ($prop) {
+            'length' => \count($this->element->_attrs),
+            default => throw UndefinedProperty::forRead($this, $prop),
+        };
     }
 
     public function item(int $index): ?Attr
     {
-        return $this->attributes[$index] ?? null;
+        return $this->element->_attrs[$index] ?? null;
     }
 
-    /**
-     * https://dom.spec.whatwg.org/#concept-element-attributes-get-by-name
-     */
     public function getNamedItem(string $qualifiedName): ?Attr
     {
-        $document = $this->element->ownerDocument;
-        if ($this->element->isHTML && $document && $document->isHTML) {
-            $qualifiedName = strtolower($qualifiedName);
-        }
-        foreach ($this->attributes as $attribute) {
-            if ($attribute->name === $qualifiedName) {
-                return $attribute;
-            }
-        }
-        return null;
+        return $this->element->getAttributeNode($qualifiedName);
     }
 
-    /**
-     * https://dom.spec.whatwg.org/#concept-element-attributes-get-by-namespace
-     */
     public function getNamedItemNS(?string $namespace, string $localName): ?Attr
     {
-        if ($namespace === '') $namespace = null;
-        foreach ($this->attributes as $attribute) {
-            if ($attribute->name === $localName && $attribute->namespaceURI === $namespace) {
-                return $attribute;
-            }
-        }
-        return null;
+        return $this->element->getAttributeNodeNS($namespace, $localName);
     }
 
     /**
-     * https://dom.spec.whatwg.org/#concept-element-attributes-set
      * @throws InUseAttributeError
      */
     public function setNamedItem(Attr $attr): ?Attr
     {
-        // 1. If attr’s element is neither null nor element, throw an "InUseAttributeError" DOMException.
-        $ownerElement = $attr->getOwnerElement();
-        if ($ownerElement && $ownerElement !== $this->element) {
-            throw new InUseAttributeError();
-        }
-        // 2. Let oldAttr be the result of getting an attribute given attr’s namespace, attr’s local name, and element.
-        $oldAttr = $this->getNamedItemNS($attr->namespaceURI, $attr->localName);
-        // 3. If oldAttr is attr, return attr.
-        if ($oldAttr === $attr) return $attr;
-        // 4. If oldAttr is non-null, then replace oldAttr with attr.
-        if ($oldAttr) {
-
-        } else {
-            // 5. Otherwise, append attr to element.
-        }
-        // 6. Return oldAttr.
-        return $oldAttr;
+        return $this->element->setAttributeNode($attr);
     }
 
     /**
@@ -89,43 +58,67 @@ final class NamedNodeMap
      */
     public function setNamedItemNS(Attr $attr): ?Attr
     {
-        return $this->setNamedItem($attr);
+        return $this->element->setAttributeNode($attr);
     }
 
     /**
-     * https://dom.spec.whatwg.org/#concept-element-attributes-remove-by-name
+     * @throws NotFoundError
      */
     public function removeNamedItem(string $qualifiedName): Attr
     {
-        // 1. Let attr be the result of getting an attribute given qualifiedName and element.
-        $attr = $this->getNamedItem($qualifiedName);
-        // 2. If attr is non-null, then remove attr.
-        if ($attr) {
-            $this->removeAttribute($attr);
+        $attr = $this->element->removeAttribute($qualifiedName);
+        if (!$attr) {
+            throw new NotFoundError();
         }
-        // 3. Return attr.
         return $attr;
     }
 
     /**
-     * https://dom.spec.whatwg.org/#concept-element-attributes-remove-by-namespace
+     * @throws NotFoundError
      */
     public function removeNamedItemNS(?string $namespace, string $localName): Attr
     {
-        // 1. Let attr be the result of getting an attribute given namespace, localName, and element.
-        $attr = $this->getNamedItemNS($namespace, $localName);
-        // 2. If attr is non-null, then remove attr.
-        if ($attr) {
-            $this->removeAttribute($attr);
+        $attr = $this->element->removeAttributeNS($namespace, $localName);
+        if (!$attr) {
+            throw new NotFoundError();
         }
-        // 3. Return attr.
         return $attr;
     }
 
-    private function removeAttribute(Attr $attr)
+    public function getLength(): int
     {
-        // 1. Handle attribute changes for attribute with attribute’s element, attribute’s value, and null.
-        // 2. Remove attribute from attribute’s element’s attribute list.
-        // 3. Set attribute’s element to null.
+        return \count($this->element->_attrs);
+    }
+
+    public function count(): int
+    {
+        return \count($this->element->_attrs);
+    }
+
+    public function getIterator(): Traversable
+    {
+        yield from $this->element->_attrs;
+    }
+
+    public function offsetExists(mixed $offset): bool
+    {
+        if (\is_int($offset)) return isset($this->element->_attrs[$offset]);
+        if (\is_string($offset)) return $this->element->hasAttribute($offset);
+        return false;
+    }
+
+    public function offsetGet(mixed $offset): ?Attr
+    {
+        if (\is_int($offset)) return $this->element->_attrs[$offset] ?? null;
+        if (\is_string($offset)) return $this->element->getAttributeNode($offset);
+        return null;
+    }
+
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
+    }
+
+    public function offsetUnset(mixed $offset): void
+    {
     }
 }

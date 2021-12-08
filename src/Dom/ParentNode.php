@@ -7,6 +7,7 @@ use Souplette\Dom\Api\ParentNodeInterface;
 use Souplette\Dom\Exception\DomException;
 use Souplette\Dom\Exception\HierarchyRequestError;
 use Souplette\Dom\Exception\NotFoundError;
+use Souplette\Dom\Internal\Idioms;
 
 /**
  * Extended by Document, DocumentFragment & Element
@@ -40,13 +41,13 @@ abstract class ParentNode extends Node implements ParentNodeInterface
 
     public function hasChildNodes(): bool
     {
-        return $this->first !== null;
+        return $this->_first !== null;
     }
 
     public function getChildNodes(): array
     {
         $nodes = [];
-        for ($child = $this->first; $child; $child = $child->next) {
+        for ($child = $this->_first; $child; $child = $child->_next) {
             $nodes[] = $child;
         }
         return $nodes;
@@ -58,7 +59,7 @@ abstract class ParentNode extends Node implements ParentNodeInterface
     public function getChildren(): array
     {
         $children = [];
-        for ($child = $this->first; $child; $child = $child->next) {
+        for ($child = $this->_first; $child; $child = $child->_next) {
             if ($child->nodeType === Node::ELEMENT_NODE) {
                 $children[] = $child;
             }
@@ -68,7 +69,7 @@ abstract class ParentNode extends Node implements ParentNodeInterface
 
     public function getFirstElementChild(): ?Element
     {
-        for ($child = $this->first; $child; $child = $child->next) {
+        for ($child = $this->_first; $child; $child = $child->_next) {
             if ($child->nodeType === Node::ELEMENT_NODE) {
                 return $child;
             }
@@ -78,7 +79,7 @@ abstract class ParentNode extends Node implements ParentNodeInterface
 
     public function getLastElementChild(): ?Element
     {
-        for ($child = $this->last; $child; $child = $child->prev) {
+        for ($child = $this->_last; $child; $child = $child->_prev) {
             if ($child->nodeType === Node::ELEMENT_NODE) {
                 return $child;
             }
@@ -89,7 +90,7 @@ abstract class ParentNode extends Node implements ParentNodeInterface
     public function getChildElementCount(): int
     {
         $count = 0;
-        for ($current = $this->first; $current; $current = $current->next) {
+        for ($current = $this->_first; $current; $current = $current->_next) {
             if ($current->nodeType ===  self::ELEMENT_NODE) $count++;
         }
         return $count;
@@ -137,9 +138,9 @@ abstract class ParentNode extends Node implements ParentNodeInterface
     public function prepend(Node|string ...$nodes): void
     {
         // 1. Let node be the result of converting nodes into a node given nodes and this’s node document.
-        $node = $this->convertNodesIntoNode($nodes);
+        $node = Idioms::convertNodesIntoNode($this->getDocumentNode(), $nodes);
         // 2. Pre-insert node into this before this’s first child.
-        $this->preInsertNodeBeforeChild($node, $this->first);
+        $this->preInsertNodeBeforeChild($node, $this->_first);
     }
 
     /**
@@ -148,7 +149,7 @@ abstract class ParentNode extends Node implements ParentNodeInterface
     public function append(Node|string ...$nodes): void
     {
         // 1. Let node be the result of converting nodes into a node given nodes and this’s node document.
-        $node = $this->convertNodesIntoNode($nodes);
+        $node = Idioms::convertNodesIntoNode($this->getDocumentNode(), $nodes);
         // 2. Append node to this.
         $this->preInsertNodeBeforeChild($node, null);
     }
@@ -161,7 +162,7 @@ abstract class ParentNode extends Node implements ParentNodeInterface
     public function replaceChildren(Node|string ...$nodes): void
     {
         // 1. Let node be the result of converting nodes into a node given nodes and this’s node document.
-        $node = $this->convertNodesIntoNode($nodes);
+        $node = Idioms::convertNodesIntoNode($this->getDocumentNode(), $nodes);
         // 2. Ensure pre-insertion validity of node into this before null.
         $this->ensurePreInsertionValidity($node, null);
         // 3. Replace all with node within this.
@@ -173,7 +174,7 @@ abstract class ParentNode extends Node implements ParentNodeInterface
         $text = '';
         foreach ($this->descendants() as $node) {
             if ($node->nodeType === Node::TEXT_NODE || $node->nodeType === Node::CDATA_SECTION_NODE) {
-                $text .= $node->value;
+                $text .= $node->_value;
             }
         }
         return $text;
@@ -186,7 +187,7 @@ abstract class ParentNode extends Node implements ParentNodeInterface
             return;
         }
         $node = new Text($value);
-        $node->document = $this->getDocumentNode();
+        $node->_doc = $this->getDocumentNode();
         $this->replaceAllWithNode($node);
     }
 
@@ -212,9 +213,9 @@ abstract class ParentNode extends Node implements ParentNodeInterface
     protected function areChildrenEqual(?Node $other): bool
     {
         for (
-            $child = $this->first, $otherChild = $other->first;
+            $child = $this->_first, $otherChild = $other->_first;
             $child && $otherChild;
-            $child = $child->next, $otherChild = $otherChild->next
+            $child = $child->_next, $otherChild = $otherChild->_next
         ) {
             if (!$child->isEqualNode($otherChild)) {
                 return false;
@@ -228,22 +229,22 @@ abstract class ParentNode extends Node implements ParentNodeInterface
      */
     protected function descendants(): iterable
     {
-        $node = $this->first;
+        $node = $this->_first;
         while ($node) {
             yield $node;
-            if ($node->first) {
-                $node = $node->first;
+            if ($node->_first) {
+                $node = $node->_first;
                 continue;
             }
             while ($node) {
                 if ($node === $this) {
                     break 2;
                 }
-                if ($node->next) {
-                    $node = $node->next;
+                if ($node->_next) {
+                    $node = $node->_next;
                     continue 2;
                 }
-                $node = $node->parent;
+                $node = $node->_parent;
             }
         }
     }
@@ -251,6 +252,117 @@ abstract class ParentNode extends Node implements ParentNodeInterface
     // ==============================================================
     // Mutation algorithms
     // ==============================================================
+
+    /**
+     * @see https://dom.spec.whatwg.org/#concept-node-adopt
+     */
+    protected function adopt(Node $node): void
+    {
+        $doc = $this->nodeType === Node::DOCUMENT_NODE ? $this : $this->_doc;
+        if ($node->_doc === $doc) {
+            return;
+        }
+        $node->_doc = $doc;
+        if ($node->nodeType === Node::ELEMENT_NODE) {
+            foreach ($node->_attrs as $attribute) {
+                $attribute->_doc = $doc;
+            }
+        }
+        for ($child = $node->_first; $child; $child = $child->_next) {
+            $this->adopt($child);
+        }
+    }
+
+    protected function uncheckedAppendChild(Node $node): void
+    {
+        $node->_parent = $this;
+        $node->_next = $node->_prev = null;
+        if ($this->_first === null) {
+            $this->_first = $node;
+            $this->_last = $node;
+        } else {
+            $last = $this->_last;
+            $last->_next = $node;
+            $node->_prev = $last;
+            $this->_last = $node;
+        }
+    }
+
+    protected function uncheckedInsertBefore(Node $node, Node $child): void
+    {
+        $node->_parent = $this;
+        $node->_next = $child;
+        $node->_prev = $child->_prev;
+        $child->_prev = $node;
+        if ($node->_prev) {
+            $node->_prev->_next = $node;
+        }
+        if ($this->_first === $child) {
+            $this->_first = $node;
+        }
+    }
+
+    /**
+     * @internal
+     */
+    public function parserInsertBefore(Node $node, ?Node $child)
+    {
+        $node->unlink();
+        $this->adopt($node);
+        if (!$child) {
+            $this->uncheckedAppendChild($node);
+        } else {
+            $this->uncheckedInsertBefore($node, $child);
+        }
+        $node->insertedInto($this);
+    }
+
+    /**
+     * https://dom.spec.whatwg.org/#concept-node-pre-insert
+     * @throws DomException
+     */
+    protected function preInsertNodeBeforeChild(Node $node, ?Node $child): Node
+    {
+        // To pre-insert a node into a parent before a child, run these steps:
+        // 1. Ensure pre-insertion validity of node into parent before child.
+        $this->ensurePreInsertionValidity($node, $child);
+        // 2. Let referenceChild be child.
+        $referenceChild = $child;
+        // 3. If referenceChild is node, then set referenceChild to node’s next sibling.
+        if ($referenceChild === $node) {
+            $referenceChild = $node->_next;
+        }
+        // 4. Insert node into parent before referenceChild.
+        $this->insertNodeBeforeChild($node, $referenceChild);
+        // 5. Return node.
+        return $node;
+    }
+
+    /**
+     * https://dom.spec.whatwg.org/#concept-node-replace
+     *
+     * @throws HierarchyRequestError|NotFoundError
+     */
+    protected function replaceChildWithNode(Node $child, Node $node): Node
+    {
+        $this->ensureReplacementValidity($child, $node);
+        // 7. Let referenceChild be child’s next sibling.
+        $referenceChild = $child->_next;
+        // 8. If referenceChild is node, then set referenceChild to node’s next sibling.
+        if ($referenceChild === $node) $referenceChild = $node->_next;
+        // 11. If child’s parent is non-null, then:
+        if ($child->_parent) {
+            // 1. Set removedNodes to « child ».
+            // 2. Remove child with the suppress observers flag set.
+            $this->removeNode($child);
+        }
+        // 12. Let nodes be node’s children if node is a DocumentFragment node; otherwise « node ».
+        // 13. Insert node into parent before referenceChild with the suppress observers flag set.
+        $this->insertNodeBeforeChild($node, $referenceChild);
+        // 14. Queue a tree mutation record for parent with nodes, removedNodes, previousSibling, and referenceChild.
+        // 15. Return child.
+        return $child;
+    }
 
     /**
      * https://dom.spec.whatwg.org/#concept-node-insert
@@ -282,6 +394,7 @@ abstract class ParentNode extends Node implements ParentNodeInterface
                 // 3. Otherwise, insert node into parent’s children before child’s index.
                 $this->uncheckedInsertBefore($current, $child);
             }
+            $current->insertedInto($this);
         }
     }
 
@@ -291,7 +404,7 @@ abstract class ParentNode extends Node implements ParentNodeInterface
     protected function preRemoveChild(Node $child): Node
     {
         // 1. If child’s parent is not parent, then throw a "NotFoundError" DOMException.
-        if ($child->parent !== $this) {
+        if ($child->_parent !== $this) {
             throw new NotFoundError();
         }
         // 2. Remove child.
@@ -306,7 +419,7 @@ abstract class ParentNode extends Node implements ParentNodeInterface
     protected function removeNode(Node $node)
     {
         // 1. Let parent be node’s parent
-        $parent = $node->parent;
+        $parent = $node->_parent;
         // 2. Assert: parent is non-null.
         assert($parent !== null);
         // 3. Let index be node’s index.
@@ -317,6 +430,7 @@ abstract class ParentNode extends Node implements ParentNodeInterface
         // run the NodeIterator pre-removing steps given node and iterator.
 
         // blah blah shadow dom, mutation records, etc...
+        $node->removedFrom($this);
     }
 
     /**
@@ -329,9 +443,9 @@ abstract class ParentNode extends Node implements ParentNodeInterface
         // 3. If node is a DocumentFragment node, then set addedNodes to node’s children.
         // 4. Otherwise, if node is non-null, set addedNodes to « node ».
         // 5. Remove all parent’s children, in tree order, with the suppress observers flag set.
-        $current = $this->first;
+        $current = $this->_first;
         while ($current) {
-            $next = $current->next;
+            $next = $current->_next;
             $this->removeNode($current);
             $current = $next;
         }
@@ -363,13 +477,13 @@ abstract class ParentNode extends Node implements ParentNodeInterface
         // then throw a "HierarchyRequestError" DOMException.
         // NOTE: this step is ensured by the class hierarchy
         // 2. If node is a host-including inclusive ancestor of parent, then throw a "HierarchyRequestError" DOMException.
-        for ($current = $this; $current; $current = $current->parent) {
+        for ($current = $this; $current; $current = $current->_parent) {
             if ($current === $node) {
                 throw new HierarchyRequestError('The new child element contains the parent.');
             }
         }
         // 3. If child is non-null and its parent is not parent, then throw a "NotFoundError" DOMException.
-        if ($child && $child->parent !== $this) {
+        if ($child && $child->_parent !== $this) {
             throw new NotFoundError(
                 'The node before which the new node is to be inserted is not a child of this node.'
             );
@@ -410,25 +524,9 @@ abstract class ParentNode extends Node implements ParentNodeInterface
     protected function collectChildNodes(): array
     {
         $children = [];
-        for ($child = $this->first; $child; $child = $child->next) {
+        for ($child = $this->_first; $child; $child = $child->_next) {
             $children[] = $child;
         }
         return $children;
-    }
-
-    protected function hasChildOfType(int $type): bool
-    {
-        for ($child = $this->first; $child; $child = $child->next) {
-            if ($child->nodeType === $type) return true;
-        }
-        return false;
-    }
-
-    protected function hasChildOfTypeThatIsNotChild(int $type, Node $child): bool
-    {
-        for ($node = $this->first; $node; $node = $node->next) {
-            if ($node->nodeType === $type && $node !== $child) return true;
-        }
-        return false;
     }
 }

@@ -10,7 +10,6 @@ use Souplette\Dom\DocumentType;
 use Souplette\Dom\Element;
 use Souplette\Dom\Exception\DomException;
 use Souplette\Dom\Exception\InvalidStateError;
-use Souplette\Dom\Internal\BaseNode;
 use Souplette\Dom\Namespaces;
 use Souplette\Dom\Node;
 use Souplette\Dom\ProcessingInstruction;
@@ -21,7 +20,7 @@ use Souplette\Xml\Serializer\NamespacePrefixMap as PrefixMap;
 /**
  * @see https://w3c.github.io/DOM-Parsing/#xml-serialization
  */
-final class Serializer extends BaseNode
+final class Serializer
 {
     private const VALID_TEXT = <<<'REGEXP'
     /
@@ -256,7 +255,7 @@ final class Serializer extends BaseNode
         $result = '';
         $localNameSet = [];
         // 3.
-        foreach ($node->attrs as $attr) {
+        foreach ($node->_attrs as $attr) {
             // 3.1
             if ($this->requireWellFormed && isset($localNameSet[$attr->namespaceURI][$attr->localName])) {
                 throw new DomException('Duplicate attribute.');
@@ -379,7 +378,7 @@ final class Serializer extends BaseNode
      */
     private function serializeComment(Comment $node): string
     {
-        $markup = $node->value;
+        $markup = $node->_value;
         if ($this->requireWellFormed && (
             !preg_match(self::VALID_TEXT, $markup)
             || preg_match('/--|-$/', $markup)
@@ -396,7 +395,7 @@ final class Serializer extends BaseNode
      */
     private function serializeText(Text $node): string
     {
-        $markup = $node->value;
+        $markup = $node->_value;
         if (!$markup) return '';
         if ($this->requireWellFormed && !preg_match(self::VALID_TEXT, $markup)) {
             throw new DomException('Text node contains invalid characters.');
@@ -455,7 +454,7 @@ final class Serializer extends BaseNode
      * @throws DomException
      */
     private function serializeProcessingInstruction(ProcessingInstruction $node): string {
-        $data = $node->value;
+        $data = $node->_value;
         if ($this->requireWellFormed) {
             if (str_contains($node->target, ':') || strcasecmp($node->target, 'xml') === 0) {
                 throw new DomException('Processing instruction target contains invalid characters.');
@@ -474,7 +473,7 @@ final class Serializer extends BaseNode
     private function recordNamespaceInformation(Element $element, PrefixMap $map, array &$localMap): ?string
     {
         $defaultNamespace = null;
-        foreach ($element->attrs as $attr) {
+        foreach ($element->_attrs as $attr) {
             if ($attr->namespaceURI === Namespaces::XMLNS) {
                 if (!$attr->prefix) {
                     $defaultNamespace = $attr->value;

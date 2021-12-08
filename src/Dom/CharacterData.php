@@ -22,7 +22,7 @@ abstract class CharacterData extends Node implements ChildNodeInterface, NonDocu
     public function __get(string $prop)
     {
         return match ($prop) {
-            'data', 'nodeValue', 'textContent' => $this->value ?? '',
+            'data', 'nodeValue', 'textContent' => $this->_value ?? '',
             'length' => $this->length,
             'nextElementSibling' => $this->getNextElementSibling(),
             'previousElementSibling' => $this->getPreviousElementSibling(),
@@ -39,13 +39,13 @@ abstract class CharacterData extends Node implements ChildNodeInterface, NonDocu
 
     public function setData(?string $data): void
     {
-        $this->value = $data ?? '';
-        $this->length = mb_strlen($this->value, 'utf-8');
+        $this->_value = $data ?? '';
+        $this->length = mb_strlen($this->_value, 'utf-8');
     }
 
     public function getData(): string
     {
-        return $this->value ?? '';
+        return $this->_value ?? '';
     }
 
     public function getLength(): int
@@ -55,7 +55,7 @@ abstract class CharacterData extends Node implements ChildNodeInterface, NonDocu
 
     public function getNodeValue(): ?string
     {
-        return $this->value ?? '';
+        return $this->_value ?? '';
     }
 
     public function setNodeValue(?string $value): void
@@ -65,7 +65,7 @@ abstract class CharacterData extends Node implements ChildNodeInterface, NonDocu
 
     public function getTextContent(): ?string
     {
-        return $this->value ?? '';
+        return $this->_value ?? '';
     }
 
     public function setTextContent(?string $value): void
@@ -78,7 +78,7 @@ abstract class CharacterData extends Node implements ChildNodeInterface, NonDocu
         if (!$otherNode) return false;
         if ($otherNode === $this) return true;
         return $otherNode->nodeType === $this->nodeType
-            && $this->value === $otherNode->value;
+            && $this->_value === $otherNode->_value;
     }
 
     /**
@@ -90,12 +90,12 @@ abstract class CharacterData extends Node implements ChildNodeInterface, NonDocu
         if ($offset > $this->length) {
             throw $this->createInvalidOffsetError($offset);
         }
-        return mb_substr($this->value ?? '', $offset, $count, 'utf-8');
+        return mb_substr($this->_value ?? '', $offset, $count, 'utf-8');
     }
 
     public function appendData(string $data): void
     {
-        $this->value .= $data;
+        $this->_value .= $data;
         $this->length += mb_strlen($data, 'utf-8');
     }
 
@@ -108,10 +108,10 @@ abstract class CharacterData extends Node implements ChildNodeInterface, NonDocu
             throw $this->createInvalidOffsetError($offset);
         }
 
-        $head = mb_substr($this->value, 0, $offset, 'utf-8');
-        $tail = mb_substr($this->value, $offset, null, 'utf-8');
+        $head = mb_substr($this->_value, 0, $offset, 'utf-8');
+        $tail = mb_substr($this->_value, $offset, null, 'utf-8');
 
-        $this->value = $head . $data . $tail;
+        $this->_value = $head . $data . $tail;
         $this->length += mb_strlen($data, 'utf-8');
     }
 
@@ -124,8 +124,8 @@ abstract class CharacterData extends Node implements ChildNodeInterface, NonDocu
             throw $this->createInvalidOffsetError($offset);
         }
         if ($count === 0) return;
-        $head = mb_substr($this->value, 0, $offset, 'utf-8');
-        $tail = mb_substr($this->value, $offset + $count, null, 'utf-8');
+        $head = mb_substr($this->_value, 0, $offset, 'utf-8');
+        $tail = mb_substr($this->_value, $offset + $count, null, 'utf-8');
         $this->setData($head . $tail);
     }
 
@@ -137,8 +137,8 @@ abstract class CharacterData extends Node implements ChildNodeInterface, NonDocu
         if ($offset > $this->length) {
             throw $this->createInvalidOffsetError($offset);
         }
-        $head = mb_substr($this->value, 0, $offset, 'utf-8');
-        $tail = mb_substr($this->value, $offset + $count, null, 'utf-8');
+        $head = mb_substr($this->_value, 0, $offset, 'utf-8');
+        $tail = mb_substr($this->_value, $offset + $count, null, 'utf-8');
         $this->setData($head . $data . $tail);
     }
 

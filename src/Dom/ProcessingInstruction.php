@@ -13,7 +13,7 @@ final class ProcessingInstruction extends CharacterData
     ) {
         $this->nodeType = Node::PROCESSING_INSTRUCTION_NODE;
         $this->nodeName = $target;
-        $this->value = $data;
+        $this->_value = $data;
         $this->length = mb_strlen($data, 'utf-8');
     }
 
@@ -23,13 +23,13 @@ final class ProcessingInstruction extends CharacterData
         if ($otherNode === $this) return true;
         return $otherNode->nodeType === $this->nodeType
             && $this->target === $otherNode->target
-            && $this->value === $otherNode->value;
+            && $this->_value === $otherNode->_value;
     }
 
     protected function clone(?Document $document, bool $deep = false): static
     {
-        $copy = new self($this->target, $this->value);
-        $copy->document = $document ?? $this->document;
+        $copy = new self($this->target, $this->_value);
+        $copy->_doc = $document ?? $this->_doc;
         return $copy;
     }
 

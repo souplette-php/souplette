@@ -2,6 +2,7 @@
 
 namespace Souplette\Html;
 
+use Souplette\Dom\Attr;
 use Souplette\Dom\Document;
 use Souplette\Dom\DocumentModes;
 use Souplette\Dom\DocumentType;
@@ -13,12 +14,13 @@ use Souplette\Encoding\Encoding;
 use Souplette\Encoding\EncodingLookup;
 use Souplette\Encoding\Exception\EncodingChanged;
 use Souplette\Html\Tokenizer\Token;
+use Souplette\Html\Tokenizer\Token\StartTag;
+use Souplette\Html\Tokenizer\Token\Tag;
 use Souplette\Html\Tokenizer\Tokenizer;
 use Souplette\Html\Tokenizer\TokenizerState;
 use Souplette\Html\Tokenizer\TokenType;
 use Souplette\Html\TreeBuilder\ActiveFormattingElementList;
 use Souplette\Html\TreeBuilder\Attributes;
-use Souplette\Html\TreeBuilder\ElementFactory;
 use Souplette\Html\TreeBuilder\Elements;
 use Souplette\Html\TreeBuilder\InsertionLocation;
 use Souplette\Html\TreeBuilder\InsertionModes;
@@ -62,7 +64,6 @@ final class TreeBuilder
     public Encoding $encoding;
     private Implementation $dom;
     public Document $document;
-    public readonly ElementFactory $elementFactory;
 
     /**
      * @see https://dom.spec.whatwg.org/#concept-document-mode
@@ -123,7 +124,6 @@ final class TreeBuilder
     {
         $this->dom = $dom;
         $this->scriptingEnabled = $scriptingEnabled;
-        $this->elementFactory = new ElementFactory();
     }
 
     /**
@@ -547,7 +547,7 @@ final class TreeBuilder
         $location = $this->appropriatePlaceForInsertingANode();
         // 2. Let element be the result of creating an element for the token in the given namespace,
         // with the intended parent being the element in which the adjusted insertion location finds itself.
-        $element = $this->elementFactory::forToken($token, $namespace, $location->parent, $inForeignContent);
+        $element = $this->createElement($token, $namespace, $location->parent, $inForeignContent);
         // 3. TODO: If it is possible to insert element at the adjusted insertion location, then:
         $canInsert = match ($location->parent) {
             $this->document => !$this->document->documentElement,
@@ -570,6 +570,58 @@ final class TreeBuilder
 
         // 5. Return element.
         return $element;
+    }
+
+    public function createElement(
+        Tag $token,
+        string $namespace,
+        Node $intendedParent,
+        bool $inForeignContent = false,
+    ): Element {
+        // 3. Let document be intended parent's node document.
+        $doc = match ($intendedParent->nodeType) {
+            Node::DOCUMENT_NODE => $intendedParent,
+            default => $intendedParent->_doc,
+        };
+        // 4. Let local name be the tag name of the token.
+        $localName = $token->name;
+        // 9. Let element be the result of creating an element given document, localName, given namespace, null, and is.
+        // If will execute script is true, set the synchronous custom elements flag; otherwise, leave it unset.
+        $element = new Element($localName, $namespace);
+        $element->_doc = $doc;
+        // 10. Append each attribute in the given token to element.
+        if ($token->attributes) {
+            foreach ($token->attributes as $name => $value) {
+                if ($value instanceof Attr) {
+                    $element->_attrs[] = $value;
+                    $value->_parent = $element;
+                } else {
+                    $attr = new Attr((string)$name);
+                    $attr->value = $value;
+                    $attr->_doc = $doc;
+                    $attr->_parent = $element;
+                    $element->_attrs[] = $attr;
+                }
+            }
+        }
+
+        return $element;
+    }
+
+    public function mergeAttributes(StartTag $fromToken, Element $toElement): void
+    {
+        // For each attribute on the token, check to see if the attribute is already present on the element.
+        // If it is not, add the attribute and its corresponding value to that element.
+        foreach ($toElement->_attrs as $attr) {
+            unset($fromToken->attributes[$attr->localName]);
+        }
+        foreach ($fromToken->attributes as $name => $value) {
+            $attr = new Attr((string)$name);
+            $attr->value = $value;
+            $attr->_doc = $toElement->_doc;
+            $attr->_parent = $toElement;
+            $toElement->_attrs[] = $attr;
+        }
     }
 
     /**

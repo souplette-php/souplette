@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom\Internal;
+namespace Souplette\Dom\Collections;
 
 use Souplette\Dom\Element;
 use Souplette\Dom\Exception\InvalidCharacterError;
@@ -15,12 +15,12 @@ use WeakReference;
  */
 final class TokenList implements \Countable, \IteratorAggregate
 {
-    private OrderedTokenSet $tokenSet;
+    private readonly OrderedTokenSet $tokenSet;
     /**
      * @var WeakReference<Element>
      */
-    private WeakReference $elementRef;
-    private string $attributeName;
+    private readonly WeakReference $elementRef;
+    private readonly string $attributeName;
     private string $previousValue;
 
     public function __construct(Element $element, string $attributeName)

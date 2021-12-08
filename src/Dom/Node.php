@@ -5,9 +5,8 @@ namespace Souplette\Dom;
 use Souplette\Dom\Api\NodeInterface;
 use Souplette\Dom\Exception\DomException;
 use Souplette\Dom\Exception\HierarchyRequestError;
-use Souplette\Dom\Exception\NotFoundError;
 use Souplette\Dom\Exception\UndefinedProperty;
-use Souplette\Dom\Internal\BaseNode;
+use Souplette\Dom\Internal\NodeFlags;
 use Souplette\Dom\Traversal\NodeTraversal;
 
 /**
@@ -31,7 +30,7 @@ use Souplette\Dom\Traversal\NodeTraversal;
  * @property-read ?string $nodeValue
  * @property ?string $textContent
  */
-abstract class Node extends BaseNode implements NodeInterface
+abstract class Node implements NodeInterface
 {
     const ELEMENT_NODE = 1;
     const ATTRIBUTE_NODE = 2;
@@ -56,19 +55,39 @@ abstract class Node extends BaseNode implements NodeInterface
     const DOCUMENT_POSITION_CONTAINED_BY = 0x10;
     const DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 0x20;
 
+    public readonly int $nodeType;
+    public readonly string $nodeName;
+
+    /** @internal  */
+    public int $_flags = 0;
+    /** @internal */
+    public ?Document $_doc = null;
+    /** @internal */
+    public ?ParentNode $_parent = null;
+    /** @internal */
+    public ?Node $_next = null;
+    /** @internal */
+    public ?Node $_prev = null;
+    /** @internal */
+    public ?Node $_first = null;
+    /** @internal */
+    public ?Node $_last = null;
+    /** @internal */
+    public ?string $_value = null;
+
     public function __get(string $prop)
     {
         return match ($prop) {
             'baseURI' => '',
             'isConnected' => $this->isConnected(),
-            'ownerDocument' => $this->document,
-            'parentNode' => $this->parent,
+            'ownerDocument' => $this->_doc,
+            'parentNode' => $this->_parent,
             'parentElement' => $this->getParentElement(),
             'childNodes' => $this->getChildNodes(),
-            'firstChild' => $this->first,
-            'lastChild' => $this->last,
-            'previousSibling' => $this->prev,
-            'nextSibling' => $this->next,
+            'firstChild' => $this->_first,
+            'lastChild' => $this->_last,
+            'previousSibling' => $this->_prev,
+            'nextSibling' => $this->_next,
             'nodeValue', 'textContent' => null,
             default => throw UndefinedProperty::forRead($this, $prop),
         };
@@ -88,22 +107,23 @@ abstract class Node extends BaseNode implements NodeInterface
      */
     public function isConnected(): bool
     {
-        return $this->getRootNode(['composed' => true])->nodeType === self::DOCUMENT_NODE;
+        return $this->hasFlag(NodeFlags::IS_CONNECTED);
+        //return $this->getRootNode(['composed' => true])->nodeType === self::DOCUMENT_NODE;
     }
 
     public function getOwnerDocument(): ?Document
     {
-        return $this->document;
+        return $this->_doc;
     }
 
     public function getDocumentNode(): ?Document
     {
-        return $this->document;
+        return $this->_doc;
     }
 
     public function getParentNode(): ?ParentNode
     {
-        return $this->parent;
+        return $this->_parent;
     }
 
     /**
@@ -113,7 +133,7 @@ abstract class Node extends BaseNode implements NodeInterface
      */
     public function getParentElement(): ?Element
     {
-        $parent = $this->parent;
+        $parent = $this->_parent;
         if ($parent && $parent->nodeType === self::ELEMENT_NODE) {
             return $parent;
         }
@@ -142,12 +162,12 @@ abstract class Node extends BaseNode implements NodeInterface
 
     public function getPreviousSibling(): ?Node
     {
-        return $this->prev;
+        return $this->_prev;
     }
 
     public function getNextSibling(): ?Node
     {
-        return $this->next;
+        return $this->_next;
     }
 
     public function getNodeValue(): ?string
@@ -171,7 +191,7 @@ abstract class Node extends BaseNode implements NodeInterface
     public function normalize(): void
     {
         $node = $this;
-        while ($firstChild = $node->first) $node = $firstChild;
+        while ($firstChild = $node->_first) $node = $firstChild;
         while ($node) {
             if ($node === $this) break;
             if ($node->nodeType === self::TEXT_NODE) {
@@ -208,17 +228,17 @@ abstract class Node extends BaseNode implements NodeInterface
         // 4. If node1 is an attribute, then set attr1 to node1 and node1 to attr1’s element.
         if ($node1->nodeType === self::ATTRIBUTE_NODE) {
             $attr1 = $node1;
-            $node1 = $attr1->parent;
+            $node1 = $attr1->_parent;
         }
         // 5. If node2 is an attribute, then:
         if ($node2->nodeType === self::ATTRIBUTE_NODE) {
             // 1. Set attr2 to node2 and node2 to attr2’s element.
             $attr2 = $node2;
-            $node2 = $attr2->parent;
+            $node2 = $attr2->_parent;
             // 2. If attr1 and node1 are non-null, and node2 is node1, then:
             if ($attr1 && $node1 && $node2 === $node1) {
                 // 1. For each attr in node2’s attribute list:
-                foreach ($node2->attrs as $attr) {
+                foreach ($node2->_attrs as $attr) {
                     // 1. If attr equals attr1, then return the result of adding DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC and DOCUMENT_POSITION_PRECEDING.
                     if ($attr === $attr1) {
                         return self::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC + self::DOCUMENT_POSITION_PRECEDING;
@@ -283,7 +303,7 @@ abstract class Node extends BaseNode implements NodeInterface
     public function getRootNode(array $options = []): Node
     {
         $root = $this;
-        while ($root->parent) $root = $root->parent;
+        while ($root->_parent) $root = $root->_parent;
         return $root;
     }
 
@@ -292,10 +312,10 @@ abstract class Node extends BaseNode implements NodeInterface
      */
     public function lookupPrefix(?string $namespace): ?string
     {
-        if (!$namespace || $this->parent?->nodeType !== self::ELEMENT_NODE) {
+        if (!$namespace || $this->_parent?->nodeType !== self::ELEMENT_NODE) {
             return null;
         }
-        return $this->parent->locateNamespacePrefix($namespace);
+        return $this->_parent->locateNamespacePrefix($namespace);
     }
 
     /**
@@ -365,57 +385,56 @@ abstract class Node extends BaseNode implements NodeInterface
 
     abstract protected function clone(?Document $document, bool $deep = false): static;
 
+    protected function hasFlag(int $mask): bool
+    {
+        return $mask === ($this->_flags & $mask);
+    }
+
+    protected function setFlag(int $mask): void
+    {
+        $this->_flags |= $mask;
+    }
+
+    protected function clearFlag(int $mask): void
+    {
+        $this->_flags &= ~$mask;
+    }
+
     // ==============================================================
     // Mutation algorithms
     // ==============================================================
 
-    /**
-     * https://dom.spec.whatwg.org/#concept-node-pre-insert
-     * @throws DomException
-     */
-    protected function preInsertNodeBeforeChild(Node $node, ?Node $child): Node
+    protected function unlink(): void
     {
-        // To pre-insert a node into a parent before a child, run these steps:
-        // 1. Ensure pre-insertion validity of node into parent before child.
-        $this->ensurePreInsertionValidity($node, $child);
-        // 2. Let referenceChild be child.
-        $referenceChild = $child;
-        // 3. If referenceChild is node, then set referenceChild to node’s next sibling.
-        if ($referenceChild === $node) {
-            $referenceChild = $node->next;
+        if ($parent = $this->_parent) {
+            if ($parent->_first === $this) {
+                $parent->_first = $this->_next;
+            }
+            if ($parent->_last === $this) {
+                $parent->_last = $this->_prev;
+            }
+            $this->_parent = null;
         }
-        // 4. Insert node into parent before referenceChild.
-        $this->insertNodeBeforeChild($node, $referenceChild);
-        // 5. Return node.
-        return $node;
+        if ($this->_next) {
+            $this->_next->_prev = $this->_prev;
+        }
+        if ($this->_prev) {
+            $this->_prev->_next = $this->_next;
+        }
+        $this->_next = $this->_prev = null;
     }
 
-    /**
-     * https://dom.spec.whatwg.org/#concept-node-replace
-     *
-     * @throws HierarchyRequestError|NotFoundError
-     */
-    protected function replaceChildWithNode(Node $child, Node $node): Node
+    protected function insertedInto(ParentNode $parent): void
     {
-        $this->ensureReplacementValidity($child, $node);
-        // 7. Let referenceChild be child’s next sibling.
-        $referenceChild = $child->next;
-        // 8. If referenceChild is node, then set referenceChild to node’s next sibling.
-        if ($referenceChild === $node) $referenceChild = $node->next;
-        // 11. If child’s parent is non-null, then:
-        if ($child->parent) {
-            // 1. Set removedNodes to « child ».
-            // 2. Remove child with the suppress observers flag set.
-            $this->removeNode($child);
+        if ($parent->hasFlag(NodeFlags::IS_CONNECTED)) {
+            $this->setFlag(NodeFlags::IS_CONNECTED);
         }
-        // 12. Let nodes be node’s children if node is a DocumentFragment node; otherwise « node ».
-        // 13. Insert node into parent before referenceChild with the suppress observers flag set.
-        $this->insertNodeBeforeChild($node, $referenceChild);
-        // 14. Queue a tree mutation record for parent with nodes, removedNodes, previousSibling, and referenceChild.
-        // 15. Return child.
-        return $child;
     }
 
+    protected function removedFrom(ParentNode $parent): void
+    {
+        $this->clearFlag(NodeFlags::IS_CONNECTED);
+    }
 
     // ==============================================================
     // Helper methods
@@ -424,7 +443,7 @@ abstract class Node extends BaseNode implements NodeInterface
     protected function isInclusiveDescendantOf(?Node $parent): bool
     {
         if (!$parent) return false;
-        for ($node = $this; $node; $node = $node->parent) {
+        for ($node = $this; $node; $node = $node->_parent) {
             if ($node === $parent) return true;
         }
         return false;
@@ -433,7 +452,7 @@ abstract class Node extends BaseNode implements NodeInterface
     protected function isInclusiveAncestorOf(?Node $child): bool
     {
         if (!$child) return false;
-        for ($node = $child; $node; $node = $node->parent) {
+        for ($node = $child; $node; $node = $node->_parent) {
             if ($node === $this) return true;
         }
         return false;
@@ -442,7 +461,7 @@ abstract class Node extends BaseNode implements NodeInterface
     protected function isPrecedingSiblingOf(?Node $sibling): bool
     {
         if (!$sibling) return false;
-        for ($node = $sibling; $node; $node = $node->prev) {
+        for ($node = $sibling; $node; $node = $node->_prev) {
             if ($node === $this) return true;
         }
         return false;
@@ -451,46 +470,16 @@ abstract class Node extends BaseNode implements NodeInterface
     protected function isFollowingSiblingOf(?Node $sibling): bool
     {
         if (!$sibling) return false;
-        for ($node = $sibling; $node; $node = $node->next) {
+        for ($node = $sibling; $node; $node = $node->_next) {
             if ($node === $this) return true;
         }
         return false;
     }
 
-    /**
-     * @throws DomException
-     */
-    protected function convertNodesIntoNode(array $nodes): Node
-    {
-        $doc = $this->getDocumentNode();
-        // 1. Let node be null.
-        // 2. Replace each string in nodes with a new Text node whose data is the string and node document is document.
-        foreach ($nodes as $i => $node) {
-            if (\is_string($node)) {
-                $node = new Text($node);
-                $node->document = $doc;
-                $nodes[$i] = $node;
-            }
-        }
-        // 3. If nodes contains one node, then set node to nodes[0].
-        if (\count($nodes) === 1) {
-            return $nodes[0];
-        }
-        // 4. Otherwise, set node to a new DocumentFragment node whose node document is document,
-        // and then append each node in nodes, if any, to it.
-        $frag = new DocumentFragment();
-        $frag->document = $doc;
-        foreach ($nodes as $node) {
-            $frag->preInsertNodeBeforeChild($node, null);
-        }
-
-        return $frag;
-    }
-
     protected function locateNamespace(?string $prefix): ?string
     {
-        if (!$this->parent) return null;
-        return $this->parent->locateNamespace($prefix);
+        if (!$this->_parent) return null;
+        return $this->_parent->locateNamespace($prefix);
     }
 
     protected function locateNamespacePrefix(string $namespace): ?string
@@ -520,14 +509,14 @@ abstract class Node extends BaseNode implements NodeInterface
             $node->remove();
             return $next;
         }
-        while ($next = $node->next) {
+        while ($next = $node->_next) {
             if ($next->nodeType !== self::TEXT_NODE) break;
             /** @var Text $next */
             if (!$next->getLength()) {
                 $next->remove();
                 continue;
             }
-            $node->appendData($next->value);
+            $node->appendData($next->_value);
             $next->remove();
         }
         return NodeTraversal::nextPostOrder($node);

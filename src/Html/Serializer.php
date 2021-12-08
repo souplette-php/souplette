@@ -6,7 +6,6 @@ use Souplette\Dom\Attr;
 use Souplette\Dom\Comment;
 use Souplette\Dom\DocumentType;
 use Souplette\Dom\Element;
-use Souplette\Dom\Internal\BaseNode;
 use Souplette\Dom\Namespaces;
 use Souplette\Dom\Node;
 use Souplette\Dom\ProcessingInstruction;
@@ -17,7 +16,7 @@ use Souplette\Xml\XmlNameEscaper;
 /**
  * @see https://html.spec.whatwg.org/multipage/parsing.html#serialising-html-fragments
  */
-final class Serializer extends BaseNode
+final class Serializer
 {
     private const BLANK_NAMESPACES = [
         Namespaces::HTML => true,
@@ -35,11 +34,11 @@ final class Serializer extends BaseNode
         $s = '';
         // TODO: 3. If the node is a template element,
         // then let the node instead be the template element's template contents (a DocumentFragment node).
-        if (!$node->first) {
+        if (!$node->_first) {
             return $s;
         }
         // 4. For each child node of the node, in tree order, run the following steps:
-        for ($currentNode = $node->first; $currentNode; $currentNode = $currentNode->next) {
+        for ($currentNode = $node->_first; $currentNode; $currentNode = $currentNode->_next) {
             // 4.1. Let current node be the child node being processed.
             // 4.2 Append the appropriate string from the following list to s:
             if ($currentNode instanceof Element) {
@@ -48,26 +47,26 @@ final class Serializer extends BaseNode
                 // If the parent of current node is a style, script, xmp, iframe, noembed, noframes, or plaintext element,
                 // or if the parent of current node is a noscript element and scripting is enabled for the node,
                 // then append the value of current node's data IDL attribute literally.
-                $parent = $currentNode->parent;
+                $parent = $currentNode->_parent;
                 $parentName = $parent->localName ?? null;
                 if (isset(Elements::RCDATA_ELEMENTS[$parentName])) {
-                    $s .= $currentNode->value;
+                    $s .= $currentNode->_value;
                 } else {
                     // Otherwise, append the value of current node's data IDL attribute, escaped as described below.
-                    $s .= $this->escapeString($currentNode->value);
+                    $s .= $this->escapeString($currentNode->_value);
                 }
             } else if ($currentNode instanceof Comment) {
                 // Append the literal string "<!--" ,
                 // followed by the value of current node's data IDL attribute,
                 // followed by the literal string "-->".
-                $s .= "<!--{$currentNode->value}-->";
+                $s .= "<!--{$currentNode->_value}-->";
             } else if ($currentNode instanceof ProcessingInstruction) {
                 // Append the literal string "<?",
                 // followed by the value of current node's target IDL attribute,
                 // followed by a single U+0020 SPACE character,
                 // followed by the value of current node's data IDL attribute,
                 // followed by a single U+003E GREATER-THAN SIGN character (>).
-                $s .= "<?{$currentNode->target} {$currentNode->value}>";
+                $s .= "<?{$currentNode->target} {$currentNode->_value}>";
             } else if ($currentNode instanceof DocumentType) {
                 // Append the literal string "<!DOCTYPE",
                 // followed by a space (U+0020 SPACE),
@@ -97,7 +96,7 @@ final class Serializer extends BaseNode
         // If current node's `is` value is not null, and the element does not have an `is` attribute in its attribute list,
         // then append the string " is="", followed by current node's is value escaped as described below in attribute mode,
         // followed by a U+0022 QUOTATION MARK character (").
-        foreach ($node->attrs as $attr) {
+        foreach ($node->_attrs as $attr) {
             // For each attribute that the element has, append a U+0020 SPACE character,
             // the attribute's serialized name as described below,
             // a U+003D EQUALS SIGN character (=), a U+0022 QUOTATION MARK character ("),

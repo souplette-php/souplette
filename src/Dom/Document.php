@@ -88,7 +88,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
 
     public function getDoctype(): ?DocumentType
     {
-        for ($child = $this->first; $child; $child = $this->next) {
+        for ($child = $this->_first; $child; $child = $this->_next) {
             if ($child->nodeType === Node::DOCUMENT_TYPE_NODE) {
                 return $child;
             }
@@ -143,7 +143,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
     public function createDocumentFragment(): DocumentFragment
     {
         $frag = new DocumentFragment();
-        $frag->document = $this;
+        $frag->_doc = $this;
         return $frag;
     }
 
@@ -164,7 +164,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
             $namespace = Namespaces::HTML;
         }
         $node = new Element($localName, $namespace);
-        $node->document = $this;
+        $node->_doc = $this;
         return $node;
     }
 
@@ -175,7 +175,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
     {
         [$namespace, $prefix, $localName] = QName::validateAndExtract($qualifiedName, $namespace);
         $node = new Element($localName, $namespace, $prefix);
-        $node->document = $this;
+        $node->_doc = $this;
         return $node;
     }
 
@@ -194,7 +194,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
             $localName = strtolower($localName);
         }
         $node = new Attr($localName);
-        $node->document = $this;
+        $node->_doc = $this;
         return $node;
     }
 
@@ -205,14 +205,14 @@ class Document extends ParentNode implements NonElementParentNodeInterface
     {
         [$namespace, $prefix, $localName] = QName::validateAndExtract($qualifiedName, $namespace);
         $node = new Attr($localName, $namespace, $prefix);
-        $node->document = $this;
+        $node->_doc = $this;
         return $node;
     }
 
     public function createTextNode(string $data): Text
     {
         $node = new Text($data);
-        $node->document = $this;
+        $node->_doc = $this;
         return $node;
     }
 
@@ -227,14 +227,14 @@ class Document extends ParentNode implements NonElementParentNodeInterface
             );
         }
         $node = new CDATASection($data);
-        $node->document = $this;
+        $node->_doc = $this;
         return $node;
     }
 
     public function createComment(string $data): Comment
     {
         $node = new Comment($data);
-        $node->document = $this;
+        $node->_doc = $this;
         return $node;
     }
 
@@ -252,7 +252,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
             );
         }
         $node = new ProcessingInstruction($target, $data);
-        $node->document = $this;
+        $node->_doc = $this;
         return $node;
     }
 
@@ -322,7 +322,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
         // TODO: encoding, contentType, URL, origin, mode
         $copy = new self($this->type);
         if ($deep) {
-            for ($child = $this->first; $child; $child = $this->next) {
+            for ($child = $this->_first; $child; $child = $this->_next) {
                 $childCopy = $child->clone($this,true);
                 $copy->uncheckedAppendChild($childCopy);
             }
@@ -374,7 +374,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
         $hasElementAfterReferenceNode = false;
         // First, check how many doctypes and elements we have, not counting the child we're about to remove.
         $sawReferenceNode = false;
-        for ($child = $this->first; $child; $child = $child->next) {
+        for ($child = $this->_first; $child; $child = $child->_next) {
             if ($oldChild && $oldChild === $child) {
                 $sawReferenceNode = true;
                 continue;
@@ -397,7 +397,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
         }
         // Then, see how many doctypes and elements might be added by the new child.
         if ($newChild->nodeType === Node::DOCUMENT_FRAGMENT_NODE) {
-            for ($child = $newChild->first; $child; $child = $child->next) {
+            for ($child = $newChild->_first; $child; $child = $child->_next) {
                 switch ($child->nodeType) {
                     case Node::ATTRIBUTE_NODE:
                     case Node::CDATA_SECTION_NODE:

@@ -20,14 +20,14 @@ final class Attr extends Node
         $this->nodeType = Node::ATTRIBUTE_NODE;
         $this->name = $prefix ? "{$prefix}:{$localName}" : $localName;
         $this->nodeName = $this->name;
-        $this->value = '';
+        $this->_value = '';
     }
 
     public function __get(string $prop)
     {
         return match ($prop) {
-            'value', 'nodeValue', 'textContent' => $this->value,
-            'ownerElement' => $this->parent,
+            'value', 'nodeValue', 'textContent' => $this->_value,
+            'ownerElement' => $this->_parent,
             'parentNode', 'parentElement', 'firstChild', 'lastChild',
             'nextSibling', 'previousSibling' => null,
             default => parent::__get($prop),
@@ -44,37 +44,37 @@ final class Attr extends Node
 
     public function getValue(): string
     {
-        return $this->value;
+        return $this->_value;
     }
 
     public function setValue(string $value): void
     {
-        $this->value = $value;
+        $this->_value = $value;
     }
 
     public function getNodeValue(): string
     {
-        return $this->value;
+        return $this->_value;
     }
 
     public function setNodeValue(?string $value): void
     {
-        $this->value = $value;
+        $this->_value = $value;
     }
 
     public function getTextContent(): string
     {
-        return $this->value;
+        return $this->_value;
     }
 
     public function setTextContent(?string $value): void
     {
-        $this->value = $value;
+        $this->_value = $value;
     }
 
     public function getOwnerElement(): ?Element
     {
-        return $this->parent;
+        return $this->_parent;
     }
 
     public function isEqualNode(?Node $otherNode): bool
@@ -83,7 +83,7 @@ final class Attr extends Node
         if ($otherNode === $this) return true;
         return $otherNode->nodeType === $this->nodeType && (
             $this->name === $otherNode->name
-            && $this->value === $otherNode->value
+            && $this->_value === $otherNode->_value
             && $this->namespaceURI === $otherNode->namespaceURI
         );
     }
@@ -91,8 +91,8 @@ final class Attr extends Node
     protected function clone(?Document $document, bool $deep = false): static
     {
         $copy = new self($this->localName, $this->namespaceURI, $this->prefix);
-        $copy->document = $document ?? $this->document;
-        $copy->value = $this->value;
+        $copy->_doc = $document ?? $this->_doc;
+        $copy->_value = $this->_value;
         return $copy;
     }
 
@@ -101,13 +101,13 @@ final class Attr extends Node
      */
     public function lookupPrefix(?string $namespace): ?string
     {
-        if (!$namespace || !$this->parent) return null;
-        return $this->parent->locateNamespacePrefix($namespace);
+        if (!$namespace || !$this->_parent) return null;
+        return $this->_parent->locateNamespacePrefix($namespace);
     }
 
     protected function locateNamespace(?string $prefix): ?string
     {
-        if (!$this->parent) return null;
-        return $this->parent->locateNamespace($prefix);
+        if (!$this->_parent) return null;
+        return $this->_parent->locateNamespace($prefix);
     }
 }

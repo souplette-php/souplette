@@ -4,6 +4,7 @@ namespace Souplette\Dom\Traits;
 
 use Souplette\Dom\Exception\DomException;
 use Souplette\Dom\Exception\NotFoundError;
+use Souplette\Dom\Internal\Idioms;
 use Souplette\Dom\Node;
 
 /**
@@ -17,7 +18,7 @@ trait ChildNodeTrait
     public function before(Node|string ...$nodes): void
     {
         // 1. Let parent be this’s parent.
-        $parent = $this->parent;
+        $parent = $this->_parent;
         // 2. If parent is null, then return.
         if (!$parent) {
             return;
@@ -25,15 +26,16 @@ trait ChildNodeTrait
         // 3. Let viablePreviousSibling be this’s first preceding sibling not in nodes, and null otherwise.
         $viablePreviousSibling = $this->findViablePreviousSibling($nodes);
         // 4. Let node be the result of converting nodes into a node, given nodes and this’s node document.
-        $node = $this->convertNodesIntoNode($nodes);
+        $node = Idioms::convertNodesIntoNode($this->getDocumentNode(), $nodes);
         // 5. If viablePreviousSibling is null, set it to parent’s first child, and to viablePreviousSibling’s next sibling otherwise.
         if ($viablePreviousSibling === null) {
-            $viablePreviousSibling = $parent->first;
+            $viablePreviousSibling = $parent->_first;
         } else {
-            $viablePreviousSibling = $viablePreviousSibling->next;
+            $viablePreviousSibling = $viablePreviousSibling->_next;
         }
         // 6. Pre-insert node into parent before viablePreviousSibling.
-        $parent->preInsertNodeBeforeChild($node, $viablePreviousSibling);
+        //$parent->preInsertNodeBeforeChild($node, $viablePreviousSibling);
+        $parent->insertBefore($node, $viablePreviousSibling);
     }
 
     /**
@@ -42,7 +44,7 @@ trait ChildNodeTrait
     public function after(Node|string ...$nodes): void
     {
         // 1. Let parent be this’s parent.
-        $parent = $this->parent;
+        $parent = $this->_parent;
         // 2. If parent is null, then return.
         if (!$parent) {
             return;
@@ -50,9 +52,10 @@ trait ChildNodeTrait
         // 3. Let viableNextSibling be this’s first following sibling not in nodes, and null otherwise.
         $viableNextSibling = $this->findViableNextSibling($nodes);
         // 4. Let node be the result of converting nodes into a node, given nodes and this’s node document.
-        $node = $this->convertNodesIntoNode($nodes);
+        $node = Idioms::convertNodesIntoNode($this->getDocumentNode(), $nodes);
         // 5. Pre-insert node into parent before viableNextSibling
-        $parent->preInsertNodeBeforeChild($node, $viableNextSibling);
+        //$parent->preInsertNodeBeforeChild($node, $viableNextSibling);
+        $parent->insertBefore($node, $viableNextSibling);
     }
 
     /**
@@ -61,7 +64,7 @@ trait ChildNodeTrait
     public function replaceWith(Node|string ...$nodes): void
     {
         // 1. Let parent be this’s parent.
-        $parent = $this->parent;
+        $parent = $this->_parent;
         // 2. If parent is null, then return.
         if (!$parent) {
             return;
@@ -69,14 +72,16 @@ trait ChildNodeTrait
         // 3. Let viableNextSibling be this’s first following sibling not in nodes, and null otherwise.
         $viableNextSibling = $this->findViableNextSibling($nodes);
         // 4. Let node be the result of converting nodes into a node, given nodes and this’s node document.
-        $node = $this->convertNodesIntoNode($nodes);
+        $node = Idioms::convertNodesIntoNode($this->getDocumentNode(), $nodes);
         // 5. If this’s parent is parent, replace this with node within parent.
         //    This could have been inserted into node.
-        if ($this->parent === $parent) {
-            $parent->replaceChildWithNode($this, $node);
+        if ($this->_parent === $parent) {
+            //$parent->replaceChildWithNode($this, $node);
+            $parent->replaceChild($node, $this);
         } else {
             // 6. Otherwise, pre-insert node into parent before viableNextSibling.
-            $parent->preInsertNodeBeforeChild($node, $viableNextSibling);
+            //$parent->preInsertNodeBeforeChild($node, $viableNextSibling);
+            $parent->insertBefore($node, $viableNextSibling);
         }
     }
 
@@ -86,11 +91,11 @@ trait ChildNodeTrait
     public function remove(): void
     {
         // 1. If this’s parent is null, then return.
-        if (!$this->parent) {
+        if (!$this->_parent) {
             return;
         }
         // 2. Remove this.
-        $this->parent->removeChild($this);
+        $this->_parent->removeChild($this);
     }
 
     /**
@@ -99,7 +104,7 @@ trait ChildNodeTrait
      */
     private function findViableNextSibling(array $nodes): ?Node
     {
-        for ($sibling = $this->next; $sibling; $sibling = $sibling->next) {
+        for ($sibling = $this->_next; $sibling; $sibling = $sibling->_next) {
             if (!\in_array($sibling, $nodes, true)) {
                 return $sibling;
             }
@@ -113,7 +118,7 @@ trait ChildNodeTrait
      */
     private function findViablePreviousSibling(array $nodes): ?Node
     {
-        for ($sibling = $this->prev; $sibling; $sibling = $sibling->prev) {
+        for ($sibling = $this->_prev; $sibling; $sibling = $sibling->_prev) {
             if (!\in_array($sibling, $nodes, true)) {
                 return $sibling;
             }

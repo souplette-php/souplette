@@ -5,7 +5,6 @@ namespace Souplette\Xml;
 use Souplette\Dom\Document;
 use Souplette\Dom\DocumentType;
 use Souplette\Dom\Exception\DomException;
-use Souplette\Dom\Internal\BaseNode;
 use Souplette\Dom\Node;
 use Souplette\Dom\Text;
 use Souplette\Dom\XmlDocument;
@@ -15,7 +14,7 @@ use XMLReader;
 /**
  * @see https://html.spec.whatwg.org/multipage/xhtml.html#xml-parser
  */
-final class Parser extends BaseNode
+final class Parser
 {
     private const HTML_PUBLIC_IDS = [
         '-//W3C//DTD XHTML 1.0 Transitional//EN' => true,
@@ -136,7 +135,7 @@ final class Parser extends BaseNode
         if (!$node) {
             $node = new DocumentType($reader->name);
         }
-        $node->document = $document;
+        $node->_doc = $document;
         $parent->appendChild($node);
     }
 
@@ -145,7 +144,7 @@ final class Parser extends BaseNode
      */
     private function handleText(XMLReader $reader, Node $parent, Document $document)
     {
-        if (($prev = $parent->last) && $prev instanceof Text) {
+        if (($prev = $parent->_last) && $prev instanceof Text) {
             $prev->appendData($reader->value);
         } else {
             $parent->appendChild($document->createTextNode($reader->value));

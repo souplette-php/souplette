@@ -35,7 +35,7 @@ final class DocumentType extends Node implements ChildNodeInterface
     protected function clone(?Document $document, bool $deep = false): static
     {
         $copy = new self($this->name, $this->publicId, $this->systemId);
-        $copy->document = $document ?? $this->document;
+        $copy->_doc = $document ?? $this->_doc;
         return $copy;
     }
 

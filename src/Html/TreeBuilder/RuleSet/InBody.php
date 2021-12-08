@@ -133,7 +133,7 @@ final class InBody extends RuleSet
                 // check to see if the attribute is already present on the top element of the stack of open elements.
                 // If it is not, add the attribute and its corresponding value to that element.
                 if ($token->attributes) {
-                    $tree->elementFactory::mergeAttributes($token, $tree->openElements->bottom());
+                    $tree->mergeAttributes($token, $tree->openElements->bottom());
                 }
                 return;
             } else if (isset(self::IN_HEAD_START_TAGS[$tagName])) {
@@ -162,7 +162,7 @@ final class InBody extends RuleSet
                 // and if it is not, add the attribute and its corresponding value to that element.
                 if ($token->attributes) {
                     $body = $tree->openElements[$count - 2];
-                    $tree->elementFactory::mergeAttributes($token, $body);
+                    $tree->mergeAttributes($token, $body);
                 }
                 return;
             } else if ($tagName === 'frameset') {

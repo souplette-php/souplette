@@ -5,13 +5,13 @@ namespace Souplette\Dom;
 use Souplette\Css\Selectors\SelectorQuery;
 use Souplette\Dom\Api\ChildNodeInterface;
 use Souplette\Dom\Api\NonDocumentTypeChildNodeInterface;
+use Souplette\Dom\Collections\TokenList;
 use Souplette\Dom\Exception\InUseAttributeError;
 use Souplette\Dom\Exception\InvalidCharacterError;
 use Souplette\Dom\Exception\NamespaceError;
 use Souplette\Dom\Exception\NoModificationAllowed;
 use Souplette\Dom\Exception\NotFoundError;
 use Souplette\Dom\Exception\SyntaxError;
-use Souplette\Dom\Internal\TokenList;
 use Souplette\Dom\Traits\ChildNodeTrait;
 use Souplette\Dom\Traits\GetElementsByClassNameTrait;
 use Souplette\Dom\Traits\GetElementsByTagNameTrait;
@@ -44,6 +44,11 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
     public readonly ?string $prefix;
     public readonly bool $isHTML;
 
+    /**
+     * @internal
+     * @var Attr[]
+     */
+    public array $_attrs = [];
     protected TokenList $classList;
 
     public function __construct(string $localName, ?string $namespace = null, ?string $prefix = null)
@@ -65,7 +70,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
     public function __get(string $prop)
     {
         return match ($prop) {
-            'attributes' => $this->attrs,
+            'attributes' => $this->_attrs,
             'nextElementSibling' => $this->getNextElementSibling(),
             'previousElementSibling' => $this->getPreviousElementSibling(),
             'id' => $this->getId(),
@@ -128,7 +133,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
         if (!$otherNode) return false;
         if ($otherNode === $this) return true;
         if ($otherNode->nodeType !== $this->nodeType) return false;
-        foreach ($this->attrs as $attribute) {
+        foreach ($this->_attrs as $attribute) {
             $otherAttr = $otherNode->getAttributeNS($attribute->namespaceURI, $attribute->localName);
             if (!$attribute->isEqualNode($otherAttr)) {
                 return false;
@@ -139,7 +144,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
 
     public function getAttributes(): array
     {
-        return $this->attrs;
+        return $this->_attrs;
     }
 
     /**
@@ -147,18 +152,18 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
      */
     public function getAttributeNames(): array
     {
-        if (!$this->attrs) return [];
-        return array_map(fn(Attr $attr) => $attr->name, $this->attrs);
+        if (!$this->_attrs) return [];
+        return array_map(fn(Attr $attr) => $attr->name, $this->_attrs);
     }
 
     public function getAttribute(string $qualifiedName): ?string
     {
-        return $this->getAttributeNode($qualifiedName)?->value;
+        return $this->getAttributeNode($qualifiedName)?->_value;
     }
 
     public function getAttributeNS(?string $namespace, string $localName): ?string
     {
-        return $this->getAttributeNodeNS($namespace, $localName)?->value;
+        return $this->getAttributeNodeNS($namespace, $localName)?->_value;
     }
 
     public function setAttribute(string $qualifiedName, string $value): void
@@ -166,20 +171,21 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
         if (!QName::isValidName($qualifiedName)) {
             throw new InvalidCharacterError();
         }
-        if ($this->isHTML && $this->document?->isHTML) {
+        if ($this->isHTML && $this->_doc?->isHTML) {
             $qualifiedName = strtolower($qualifiedName);
         }
-        foreach ($this->attrs as $attr) {
+        foreach ($this->_attrs as $attr) {
             if ($attr->name === $qualifiedName) {
-                $attr->value = $value;
+                $attr->_value = $value;
                 return;
             }
         }
         $attr = new Attr($qualifiedName);
-        $attr->document = $this->document;
-        $attr->parent = $this;
-        $attr->value = $value;
-        $this->attrs[] = $attr;
+        $attr->_doc = $this->_doc;
+        $attr->_parent = $this;
+        $attr->_value = $value;
+        $this->_attrs[] = $attr;
+        $attr->insertedInto($this);
     }
 
     /**
@@ -189,29 +195,31 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
     public function setAttributeNS(?string $namespace, string $qualifiedName, string $value): void
     {
         [$namespace, $prefix, $localName] = QName::validateAndExtract($qualifiedName, $namespace);
-        $attribute = $this->getAttributeNodeNS($namespace, $localName);
-        if (!$attribute) {
-            $attribute = new Attr($localName, $namespace, $prefix);
-            $attribute->document = $this->document;
-            $attribute->parent = $this;
-            $attribute->value = $value;
-            $this->attrs[] = $attribute;
+        $attr = $this->getAttributeNodeNS($namespace, $localName);
+        if (!$attr) {
+            $attr = new Attr($localName, $namespace, $prefix);
+            $attr->_doc = $this->_doc;
+            $attr->_parent = $this;
+            $attr->_value = $value;
+            $this->_attrs[] = $attr;
+            $attr->insertedInto($this);
             return;
         }
-        $attribute->value = $value;
+        $attr->_value = $value;
     }
 
     public function removeAttribute(string $qualifiedName): ?Attr
     {
-        if (!$this->attrs) return null;
+        if (!$this->_attrs) return null;
         // 1. Let attr be the result of getting an attribute given qualifiedName and element.
-        if ($this->isHTML && $this->document?->isHTML) {
+        if ($this->isHTML && $this->_doc?->isHTML) {
             $qualifiedName = strtolower($qualifiedName);
         }
-        foreach ($this->attrs as $i => $attr) {
+        foreach ($this->_attrs as $i => $attr) {
             if ($attr->name === $qualifiedName) {
-                array_splice($this->attrs, $i, 1);
-                $attr->parent = null;
+                array_splice($this->_attrs, $i, 1);
+                $attr->_parent = null;
+                $attr->removedFrom($this);
                 return $attr;
             }
         }
@@ -220,12 +228,13 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
 
     public function removeAttributeNS(?string $namespace, string $localName): ?Attr
     {
-        if (!$this->attrs) return null;
+        if (!$this->_attrs) return null;
         if ($namespace === '') $namespace = null;
-        foreach ($this->attrs as $i => $attr) {
+        foreach ($this->_attrs as $i => $attr) {
             if ($attr->localName === $localName && $attr->namespaceURI === $namespace) {
-                array_splice($this->attrs, $i, 1);
-                $attr->parent = null;
+                array_splice($this->_attrs, $i, 1);
+                $attr->_parent = null;
+                $attr->removedFrom($this);
                 return $attr;
             }
         }
@@ -241,7 +250,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
         if (!QName::isValidName($qualifiedName)) {
             throw new InvalidCharacterError();
         }
-        if ($this->isHTML && $this->document?->isHTML) {
+        if ($this->isHTML && $this->_doc?->isHTML) {
             $qualifiedName = strtolower($qualifiedName);
         }
         $attr = $this->getAttributeNode($qualifiedName);
@@ -251,9 +260,10 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
             // then append this attribute to this, and then return true.
             if ($force || $force === null) {
                 $attr = new Attr($qualifiedName);
-                $attr->document = $this->document;
-                $attr->parent = $this;
-                $this->attrs[] = $attr;
+                $attr->_doc = $this->_doc;
+                $attr->_parent = $this;
+                $this->_attrs[] = $attr;
+                $attr->insertedInto($this);
                 return true;
             }
             return false;
@@ -283,12 +293,12 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
      */
     public function getAttributeNode(string $qualifiedName): ?Attr
     {
-        if (!$this->attrs) return null;
+        if (!$this->_attrs) return null;
 
-        if ($this->isHTML && $this->document?->isHTML) {
+        if ($this->isHTML && $this->_doc?->isHTML) {
             $qualifiedName = strtolower($qualifiedName);
         }
-        foreach ($this->attrs as $attribute) {
+        foreach ($this->_attrs as $attribute) {
             if ($attribute->name === $qualifiedName) {
                 return $attribute;
             }
@@ -301,9 +311,9 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
      */
     public function getAttributeNodeNS(?string $namespace, string $localName): ?Attr
     {
-        if (!$this->attrs) return null;
+        if (!$this->_attrs) return null;
         if ($namespace === '') $namespace = null;
-        foreach ($this->attrs as $attribute) {
+        foreach ($this->_attrs as $attribute) {
             if ($attribute->localName === $localName && $attribute->namespaceURI === $namespace) {
                 return $attribute;
             }
@@ -316,21 +326,24 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
      */
     public function setAttributeNode(Attr $attr): ?Attr
     {
-        if ($attr->parent && $attr->parent !== $this) {
+        if ($attr->_parent && $attr->_parent !== $this) {
             throw new InUseAttributeError();
         }
-        foreach ($this->attrs as $i => $oldAttr) {
+        foreach ($this->_attrs as $i => $oldAttr) {
             if ($oldAttr->localName === $attr->localName && $oldAttr->namespaceURI === $attr->namespaceURI) {
                 if ($oldAttr === $attr) return $attr;
-                $attr->document = $this->document;
-                $attr->parent = $this;
-                $this->attrs[$i] = $attr;
+                $attr->_doc = $this->_doc;
+                $attr->_parent = $this;
+                $this->_attrs[$i] = $attr;
+                $attr->insertedInto($this);
+                $oldAttr->removedFrom($this);
                 return $oldAttr;
             }
         }
-        $attr->document = $this->document;
-        $attr->parent = $this;
-        $this->attrs[] = $attr;
+        $attr->_doc = $this->_doc;
+        $attr->_parent = $this;
+        $this->_attrs[] = $attr;
+        $attr->insertedInto($this);
         return null;
     }
 
@@ -349,17 +362,17 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
      */
     public function removeAttributeNode(Attr $attribute): Attr
     {
-        if (!$this->attrs) {
+        if (!$this->_attrs) {
             throw new NotFoundError();
         }
 
-        $index = array_search($attribute, $this->attrs, true);
+        $index = array_search($attribute, $this->_attrs, true);
         if ($index === false) {
             throw new NotFoundError();
         }
 
-        array_splice($this->attrs, $index, 1);
-        $attribute->parent = null;
+        array_splice($this->_attrs, $index, 1);
+        $attribute->_parent = null;
 
         return $attribute;
     }
@@ -379,7 +392,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
         }
         // https://w3c.github.io/DOM-Parsing/#the-innerhtml-mixin
         $parser = new Parser();
-        $children = $parser->parseFragment($this, $html, $this->document?->encoding ?? 'utf-8');
+        $children = $parser->parseFragment($this, $html, $this->_doc?->encoding ?? 'utf-8');
         $this->replaceChildren(...$children);
     }
 
@@ -393,7 +406,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
     public function setOuterHTML(string $html): void
     {
         // https://w3c.github.io/DOM-Parsing/#dom-element-outerhtml
-        $parent = $this->parent;
+        $parent = $this->_parent;
         if (!$parent) return;
         if ($parent->nodeType === Node::DOCUMENT_NODE) {
             throw new NoModificationAllowed(sprintf(
@@ -407,10 +420,10 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
         }
         if ($parent->nodeType === Node::DOCUMENT_FRAGMENT_NODE) {
             $parent = new Element('body', Namespaces::HTML);
-            $parent->document = $this->document;
+            $parent->_doc = $this->_doc;
         }
         $parser = new Parser();
-        $children = $parser->parseFragment($parent, $html, $this->document?->encoding ?? 'utf-8');
+        $children = $parser->parseFragment($parent, $html, $this->_doc?->encoding ?? 'utf-8');
         $this->replaceWith(...$children);
     }
 
@@ -419,7 +432,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
         // https://w3c.github.io/DOM-Parsing/#dom-element-insertadjacenthtml
         $position = strtolower($position);
         $context = match ($position) {
-            'beforebegin', 'afterend' => $this->parent,
+            'beforebegin', 'afterend' => $this->_parent,
             'afterbegin', 'beforeend' => $this,
             default => throw new SyntaxError(sprintf(
                 'Failed to execute %s: The value provided ("%s") is not one of "beforebegin", "afterend", "afterbegin", or "beforeend".',
@@ -427,22 +440,22 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
                 $position
             )),
         };
-        if (!$context || $context === $this->document) {
+        if (!$context || $context === $this->_doc) {
             throw new NoModificationAllowed(sprintf(
                 'Failed to execute %s: The element has no parent.',
                 __METHOD__,
             ));
         }
         if ($context->nodeType !== Node::ELEMENT_NODE || (
-            $context->document?->isHTML
+            $context->_doc?->isHTML
             && $context->isHTML
             && $context->localName === 'html'
         )) {
             $context = new Element('body', Namespaces::HTML);
-            $context->document = $this->document;
+            $context->_doc = $this->_doc;
         }
         $parser = new Parser();
-        $children = $parser->parseFragment($context, $html, $this->document?->encoding ?? 'utf-8');
+        $children = $parser->parseFragment($context, $html, $this->_doc?->encoding ?? 'utf-8');
         match ($position) {
             'beforebegin' => $this->before(...$children),
             'afterbegin' => $this->prepend(...$children),
@@ -468,18 +481,18 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
         if ($this->namespaceURI && $this->prefix === $prefix) {
             return $this->namespaceURI;
         }
-        foreach ($this->attrs as $attr) {
+        foreach ($this->_attrs as $attr) {
             if ($attr->prefix === 'xmlns' && $attr->namespaceURI === Namespaces::XMLNS && $attr->localName === $prefix) {
                 return $attr->localName;
             } else if (
                 $prefix === null
                 && $attr->localName === 'xmlns' && !$attr->prefix && $attr->namespaceURI === Namespaces::XMLNS
             ) {
-                return $attr->value ?: null;
+                return $attr->_value ?: null;
             }
         }
-        if ($this->parent?->nodeType === Node::ELEMENT_NODE) {
-            return $this->parent->locateNamespace($prefix);
+        if ($this->_parent?->nodeType === Node::ELEMENT_NODE) {
+            return $this->_parent->locateNamespace($prefix);
         }
         return null;
     }
@@ -492,13 +505,13 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
         if ($this->prefix && $this->namespaceURI === $namespace) {
             return $this->prefix;
         }
-        foreach ($this->attrs as $attr) {
-            if ($attr->prefix === 'xmlns' && $attr->value === $namespace) {
+        foreach ($this->_attrs as $attr) {
+            if ($attr->prefix === 'xmlns' && $attr->_value === $namespace) {
                 return $attr->localName;
             }
         }
-        if ($this->parent?->nodeType === Node::ELEMENT_NODE) {
-            return $this->parent->locateNamespacePrefix($namespace);
+        if ($this->_parent?->nodeType === Node::ELEMENT_NODE) {
+            return $this->_parent->locateNamespacePrefix($namespace);
         }
         return null;
     }
@@ -506,16 +519,18 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
     protected function clone(?Document $document, bool $deep = false): static
     {
         $copy = new self($this->localName, $this->namespaceURI, $this->prefix);
-        $copy->document = $document ?? $this->document;
-        foreach ($this->attrs as $attr) {
-            $copyAttribute = $attr->clone($copy->document);
-            $copyAttribute->parent = $copy;
-            $copy->attrs[] = $copyAttribute;
+        $copy->_doc = $document ?? $this->_doc;
+        foreach ($this->_attrs as $attr) {
+            $copyAttribute = $attr->clone($copy->_doc);
+            $copyAttribute->_parent = $copy;
+            $copy->_attrs[] = $copyAttribute;
+            $copyAttribute->insertedInto($copy);
         }
         if ($deep) {
-            for ($child = $this->first; $child; $child = $this->next) {
-                $childCopy = $child->clone($copy->document, true);
+            for ($child = $this->_first; $child; $child = $this->_next) {
+                $childCopy = $child->clone($copy->_doc, true);
                 $copy->uncheckedAppendChild($childCopy);
+                $childCopy->insertedInto($copy);
             }
         }
         return $copy;

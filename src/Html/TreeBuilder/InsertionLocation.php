@@ -4,13 +4,12 @@ namespace Souplette\Html\TreeBuilder;
 
 use Souplette\Dom\Document;
 use Souplette\Dom\Element;
-use Souplette\Dom\Internal\BaseNode;
 use Souplette\Dom\Namespaces;
 use Souplette\Dom\Node;
 use Souplette\Dom\ParentNode;
 use Souplette\Dom\Text;
 
-final class InsertionLocation extends BaseNode
+final class InsertionLocation
 {
     public ?Node $target;
     public ?Document $document;
@@ -20,24 +19,18 @@ final class InsertionLocation extends BaseNode
         ?Node $target = null,
         public bool $beforeTarget = false
     ) {
-        $this->target = $target ?: $parent->last;
+        $this->target = $target ?: $parent->_last;
         if ($parent instanceof Document) {
             $this->document = $parent;
         } else {
-            $this->document = $parent->document;
+            $this->document = $parent->_doc;
         }
     }
 
-    public function insert(Node $node)
+    public function insert(Node $node): void
     {
-        $target = $this->beforeTarget ? $this->target : $this->target?->next;
-        $this->parent->adopt($node);
-        $node->unlink();
-        if (!$target) {
-            $this->parent->uncheckedAppendChild($node);
-        } else {
-            $this->parent->uncheckedInsertBefore($node, $target);
-        }
+        $target = $this->beforeTarget ? $this->target : $this->target?->_next;
+        $this->parent->parserInsertBefore($node, $target);
     }
 
     public function insertCharacter(string $data)
@@ -47,8 +40,8 @@ final class InsertionLocation extends BaseNode
         // then append data to that Text node's data.
         if ($target?->nodeType === Node::TEXT_NODE) {
             $target->appendData($data);
-        } else if ($this->beforeTarget && $target?->prev?->nodeType === Node::TEXT_NODE) {
-            $target->prev->appendData($data);
+        } else if ($this->beforeTarget && $target?->_prev?->nodeType === Node::TEXT_NODE) {
+            $target->_prev->appendData($data);
         } else {
             // Otherwise, create a new Text node whose data is data
             // and whose node document is the same as that of the element in which the adjusted insertion location finds itself,
@@ -64,7 +57,7 @@ final class InsertionLocation extends BaseNode
             if ($node->localName === $tagName && $node->namespaceURI === $namespaceURI) {
                 return $node;
             }
-            $node = $node->parent;
+            $node = $node->_parent;
         }
         return null;
     }

@@ -17,11 +17,6 @@ use Souplette\Dom\Traversal\ElementTraversal;
 
 final class SelectorQuery
 {
-    public static function byId(ParentNode $element, string $id): Element|null
-    {
-        return self::first($element, new IdSelector($id));
-    }
-
     public static function byClassNames(ParentNode $element, string $classNames): array
     {
         $compound = null;
