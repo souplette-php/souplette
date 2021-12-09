@@ -20,6 +20,11 @@ final class DocumentFragment extends ParentNode implements NonElementParentNodeI
         $this->_flags |= NodeFlags::IS_CONTAINER;
     }
 
+    public function getRootNode(array $options = []): Node
+    {
+        return $this;
+    }
+
     protected function clone(?Document $document, bool $deep = false): static
     {
         $copy = new self();

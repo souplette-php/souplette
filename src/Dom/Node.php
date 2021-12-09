@@ -63,6 +63,8 @@ abstract class Node implements NodeInterface
     /** @internal */
     public ?Document $_doc = null;
     /** @internal */
+    public ?ParentNode $_treeScope = null;
+    /** @internal */
     public ?ParentNode $_parent = null;
     /** @internal */
     public ?Node $_next = null;
@@ -302,6 +304,9 @@ abstract class Node implements NodeInterface
      */
     public function getRootNode(array $options = []): Node
     {
+        if ($this->hasFlag(NodeFlags::IS_CONNECTED)) {
+            return $this->_doc;
+        }
         $root = $this;
         while ($root->_parent) $root = $root->_parent;
         return $root;
@@ -404,11 +409,6 @@ abstract class Node implements NodeInterface
         $this->_flags &= ~$mask;
     }
 
-    protected function isInShadowTree(): bool
-    {
-        return $this->hasFlag(NodeFlags::IS_CONNECTED | NodeFlags::IN_SHADOW_TREE);
-    }
-
     // ==============================================================
     // Mutation algorithms
     // ==============================================================
@@ -437,14 +437,14 @@ abstract class Node implements NodeInterface
     // Mutation notifications
     // ==============================================================
 
-    protected function insertedInto(ParentNode $parent): void
+    protected function insertedInto(ParentNode $insertionPoint): void
     {
-        if ($parent->hasFlag(NodeFlags::IS_CONNECTED)) {
+        if ($insertionPoint->hasFlag(NodeFlags::IS_CONNECTED)) {
             $this->setFlag(NodeFlags::IS_CONNECTED);
         }
     }
 
-    protected function removedFrom(ParentNode $parent): void
+    protected function removedFrom(ParentNode $insertionPoint): void
     {
         $this->clearFlag(NodeFlags::IS_CONNECTED);
     }

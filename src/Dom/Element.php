@@ -191,6 +191,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
         }
         foreach ($this->_attrs as $attr) {
             if ($attr->name === $qualifiedName) {
+                $this->didModifyAttribute($qualifiedName, $attr->_value, $value);
                 $attr->_value = $value;
                 return;
             }
@@ -200,7 +201,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
         $attr->_parent = $this;
         $attr->_value = $value;
         $this->_attrs[] = $attr;
-        $attr->insertedInto($this);
+        $this->didAddAttribute($qualifiedName, $value);
     }
 
     /**
@@ -217,9 +218,10 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
             $attr->_parent = $this;
             $attr->_value = $value;
             $this->_attrs[] = $attr;
-            $attr->insertedInto($this);
+            $this->didAddAttribute($qualifiedName, $value);
             return;
         }
+        $this->didModifyAttribute($qualifiedName, $attr->_value, $value);
         $attr->_value = $value;
     }
 
@@ -234,7 +236,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
             if ($attr->name === $qualifiedName) {
                 array_splice($this->_attrs, $i, 1);
                 $attr->_parent = null;
-                $attr->removedFrom($this);
+                $this->didRemoveAttribute($qualifiedName, $attr->_value);
                 return $attr;
             }
         }
@@ -249,7 +251,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
             if ($attr->localName === $localName && $attr->namespaceURI === $namespace) {
                 array_splice($this->_attrs, $i, 1);
                 $attr->_parent = null;
-                $attr->removedFrom($this);
+                $this->didRemoveAttribute($attr->name, $attr->_value);
                 return $attr;
             }
         }
@@ -278,7 +280,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
                 $attr->_doc = $this->_doc;
                 $attr->_parent = $this;
                 $this->_attrs[] = $attr;
-                $attr->insertedInto($this);
+                $this->didAddAttribute($qualifiedName, '');
                 return true;
             }
             return false;
@@ -347,18 +349,18 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
         foreach ($this->_attrs as $i => $oldAttr) {
             if ($oldAttr->localName === $attr->localName && $oldAttr->namespaceURI === $attr->namespaceURI) {
                 if ($oldAttr === $attr) return $attr;
+                $this->didRemoveAttribute($oldAttr->name, $oldAttr->_value);
                 $attr->_doc = $this->_doc;
                 $attr->_parent = $this;
                 $this->_attrs[$i] = $attr;
-                $attr->insertedInto($this);
-                $oldAttr->removedFrom($this);
+                $this->didAddAttribute($attr->name, $attr->_value);
                 return $oldAttr;
             }
         }
         $attr->_doc = $this->_doc;
         $attr->_parent = $this;
         $this->_attrs[] = $attr;
-        $attr->insertedInto($this);
+        $this->didAddAttribute($attr->name, $attr->_value);
         return null;
     }
 
@@ -388,6 +390,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
 
         array_splice($this->_attrs, $index, 1);
         $attribute->_parent = null;
+        $this->didRemoveAttribute($attribute->name, $attribute->_value);
 
         return $attribute;
     }
@@ -539,15 +542,77 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
             $copyAttribute = $attr->clone($copy->_doc);
             $copyAttribute->_parent = $copy;
             $copy->_attrs[] = $copyAttribute;
-            $copyAttribute->insertedInto($copy);
         }
         if ($deep) {
             for ($child = $this->_first; $child; $child = $this->_next) {
                 $childCopy = $child->clone($copy->_doc, true);
                 $copy->uncheckedAppendChild($childCopy);
-                $childCopy->insertedInto($copy);
             }
         }
         return $copy;
+    }
+
+    // ==============================================================
+    // Mutation notifications
+    // ==============================================================
+
+    protected function insertedInto(ParentNode $insertionPoint): void
+    {
+        parent::insertedInto($insertionPoint);
+        if (!$insertionPoint->hasFlag(NodeFlags::IS_CONNECTED)) {
+            return;
+        }
+        if ($id = $this->getAttribute('id')) {
+            $this->updateId(null, $id);
+        }
+    }
+
+    protected function removedFrom(ParentNode $insertionPoint): void
+    {
+        $wasInDocument = $insertionPoint->hasFlag(NodeFlags::IS_CONNECTED);
+        if ($wasInDocument) {
+            if ($id = $this->getAttribute('id')) {
+                $this->updateId($id, null);
+            }
+        }
+        parent::removedFrom($insertionPoint);
+    }
+
+    protected function didAddAttribute(string $qualifiedName, string $value): void
+    {
+        if ($qualifiedName === 'id') {
+            $this->updateId(null, $value);
+        }
+    }
+
+    protected function didModifyAttribute(string $qualifiedName, string $oldValue, string $newValue): void
+    {
+        if ($qualifiedName === 'id') {
+            $this->updateId($oldValue, $newValue);
+        }
+    }
+
+    protected function didRemoveAttribute(string $qualifiedName, string $oldValue): void
+    {
+        if ($qualifiedName === 'id') {
+            $this->updateId($oldValue, null);
+        }
+    }
+
+    private function updateId(?string $oldId, ?string $newId): void
+    {
+        if (!$this->hasFlag(NodeFlags::IS_CONNECTED)) {
+            return;
+        }
+        if ($oldId === $newId) {
+            return;
+        }
+        $treeScope = $this->_doc;
+        if ($oldId) {
+            $treeScope->removeElementById($oldId, $this);
+        }
+        if ($newId) {
+            $treeScope->addElementById($newId, $this);
+        }
     }
 }

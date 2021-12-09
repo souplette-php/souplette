@@ -5,6 +5,7 @@ namespace Souplette\Dom;
 /**
  * @property-read ?Element $ownerElement
  * @property string $value
+ * @property-read true $specified
  */
 final class Attr extends Node
 {
@@ -30,6 +31,7 @@ final class Attr extends Node
             'ownerElement' => $this->_parent,
             'parentNode', 'parentElement', 'firstChild', 'lastChild',
             'nextSibling', 'previousSibling' => null,
+            'specified' => true,
             default => parent::__get($prop),
         };
     }
@@ -49,7 +51,11 @@ final class Attr extends Node
 
     public function setValue(string $value): void
     {
-        $this->_value = $value;
+        if ($this->_parent) {
+            $this->_parent->setAttribute($this->name, $value);
+        } else {
+            $this->_value = $value;
+        }
     }
 
     public function getNodeValue(): string
@@ -59,7 +65,7 @@ final class Attr extends Node
 
     public function setNodeValue(?string $value): void
     {
-        $this->_value = $value;
+        $this->setValue($value ?? '');
     }
 
     public function getTextContent(): string
@@ -69,7 +75,7 @@ final class Attr extends Node
 
     public function setTextContent(?string $value): void
     {
-        $this->_value = $value;
+        $this->setValue($value ?? '');
     }
 
     public function getOwnerElement(): ?Element

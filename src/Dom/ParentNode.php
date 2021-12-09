@@ -230,20 +230,32 @@ abstract class ParentNode extends Node implements ParentNodeInterface
     // Mutation notifications
     // ==============================================================
 
-    protected function insertedInto(ParentNode $parent): void
+    protected function insertedInto(ParentNode $insertionPoint): void
     {
-        $isConnected = $parent->hasFlag(NodeFlags::IS_CONNECTED);
-        foreach (NodeTraversal::descendantsOf($this, true) as $node) {
-            if ($isConnected) {
-                $node->setFlag(NodeFlags::IS_CONNECTED);
+        if ($isConnected = $insertionPoint->hasFlag(NodeFlags::IS_CONNECTED)) {
+            $this->setFlag(NodeFlags::IS_CONNECTED);
+        }
+        foreach (NodeTraversal::descendantsOf($this) as $node) {
+            // As an optimization we don't notify leaf nodes when inserting into detached subtrees.
+            if (!$isConnected && !$node->hasFlag(NodeFlags::IS_CONTAINER)) {
+                continue;
             }
+            $node->insertedInto($insertionPoint);
         }
     }
 
-    protected function removedFrom(ParentNode $parent): void
+    protected function removedFrom(ParentNode $insertionPoint): void
     {
-        foreach (NodeTraversal::descendantsOf($this, true) as $node) {
-            $node->clearFlag(NodeFlags::IS_CONNECTED);
+        $wasConnected = $insertionPoint->hasFlag(NodeFlags::IS_CONNECTED);
+        $this->clearFlag(NodeFlags::IS_CONNECTED);
+        foreach (NodeTraversal::descendantsOf($this) as $node) {
+            // As an optimization we skip notifying Text nodes and other leaf nodes
+            // of removal when they're not in the Document tree
+            // since the virtual call to removedFrom is not needed.
+            if (!$wasConnected && !$node->hasFlag(NodeFlags::IS_CONTAINER)) {
+                continue;
+            }
+            $node->removedFrom($insertionPoint);
         }
     }
 

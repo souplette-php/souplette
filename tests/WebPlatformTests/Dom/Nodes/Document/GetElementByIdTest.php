@@ -108,17 +108,29 @@ final class GetElementByIdTest extends TestCase
         $body = self::$doc->body;
         $testId = 'test5';
         $target = self::$doc->getElementById($testId);
-        Assert::assertSame('1st', $target->getAttribute('data-name'));
+        Assert::assertSame(
+            '1st',
+            $target->getAttribute('data-name'),
+            'returns the first element in tree order'
+        );
 
         $element4 = self::$doc->createElement('div');
         $element4->setAttribute('id', $testId);
         $element4->setAttribute('data-name', '4th');
         $body->appendChild($element4);
         // should still be 1st
-        Assert::assertSame($target, self::$doc->getElementById($testId));
+        Assert::assertSame(
+            $target,
+            self::$doc->getElementById($testId),
+            'returns the first element after adding another element with same id'
+        );
         //
         $target->remove();
-        Assert::assertSame($element4, self::$doc->getElementById($testId));
+        Assert::assertSame(
+            $element4,
+            self::$doc->getElementById($testId),
+            'returns the new element after removing first.'
+        );
     }
 
     public function testNonConnectedElement()

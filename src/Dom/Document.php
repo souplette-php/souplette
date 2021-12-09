@@ -9,7 +9,9 @@ use Souplette\Dom\Exception\InvalidCharacterError;
 use Souplette\Dom\Exception\NamespaceError;
 use Souplette\Dom\Exception\NotFoundError;
 use Souplette\Dom\Exception\NotSupportedError;
+use Souplette\Dom\Internal\ElementsByIdMap;
 use Souplette\Dom\Internal\NodeFlags;
+use Souplette\Dom\Internal\TreeOrderedMap;
 use Souplette\Dom\Traits\GetElementsByClassNameTrait;
 use Souplette\Dom\Traits\GetElementsByTagNameTrait;
 use Souplette\Dom\Traits\NonElementParentNodeTrait;
@@ -29,7 +31,7 @@ use Souplette\Xml\QName;
  */
 class Document extends ParentNode implements NonElementParentNodeInterface
 {
-    use NonElementParentNodeTrait;
+    //use NonElementParentNodeTrait;
     use GetElementsByTagNameTrait;
     use GetElementsByClassNameTrait;
 
@@ -45,6 +47,8 @@ class Document extends ParentNode implements NonElementParentNodeInterface
     protected string $mode = DocumentModes::NO_QUIRKS;
     private Implementation $implementation;
 
+    private ?ElementsByIdMap $elementsById = null;
+
     /** @internal */
     public ?DocumentType $_doctype = null;
 
@@ -54,8 +58,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
         $this->nodeType = Node::DOCUMENT_NODE;
         $this->nodeName = '#document';
         $this->_flags |= NodeFlags::IS_CONTAINER|NodeFlags::IS_CONNECTED;
-        if ($type !== 'xml') {
-            $this->isHTML = true;
+        if ($this->isHTML = $type !== 'xml') {
             $this->_flags |= NodeFlags::NS_TYPE_HTML;
         }
     }
@@ -315,9 +318,20 @@ class Document extends ParentNode implements NonElementParentNodeInterface
         return null;
     }
 
+    public function getRootNode(array $options = []): Node
+    {
+        return $this;
+    }
+
     public function getDocumentNode(): ?Document
     {
         return $this;
+    }
+
+    public function getElementById(string $elementId): ?Element
+    {
+        if (!$elementId) return null;
+        return $this->elementsById?->get($elementId, $this);
     }
 
     protected function clone(?Document $document, bool $deep = false): static
@@ -339,6 +353,29 @@ class Document extends ParentNode implements NonElementParentNodeInterface
             return $root->locateNamespace($prefix);
         }
         return null;
+    }
+
+
+    // ==============================================================
+    // Internal caches
+    // ==============================================================
+
+    /**
+     * @internal
+     */
+    public function addElementById(string $newId, Element $element): void
+    {
+        $this->elementsById ??= new ElementsByIdMap();
+        $this->elementsById->add($newId, $element);
+    }
+
+    /**
+     * @internal
+     */
+    public function removeElementById(string $newId, Element $element): void
+    {
+        $this->elementsById ??= new ElementsByIdMap();
+        $this->elementsById->remove($newId, $element);
     }
 
     // ==============================================================
