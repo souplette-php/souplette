@@ -107,8 +107,8 @@ abstract class Node implements NodeInterface
      */
     public function isConnected(): bool
     {
-        return $this->hasFlag(NodeFlags::IS_CONNECTED);
         //return $this->getRootNode(['composed' => true])->nodeType === self::DOCUMENT_NODE;
+        return $this->hasFlag(NodeFlags::IS_CONNECTED);
     }
 
     public function getOwnerDocument(): ?Document
@@ -385,6 +385,10 @@ abstract class Node implements NodeInterface
 
     abstract protected function clone(?Document $document, bool $deep = false): static;
 
+    // ==============================================================
+    // Node flags
+    // ==============================================================
+
     protected function hasFlag(int $mask): bool
     {
         return $mask === ($this->_flags & $mask);
@@ -398,6 +402,11 @@ abstract class Node implements NodeInterface
     protected function clearFlag(int $mask): void
     {
         $this->_flags &= ~$mask;
+    }
+
+    protected function isInShadowTree(): bool
+    {
+        return $this->hasFlag(NodeFlags::IS_CONNECTED | NodeFlags::IN_SHADOW_TREE);
     }
 
     // ==============================================================
@@ -423,6 +432,10 @@ abstract class Node implements NodeInterface
         }
         $this->_next = $this->_prev = null;
     }
+
+    // ==============================================================
+    // Mutation notifications
+    // ==============================================================
 
     protected function insertedInto(ParentNode $parent): void
     {

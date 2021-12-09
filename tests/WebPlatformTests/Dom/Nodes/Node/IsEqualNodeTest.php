@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Tests\WebPlatformTests\Dom\Nodes;
+namespace Souplette\Tests\WebPlatformTests\Dom\Nodes\Node;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
@@ -11,7 +11,7 @@ use Souplette\Dom\Implementation;
  * Ported from web-platform-tests
  * wpt/dom/nodes/Node-isEqualNode.html
  */
-final class NodeIsEqualNodeTest extends TestCase
+final class IsEqualNodeTest extends TestCase
 {
     /**
      * @dataProvider documentTypeProvider

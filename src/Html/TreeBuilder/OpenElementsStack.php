@@ -116,7 +116,7 @@ final class OpenElementsStack extends Stack
     {
         while (true) {
             $node = $this->top();
-            if ($node->namespaceURI === Namespaces::HTML
+            if ($node->isHTML
                 || Elements::isMathMlTextIntegrationPoint($node)
                 || Elements::isHtmlIntegrationPoint($node)
             ) {

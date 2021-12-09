@@ -8,6 +8,8 @@ use Souplette\Dom\Exception\DomException;
 use Souplette\Dom\Exception\HierarchyRequestError;
 use Souplette\Dom\Exception\NotFoundError;
 use Souplette\Dom\Internal\Idioms;
+use Souplette\Dom\Internal\NodeFlags;
+use Souplette\Dom\Traversal\NodeTraversal;
 
 /**
  * Extended by Document, DocumentFragment & Element
@@ -172,7 +174,7 @@ abstract class ParentNode extends Node implements ParentNodeInterface
     public function getTextContent(): ?string
     {
         $text = '';
-        foreach ($this->descendants() as $node) {
+        foreach (NodeTraversal::descendantsOf($this) as $node) {
             if ($node->nodeType === Node::TEXT_NODE || $node->nodeType === Node::CDATA_SECTION_NODE) {
                 $text .= $node->_value;
             }
@@ -224,28 +226,24 @@ abstract class ParentNode extends Node implements ParentNodeInterface
         return true;
     }
 
-    /**
-     * @return iterable<Node>
-     */
-    protected function descendants(): iterable
+    // ==============================================================
+    // Mutation notifications
+    // ==============================================================
+
+    protected function insertedInto(ParentNode $parent): void
     {
-        $node = $this->_first;
-        while ($node) {
-            yield $node;
-            if ($node->_first) {
-                $node = $node->_first;
-                continue;
+        $isConnected = $parent->hasFlag(NodeFlags::IS_CONNECTED);
+        foreach (NodeTraversal::descendantsOf($this, true) as $node) {
+            if ($isConnected) {
+                $node->setFlag(NodeFlags::IS_CONNECTED);
             }
-            while ($node) {
-                if ($node === $this) {
-                    break 2;
-                }
-                if ($node->_next) {
-                    $node = $node->_next;
-                    continue 2;
-                }
-                $node = $node->_parent;
-            }
+        }
+    }
+
+    protected function removedFrom(ParentNode $parent): void
+    {
+        foreach (NodeTraversal::descendantsOf($this, true) as $node) {
+            $node->clearFlag(NodeFlags::IS_CONNECTED);
         }
     }
 

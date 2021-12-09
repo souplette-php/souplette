@@ -3,6 +3,7 @@
 namespace Souplette\Dom;
 
 use Souplette\Dom\Api\NonElementParentNodeInterface;
+use Souplette\Dom\Internal\NodeFlags;
 use Souplette\Dom\Traits\NonElementParentNodeTrait;
 
 final class DocumentFragment extends ParentNode implements NonElementParentNodeInterface
@@ -16,6 +17,7 @@ final class DocumentFragment extends ParentNode implements NonElementParentNodeI
     {
         $this->nodeType = Node::DOCUMENT_FRAGMENT_NODE;
         $this->nodeName = '#document-fragment';
+        $this->_flags |= NodeFlags::IS_CONTAINER;
     }
 
     protected function clone(?Document $document, bool $deep = false): static

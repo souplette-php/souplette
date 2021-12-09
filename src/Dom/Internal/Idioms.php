@@ -8,6 +8,9 @@ use Souplette\Dom\Exception\DomException;
 use Souplette\Dom\Node;
 use Souplette\Dom\Text;
 
+/**
+ * @internal
+ */
 final class Idioms
 {
     const ASCII_WHITESPACE = " \n\t\r\f";

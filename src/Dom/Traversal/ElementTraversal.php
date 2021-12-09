@@ -73,6 +73,19 @@ abstract class ElementTraversal
     /**
      * @return iterable<Element>
      */
+    public static function inclusiveAncestorsOf(Node $node, ?callable $filter = null): iterable
+    {
+        while ($node) {
+            if ($node->nodeType === Node::ELEMENT_NODE && (!$filter || $filter($node))) {
+                yield $node;
+            }
+            $node = $node->_parent;
+        }
+    }
+
+    /**
+     * @return iterable<Element>
+     */
     public static function following(Node $node, ?callable $filter = null): iterable
     {
         while ($node = $node->_next) {

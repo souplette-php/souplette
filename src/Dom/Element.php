@@ -12,6 +12,7 @@ use Souplette\Dom\Exception\NamespaceError;
 use Souplette\Dom\Exception\NoModificationAllowed;
 use Souplette\Dom\Exception\NotFoundError;
 use Souplette\Dom\Exception\SyntaxError;
+use Souplette\Dom\Internal\NodeFlags;
 use Souplette\Dom\Traits\ChildNodeTrait;
 use Souplette\Dom\Traits\GetElementsByClassNameTrait;
 use Souplette\Dom\Traits\GetElementsByTagNameTrait;
@@ -58,7 +59,15 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
         $this->namespaceURI = $namespace;
         $this->prefix = $prefix;
         $this->qualifiedName = $prefix ? "{$prefix}:{$localName}" : $localName;
-        $this->isHTML = $namespace === Namespaces::HTML;
+        $this->_flags |= NodeFlags::IS_CONTAINER;
+        $this->_flags |= match ($namespace) {
+            Namespaces::HTML => NodeFlags::NS_TYPE_HTML,
+            Namespaces::SVG => NodeFlags::NS_TYPE_SVG,
+            Namespaces::MATHML => NodeFlags::NS_TYPE_MATHTML,
+            default => NodeFlags::NS_TYPE_OTHER,
+        };
+        $this->isHTML = ($this->_flags & NodeFlags::ELEMENT_NS_MASK) === NodeFlags::NS_TYPE_HTML;
+        //$this->isHTML = $namespace === Namespaces::HTML;
         if ($this->isHTML) {
             $this->tagName = strtoupper($this->qualifiedName);
         } else {

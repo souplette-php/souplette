@@ -11,6 +11,7 @@ use Souplette\Dom\Implementation;
 use Souplette\Dom\Namespaces;
 use Souplette\Dom\Node;
 use Souplette\Dom\Text;
+use Souplette\Dom\Traversal\ElementTraversal;
 use Souplette\Encoding\Encoding;
 use Souplette\Encoding\EncodingLookup;
 use Souplette\Encoding\Exception\EncodingChanged;
@@ -192,13 +193,11 @@ final class TreeBuilder
         // 11. Set the parser's form element pointer to the nearest node to the context element that is a form element
         // (going straight up the ancestor chain, and including the element itself, if it is a form element), if any.
         // (If there is no such form element, the form element pointer keeps its initial value, null.)
-        $node = $contextElement;
-        while ($node) {
+        foreach (ElementTraversal::inclusiveAncestorsOf($contextElement) as $node) {
             if ($node->localName === 'form') {
                 $this->formElement = $node;
                 break;
             }
-            $node = $node->_parent;
         }
         // 12. Place the input into the input stream for the HTML parser just created.
         // The encoding confidence is irrelevant.
@@ -247,7 +246,7 @@ final class TreeBuilder
             $adjustedCurrentNode = $this->getAdjustedCurrentNode();
             if (
                 !$adjustedCurrentNode
-                || $adjustedCurrentNode->namespaceURI === Namespaces::HTML
+                || $adjustedCurrentNode->isHTML
                 || (
                     Elements::isMathMlTextIntegrationPoint($adjustedCurrentNode) && (
                         (

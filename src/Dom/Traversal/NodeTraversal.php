@@ -26,10 +26,14 @@ abstract class NodeTraversal
     }
 
     /**
+     * Yields all descendants of a given parent, in tree order.
      * @return iterable<Node>
      */
-    public static function descendantsOf(Node $parent): iterable
+    public static function descendantsOf(Node $parent, bool $inclusive = false): iterable
     {
+        if ($inclusive) {
+            yield $parent;
+        }
         $node = $parent->_first;
         while ($node) {
             yield $node;

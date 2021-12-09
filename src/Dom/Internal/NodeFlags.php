@@ -2,6 +2,9 @@
 
 namespace Souplette\Dom\Internal;
 
+/**
+ * @internal
+ */
 final class NodeFlags
 {
     const NODE_TYPE_SHIFT = 2;
@@ -15,4 +18,10 @@ final class NodeFlags
     // Tree state flags. These change when the element is added/removed from a DOM tree.
     const IS_CONNECTED = 1 << 8;
     const IN_SHADOW_TREE = 1 << 9;
+
+    // ex: isHTML -> ($node->_flags & NodeFlags::ELEMENT_NS_MASK) === NS_TYPE_HTML
+    const NS_TYPE_HTML = 0;
+    const NS_TYPE_MATHTML = 1 << self::ELEMENT_NS_SHIFT;
+    const NS_TYPE_SVG = 2 << self::ELEMENT_NS_SHIFT;
+    const NS_TYPE_OTHER = 3 << self::ELEMENT_NS_SHIFT;
 }

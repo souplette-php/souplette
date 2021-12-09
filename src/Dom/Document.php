@@ -9,6 +9,7 @@ use Souplette\Dom\Exception\InvalidCharacterError;
 use Souplette\Dom\Exception\NamespaceError;
 use Souplette\Dom\Exception\NotFoundError;
 use Souplette\Dom\Exception\NotSupportedError;
+use Souplette\Dom\Internal\NodeFlags;
 use Souplette\Dom\Traits\GetElementsByClassNameTrait;
 use Souplette\Dom\Traits\GetElementsByTagNameTrait;
 use Souplette\Dom\Traits\NonElementParentNodeTrait;
@@ -45,11 +46,15 @@ class Document extends ParentNode implements NonElementParentNodeInterface
     private Implementation $implementation;
 
     public function __construct(
-        public readonly string $type,
+        public readonly string $type = 'html',
     ) {
         $this->nodeType = Node::DOCUMENT_NODE;
         $this->nodeName = '#document';
-        $this->isHTML = $type !== 'xml';
+        $this->_flags |= NodeFlags::IS_CONTAINER|NodeFlags::IS_CONNECTED;
+        if ($type !== 'xml') {
+            $this->isHTML = true;
+            $this->_flags |= NodeFlags::NS_TYPE_HTML;
+        }
     }
 
     public function __get(string $prop)
