@@ -12,7 +12,7 @@ final class Implementation
     public function createDocument(): Document
     {
         $doc = new Document('html');
-        //$doc->implementation = $this;
+        $doc->_implementation = $this;
         return $doc;
     }
 
@@ -22,9 +22,11 @@ final class Implementation
         $doc->appendChild($this->createDocumentType('html'));
         $doc->appendChild($html = $doc->createElement('html'));
         $html->appendChild($head = $doc->createElement('head'));
-        $titleNode = $doc->createElement('title');
-        $titleNode->textContent = $title;
-        $head->appendChild($titleNode);
+        if ($title) {
+            $titleNode = $doc->createElement('title');
+            $titleNode->textContent = $title;
+            $head->appendChild($titleNode);
+        }
         $html->appendChild($doc->createElement('body'));
 
         return $doc;

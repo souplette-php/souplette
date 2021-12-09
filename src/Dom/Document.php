@@ -19,6 +19,7 @@ use Souplette\Dom\Traversal\ElementTraversal;
 use Souplette\Xml\QName;
 
 /**
+ * @property-read Implementation $implementation
  * @property-read string $mode
  * @property-read string $compatMode
  * @property-read string $characterSet
@@ -45,10 +46,11 @@ class Document extends ParentNode implements NonElementParentNodeInterface
     public string $encoding = 'UTF-8';
 
     protected string $mode = DocumentModes::NO_QUIRKS;
-    private Implementation $implementation;
 
     private ?ElementsByIdMap $elementsById = null;
 
+    /** @internal */
+    public Implementation $_implementation;
     /** @internal */
     public ?DocumentType $_doctype = null;
 
@@ -66,7 +68,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
     public function __get(string $prop)
     {
         return match ($prop) {
-            'implementation' => $this->implementation ??= new Implementation(),
+            'implementation' => $this->getImplementation(),
             'mode' => $this->mode,
             'compatMode' => $this->getCompatMode(),
             'doctype' => $this->getDoctype(),
@@ -85,6 +87,11 @@ class Document extends ParentNode implements NonElementParentNodeInterface
             'title' => $this->setTitle($value),
             default => parent::__set($prop, $value),
         };
+    }
+
+    public function getImplementation(): Implementation
+    {
+        return $this->_implementation ??= new Implementation();
     }
 
     public function getMode(): string
