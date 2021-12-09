@@ -51,4 +51,16 @@ final class DocumentType extends Node implements ChildNodeInterface
     {
         return null;
     }
+
+    protected function insertedInto(ParentNode $parent): void
+    {
+        parent::insertedInto($parent);
+        $this->_doc->_doctype = $this;
+    }
+
+    protected function removedFrom(ParentNode $parent): void
+    {
+        parent::removedFrom($parent);
+        $this->_doc->_doctype = null;
+    }
 }

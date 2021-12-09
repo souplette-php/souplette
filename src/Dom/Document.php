@@ -45,6 +45,9 @@ class Document extends ParentNode implements NonElementParentNodeInterface
     protected string $mode = DocumentModes::NO_QUIRKS;
     private Implementation $implementation;
 
+    /** @internal */
+    public ?DocumentType $_doctype = null;
+
     public function __construct(
         public readonly string $type = 'html',
     ) {
@@ -93,12 +96,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
 
     public function getDoctype(): ?DocumentType
     {
-        for ($child = $this->_first; $child; $child = $this->_next) {
-            if ($child->nodeType === Node::DOCUMENT_TYPE_NODE) {
-                return $child;
-            }
-        }
-        return null;
+        return $this->_doctype;
     }
 
     public function getDocumentElement(): ?Element
@@ -342,6 +340,10 @@ class Document extends ParentNode implements NonElementParentNodeInterface
         }
         return null;
     }
+
+    // ==============================================================
+    // Mutation algorithms
+    // ==============================================================
 
     protected const VALID_CHILD_TYPES = ParentNode::VALID_CHILD_TYPES + [
         Node::DOCUMENT_TYPE_NODE => true,
