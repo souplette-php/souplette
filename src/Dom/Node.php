@@ -107,8 +107,7 @@ abstract class Node implements NodeInterface
      */
     public function isConnected(): bool
     {
-        //return $this->getRootNode(['composed' => true])->nodeType === self::DOCUMENT_NODE;
-        return $this->hasFlag(NodeFlags::IS_CONNECTED);
+        return (bool)($this->_flags & NodeFlags::IS_CONNECTED);
     }
 
     public function getOwnerDocument(): ?Document
@@ -217,72 +216,95 @@ abstract class Node implements NodeInterface
      */
     public function compareDocumentPosition(Node $other): int
     {
-        // The compareDocumentPosition(other) method, when invoked, must run these steps:
-        // 1.If this is other, then return zero.
         if ($this === $other) return 0;
-        // 2. Let node1 be other and node2 be this.
-        $node1 = $other;
-        $node2 = $this;
-        // 3. Let attr1 and attr2 be null.
-        $attr1 = $attr2 = null;
-        // 4. If node1 is an attribute, then set attr1 to node1 and node1 to attr1’s element.
-        if ($node1->nodeType === self::ATTRIBUTE_NODE) {
-            $attr1 = $node1;
-            $node1 = $attr1->_parent;
-        }
-        // 5. If node2 is an attribute, then:
-        if ($node2->nodeType === self::ATTRIBUTE_NODE) {
-            // 1. Set attr2 to node2 and node2 to attr2’s element.
-            $attr2 = $node2;
-            $node2 = $attr2->_parent;
-            // 2. If attr1 and node1 are non-null, and node2 is node1, then:
-            if ($attr1 && $node1 && $node2 === $node1) {
-                // 1. For each attr in node2’s attribute list:
-                foreach ($node2->_attrs as $attr) {
-                    // 1. If attr equals attr1, then return the result of adding DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC and DOCUMENT_POSITION_PRECEDING.
-                    if ($attr === $attr1) {
-                        return self::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC + self::DOCUMENT_POSITION_PRECEDING;
-                    }
-                    // 2. If attr equals attr2, then return the result of adding DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC and DOCUMENT_POSITION_FOLLOWING.
-                    if ($attr === $attr2) {
-                        return self::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC + self::DOCUMENT_POSITION_FOLLOWING;
-                    }
-                }
-            }
-        }
-        // 6. If node1 or node2 is null, or node1’s root is not node2’s root,
-        // then return the result of adding DOCUMENT_POSITION_DISCONNECTED, DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC,
-        // and either DOCUMENT_POSITION_PRECEDING or DOCUMENT_POSITION_FOLLOWING,
-        // with the constraint that this is to be consistent, together.
-        if (!$node1 || !$node2 || $node1->getRootNode() !== $node2->getRootNode()) {
+        /** @var ?Attr $attr1 */
+        $attr1 = $this->nodeType === Node::ATTRIBUTE_NODE ? $this : null;
+        /** @var ?Attr $attr2 */
+        $attr2 = $other->nodeType === Node::ATTRIBUTE_NODE ? $other : null;
+        $start1 = $attr1 ? $attr1->_parent : $this;
+        $start2 = $attr2 ? $attr2->_parent : $other;
+        // If either of start1 or start2 is null, then we are disconnected,
+        // since one of the nodes is an orphaned attribute node.
+        if (!$start1 || !$start2) {
             return (
-                self::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
-                + self::DOCUMENT_POSITION_DISCONNECTED
-                + self::DOCUMENT_POSITION_PRECEDING
+                self::DOCUMENT_POSITION_DISCONNECTED
+                | self::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+                | self::DOCUMENT_POSITION_PRECEDING
             );
         }
-        // 7. If node1 is an ancestor of node2 and attr1 is null, or node1 is node2 and attr2 is non-null,
-        // then return the result of adding DOCUMENT_POSITION_CONTAINS to DOCUMENT_POSITION_PRECEDING.
-        if (
-            (!$attr1 && $node1->isInclusiveAncestorOf($node2))
-            || ($attr2 && $node1 === $node2)
-        ) {
-            return self::DOCUMENT_POSITION_CONTAINS + self::DOCUMENT_POSITION_PRECEDING;
+        $chain1 = $chain2 = [];
+        if ($attr1) $chain1[] = $attr1;
+        if ($attr2) $chain2[] = $attr2;
+        if ($attr1 && $attr2 && $start1 === $start2 && $start1) {
+            // We are comparing two attributes on the same node.
+            // Crawl our attribute map and see which one we hit first.
+            $owner1 = $attr1->_parent;
+            foreach ($owner1->_attrs as $attr) {
+                // If neither of the two determining nodes is a child node
+                // and nodeType is the same for both determining nodes,
+                // then an implementation-dependent order between the determining nodes is returned.
+                // This order is stable as long as no nodes of the same nodeType
+                // are inserted into or removed from the direct container.
+                // This would be the case, for example, when comparing two attributes of the same element,
+                // and inserting or removing additional attributes might change the order between existing attributes.
+                if ($attr1->name === $attr->name) {
+                    return self::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC | self::DOCUMENT_POSITION_FOLLOWING;
+                }
+                if ($attr2->name === $attr->name) {
+                    return self::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC | self::DOCUMENT_POSITION_PRECEDING;
+                }
+            }
+            return self::DOCUMENT_POSITION_DISCONNECTED;
         }
-        // 8. If node1 is a descendant of node2 and attr2 is null, or node1 is node2 and attr1 is non-null,
-        // then return the result of adding DOCUMENT_POSITION_CONTAINED_BY to DOCUMENT_POSITION_FOLLOWING.
-        if (
-            (!$attr2 && $node1->isInclusiveDescendantOf($node2))
-            || ($attr1 && $node1 === $node2)
-        ) {
-            return self::DOCUMENT_POSITION_CONTAINED_BY + self::DOCUMENT_POSITION_FOLLOWING;
+        // If one node is in the document and the other is not, we must be disconnected.
+        // If the nodes have different owning documents, they must be disconnected.
+        // Note that we avoid comparing Attr nodes here, since they return false from isConnected() all the time
+        // (which seems like a bug but is implemented this way in all major browsers).
+        if ($start1->isConnected() !== $start2->isConnected()) {
+            return self::DOCUMENT_POSITION_DISCONNECTED
+                | self::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+                | self::DOCUMENT_POSITION_PRECEDING;
         }
-        // 9. If node1 is preceding node2, then return DOCUMENT_POSITION_PRECEDING.
-        if ($node1->isPrecedingSiblingOf($node2)) {
-            return self::DOCUMENT_POSITION_PRECEDING;
+        // We need to find a common ancestor container,
+        // and then compare the indices of the two immediate children.
+        for ($current = $start1; $current; $current = $current->_parent) $chain1[] = $current;
+        for ($current = $start2; $current; $current = $current->_parent) $chain2[] = $current;
+        $index1 = \count($chain1);
+        $index2 = \count($chain2);
+        // If the two elements don't have a common root, they're not in the same tree.
+        if ($chain1[$index1 - 1] !== $chain2[$index2 - 1]) {
+            return self::DOCUMENT_POSITION_DISCONNECTED
+                | self::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+                | self::DOCUMENT_POSITION_PRECEDING;
         }
-        // 10. Return DOCUMENT_POSITION_FOLLOWING.
-        return self::DOCUMENT_POSITION_FOLLOWING;
+        // Walk the two chains backwards and look for the first difference.
+        $connection = 0;
+        //if ($start1->_treeScope !== $start2->_treeScope) $connection = self::DOCUMENT_POSITION_DISCONNECTED | self::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
+        for ($i = min($index1, $index2); $i; $i--) {
+            $child1 = $chain1[--$index1];
+            $child2 = $chain2[--$index2];
+            if ($child1 !== $child2) {
+                // If one of the children is an attribute, it wins.
+                if ($child1->nodeType === self::ATTRIBUTE_NODE) return self::DOCUMENT_POSITION_FOLLOWING | $connection;
+                if ($child2->nodeType === self::ATTRIBUTE_NODE) return self::DOCUMENT_POSITION_PRECEDING | $connection;
+                // SKIPPED: If one of the children is a shadow root,
+                if (!$child2->_next) return self::DOCUMENT_POSITION_FOLLOWING | $connection;
+                if (!$child1->_next) return self::DOCUMENT_POSITION_PRECEDING | $connection;
+                // Otherwise, we need to see which node occurs first.
+                // Crawl backwards from child2 looking for child1.
+                for ($child = $child2->_prev; $child; $child = $child->_prev) {
+                    if ($child === $child1) return self::DOCUMENT_POSITION_FOLLOWING | $connection;
+                }
+                return self::DOCUMENT_POSITION_PRECEDING | $connection;
+            }
+        }
+        // There was no difference between the two parent chains, i.e., one was a subset of the other.
+        // The shorter chain is the ancestor.
+        return $index1 < $index2 ? (
+            self::DOCUMENT_POSITION_FOLLOWING | self::DOCUMENT_POSITION_CONTAINED_BY | $connection
+        ) : (
+            self::DOCUMENT_POSITION_PRECEDING | self::DOCUMENT_POSITION_CONTAINS | $connection
+        );
     }
 
     /**
@@ -291,12 +313,16 @@ abstract class Node implements NodeInterface
     public function contains(?Node $other): bool
     {
         if (!$other) return false;
-        return $other->isInclusiveDescendantOf($this);
+        for ($node = $other; $node; $node = $node->_parent) {
+            if ($node === $this) return true;
+        }
+        return false;
     }
 
     /**
-     * The getRootNode(options) method steps are to return this’s shadow-including root if options["composed"] is true;
-     * otherwise this’s root.
+     * The getRootNode(options) method steps are to return:
+     * - this’s shadow-including root if options["composed"] is true;
+     * - otherwise this’s root.
      *
      * https://dom.spec.whatwg.org/#dom-node-getrootnode
      */
@@ -450,42 +476,6 @@ abstract class Node implements NodeInterface
     // ==============================================================
     // Helper methods
     // ==============================================================
-
-    protected function isInclusiveDescendantOf(?Node $parent): bool
-    {
-        if (!$parent) return false;
-        for ($node = $this; $node; $node = $node->_parent) {
-            if ($node === $parent) return true;
-        }
-        return false;
-    }
-
-    protected function isInclusiveAncestorOf(?Node $child): bool
-    {
-        if (!$child) return false;
-        for ($node = $child; $node; $node = $node->_parent) {
-            if ($node === $this) return true;
-        }
-        return false;
-    }
-
-    protected function isPrecedingSiblingOf(?Node $sibling): bool
-    {
-        if (!$sibling) return false;
-        for ($node = $sibling; $node; $node = $node->_prev) {
-            if ($node === $this) return true;
-        }
-        return false;
-    }
-
-    protected function isFollowingSiblingOf(?Node $sibling): bool
-    {
-        if (!$sibling) return false;
-        for ($node = $sibling; $node; $node = $node->_next) {
-            if ($node === $this) return true;
-        }
-        return false;
-    }
 
     protected function locateNamespace(?string $prefix): ?string
     {
