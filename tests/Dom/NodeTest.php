@@ -108,4 +108,24 @@ final class NodeTest extends TestCase
             $doc->firstChild->firstChild,
         ];
     }
+
+    public function testNormalize()
+    {
+        $doc = DomBuilder::html()->tag('html')
+            ->text('foo')
+            ->text('')
+            ->text('bar')
+            ->tag('p')
+                ->text('baz')
+                ->text('')
+                ->text('qux')
+            ->getDocument();
+        $root = $doc->documentElement;
+        $para = $root->lastElementChild;
+        $doc->normalize();
+        Assert::assertCount(2, $root->childNodes);
+        Assert::assertSame('foobar', $root->firstChild->textContent);
+        Assert::assertCount(1, $para->childNodes);
+        Assert::assertSame('bazqux', $para->firstChild->textContent);
+    }
 }

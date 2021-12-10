@@ -63,8 +63,6 @@ abstract class Node implements NodeInterface
     /** @internal */
     public ?Document $_doc = null;
     /** @internal */
-    public ?ParentNode $_treeScope = null;
-    /** @internal */
     public ?ParentNode $_parent = null;
     /** @internal */
     public ?Node $_next = null;

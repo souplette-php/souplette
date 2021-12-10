@@ -62,18 +62,32 @@ interface NodeInterface
     public function isDefaultNamespace(?string $namespace): bool;
 
     /**
+     * @template T of <Node>
+     * @param T $node
+     * @param Node|null $child
+     * @return T
      * @throws DomException
      */
     public function insertBefore(Node $node, ?Node $child = null): Node;
     /**
+     * @template T of <Node>
+     * @param T $node
+     * @return T
      * @throws DomException
      */
     public function appendChild(Node $node): Node;
     /**
+     * @template T of <Node>
+     * @param T $node
+     * @param Node $child
+     * @return T
      * @throws DomException
      */
     public function replaceChild(Node $node, Node $child): Node;
     /**
+     * @template T of <Node>
+     * @param T $child
+     * @return T
      * @throws DomException
      */
     public function removeChild(Node $child): Node;
