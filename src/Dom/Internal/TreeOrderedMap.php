@@ -49,12 +49,12 @@ abstract class TreeOrderedMap
         $entry->orderedList = [];
     }
 
-    public function contains(string $key): bool
+    public function has(string $key): bool
     {
         return isset($this->entries[$key]);
     }
 
-    public function containsMultiple(string $key): bool
+    public function hasMultiple(string $key): bool
     {
         if ($entry = $this->entries[$key] ?? null) {
             return $entry->count > 1;
