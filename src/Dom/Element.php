@@ -139,12 +139,13 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
 
     public function isEqualNode(?Node $otherNode): bool
     {
-        if (!$otherNode) return false;
         if ($otherNode === $this) return true;
-        if ($this->nodeType !== $otherNode->nodeType) return false;
-        if ($this->localName !== $otherNode->localName
+        if (!$otherNode
+            || $this->nodeType !== $otherNode->nodeType
+            || $this->localName !== $otherNode->localName
             || $this->prefix !== $otherNode->prefix
             || $this->namespaceURI !== $otherNode->namespaceURI
+            || \count($this->_attrs) !== \count($otherNode->_attrs)
         ) {
             return false;
         }
