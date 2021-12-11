@@ -12,6 +12,7 @@ use Souplette\Dom\Exception\DomException;
 use Souplette\Dom\Exception\InvalidStateError;
 use Souplette\Dom\Namespaces;
 use Souplette\Dom\Node;
+use Souplette\Dom\ParentNode;
 use Souplette\Dom\ProcessingInstruction;
 use Souplette\Dom\Text;
 use Souplette\Dom\Traversal\NodeTraversal;
@@ -74,7 +75,7 @@ final class Serializer
     /**
      * @throws InvalidStateError
      */
-    public function serialize(Node $node, bool $requireWellFormed = true): string
+    public function serialize(Node $node, bool $requireWellFormed = false): string
     {
         $this->requireWellFormed = $requireWellFormed;
         $this->prefixIndex = 1;
@@ -87,6 +88,31 @@ final class Serializer
             throw new InvalidStateError($err->getMessage(), $err);
         }
     }
+
+    /**
+     * @throws InvalidStateError
+     */
+    public function serializeFragment(Element $node, bool $requireWellFormed = false): string
+    {
+        $this->requireWellFormed = $requireWellFormed;
+        $this->prefixIndex = 1;
+        $prefixMap = new PrefixMap();
+        $prefixMap->add('xml', Namespaces::XML);
+
+        $localPrefixMap = [];
+        $localDefaultNamespace = $this->recordNamespaceInformation($node, $prefixMap, $localPrefixMap);
+        $inheritedNamespace = $localDefaultNamespace ?? $node->namespaceURI;
+        $markup = '';
+        try {
+            foreach (NodeTraversal::childrenOf($node) as $child) {
+                $markup .= $this->serializeNode($child, $inheritedNamespace, $prefixMap);
+            }
+            return $markup;
+        } catch (\Throwable $err) {
+            throw new InvalidStateError($err->getMessage(), $err);
+        }
+    }
+
 
     /**
      * @throws DomException
@@ -273,20 +299,20 @@ final class Serializer
                 // 3.5.2
                 if ($attributeNamespace === Namespaces::XMLNS) {
                     // 3.5.2.1
-                    if ($attr->value === Namespaces::XML) continue;
+                    if ($attr->_value === Namespaces::XML) continue;
                     if ($attr->prefix === null && $ignoreNamespaceDefinitionAttribute) continue;
                     if ($attr->prefix && (
-                        $attr->value !== $localPrefixMap[$attr->localName] ?? null
+                        $attr->_value !== $localPrefixMap[$attr->localName] ?? null
                     )) {
                         continue;
                     }
                     // TODO: WTF???
                     // 3.5.2.2
-                    if ($this->requireWellFormed && $attr->value === Namespaces::XMLNS) {
+                    if ($this->requireWellFormed && $attr->_value === Namespaces::XMLNS) {
                         throw new DomException('The XMLNS namespace is reserved.');
                     }
                     // 3.5.2.3
-                    if ($this->requireWellFormed && $attr->value === '') {
+                    if ($this->requireWellFormed && $attr->_value === '') {
                         throw new DomException(
                             'Namespace prefix declarations cannot be used to undeclare a namespace'
                             . ' (use a default namespace declaration instead).'
@@ -325,7 +351,7 @@ final class Serializer
             $result .= sprintf(
                 '%s="%s"',
                 $attr->localName,
-                $this->serializeAttributeValue($attr->value),
+                $this->serializeAttributeValue($attr->_value),
             );
         }
         // 4.
@@ -476,11 +502,11 @@ final class Serializer
         foreach ($element->_attrs as $attr) {
             if ($attr->namespaceURI === Namespaces::XMLNS) {
                 if (!$attr->prefix) {
-                    $defaultNamespace = $attr->value;
+                    $defaultNamespace = $attr->_value;
                     continue;
                 }
                 $prefixDefinition = $attr->localName;
-                $namespaceDefinition = $attr->value;
+                $namespaceDefinition = $attr->_value;
                 if ($namespaceDefinition === Namespaces::XML) {
                     continue;
                 }

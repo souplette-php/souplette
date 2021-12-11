@@ -4,9 +4,11 @@ namespace Souplette\Xml;
 
 use Souplette\Dom\Document;
 use Souplette\Dom\DocumentType;
+use Souplette\Dom\Element;
 use Souplette\Dom\Exception\DomException;
 use Souplette\Dom\Node;
 use Souplette\Dom\Text;
+use Souplette\Dom\Traversal\ElementTraversal;
 use Souplette\Dom\XmlDocument;
 use Souplette\Xml\Exception\ParseError;
 use XMLReader;
@@ -43,6 +45,29 @@ final class Parser
 
         try {
             return $this->read($reader);
+        } finally {
+            $reader->close();
+            libxml_clear_errors();
+            libxml_use_internal_errors($internalErrors);
+            libxml_set_external_entity_loader(null);
+        }
+    }
+
+    /**
+     * https://html.spec.whatwg.org/multipage/xhtml.html#xml-fragment-parsing-algorithm
+     * @return Node[]
+     * @throws DomException
+     */
+    public function parseFragment(string $xml, Element $context): array
+    {
+        $xml = $this->preprocessFragment($xml, $context);
+        $internalErrors = libxml_use_internal_errors(true);
+        $reader = new XMLReader();
+        $reader->xml($xml);
+
+        try {
+            $document = $this->read($reader);
+            return $document->getDocumentElement()?->getChildNodes() ?? [];
         } finally {
             $reader->close();
             libxml_clear_errors();
@@ -199,5 +224,62 @@ final class Parser
             return new DocumentType($m['name'], $m['publicId'] ?? '', $m['systemId'] ?? '');
         }
         return null;
+    }
+
+    private function preprocessFragment(string $xml, Element $context): string
+    {
+        $declarations = [];
+        $defaultNamespace = $this->collectNamespaceDeclarations($context, $declarations);
+        $attributes = [];
+        if ($defaultNamespace) {
+            $attributes[] = sprintf('xmlns="%s"', $defaultNamespace);
+        }
+        foreach ($declarations as $prefix => $namespace) {
+            $attributes[] = sprintf('xmlns:%s="%s"', $prefix, $namespace);
+        }
+        return sprintf(
+            '<%1$s %2$s>%3$s</%1$s>',
+            $context->qualifiedName,
+            implode(' ', $attributes),
+            $xml,
+        );
+    }
+
+    /**
+     * Step 2 of https://html.spec.whatwg.org/C/#xml-fragment-parsing-algorithm
+     * The following code collects prefix-namespace mapping in scope on `$element`.
+     *
+     * @return string|null The default namespace
+     */
+    private function collectNamespaceDeclarations(Element $element, array &$map): ?string
+    {
+        $stack = new \SplStack();
+        $stack->push($element);
+        foreach (ElementTraversal::ancestorsOf($element) as $parent) {
+            $stack->push($parent);
+        }
+        if ($stack->isEmpty()) return null;
+        $defaultNamespace = null;
+        /** @var Element $element */
+        foreach ($stack as $element) {
+            // According to https://dom.spec.whatwg.org/#locate-a-namespace,
+            // a namespace from the element name should have higher priority.
+            // So we check xmlns attributes first, then overwrite the map with the namespace of the element name.
+            foreach ($element->_attrs as $attr) {
+                if ($attr->localName === 'xmlns') {
+                    $defaultNamespace = $attr->_value;
+                } else if ($attr->prefix === 'xmlns') {
+                    $map[$attr->localName] = $attr->_value;
+                }
+            }
+            if ($element->namespaceURI === null) continue;
+            if (!$element->prefix) {
+                $defaultNamespace = $element->namespaceURI;
+            } else {
+                $map[$element->prefix] = $element->namespaceURI;
+            }
+        }
+
+        return $defaultNamespace;
     }
 }

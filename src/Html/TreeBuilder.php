@@ -6,7 +6,6 @@ use Souplette\Dom\Attr;
 use Souplette\Dom\Document;
 use Souplette\Dom\DocumentType;
 use Souplette\Dom\Element;
-use Souplette\Dom\Implementation;
 use Souplette\Dom\Internal\DocumentMode;
 use Souplette\Dom\Namespaces;
 use Souplette\Dom\Node;

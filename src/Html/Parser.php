@@ -4,7 +4,6 @@ namespace Souplette\Html;
 
 use Souplette\Dom\Document;
 use Souplette\Dom\Element;
-use Souplette\Dom\Implementation;
 use Souplette\Dom\Node;
 use Souplette\Encoding\Encoding;
 use Souplette\Encoding\EncodingLookup;

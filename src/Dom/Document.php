@@ -12,10 +12,9 @@ use Souplette\Dom\Internal\CompatMode;
 use Souplette\Dom\Internal\DocumentMode;
 use Souplette\Dom\Internal\ElementsByIdMap;
 use Souplette\Dom\Internal\NodeFlags;
+use Souplette\Dom\Traits\DocumentTreeAccessorsTrait;
 use Souplette\Dom\Traits\GetElementsByClassNameTrait;
 use Souplette\Dom\Traits\GetElementsByTagNameTrait;
-use Souplette\Dom\Traits\DocumentTreeAccessorsTrait;
-use Souplette\Dom\Traversal\ElementTraversal;
 use Souplette\Xml\QName;
 
 /**
