@@ -39,9 +39,19 @@ final class Attr extends Node
     public function __set(string $prop, mixed $value)
     {
         match ($prop) {
-            'value', 'nodeValue' => $this->setValue($value),
+            'value', 'nodeValue', 'textContent' => $this->setValue($value),
             default => parent::__set($prop, $value),
         };
+    }
+
+    public function getParentNode(): ?ParentNode
+    {
+        return null;
+    }
+
+    public function getParentElement(): ?Element
+    {
+        return null;
     }
 
     public function getValue(): string
