@@ -9,10 +9,10 @@ use Souplette\Dom\Exception\NoModificationAllowed;
 use Souplette\Dom\Exception\SyntaxError;
 use Souplette\Dom\Namespaces;
 use Souplette\Dom\Node;
-use Souplette\Html\Parser as HtmlParser;
-use Souplette\Html\Serializer as HtmlSerializer;
-use Souplette\Xml\Parser as XmlParser;
-use Souplette\Xml\Serializer as XmlSerializer;
+use Souplette\Html\HtmlParser;
+use Souplette\Html\HtmlSerializer;
+use Souplette\Xml\XmlParser;
+use Souplette\Xml\XmlSerializer;
 
 /**
  * https://w3c.github.io/DOM-Parsing/#the-innerhtml-mixin
@@ -28,7 +28,7 @@ trait DomParsingTrait
         $contextDocument = $this->getDocumentNode();
         if ($contextDocument->isHTML) {
             $serializer = new HtmlSerializer();
-            return $serializer->serialize($this);
+            return $serializer->serializeFragment($this);
         }
         $serializer = new XmlSerializer();
         return $serializer->serializeFragment($this, true);
@@ -57,7 +57,7 @@ trait DomParsingTrait
         $contextDocument = $this->getDocumentNode();
         if ($contextDocument->isHTML) {
             $serializer = new HtmlSerializer();
-            return $serializer->serializeElement($this);
+            return $serializer->serialize($this);
         }
         $serializer = new XmlSerializer();
         return $serializer->serialize($this, true);

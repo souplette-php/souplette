@@ -21,7 +21,7 @@ use Souplette\Xml\Serializer\NamespacePrefixMap as PrefixMap;
 /**
  * @see https://w3c.github.io/DOM-Parsing/#xml-serialization
  */
-final class Serializer
+final class XmlSerializer
 {
     private const VALID_TEXT = <<<'REGEXP'
     /
@@ -103,6 +103,7 @@ final class Serializer
         $localDefaultNamespace = $this->recordNamespaceInformation($node, $prefixMap, $localPrefixMap);
         $inheritedNamespace = $localDefaultNamespace ?? $node->namespaceURI;
         $markup = '';
+
         try {
             foreach (NodeTraversal::childrenOf($node) as $child) {
                 $markup .= $this->serializeNode($child, $inheritedNamespace, $prefixMap);

@@ -13,7 +13,7 @@ use Souplette\Html\Parser\EncodingSniffer;
 use Souplette\Html\Parser\InputPreprocessor;
 use Souplette\Html\Tokenizer\Tokenizer;
 
-final class Parser
+final class HtmlParser
 {
     private TreeBuilder $treeBuilder;
 

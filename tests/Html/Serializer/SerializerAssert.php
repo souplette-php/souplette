@@ -4,15 +4,15 @@ namespace Souplette\Tests\Html\Serializer;
 
 use PHPUnit\Framework\Assert;
 use Souplette\Dom\Node;
-use Souplette\Html\Serializer;
-use Souplette\Xml\Serializer as XmlSerializer;
+use Souplette\Html\HtmlSerializer;
+use Souplette\Xml\XmlSerializer as XmlSerializer;
 
 final class SerializerAssert
 {
     public static function assertSerializationEquals(Node $input, string $expected, ?string $xhtml = null)
     {
-        $serializer = new Serializer();
-        $result = $serializer->serialize($input);
+        $serializer = new HtmlSerializer();
+        $result = $serializer->serializeFragment($input);
         Assert::assertSame($expected, $result, 'Using HTML serialization');
         if ($xhtml !== null) {
             $serializer = new XmlSerializer();

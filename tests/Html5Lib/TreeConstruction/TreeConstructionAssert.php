@@ -4,13 +4,13 @@ namespace Souplette\Tests\Html5Lib\TreeConstruction;
 
 use PHPUnit\Framework\Assert;
 use Souplette\Dom\Document;
-use Souplette\Html\Parser;
+use Souplette\Html\HtmlParser;
 
 final class TreeConstructionAssert
 {
     public static function assertTestPasses(TreeConstructionTestDTO $test)
     {
-        $parser = new Parser($test->scriptingEnabled);
+        $parser = new HtmlParser($test->scriptingEnabled);
         $serializer = new Serializer();
         if ($test->contextElement) {
             $doc = new Document('html');

@@ -4,6 +4,8 @@ namespace Souplette\Html;
 
 use Souplette\Dom\Attr;
 use Souplette\Dom\Comment;
+use Souplette\Dom\Document;
+use Souplette\Dom\DocumentFragment;
 use Souplette\Dom\DocumentType;
 use Souplette\Dom\Element;
 use Souplette\Dom\Namespaces;
@@ -11,12 +13,11 @@ use Souplette\Dom\Node;
 use Souplette\Dom\ProcessingInstruction;
 use Souplette\Dom\Text;
 use Souplette\Html\Serializer\Elements;
-use Souplette\Xml\XmlNameEscaper;
 
 /**
  * @see https://html.spec.whatwg.org/multipage/parsing.html#serialising-html-fragments
  */
-final class Serializer
+final class HtmlSerializer
 {
     private const BLANK_NAMESPACES = [
         Namespaces::HTML => true,
@@ -26,8 +27,29 @@ final class Serializer
 
     public function serialize(Node $node): string
     {
+        $s = '';
+        if ($node instanceof Element) {
+            $s .= $this->serializeElement($node);
+        } else if ($node instanceof Text) {
+            $s .= $this->serializeText($node);
+        } else if ($node instanceof Comment) {
+            $s .= $this->serializeComment($node);
+        } else if ($node instanceof ProcessingInstruction) {
+            $s .= $this->serializeProcessingInstruction($node);
+        } else if ($node instanceof DocumentType) {
+            $s .= $this->serializeDocumentType($node);
+        } else if ($node instanceof Document) {
+            $s .= $this->serializeFragment($node);
+        } else if ($node instanceof DocumentFragment) {
+            $s .= $this->serializeFragment($node);
+        }
+        return $s;
+    }
+
+    public function serializeFragment(Node $node): string
+    {
         // 1. If the node serializes as void, then return the empty string.
-        if ($node instanceof Element && isset(Elements::VOID_ELEMENTS[$node->localName])) {
+        if ($node instanceof Element && $node->isHTML && isset(Elements::VOID_ELEMENTS[$node->localName])) {
             return '';
         }
         // 2. Let s be a string, and initialize it to the empty string.
@@ -38,48 +60,16 @@ final class Serializer
             return $s;
         }
         // 4. For each child node of the node, in tree order, run the following steps:
-        for ($currentNode = $node->_first; $currentNode; $currentNode = $currentNode->_next) {
+        for ($child = $node->_first; $child; $child = $child->_next) {
             // 4.1. Let current node be the child node being processed.
             // 4.2 Append the appropriate string from the following list to s:
-            if ($currentNode instanceof Element) {
-                $s .= $this->serializeElement($currentNode);
-            } else if ($currentNode instanceof Text) {
-                // If the parent of current node is a style, script, xmp, iframe, noembed, noframes, or plaintext element,
-                // or if the parent of current node is a noscript element and scripting is enabled for the node,
-                // then append the value of current node's data IDL attribute literally.
-                $parent = $currentNode->_parent;
-                $parentName = $parent->localName ?? null;
-                if (isset(Elements::RCDATA_ELEMENTS[$parentName])) {
-                    $s .= $currentNode->_value;
-                } else {
-                    // Otherwise, append the value of current node's data IDL attribute, escaped as described below.
-                    $s .= $this->escapeString($currentNode->_value);
-                }
-            } else if ($currentNode instanceof Comment) {
-                // Append the literal string "<!--" ,
-                // followed by the value of current node's data IDL attribute,
-                // followed by the literal string "-->".
-                $s .= "<!--{$currentNode->_value}-->";
-            } else if ($currentNode instanceof ProcessingInstruction) {
-                // Append the literal string "<?",
-                // followed by the value of current node's target IDL attribute,
-                // followed by a single U+0020 SPACE character,
-                // followed by the value of current node's data IDL attribute,
-                // followed by a single U+003E GREATER-THAN SIGN character (>).
-                $s .= "<?{$currentNode->target} {$currentNode->_value}>";
-            } else if ($currentNode instanceof DocumentType) {
-                // Append the literal string "<!DOCTYPE",
-                // followed by a space (U+0020 SPACE),
-                // followed by the value of current node's name IDL attribute,
-                // followed by the literal string ">" (U+003E GREATER-THAN SIGN).
-                $s .= "<!DOCTYPE {$currentNode->name}>";
-            }
+            $s .= $this->serialize($child);
         }
 
         return $s;
     }
 
-    public function serializeElement(Element $node): string
+    private function serializeElement(Element $node): string
     {
         $s = '';
         // If current node is an element in the HTML namespace, the MathML namespace, or the SVG namespace,
@@ -87,9 +77,8 @@ final class Serializer
         if (isset(self::BLANK_NAMESPACES[$node->namespaceURI])) {
             $tagName = $node->localName;
         } else {
-            $tagName = $node->tagName;
+            $tagName = $node->qualifiedName;
         }
-        $tagName = XmlNameEscaper::unescape($tagName);
         // Append a U+003C LESS-THAN SIGN character (<), followed by tagName.
         $s .= "<{$tagName}";
         // NOTE: next spec step is skipped since we do not support custom elements.
@@ -114,7 +103,7 @@ final class Serializer
         // (thus recursing into this algorithm for that element),
         // followed by a U+003C LESS-THAN SIGN character (<), a U+002F SOLIDUS character (/),
         // tagName again, and finally a U+003E GREATER-THAN SIGN character (>).
-        $s .= $this->serialize($node);
+        $s .= $this->serializeFragment($node);
         $s .= "</{$tagName}>";
         return $s;
     }
@@ -126,16 +115,52 @@ final class Serializer
         $isBoolean = isset(Elements::BOOLEAN_ATTRIBUTES['*'][$canonicalName])
             || isset(Elements::BOOLEAN_ATTRIBUTES[$tagName][$canonicalName]);
         if ($isBoolean && (
-            $attr->value === '' ||
-            strcasecmp($attr->value, $canonicalName) === 0
+            $attr->_value === '' ||
+            strcasecmp($attr->_value, $canonicalName) === 0
         )) {
             return $name;
         }
-        return sprintf(
-            '%s="%s"',
-            XmlNameEscaper::unescape($name),
-            $this->escapeString($attr->value, true)
-        );
+        return sprintf('%s="%s"', $name, $this->escapeString($attr->_value, true));
+    }
+
+    public function serializeText(Text $node): string
+    {
+        // If the parent of current node is a style, script, xmp, iframe, noembed, noframes, or plaintext element,
+        // or if the parent of current node is a noscript element and scripting is enabled for the node,
+        // then append the value of current node's data IDL attribute literally.
+        $parent = $node->_parent;
+        if ($parent->isHTML && isset(Elements::RCDATA_ELEMENTS[$parent->localName])) {
+            return $node->_value;
+        }
+        // Otherwise, append the value of current node's data IDL attribute, escaped as described below.
+        return $this->escapeString($node->_value);
+    }
+
+    public function serializeComment(Comment $node): string
+    {
+        // Append the literal string "<!--" ,
+        // followed by the value of current node's data IDL attribute,
+        // followed by the literal string "-->".
+        return "<!--{$node->_value}-->";
+    }
+
+    private function serializeProcessingInstruction(ProcessingInstruction $node): string
+    {
+        // Append the literal string "<?",
+        // followed by the value of current node's target IDL attribute,
+        // followed by a single U+0020 SPACE character,
+        // followed by the value of current node's data IDL attribute,
+        // followed by a single U+003E GREATER-THAN SIGN character (>).
+        return "<?{$node->target} {$node->_value}>";
+    }
+
+    public function serializeDocumentType(DocumentType $node): string
+    {
+        // Append the literal string "<!DOCTYPE",
+        // followed by a space (U+0020 SPACE),
+        // followed by the value of current node's name IDL attribute,
+        // followed by the literal string ">" (U+003E GREATER-THAN SIGN).
+        return "<!DOCTYPE {$node->name}>";
     }
 
     /**
@@ -148,7 +173,7 @@ final class Serializer
             Namespaces::XMLNS => $attr->localName === 'xmlns' ? 'xmlns' : "xmlns:{$attr->localName}",
             Namespaces::XLINK => "xlink:{$attr->localName}",
             null, '' => $attr->localName,
-            default => $attr->nodeName,
+            default => $attr->name,
         };
     }
 

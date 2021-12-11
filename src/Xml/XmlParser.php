@@ -16,7 +16,7 @@ use XMLReader;
 /**
  * @see https://html.spec.whatwg.org/multipage/xhtml.html#xml-parser
  */
-final class Parser
+final class XmlParser
 {
     private const HTML_PUBLIC_IDS = [
         '-//W3C//DTD XHTML 1.0 Transitional//EN' => true,
@@ -33,7 +33,7 @@ final class Parser
     /**
      * @throws DomException|ParseError
      */
-    public function parse(string $xml): Document
+    public function parse(string $xml): XmlDocument
     {
         libxml_set_external_entity_loader($this->resolveEntities(...));
         $internalErrors = libxml_use_internal_errors(true);

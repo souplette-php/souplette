@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-use Souplette\Html\Parser;
+use Souplette\Html\HtmlParser;
 use Souplette\Tests\Html5Lib\DataFile;
 use Souplette\Tests\Html5Lib\TreeConstruction\Serializer;
 
@@ -22,7 +22,7 @@ $test = $testFile[$testno];
 printf("#DATA: %s\n", $test['data']);
 printf("#EXPECTED:\n%s\n", $test['document']);
 
-$parser = new Parser();
+$parser = new HtmlParser();
 $doc = $parser->parse($test['data']);
 
 $serializer = new Serializer();
