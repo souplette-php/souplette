@@ -25,6 +25,11 @@ final class Idioms
         }
     }
 
+    public static function stripAndCollapseAsciiWhitespace(string $input): string
+    {
+        return trim(preg_replace('/\s+/', ' ', $input));
+    }
+
     /**
      * @throws DomException
      */

@@ -14,6 +14,7 @@ use Souplette\Dom\Internal\ElementsByIdMap;
 use Souplette\Dom\Internal\NodeFlags;
 use Souplette\Dom\Traits\GetElementsByClassNameTrait;
 use Souplette\Dom\Traits\GetElementsByTagNameTrait;
+use Souplette\Dom\Traits\DocumentTreeAccessorsTrait;
 use Souplette\Dom\Traversal\ElementTraversal;
 use Souplette\Xml\QName;
 
@@ -26,13 +27,14 @@ use Souplette\Xml\QName;
  * @property-read ?DocumentType $doctype
  * @property-read ?Element $documentElement
  * @property-read ?Element $head
- * @property-read ?Element $body
+ * @property ?Element $body
  * @property string $title
  */
 class Document extends ParentNode implements NonElementParentNodeInterface
 {
     use GetElementsByTagNameTrait;
     use GetElementsByClassNameTrait;
+    use DocumentTreeAccessorsTrait;
 
     public readonly int $nodeType;
     public readonly string $nodeName;
@@ -69,7 +71,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
             'compatMode' => $this->getCompatMode(),
             'contentType' => $this->getContentType(),
             'doctype' => $this->getDoctype(),
-            'documentElement' => $this->getFirstElementChild(),
+            'documentElement' => $this->getDocumentElement(),
             'head' => $this->getHead(),
             'body' => $this->getBody(),
             'title' => $this->getTitle(),
@@ -81,6 +83,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
     {
         match ($prop) {
             'textContent', 'nodeValue' => null,
+            'body' => $this->setBody($value),
             'title' => $this->setTitle($value),
             default => parent::__set($prop, $value),
         };
@@ -120,45 +123,6 @@ class Document extends ParentNode implements NonElementParentNodeInterface
     public function getDocumentElement(): ?Element
     {
         return $this->getFirstElementChild();
-    }
-
-    public function getHead(): ?Element
-    {
-        return ElementTraversal::firstChild(
-            $this->getDocumentElement(),
-            fn(Element $el) => $el->localName === 'head' && $el->isHTML,
-        );
-    }
-
-    public function getBody(): ?Element
-    {
-        return ElementTraversal::firstChild(
-            $this->getDocumentElement(),
-            fn(Element $el) => $el->localName === 'body' && $el->isHTML,
-        );
-    }
-
-    public function getTitle(): string
-    {
-        $title = ElementTraversal::firstChild(
-            $this->getHead(),
-            fn(Element $el) => $el->localName === 'title' && $el->isHTML,
-        );
-        return $title?->getTextContent() ?? '';
-    }
-
-    public function setTitle(string $value): void
-    {
-        $head = $this->getHead();
-        if (!$head) return;
-        $title = ElementTraversal::firstChild(
-            $head,
-            fn(Element $el) => $el->localName === 'title' && $el->isHTML,
-        );
-        if (!$title) {
-            $title = $head->appendChild($this->createElement('title'));
-        }
-        $title->setTextContent($value);
     }
 
     public function createDocumentFragment(): DocumentFragment

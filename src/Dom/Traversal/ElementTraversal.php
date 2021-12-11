@@ -19,6 +19,15 @@ abstract class ElementTraversal
         return null;
     }
 
+    public static function firstDescendant(?ParentNode $parent, ?callable $filter = null): ?Element
+    {
+        if (!$parent) return null;
+        foreach (self::descendantsOf($parent, $filter) as $node) {
+            return $node;
+        }
+        return null;
+    }
+
     /**
      * @return iterable<Element>
      */
