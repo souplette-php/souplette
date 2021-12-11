@@ -5,12 +5,12 @@ namespace Souplette\Dom\Exception;
 use Throwable;
 
 /**
- * The string did not match the expected pattern.
+ * The operation failed for an unknown transient reason (e.g. out of memory).
  */
-final class SyntaxError extends DomException
+final class UnknownError extends DomException
 {
     public function __construct(string $message = '', ?Throwable $previous = null)
     {
-        parent::__construct($message, self::SYNTAX_ERR, $previous);
+        parent::__construct($message, 0, $previous);
     }
 }

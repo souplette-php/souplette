@@ -5,12 +5,12 @@ namespace Souplette\Dom\Exception;
 use Throwable;
 
 /**
- * The string did not match the expected pattern.
+ * @deprecated Use `TypeError` instead.
  */
-final class SyntaxError extends DomException
+final class TypeMismatchError extends DomException
 {
     public function __construct(string $message = '', ?Throwable $previous = null)
     {
-        parent::__construct($message, self::SYNTAX_ERR, $previous);
+        parent::__construct($message, self::TYPE_MISMATCH_ERR, $previous);
     }
 }

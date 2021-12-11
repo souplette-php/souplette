@@ -5,9 +5,9 @@ namespace Souplette\Dom;
 use Souplette\Dom\Api\NodeInterface;
 use Souplette\Dom\Exception\DomException;
 use Souplette\Dom\Exception\HierarchyRequestError;
-use Souplette\Dom\Exception\UndefinedProperty;
 use Souplette\Dom\Internal\NodeFlags;
 use Souplette\Dom\Traversal\NodeTraversal;
+use Souplette\Exception\UndefinedProperty;
 
 /**
  * @see https://dom.spec.whatwg.org/#interface-node

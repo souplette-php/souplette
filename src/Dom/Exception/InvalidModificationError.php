@@ -5,12 +5,12 @@ namespace Souplette\Dom\Exception;
 use Throwable;
 
 /**
- * The string did not match the expected pattern.
+ * The object can not be modified in this way.
  */
-final class SyntaxError extends DomException
+final class InvalidModificationError extends DomException
 {
     public function __construct(string $message = '', ?Throwable $previous = null)
     {
-        parent::__construct($message, self::SYNTAX_ERR, $previous);
+        parent::__construct($message, self::INVALID_MODIFICATION_ERR, $previous);
     }
 }

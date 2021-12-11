@@ -10,6 +10,8 @@ use Souplette\Dom\DocumentType;
 use Souplette\Dom\Element;
 use Souplette\Dom\Exception\DomException;
 use Souplette\Dom\Exception\InvalidStateError;
+use Souplette\Dom\Exception\NamespaceError;
+use Souplette\Dom\Exception\SyntaxError;
 use Souplette\Dom\Namespaces;
 use Souplette\Dom\Node;
 use Souplette\Dom\ParentNode;
@@ -162,7 +164,10 @@ final class XmlSerializer
             str_contains($node->localName, ':')
             || !preg_match(QName::NAME_PATTERN, $node->localName)
         )) {
-            throw new DomException('Element local name contains invalid characters.');
+            throw new SyntaxError(sprintf(
+                'Element local name contains invalid characters: "%s".',
+                $node->localName,
+            ));
         }
         // 2, 3, 4, 5, 6, 7, 8, 9
         $markup = '<';
@@ -196,7 +201,7 @@ final class XmlSerializer
             if ($prefix === 'xmlns') {
                 // 12.3.1
                 if ($this->requireWellFormed) {
-                    throw new DomException('Element has an xmlns prefix.');
+                    throw new NamespaceError('Element has an xmlns prefix.');
                 }
                 // 12.3.2
                 $candidatePrefix = $prefix;
@@ -285,7 +290,10 @@ final class XmlSerializer
         foreach ($node->_attrs as $attr) {
             // 3.1
             if ($this->requireWellFormed && isset($localNameSet[$attr->namespaceURI][$attr->localName])) {
-                throw new DomException('Duplicate attribute.');
+                throw new InvalidStateError(sprintf(
+                    'Duplicate attribute "%s".',
+                    $attr->name,
+                ));
             }
             // 3.2
             $localNameSet[$attr->namespaceURI][$attr->localName] = true;
@@ -310,11 +318,11 @@ final class XmlSerializer
                     // TODO: WTF???
                     // 3.5.2.2
                     if ($this->requireWellFormed && $attr->_value === Namespaces::XMLNS) {
-                        throw new DomException('The XMLNS namespace is reserved.');
+                        throw new NamespaceError('The XMLNS namespace is reserved.');
                     }
                     // 3.5.2.3
                     if ($this->requireWellFormed && $attr->_value === '') {
-                        throw new DomException(
+                        throw new NamespaceError(
                             'Namespace prefix declarations cannot be used to undeclare a namespace'
                             . ' (use a default namespace declaration instead).'
                         );
@@ -343,7 +351,7 @@ final class XmlSerializer
                 || !preg_match(QName::NAME_PATTERN, $attr->localName)
                 || ($attr->localName === 'xmlns' && $attributeNamespace === null)
             )) {
-                throw new DomException(sprintf(
+                throw new SyntaxError(sprintf(
                     'Invalid attribute name: "%s"',
                     $attr->localName,
                 ));
@@ -367,7 +375,10 @@ final class XmlSerializer
     {
         if (!$value) return '';
         if ($this->requireWellFormed && !preg_match(self::VALID_TEXT, $value)) {
-            throw new DomException('Attribute value contains illegal characters.');
+            throw new SyntaxError(sprintf(
+                'Attribute value contains illegal characters: "%s".',
+                $value,
+            ));
         }
 
         return strtr($value, [
@@ -388,7 +399,7 @@ final class XmlSerializer
         PrefixMap $prefixMap,
     ): string {
         if ($this->requireWellFormed && !$node->getDocumentElement()) {
-            throw new DomException('Missing document element node.');
+            throw new InvalidStateError('Missing document element node.');
         }
 
         $markup = '';
@@ -410,7 +421,7 @@ final class XmlSerializer
             !preg_match(self::VALID_TEXT, $markup)
             || preg_match('/--|-$/', $markup)
         )) {
-            throw new DomException('Comment node contains invalid characters.');
+            throw new SyntaxError('Comment node contains invalid characters.');
         }
 
         return "<!--{$markup}-->";
@@ -425,7 +436,7 @@ final class XmlSerializer
         $markup = $node->_value;
         if (!$markup) return '';
         if ($this->requireWellFormed && !preg_match(self::VALID_TEXT, $markup)) {
-            throw new DomException('Text node contains invalid characters.');
+            throw new SyntaxError('Text node contains invalid characters.');
         }
 
         return strtr($markup, [
@@ -455,10 +466,10 @@ final class XmlSerializer
     private function serializeDocumentType(DocumentType $node): string {
         if ($this->requireWellFormed) {
             if ($node->publicId && !preg_match(self::VALID_DOCTYPE_PUBLIC_ID, $node->publicId)) {
-                throw new DomException('Doctype public ID contains invalid characters.');
+                throw new SyntaxError('Doctype public ID contains invalid characters.');
             }
             if ($node->systemId && (!preg_match(self::VALID_DOCTYPE_SYSTEM_ID, $node->systemId))) {
-                throw new DomException('Doctype system ID contains invalid characters.');
+                throw new SyntaxError('Doctype system ID contains invalid characters.');
             }
         }
 
@@ -484,10 +495,10 @@ final class XmlSerializer
         $data = $node->_value;
         if ($this->requireWellFormed) {
             if (str_contains($node->target, ':') || strcasecmp($node->target, 'xml') === 0) {
-                throw new DomException('Processing instruction target contains invalid characters.');
+                throw new SyntaxError('Processing instruction target contains invalid characters.');
             }
             if (str_contains($data, '?>') || !preg_match(self::VALID_TEXT, $data)) {
-                throw new DomException('Processing instruction data contains invalid characters.');
+                throw new SyntaxError('Processing instruction data contains invalid characters.');
             }
         }
 

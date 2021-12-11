@@ -5,12 +5,12 @@ namespace Souplette\Dom\Exception;
 use Throwable;
 
 /**
- * The string did not match the expected pattern.
+ * The quota has been exceeded.
  */
-final class SyntaxError extends DomException
+final class QuotaExceededError extends DomException
 {
     public function __construct(string $message = '', ?Throwable $previous = null)
     {
-        parent::__construct($message, self::SYNTAX_ERR, $previous);
+        parent::__construct($message, self::QUOTA_EXCEEDED_ERR, $previous);
     }
 }

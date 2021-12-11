@@ -2,10 +2,15 @@
 
 namespace Souplette\Dom\Exception;
 
+use Throwable;
+
+/**
+ * @deprecated Use RangeError instead.
+ */
 final class IndexSizeError extends DomException
 {
-    public function __construct($message = "", \Throwable $previous = null)
+    public function __construct(string $message = '', ?Throwable $previous = null)
     {
-        parent::__construct($message, ErrorCodes::INDEX_SIZE_ERROR, $previous);
+        parent::__construct($message, self::INDEX_SIZE_ERR, $previous);
     }
 }

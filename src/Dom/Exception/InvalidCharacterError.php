@@ -4,10 +4,13 @@ namespace Souplette\Dom\Exception;
 
 use Throwable;
 
+/**
+ * The string contains invalid characters.
+ */
 final class InvalidCharacterError extends DomException
 {
-    public function __construct($message = "", Throwable $previous = null)
+    public function __construct(string $message = '', ?Throwable $previous = null)
     {
-        parent::__construct($message, ErrorCodes::INVALID_CHARACTER_ERROR, $previous);
+        parent::__construct($message, self::INVALID_CHARACTER_ERR, $previous);
     }
 }

@@ -6,8 +6,8 @@ use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Dom\Document;
 use Souplette\Dom\Element;
-use Souplette\Dom\Exception\UndefinedProperty;
 use Souplette\Dom\Node;
+use Souplette\Exception\UndefinedProperty;
 
 final class NodeTest extends TestCase
 {

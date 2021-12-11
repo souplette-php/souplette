@@ -4,10 +4,13 @@ namespace Souplette\Dom\Exception;
 
 use Throwable;
 
+/**
+ * The object can not be found here.
+ */
 final class NotFoundError extends DomException
 {
-    public function __construct($message = "", Throwable $previous = null)
+    public function __construct(string $message = '', ?Throwable $previous = null)
     {
-        parent::__construct($message, ErrorCodes::NOT_FOUND_ERROR, $previous);
+        parent::__construct($message, self::NOT_FOUND_ERR, $previous);
     }
 }

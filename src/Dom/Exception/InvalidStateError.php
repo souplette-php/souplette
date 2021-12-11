@@ -4,10 +4,13 @@ namespace Souplette\Dom\Exception;
 
 use Throwable;
 
+/**
+ * The object is in an invalid state.
+ */
 final class InvalidStateError extends DomException
 {
-    public function __construct($message = "", Throwable $previous = null)
+    public function __construct(string $message = '', ?Throwable $previous = null)
     {
-        parent::__construct($message, ErrorCodes::INVALID_STATE_ERROR, $previous);
+        parent::__construct($message, self::INVALID_STATE_ERR, $previous);
     }
 }

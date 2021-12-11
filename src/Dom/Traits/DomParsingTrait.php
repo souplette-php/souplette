@@ -5,7 +5,7 @@ namespace Souplette\Dom\Traits;
 use Souplette\Dom\DocumentFragment;
 use Souplette\Dom\Element;
 use Souplette\Dom\Exception\DomException;
-use Souplette\Dom\Exception\NoModificationAllowed;
+use Souplette\Dom\Exception\NoModificationAllowedError;
 use Souplette\Dom\Exception\SyntaxError;
 use Souplette\Dom\Namespaces;
 use Souplette\Dom\Node;
@@ -71,7 +71,7 @@ trait DomParsingTrait
         $parent = $this->_parent;
         if (!$parent) return;
         if ($parent->nodeType === Node::DOCUMENT_NODE) {
-            throw new NoModificationAllowed(sprintf(
+            throw new NoModificationAllowedError(sprintf(
                 'Failed to execute %s: The element has no parent.',
                 __METHOD__,
             ));
@@ -106,7 +106,7 @@ trait DomParsingTrait
             )),
         };
         if (!$context || $context === $this->_doc) {
-            throw new NoModificationAllowed(sprintf(
+            throw new NoModificationAllowedError(sprintf(
                 'Failed to execute %s: The element has no parent.',
                 __METHOD__,
             ));

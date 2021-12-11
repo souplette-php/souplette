@@ -5,12 +5,12 @@ namespace Souplette\Dom\Exception;
 use Throwable;
 
 /**
- * The string did not match the expected pattern.
+ * A mutation operation in a transaction failed because a constraint was not satisfied.
  */
-final class SyntaxError extends DomException
+final class ConstraintError extends DomException
 {
     public function __construct(string $message = '', ?Throwable $previous = null)
     {
-        parent::__construct($message, self::SYNTAX_ERR, $previous);
+        parent::__construct($message, 0, $previous);
     }
 }
