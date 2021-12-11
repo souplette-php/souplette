@@ -20,6 +20,15 @@ final class TreeConstructionTestDTO
     public bool $isAllowedToFail = false;
     public string $allowedToFailReason = '';
 
+    private const PREFIX_TO_NS = [
+        'html' => Namespaces::HTML,
+        'math' => Namespaces::MATHML,
+        'svg' => Namespaces::SVG,
+        'xlink' => Namespaces::XLINK,
+        'xml' => Namespaces::XML,
+        'xmlns' => Namespaces::XMLNS,
+    ];
+
     public static function fromArray(array $data): self
     {
         $test = new self();
@@ -32,7 +41,7 @@ final class TreeConstructionTestDTO
             $context = explode(' ', trim($data['document-fragment']));
             if (\count($context) === 2) {
                 [$prefix, $localName] = $context;
-                $test->contextElement = [Namespaces::FROM_PREFIX[$prefix], $localName];
+                $test->contextElement = [self::PREFIX_TO_NS[$prefix], $localName];
             } else {
                 $test->contextElement = [Namespaces::HTML, $context[0]];
             }

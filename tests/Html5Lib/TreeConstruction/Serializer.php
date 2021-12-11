@@ -11,10 +11,18 @@ use Souplette\Dom\Element;
 use Souplette\Dom\Namespaces;
 use Souplette\Dom\Node;
 use Souplette\Dom\Text;
-use Souplette\Xml\XmlNameEscaper;
 
 final class Serializer
 {
+    const NS_TO_PREFIX = [
+        Namespaces::HTML => 'html',
+        Namespaces::MATHML => 'math',
+        Namespaces::SVG => 'svg',
+        Namespaces::XLINK => 'xlink',
+        Namespaces::XML => 'xml',
+        Namespaces::XMLNS => 'xmlns',
+    ];
+
     public function serialize(Node $doc): string
     {
         $output = [];
@@ -95,10 +103,9 @@ final class Serializer
     private function serializeTagName(Element $node): string
     {
         if ($node->namespaceURI && $node->namespaceURI !== Namespaces::HTML) {
-            $localName = XmlNameEscaper::unescape($node->localName);
-            $name = sprintf('%s %s', Namespaces::TO_PREFIX[$node->namespaceURI], $localName);
+            $name = sprintf('%s %s', self::NS_TO_PREFIX[$node->namespaceURI], $node->localName);
         } else {
-            $name = XmlNameEscaper::unescape($node->localName);
+            $name = $node->localName;
         }
         return $name;
     }
@@ -106,11 +113,11 @@ final class Serializer
     private function serializeAttributeName(Element $node, Attr $attr): string
     {
         if ($node->namespaceURI === Namespaces::HTML && $attr->namespaceURI === Namespaces::XML) {
-            $name = XmlNameEscaper::escape($attr->nodeName);
+            $name = $attr->name;
         } else if ($attr->namespaceURI) {
-            $name = sprintf('%s %s', Namespaces::TO_PREFIX[$attr->namespaceURI], XmlNameEscaper::unescape($attr->localName));
+            $name = sprintf('%s %s', self::NS_TO_PREFIX[$attr->namespaceURI], $attr->localName);
         } else {
-            $name = XmlNameEscaper::unescape($attr->localName);
+            $name = $attr->localName;
         }
         return $name;
     }
