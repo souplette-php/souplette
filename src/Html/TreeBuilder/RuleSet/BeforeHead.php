@@ -13,34 +13,42 @@ use Souplette\Html\TreeBuilder\RuleSet;
  */
 final class BeforeHead extends RuleSet
 {
+    private const HEAD_INSERTION_END_TAGS = [
+        'head' => true,
+        'body' => true,
+        'html' => true,
+        'br' => true,
+    ];
+
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token::TYPE;
         if ($type === TokenType::CHARACTER) {
-            $l = strspn($token->data, " \n\t\f");
-            if ($l === \strlen($token->data)) {
+            if (!$token->removeLeadingWhitespace()) {
                 // Ignore the token.
                 return;
             }
-            if ($l > 0) {
-                $token->data = substr($token->data, $l);
-            }
-        } else if ($type === TokenType::COMMENT) {
+        }
+        if ($type === TokenType::COMMENT) {
             $tree->insertComment($token);
             return;
-        } else if ($type === TokenType::DOCTYPE) {
+        }
+        if ($type === TokenType::DOCTYPE) {
             // TODO: Parse error. Ignore the token.
             return;
-        } else if ($type === TokenType::START_TAG && $token->name === 'html') {
+        }
+        if ($type === TokenType::START_TAG && $token->name === 'html') {
             InBody::process($token, $tree);
             return;
-        } else if ($type === TokenType::START_TAG && $token->name === 'head') {
+        }
+        if ($type === TokenType::START_TAG && $token->name === 'head') {
             $head = $tree->insertElement($token);
             $tree->headElement = $head;
             $tree->insertionMode = InsertionModes::IN_HEAD;
             return;
-        } else if ($type === TokenType::END_TAG) {
-            if ($token->name === 'head' || $token->name === 'body' || $token->name === 'html' || $token->name === 'br') {
+        }
+        if ($type === TokenType::END_TAG) {
+            if (isset(self::HEAD_INSERTION_END_TAGS[$token->name])) {
                 // Act as described in the "anything else" entry below.
             } else {
                 // TODO: Parse error. Ignore the token.

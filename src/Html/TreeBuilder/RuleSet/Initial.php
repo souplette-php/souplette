@@ -18,12 +18,17 @@ final class Initial extends RuleSet
     public static function process(Token $token, TreeBuilder $tree)
     {
         $type = $token::TYPE;
-        if ($type === TokenType::CHARACTER && ctype_space($token->data)) {
-            // Ignore the token.
-            return;
-        } else if ($type === TokenType::COMMENT) {
+        if ($type === TokenType::CHARACTER) {
+            if (!$token->removeLeadingWhitespace()) {
+                // Ignore the token.
+                return;
+            }
+        }
+        if ($type === TokenType::COMMENT) {
             $tree->insertComment($token, new InsertionLocation($tree->document));
-        } else if ($type === TokenType::DOCTYPE) {
+            return;
+        }
+        if ($type === TokenType::DOCTYPE) {
             // If the DOCTYPE token's name is not a case-sensitive match for the string "html",
             // or the token's public identifier is not missing,
             // or the token's system identifier is neither missing nor a case-sensitive match for the string "about:legacy-compat",
@@ -55,14 +60,14 @@ final class Initial extends RuleSet
                 $tree->document->_mode = DocumentMode::LIMITED_QUIRKS;
             }
             $tree->insertionMode = InsertionModes::BEFORE_HTML;
-        } else {
-            // TODO: If the document is not an iframe srcdoc document, then this is a parse error;
-            // set the Document to quirks mode.
-            $tree->document->_mode = DocumentMode::QUIRKS;
-            // In any case, switch the insertion mode to "before html", then reprocess the token.
-            $tree->insertionMode = InsertionModes::BEFORE_HTML;
-            $tree->processToken($token);
+            return;
         }
+        // TODO: If the document is not an iframe srcdoc document, then this is a parse error;
+        // set the Document to quirks mode.
+        $tree->document->_mode = DocumentMode::QUIRKS;
+        // In any case, switch the insertion mode to "before html", then reprocess the token.
+        $tree->insertionMode = InsertionModes::BEFORE_HTML;
+        $tree->processToken($token);
     }
 
     private const PUBLIC_ID_QUIRKS_PATTERN = <<<'REGEXP'

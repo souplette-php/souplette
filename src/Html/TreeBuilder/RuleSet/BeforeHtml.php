@@ -25,8 +25,7 @@ final class BeforeHtml extends RuleSet
             $tree->insertComment($token, new InsertionLocation($tree->document));
             return;
         } else if ($type === TokenType::CHARACTER) {
-            $token->data = ltrim($token->data, " \n\t\f\r");
-            if (\strlen($token->data) === 0) {
+            if (!$token->removeLeadingWhitespace()) {
                 // Ignore the token.
                 return;
             }
