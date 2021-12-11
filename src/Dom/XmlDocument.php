@@ -4,8 +4,5 @@ namespace Souplette\Dom;
 
 class XmlDocument extends Document
 {
-    public function __construct()
-    {
-        parent::__construct('xml');
-    }
+    protected string $type = 'xml';
 }

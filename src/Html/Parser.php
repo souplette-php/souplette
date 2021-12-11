@@ -20,7 +20,7 @@ final class Parser
 
     public function __construct(bool $scriptingEnabled = false)
     {
-        $this->treeBuilder = new TreeBuilder(new Implementation(), $scriptingEnabled);
+        $this->treeBuilder = new TreeBuilder($scriptingEnabled);
     }
 
     public function parse(string $input, ?string $encoding = null): Document

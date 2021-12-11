@@ -40,6 +40,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
 
     public string $encoding = 'UTF-8';
 
+    protected string $type = 'html';
     private ?ElementsByIdMap $elementsById = null;
 
     /** @internal */
@@ -48,14 +49,14 @@ class Document extends ParentNode implements NonElementParentNodeInterface
     public DocumentMode $_mode = DocumentMode::NO_QUIRKS;
     /** @internal */
     public ?DocumentType $_doctype = null;
+    /** @internal */
+    public string $_contentType = 'application/xml';
 
-    public function __construct(
-        public readonly string $type = 'html',
-    ) {
+    public function __construct() {
         $this->nodeType = Node::DOCUMENT_NODE;
         $this->nodeName = '#document';
         $this->_flags |= NodeFlags::IS_CONTAINER|NodeFlags::IS_CONNECTED;
-        if ($this->isHTML = $type !== 'xml') {
+        if ($this->isHTML = $this->type !== 'xml') {
             $this->_flags |= NodeFlags::NS_TYPE_HTML;
         }
     }
@@ -66,6 +67,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
             'implementation' => $this->getImplementation(),
             'mode' => $this->getMode(),
             'compatMode' => $this->getCompatMode(),
+            'contentType' => $this->getContentType(),
             'doctype' => $this->getDoctype(),
             'documentElement' => $this->getFirstElementChild(),
             'head' => $this->getHead(),
@@ -103,6 +105,11 @@ class Document extends ParentNode implements NonElementParentNodeInterface
             DocumentMode::QUIRKS => CompatMode::BACK->value,
             default => CompatMode::CSS1->value,
         };
+    }
+
+    public function getContentType(): string
+    {
+        return $this->_contentType;
     }
 
     public function getDoctype(): ?DocumentType

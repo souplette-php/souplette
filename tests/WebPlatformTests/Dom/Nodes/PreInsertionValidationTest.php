@@ -8,6 +8,7 @@ use Souplette\Dom\DocumentType;
 use Souplette\Dom\Exception\HierarchyRequestError;
 use Souplette\Dom\Exception\NotFoundError;
 use Souplette\Dom\Implementation;
+use Souplette\Dom\Namespaces;
 use Souplette\Dom\Text;
 
 final class PreInsertionValidationTest extends TestCase
@@ -59,7 +60,7 @@ final class PreInsertionValidationTest extends TestCase
     private static function createHierarchyRequestErrorProvider(string $method): iterable
     {
         $implementation = new Implementation();
-        $doc = $implementation->createDocument();
+        $doc = $implementation->createDocument(Namespaces::HTML, null);
         $parent = $doc->createElement('div');
         $child = $doc->createElement('p');
         $parent->appendChild($child);
@@ -71,7 +72,7 @@ final class PreInsertionValidationTest extends TestCase
             fn() => $child->{$method}($parent),
         ];
         // step 4
-        $doc2 = $implementation->createDocument();
+        $doc2 = $implementation->createDocument(null, null);
         yield "insert document in document ({$method})" => [
             fn() => $doc->{$method}($doc2),
         ];
@@ -93,7 +94,7 @@ final class PreInsertionValidationTest extends TestCase
             fn() => $doc->{$method}($frag),
         ];
         // Step 6, in case of DocumentFragment has multiple elements when document already has an element
-        $doc2 = $implementation->createDocument();
+        $doc2 = $implementation->createDocument(null, null);
         $doc2->appendChild($doc2->createElement('html'));
         $frag = $doc->createDocumentFragment();
         $frag->appendChild($doc2->createElement('a'));
@@ -106,7 +107,7 @@ final class PreInsertionValidationTest extends TestCase
             fn() => $doc2->{$method}($node),
         ];
         // Step 6, in case of a doctype when document already has another doctype
-        $doc2 = $implementation->createDocument();
+        $doc2 = $implementation->createDocument(null, null);
         $doc2->appendChild($implementation->createDocumentType('html'));
         yield "insert doctype in document with another doctype ({$method})" => [
             fn() => $doc2->{$method}($implementation->createDocumentType('foo')),
@@ -114,7 +115,7 @@ final class PreInsertionValidationTest extends TestCase
         // Step 6, in case of a doctype when document has an element
         if ($method !== 'prepend') {
             // Skip `.prepend` as this doesn't throw if `child` is an element
-            $doc2 = $implementation->createDocument();
+            $doc2 = $implementation->createDocument(null, null);
             $doc2->appendChild($doc2->createElement('html'));
             yield "insert doctype in document with a document element ({$method})" => [
                 fn() => $doc2->{$method}($implementation->createDocumentType('html')),
@@ -144,7 +145,7 @@ final class PreInsertionValidationTest extends TestCase
     private static function createNotFoundErrorProvider(string $method): iterable
     {
         $impl = new Implementation();
-        $doc = $impl->createDocument();
+        $doc = $impl->createDocument(null, null);
 
         // Step 1 happens before step 3.
         // Should check the 'parent' type before checking whether 'child' is a child of 'parent'
@@ -178,7 +179,7 @@ final class PreInsertionValidationTest extends TestCase
         // Should check whether 'child' is a child of 'parent' before checking
         // whether 'node' is of a type that can have a parent.
         $nonInsertableNodes = [
-            $impl->createDocument(),
+            $impl->createDocument(null, null),
         ];
         $parent = $doc->createElement('div');
         $child = $doc->createElement('div');
@@ -191,7 +192,7 @@ final class PreInsertionValidationTest extends TestCase
         // Step 3 happens before step 5.
         // Should check whether 'child' is a child of 'parent' before checking
         // whether 'node' is of a type that can have a parent of the type that 'parent' is.
-        $parent = $impl->createDocument();
+        $parent = $impl->createDocument(null, null);
         $child = $doc->createElement('div');
         $node = $doc->createTextNode('');
         yield [
@@ -213,7 +214,7 @@ final class PreInsertionValidationTest extends TestCase
         // Should check whether 'child' is a child of 'parent' before checking whether 'node'
         // can be inserted into the document given the kids the document has right now.
         $child = $doc->createElement('div');
-        $parent = $impl->createDocument();
+        $parent = $impl->createDocument(null, null);
         $node = $doc->createDocumentFragment();
         $node->appendChild($doc->createElement('div'));
         $node->appendChild($doc->createElement('div'));

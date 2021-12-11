@@ -64,7 +64,6 @@ final class TreeBuilder
 
     public Tokenizer $tokenizer;
     public Encoding $encoding;
-    private Implementation $dom;
     public Document $document;
 
     /**
@@ -118,9 +117,8 @@ final class TreeBuilder
     public bool $scriptingEnabled = false;
     public bool $shouldSkipNextNewLine = false;
 
-    public function __construct(Implementation $dom, bool $scriptingEnabled = false)
+    public function __construct(bool $scriptingEnabled = false)
     {
-        $this->dom = $dom;
         $this->scriptingEnabled = $scriptingEnabled;
     }
 
@@ -496,12 +494,14 @@ final class TreeBuilder
 
     private function createDocument(): Document
     {
-        return $this->dom->createDocument();
+        $doc = new Document();
+        $doc->_contentType = 'text/html';
+        return $doc;
     }
 
     public function createDoctype(Token\Doctype $token): DocumentType
     {
-        return $this->dom->createDocumentType($token->name, $token->publicIdentifier ?: '', $token->systemIdentifier ?: '');
+        return new DocumentType($token->name, $token->publicIdentifier ?: '', $token->systemIdentifier ?: '');
     }
 
     public function insertCharacter(Token\Character $token, ?string $data = null)
