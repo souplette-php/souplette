@@ -72,15 +72,21 @@ final class OpenElementsStack extends Stack
         parent::__construct();
     }
 
-    public function containsTag(string $name): bool
+    public function containsTag(string $localName, string $namespace = Namespaces::HTML): bool
     {
         foreach ($this as $node) {
-            if ($node->localName === $name) {
+            if ($node->localName === $localName && $node->namespaceURI === $namespace) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    public function currentNodeHasType(string $localName, string $namespace = Namespaces::HTML): bool
+    {
+        $current = $this->top();
+        return $current->localName === $localName && $current->namespaceURI === $namespace;
     }
 
     public function popUntilTag(string $tagName, string $namespace = Namespaces::HTML)
@@ -108,7 +114,7 @@ final class OpenElementsStack extends Stack
     }
 
     /**
-     * Used in thr rules for parsing a token in foreign content.
+     * Used in the rules for parsing a token in foreign content.
      * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inforeign
      * The algorithm in the spec is not quite the same, but Blink and html5lib use this one.
      */
@@ -131,13 +137,22 @@ final class OpenElementsStack extends Stack
      */
     public function hasElementInScope(Element $target): bool
     {
-        $scope = self::SCOPE_BASE;
         foreach ($this as $node) {
             // If node is the target node, terminate in a match state.
             if ($node === $target) return true;
             // Otherwise, if node is one of the element types in list, terminate in a failure state.
-            if (isset($scope[$node->namespaceURI][$node->localName])) return false;
+            if (isset(self::SCOPE_BASE[$node->namespaceURI][$node->localName])) return false;
         }
+        return false;
+    }
+
+    public function hasHeadingElementInScope(): bool
+    {
+        foreach ($this as $node) {
+            if ($node->isHTML && isset(Elements::HEADING_ELEMENTS[$node->localName])) return true;
+            if (isset(self::SCOPE_BASE[$node->namespaceURI][$node->localName])) return false;
+        }
+
         return false;
     }
 
@@ -150,10 +165,9 @@ final class OpenElementsStack extends Stack
      */
     public function hasTagsInScope(array $tagNames, string $namespace = Namespaces::HTML): bool
     {
-        $scope = self::SCOPE_BASE;
         foreach ($this as $node) {
             if (\in_array($node->localName, $tagNames, true) && $node->namespaceURI === $namespace) return true;
-            if (isset($scope[$node->namespaceURI][$node->localName])) return false;
+            if (isset(self::SCOPE_BASE[$node->namespaceURI][$node->localName])) return false;
         }
 
         return false;
@@ -161,17 +175,12 @@ final class OpenElementsStack extends Stack
 
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#has-an-element-in-scope
-     *
-     * @param string $tagName
-     * @param string $namespace
-     * @return bool
      */
     public function hasTagInScope(string $tagName, string $namespace = Namespaces::HTML): bool
     {
-        $scope = self::SCOPE_BASE;
         foreach ($this as $node) {
             if ($node->localName === $tagName && $node->namespaceURI === $namespace) return true;
-            if (isset($scope[$node->namespaceURI][$node->localName])) return false;
+            if (isset(self::SCOPE_BASE[$node->namespaceURI][$node->localName])) return false;
         }
 
         return false;
@@ -179,10 +188,6 @@ final class OpenElementsStack extends Stack
 
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#has-an-element-in-list-item-scope
-     *
-     * @param string $tagName
-     * @param string $namespace
-     * @return bool
      */
     public function hasTagInListItemScope(string $tagName, string $namespace = Namespaces::HTML): bool
     {
@@ -197,16 +202,12 @@ final class OpenElementsStack extends Stack
 
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#has-an-element-in-button-scope
-     *
-     * @param string $tagName
-     * @param string $namespace
-     * @return bool
      */
-    public function hasTagInButtonScope(string $tagName, string $namespace = Namespaces::HTML): bool
+    public function hasParagraphInButtonScope(): bool
     {
         $scope = self::$SCOPE_BUTTON;
         foreach ($this as $node) {
-            if ($node->localName === $tagName && $node->namespaceURI === $namespace) return true;
+            if ($node->isHTML && $node->localName === 'p') return true;
             if (isset($scope[$node->namespaceURI][$node->localName])) return false;
         }
 
@@ -215,10 +216,6 @@ final class OpenElementsStack extends Stack
 
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#has-an-element-in-table-scope
-     *
-     * @param string $tagName
-     * @param string $namespace
-     * @return bool
      */
     public function hasTagInTableScope(string $tagName, string $namespace = Namespaces::HTML): bool
     {
@@ -233,16 +230,13 @@ final class OpenElementsStack extends Stack
 
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#has-an-element-in-table-scope
-     *
-     * @param string[] $tagNames
-     * @param string $namespace
-     * @return bool
      */
-    public function hasTagsInTableScope(array $tagNames, string $namespace = Namespaces::HTML): bool
+    public function hasTableCellInTableScope(): bool
     {
+        $cellTypes = ['td' => true, 'th' => true];
         $scope = self::SCOPE_TABLE;
         foreach ($this as $node) {
-            if (\in_array($node->localName, $tagNames, true) && $node->namespaceURI === $namespace) return true;
+            if ($node->isHTML && isset($cellTypes[$node->localName])) return true;
             if (isset($scope[$node->namespaceURI][$node->localName])) return false;
         }
 
@@ -251,10 +245,6 @@ final class OpenElementsStack extends Stack
 
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#has-an-element-in-select-scope
-     *
-     * @param string $tagName
-     * @param string $namespace
-     * @return bool
      */
     public function hasTagInSelectScope(string $tagName, string $namespace = Namespaces::HTML): bool
     {
@@ -291,10 +281,44 @@ final class OpenElementsStack extends Stack
         return null;
     }
 
+    // =======================================================================
+    // GENERIC ALGORITHMS
+    // The following methods are generic algorithms defined in the HTML spec.
+    // We replace them by more specific methods for performance,
+    // but keep them here for reference
+    // =======================================================================
+
+    // @codeCoverageIgnoreStart
+
     /**
-     * This method is inlined in the more specific public methods and is kept here as a reference.
-     * @codeCoverageIgnore
-     *
+     * @see https://html.spec.whatwg.org/multipage/parsing.html#has-an-element-in-button-scope
+     */
+    public function hasTagInButtonScope(string $tagName, string $namespace = Namespaces::HTML): bool
+    {
+        $scope = self::$SCOPE_BUTTON;
+        foreach ($this as $node) {
+            if ($node->localName === $tagName && $node->namespaceURI === $namespace) return true;
+            if (isset($scope[$node->namespaceURI][$node->localName])) return false;
+        }
+
+        return false;
+    }
+
+    /**
+     * @see https://html.spec.whatwg.org/multipage/parsing.html#has-an-element-in-table-scope
+     */
+    public function hasTagsInTableScope(array $tagNames, string $namespace = Namespaces::HTML): bool
+    {
+        $scope = self::SCOPE_TABLE;
+        foreach ($this as $node) {
+            if (\in_array($node->localName, $tagNames, true) && $node->namespaceURI === $namespace) return true;
+            if (isset($scope[$node->namespaceURI][$node->localName])) return false;
+        }
+
+        return false;
+    }
+
+    /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#has-an-element-in-the-specific-scope
      */
     private function hasElementInSpecificScope(Element $targetNode, array $scope, bool $invert = false): bool
@@ -315,9 +339,6 @@ final class OpenElementsStack extends Stack
     }
 
     /**
-     * This method is inlined in the more specific public methods and is kept here as a reference.
-     * @codeCoverageIgnore
-     *
      * @see https://html.spec.whatwg.org/multipage/parsing.html#has-an-element-in-the-specific-scope
      */
     private function hasTagInSpecificScope(
@@ -341,4 +362,6 @@ final class OpenElementsStack extends Stack
 
         return false;
     }
+
+    // @codeCoverageIgnoreEnd
 }

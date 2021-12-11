@@ -35,18 +35,18 @@ final class InSelect extends RuleSet
             InBody::process($token, $tree);
         } else if ($type === TokenType::START_TAG && $token->name === 'option') {
             // If the current node is an option element, pop that node from the stack of open elements.
-            if ($tree->openElements->top()->localName === 'option') {
+            if ($tree->openElements->currentNodeHasType('option')) {
                 $tree->openElements->pop();
             }
             // Insert an HTML element for the token.
             $tree->insertElement($token);
         } else if ($type === TokenType::START_TAG && $token->name === 'optgroup') {
             // If the current node is an option element, pop that node from the stack of open elements.
-            if ($tree->openElements->top()->localName === 'option') {
+            if ($tree->openElements->currentNodeHasType('option')) {
                 $tree->openElements->pop();
             }
             // If the current node is an optgroup element, pop that node from the stack of open elements.
-            if ($tree->openElements->top()->localName === 'optgroup') {
+            if ($tree->openElements->currentNodeHasType('optgroup')) {
                 $tree->openElements->pop();
             }
             // Insert an HTML element for the token.
@@ -55,7 +55,7 @@ final class InSelect extends RuleSet
             // First, if the current node is an option element,
             // and the node immediately before it in the stack of open elements is an optgroup element,
             // then pop the current node from the stack of open elements.
-            if ($tree->openElements->top()->localName === 'option') {
+            if ($tree->openElements->currentNodeHasType('option')) {
                 $previousNode = $tree->openElements[1] ?? null;
                 if ($previousNode && $previousNode->localName === 'optgroup') {
                     $tree->openElements->pop();
@@ -63,7 +63,7 @@ final class InSelect extends RuleSet
             }
             // If the current node is an optgroup element, then pop that node from the stack of open elements.
             // Otherwise, this is a parse error; ignore the token.
-            if ($tree->openElements->top()->localName === 'optgroup') {
+            if ($tree->openElements->currentNodeHasType('optgroup')) {
                 $tree->openElements->pop();
             } else {
                 // TODO: Parse error.
@@ -72,7 +72,7 @@ final class InSelect extends RuleSet
         } else if ($type === TokenType::END_TAG && $token->name === 'option') {
             // If the current node is an option element, then pop that node from the stack of open elements.
             // Otherwise, this is a parse error; ignore the token.
-            if ($tree->openElements->top()->localName === 'option') {
+            if ($tree->openElements->currentNodeHasType('option')) {
                 $tree->openElements->pop();
             } else {
                 // TODO: Parse error.

@@ -19,10 +19,10 @@ final class ActiveFormattingElementList extends Stack
         if ($node->namespaceURI !== $other->namespaceURI) {
             return false;
         }
-        if (\count($node->attributes) !== \count($other->attributes)) {
+        if (\count($node->_attrs) !== \count($other->_attrs)) {
             return false;
         }
-        foreach ($node->attributes as $attr) {
+        foreach ($node->_attrs as $attr) {
             $otherAttr = $other->getAttributeNode($attr->name);
             if (!$otherAttr) {
                 return false;
@@ -30,7 +30,7 @@ final class ActiveFormattingElementList extends Stack
             if ($attr->namespaceURI !== $otherAttr->namespaceURI) {
                 return false;
             }
-            if ($attr->value !== $otherAttr->value) {
+            if ($attr->_value !== $otherAttr->_value) {
                 return false;
             }
         }

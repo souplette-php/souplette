@@ -146,7 +146,7 @@ final class InHead extends RuleSet
                 // Generate all implied end tags thoroughly.
                 $tree->generateImpliedEndTags(null, true);
                 // If the current node is not a template element, then this is a parse error.
-                if ($tree->openElements->top()->localName !== 'template') {
+                if (!$tree->openElements->currentNodeHasType('template')) {
                     // TODO: Parse error.
                 }
                 // Pop elements from the stack of open elements until a template element has been popped from the stack.

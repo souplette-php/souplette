@@ -48,7 +48,7 @@ final class InFrameset extends RuleSet
             // If the parser was not created as part of the HTML fragment parsing algorithm (fragment case),
             // and the current node is no longer a frameset element,
             // then switch the insertion mode to "after frameset".
-            if (!$tree->isBuildingFragment && $tree->openElements->top()->localName !== 'frameset') {
+            if (!$tree->isBuildingFragment && !$tree->openElements->currentNodeHasType('frameset')) {
                 $tree->insertionMode = InsertionModes::AFTER_FRAMESET;
             }
         } else if ($type === TokenType::START_TAG && $token->name === 'frame') {

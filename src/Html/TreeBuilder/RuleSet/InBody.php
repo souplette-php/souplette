@@ -200,16 +200,16 @@ final class InBody extends RuleSet
                 return;
             } else if (isset(self::CLOSE_P_START_TAGS[$tagName])) {
                 // If the stack of open elements has a p element in button scope, then close a p element.
-                if ($tree->openElements->hasTagInButtonScope('p')) {
-                    self::closeAPElement($tree);
+                if ($tree->openElements->hasParagraphInButtonScope()) {
+                    self::closeParagraph($tree);
                 }
                 // Insert an HTML element for the token.
                 $tree->insertElement($token);
                 return;
             } else if (isset(Elements::HEADING_ELEMENTS[$tagName])) {
                 // If the stack of open elements has a p element in button scope, then close a p element.
-                if ($tree->openElements->hasTagInButtonScope('p')) {
-                    self::closeAPElement($tree);
+                if ($tree->openElements->hasParagraphInButtonScope()) {
+                    self::closeParagraph($tree);
                 }
                 // If the current node is an HTML element whose tag name is one of "h1", "h2", "h3", "h4", "h5", or "h6",
                 $currentNode = $tree->openElements->top();
@@ -223,8 +223,8 @@ final class InBody extends RuleSet
                 return;
             } else if ($tagName === 'pre' || $tagName === 'listing') {
                 // If the stack of open elements has a p element in button scope, then close a p element.
-                if ($tree->openElements->hasTagInButtonScope('p')) {
-                    self::closeAPElement($tree);
+                if ($tree->openElements->hasParagraphInButtonScope()) {
+                    self::closeParagraph($tree);
                 }
                 // Insert an HTML element for the token.
                 $tree->insertElement($token);
@@ -246,8 +246,8 @@ final class InBody extends RuleSet
                 }
                 // Otherwise:
                 // If the stack of open elements has a p element in button scope, then close a p element.
-                if ($tree->openElements->hasTagInButtonScope('p')) {
-                    self::closeAPElement($tree);
+                if ($tree->openElements->hasParagraphInButtonScope()) {
+                    self::closeParagraph($tree);
                 }
                 // Insert an HTML element for the token,
                 $form = $tree->insertElement($token);
@@ -266,7 +266,7 @@ final class InBody extends RuleSet
                         // Generate implied end tags, except for li elements.
                         $tree->generateImpliedEndTags('li');
                         // If the current node is not an li element, then this is a parse error.
-                        if ($tree->openElements->top()->localName !== 'li') {
+                        if (!$tree->openElements->currentNodeHasType('li')) {
                             // TODO: Parse error.
                         }
                         // Pop elements from the stack of open elements until an li element has been popped from the stack.
@@ -283,8 +283,8 @@ final class InBody extends RuleSet
                     }
                 }
                 // If the stack of open elements has a p element in button scope, then close a p element.
-                if ($tree->openElements->hasTagInButtonScope('p')) {
-                    self::closeAPElement($tree);
+                if ($tree->openElements->hasParagraphInButtonScope()) {
+                    self::closeParagraph($tree);
                 }
                 // Finally, insert an HTML element for the token.
                 $tree->insertElement($token);
@@ -295,7 +295,7 @@ final class InBody extends RuleSet
                 foreach ($tree->openElements as $node) {
                     if ($node->localName === 'dd') {
                         $tree->generateImpliedEndTags('dd');
-                        if ($tree->openElements->top()->localName !== 'dd') {
+                        if (!$tree->openElements->currentNodeHasType('dd')) {
                             // TODO: Parse error.
                         }
                         $tree->openElements->popUntilTag('dd');
@@ -303,7 +303,7 @@ final class InBody extends RuleSet
                     }
                     if ($node->localName === 'dt') {
                         $tree->generateImpliedEndTags('dt');
-                        if ($tree->openElements->top()->localName !== 'dt') {
+                        if (!$tree->openElements->currentNodeHasType('dt')) {
                             // TODO: Parse error.
                         }
                         $tree->openElements->popUntilTag('dt');
@@ -318,15 +318,15 @@ final class InBody extends RuleSet
                         break;
                     }
                 }
-                if ($tree->openElements->hasTagInButtonScope('p')) {
-                    self::closeAPElement($tree);
+                if ($tree->openElements->hasParagraphInButtonScope()) {
+                    self::closeParagraph($tree);
                 }
                 $tree->insertElement($token);
                 return;
             } else if ($tagName === 'plaintext') {
                 // If the stack of open elements has a p element in button scope, then close a p element.
-                if ($tree->openElements->hasTagInButtonScope('p')) {
-                    self::closeAPElement($tree);
+                if ($tree->openElements->hasParagraphInButtonScope()) {
+                    self::closeParagraph($tree);
                 }
                 // Insert an HTML element for the token.
                 $tree->insertElement($token);
@@ -424,10 +424,10 @@ final class InBody extends RuleSet
                 // If the Document is not set to quirks mode, and the stack of open elements has a p element in button scope,
                 if (
                     $tree->document->_mode !== DocumentMode::QUIRKS
-                    && $tree->openElements->hasTagInButtonScope('p')
+                    && $tree->openElements->hasParagraphInButtonScope()
                 ) {
                     // then close a p element.
-                    self::closeAPElement($tree);
+                    self::closeParagraph($tree);
                 }
                 // Insert an HTML element for the token.
                 $tree->insertElement($token);
@@ -488,8 +488,8 @@ final class InBody extends RuleSet
                 return;
             } else if ($tagName === 'hr') {
                 // If the stack of open elements has a p element in button scope, then close a p element.
-                if ($tree->openElements->hasTagInButtonScope('p')) {
-                    self::closeAPElement($tree);
+                if ($tree->openElements->hasParagraphInButtonScope()) {
+                    self::closeParagraph($tree);
                 }
                 // Insert an HTML element for the token.
                 $tree->insertElement($token);
@@ -524,8 +524,8 @@ final class InBody extends RuleSet
                 return;
             } else if ($tagName === 'xmp') {
                 // If the stack of open elements has a p element in button scope, then close a p element.
-                if ($tree->openElements->hasTagInButtonScope('p')) {
-                    self::closeAPElement($tree);
+                if ($tree->openElements->hasParagraphInButtonScope()) {
+                    self::closeParagraph($tree);
                 }
                 // Reconstruct the active formatting elements, if any.
                 $tree->reconstructTheListOfActiveElements();
@@ -568,7 +568,7 @@ final class InBody extends RuleSet
                 || $tagName === 'option'
             ) {
                 // If the current node is an option element,
-                if ($tree->openElements->top()->localName === 'option') {
+                if ($tree->openElements->currentNodeHasType('option')) {
                     // then pop the current node off the stack of open elements.
                     $tree->openElements->pop();
                 }
@@ -585,7 +585,7 @@ final class InBody extends RuleSet
                 if ($tree->openElements->hasTagInScope('ruby')) {
                     $tree->generateImpliedEndTags();
                     // If the current node is not now a ruby element, this is a parse error.
-                    if ($tree->openElements->top()->localName !== 'ruby') {
+                    if (!$tree->openElements->currentNodeHasType('ruby')) {
                         // TODO: Parse error.
                     }
                 }
@@ -741,7 +741,7 @@ final class InBody extends RuleSet
                 // Generate implied end tags.
                 $tree->generateImpliedEndTags();
                 // If the current node is not an HTML element with the same tag name as that of the token,
-                if ($tree->openElements->top()->localName !== $tagName) {
+                if (!$tree->openElements->currentNodeHasType($tagName)) {
                     // TODO: then this is a parse error.
                 }
                 // Pop elements from the stack of open elements
@@ -779,7 +779,7 @@ final class InBody extends RuleSet
                     // 2. Generate implied end tags.
                     $tree->generateImpliedEndTags();
                     // 3. If the current node is not a form element, then this is a parse error.
-                    if ($tree->openElements->top()->localName !== 'form') {
+                    if (!$tree->openElements->currentNodeHasType('form')) {
                         // TODO: Parse error.
                     }
                     // 4. Pop elements from the stack of open elements until a form element has been popped from the stack.
@@ -788,12 +788,12 @@ final class InBody extends RuleSet
                 return;
             } else if ($tagName === 'p') {
                 // If the stack of open elements does not have a p element in button scope,
-                if (!$tree->openElements->hasTagInButtonScope('p')) {
+                if (!$tree->openElements->hasParagraphInButtonScope()) {
                     // TODO: then this is a parse error;
                     // insert an HTML element for a "p" start tag token with no attributes.
                     $tree->insertElement(new Token\StartTag('p'));
                 }
-                self::closeAPElement($tree);
+                self::closeParagraph($tree);
                 return;
             } else if ($tagName === 'li') {
                 // If the stack of open elements does not have an li element in list item scope,
@@ -806,7 +806,7 @@ final class InBody extends RuleSet
                 // 1. Generate implied end tags, except for li elements.
                 $tree->generateImpliedEndTags('li');
                 // 2. If the current node is not an li element, then this is a parse error.
-                if ($tree->openElements->top()->localName !== 'li') {
+                if (!$tree->openElements->currentNodeHasType('li')) {
                     // TODO: Parse error.
                 }
                 // 3. Pop elements from the stack of open elements until an li element has been popped from the stack.
@@ -826,7 +826,7 @@ final class InBody extends RuleSet
                 // 1. Generate implied end tags, except for HTML elements with the same tag name as the token.
                 $tree->generateImpliedEndTags($tagName);
                 // 2. If the current node is not an HTML element with the same tag name as that of the token, then this is a parse error.
-                if ($tree->openElements->top()->localName !== $tagName) {
+                if (!$tree->openElements->currentNodeHasType($tagName)) {
                     // TODO: Parse error.
                 }
                 // 3. Pop elements from the stack of open elements until an HTML element with the same tag name as the token has been popped from the stack.
@@ -834,7 +834,7 @@ final class InBody extends RuleSet
             } else if (isset(Elements::HEADING_ELEMENTS[$tagName])) {
                 // If the stack of open elements does not have an element in scope that is an HTML element
                 // and whose tag name is one of "h1", "h2", "h3", "h4", "h5", or "h6",
-                if (!$tree->openElements->hasTagsInScope(['h1', 'h2', 'h3', 'h4', 'h5', 'h6'])) {
+                if (!$tree->openElements->hasHeadingElementInScope()) {
                     // TODO:  then this is a parse error;
                     // ignore the token.
                     return;
@@ -843,7 +843,7 @@ final class InBody extends RuleSet
                 // 1. Generate implied end tags
                 $tree->generateImpliedEndTags();
                 // 2. If the current node is not an HTML element with the same tag name as that of the token, then this is a parse error.
-                if ($tree->openElements->top()->localName !== $tagName) {
+                if (!$tree->openElements->currentNodeHasType($tagName)) {
                     // TODO: Parse error.
                 }
                 // 3. Pop elements from the stack of open elements until an HTML element
@@ -873,7 +873,7 @@ final class InBody extends RuleSet
                 // 1. Generate implied end tags.
                 $tree->generateImpliedEndTags();
                 // 2. If the current node is not an HTML element with the same tag name as that of the token, then this is a parse error.
-                if ($tree->openElements->top()->localName !== $tagName) {
+                if (!$tree->openElements->currentNodeHasType($tagName)) {
                     // TODO: Parse error.
                 }
                 // 3. Pop elements from the stack of open elements until an HTML element with the same tag name as the token has been popped from the stack.
@@ -892,7 +892,6 @@ final class InBody extends RuleSet
             }
         }
     }
-
 
     public static function anyOtherEndTag(TreeBuilder $tree, Token\EndTag $token)
     {
@@ -920,12 +919,12 @@ final class InBody extends RuleSet
      * @see https://html.spec.whatwg.org/multipage/parsing.html#close-a-p-element
      * @param TreeBuilder $tree
      */
-    private static function closeAPElement(TreeBuilder $tree): void
+    private static function closeParagraph(TreeBuilder $tree): void
     {
         // Generate implied end tags, except for p elements.
         $tree->generateImpliedEndTags('p');
         // If the current node is not a p element, then this is a parse error.
-        if ($tree->openElements->top()->localName !== 'p') {
+        if (!$tree->openElements->currentNodeHasType('p')) {
             // TODO: Parse error.
         }
         // Pop elements from the stack of open elements until a p element has been popped from the stack.
@@ -934,9 +933,6 @@ final class InBody extends RuleSet
 
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#adoption-agency-algorithm
-     * @param TreeBuilder $tree
-     * @param Token $token
-     * @return bool
      */
     private static function runTheAdoptionAgencyAlgorithm(TreeBuilder $tree, Token $token): void
     {
@@ -1060,7 +1056,7 @@ final class InBody extends RuleSet
                     $bookmark = $tree->activeFormattingElements->indexOf($node);
                 }
                 // 4.13.8 Append last node to node.
-                $node->appendChild($lastNode);
+                $node->parserInsertBefore($lastNode, null);
                 // 4.13.9 Set last node to node.
                 $lastNode = $node;
             }
@@ -1079,12 +1075,11 @@ final class InBody extends RuleSet
             //    $childNode = $childNodes[$i];
             //    $element->insertBefore($childNode, $element->lastChild);
             //}
-            $childNodes = $furthestBlock->childNodes;
-            foreach ($childNodes as $childNode) {
-                $element->appendChild($childNode);
+            foreach ($furthestBlock->getChildNodes() as $childNode) {
+                $element->parserInsertBefore($childNode, null);
             }
             // 4.17 Append that new element to furthest block.
-            $furthestBlock->appendChild($element);
+            $furthestBlock->parserInsertBefore($element, null);
             // 4.18 Remove formatting element from the list of active formatting elements,
             //      and insert the new element into the list of active formatting elements
             //      at the position of the aforementioned bookmark.

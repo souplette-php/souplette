@@ -51,7 +51,7 @@ final class InCaption extends RuleSet
             // Generate implied end tags.
             $tree->generateImpliedEndTags();
             // Now, if the current node is not a caption element, then this is a parse error.
-            if ($tree->openElements->top()->localName !== 'caption') {
+            if (!$tree->openElements->currentNodeHasType('caption')) {
                 // TODO: Parse error
             }
             // Pop elements from this stack until a caption element has been popped from the stack.
@@ -74,7 +74,7 @@ final class InCaption extends RuleSet
             // Generate implied end tags.
             $tree->generateImpliedEndTags();
             // Now, if the current node is not a caption element, then this is a parse error.
-            if ($tree->openElements->top()->localName !== 'caption') {
+            if (!$tree->openElements->currentNodeHasType('caption')) {
                 // TODO: Parse error
             }
             // Pop elements from this stack until a caption element has been popped from the stack.

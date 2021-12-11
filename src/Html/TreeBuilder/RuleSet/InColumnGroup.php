@@ -47,7 +47,7 @@ final class InColumnGroup extends RuleSet
             $tree->acknowledgeSelfClosingFlag($token);
         } else if ($type === TokenType::END_TAG && $token->name === 'colgroup') {
             // If the current node is not a colgroup element, then this is a parse error; ignore the token.
-            if ($tree->openElements->top()->localName !== 'colgroup') {
+            if (!$tree->openElements->currentNodeHasType('colgroup')) {
                 // TODO: Parse error.
                 return;
             }
@@ -68,7 +68,7 @@ final class InColumnGroup extends RuleSet
         } else {
             ANYTHING_ELSE:
             // If the current node is not a colgroup element, then this is a parse error; ignore the token.
-            if ($tree->openElements->top()->localName !== 'colgroup') {
+            if (!$tree->openElements->currentNodeHasType('colgroup')) {
                 // TODO: Parse error.
                 return;
             }

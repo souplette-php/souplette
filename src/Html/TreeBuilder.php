@@ -603,7 +603,7 @@ final class TreeBuilder
                     $value->_parent = $element;
                 } else {
                     $attr = new Attr((string)$name);
-                    $attr->value = $value;
+                    $attr->_value = $value;
                     $attr->_doc = $doc;
                     $attr->_parent = $element;
                     $element->_attrs[] = $attr;
@@ -619,11 +619,11 @@ final class TreeBuilder
         // For each attribute on the token, check to see if the attribute is already present on the element.
         // If it is not, add the attribute and its corresponding value to that element.
         foreach ($toElement->_attrs as $attr) {
-            unset($fromToken->attributes[$attr->localName]);
+            unset($fromToken->attributes[$attr->name]);
         }
         foreach ($fromToken->attributes as $name => $value) {
             $attr = new Attr((string)$name);
-            $attr->value = $value;
+            $attr->_value = $value;
             $attr->_doc = $toElement->_doc;
             $attr->_parent = $toElement;
             $toElement->_attrs[] = $attr;
@@ -689,14 +689,10 @@ final class TreeBuilder
         if (!$token->attributes) return;
         foreach ($token->attributes as $qname => $value) {
             if (isset(Attributes::ADJUSTED_FOREIGN_ATTRIBUTES[$qname])) {
-                unset($token->attributes[$qname]);
                 [$prefix, $localName, $ns] = Attributes::ADJUSTED_FOREIGN_ATTRIBUTES[$qname];
-                if (!$prefix) {
-                    $attr = $this->document->createAttribute($qname);
-                } else {
-                    $attr = $this->document->createAttributeNS($ns, $qname);
-                }
-                $attr->value = $value;
+                $attr = new Attr($localName, $ns, $prefix);
+                $attr->_doc = $this->document;
+                $attr->_value = $value;
                 $token->attributes[$qname] = $attr;
             }
         }

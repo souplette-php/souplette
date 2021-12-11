@@ -54,7 +54,7 @@ final class InCell extends RuleSet
             // Generate implied end tags.
             $tree->generateImpliedEndTags();
             // Now, if the current node is not an HTML element with the same tag name as the token, then this is a parse error.
-            if ($tree->openElements->top()->localName !== $token->name) {
+            if (!$tree->openElements->currentNodeHasType($token->name)) {
                 // TODO: Parse error.
             }
             // Pop elements from the stack of open elements stack until an HTML element with the same tag name as the token has been popped from the stack.
@@ -66,7 +66,7 @@ final class InCell extends RuleSet
         } else if ($type === TokenType::START_TAG && isset(self::CLOSE_CELL_START_TAGS[$token->name])) {
             // If the stack of open elements does not have a td or th element in table scope,
             // then this is a parse error; ignore the token. (fragment case)
-            if (!$tree->openElements->hasTagsInTableScope(['td', 'th'])) {
+            if (!$tree->openElements->hasTableCellInTableScope()) {
                 // TODO: Parse error.
                 return;
             }
