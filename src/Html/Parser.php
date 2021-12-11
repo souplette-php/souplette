@@ -2,7 +2,6 @@
 
 namespace Souplette\Html;
 
-use JetBrains\PhpStorm\Pure;
 use Souplette\Dom\Document;
 use Souplette\Dom\Element;
 use Souplette\Dom\Implementation;
@@ -57,7 +56,6 @@ final class Parser
         }
     }
 
-    #[Pure]
     private function createTokenizer(string $input): Tokenizer
     {
         return new Tokenizer($input);

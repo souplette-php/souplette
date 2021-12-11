@@ -2,8 +2,6 @@
 
 namespace Souplette\Css\Selectors;
 
-use JetBrains\PhpStorm\Pure;
-
 /**
  * @see https://www.w3.org/TR/selectors-4/#specificity-rules
  */
@@ -16,7 +14,6 @@ final class Specificity
     ) {
     }
 
-    #[Pure]
     public function add(self $specificity): self
     {
         return new self(
@@ -26,7 +23,6 @@ final class Specificity
         );
     }
 
-    #[Pure]
     public function isGreaterThan(self $specificity): bool
     {
         return $this->compare($specificity) > 0;

@@ -2,13 +2,11 @@
 
 namespace Souplette\Html\Parser;
 
-use JetBrains\PhpStorm\Pure;
 use Souplette\Encoding\EncodingLookup;
 use Souplette\Html\Tokenizer\Tokenizer;
 
 final class EncodingSniffer
 {
-    #[Pure]
     public static function sniffBOM(string $input): ?string
     {
         if (str_starts_with($input, "\xEF\xBB\xBF")) {

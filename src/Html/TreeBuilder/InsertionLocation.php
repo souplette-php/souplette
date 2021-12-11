@@ -7,7 +7,6 @@ use Souplette\Dom\Element;
 use Souplette\Dom\Namespaces;
 use Souplette\Dom\Node;
 use Souplette\Dom\ParentNode;
-use Souplette\Dom\Text;
 
 final class InsertionLocation
 {

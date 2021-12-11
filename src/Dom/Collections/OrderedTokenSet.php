@@ -2,7 +2,6 @@
 
 namespace Souplette\Dom\Collections;
 
-use JetBrains\PhpStorm\Pure;
 use Souplette\Dom\Internal\Idioms;
 
 /**
@@ -32,7 +31,6 @@ final class OrderedTokenSet implements \Countable, \IteratorAggregate, \ArrayAcc
         }
     }
 
-    #[Pure]
     public function serialize(): string
     {
         return implode(' ', $this->tokens);
@@ -46,7 +44,6 @@ final class OrderedTokenSet implements \Countable, \IteratorAggregate, \ArrayAcc
         return $this->tokens;
     }
 
-    #[Pure]
     public function isEmpty(): bool
     {
         return \count($this->tokens) === 0;
@@ -110,7 +107,6 @@ final class OrderedTokenSet implements \Countable, \IteratorAggregate, \ArrayAcc
         return false;
     }
 
-    #[Pure]
     public function count(): int
     {
         return \count($this->tokens);

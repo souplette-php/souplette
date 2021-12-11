@@ -2,9 +2,9 @@
 
 namespace Souplette\Css\Selectors\Query;
 
+use Souplette\Css\Selectors\Node\ComplexSelector;
 use Souplette\Dom\Document;
 use Souplette\Dom\Element;
-use Souplette\Css\Selectors\Node\ComplexSelector;
 use Souplette\Dom\Internal\DocumentMode;
 use Souplette\Dom\ParentNode;
 

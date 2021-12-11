@@ -2,17 +2,16 @@
 
 namespace Souplette\Css\Selectors;
 
-use Souplette\Dom\Element;
-use Souplette\Dom\Internal\Idioms;
-use Souplette\Dom\ParentNode;
 use Souplette\Css\Selectors\Node\ComplexSelector;
 use Souplette\Css\Selectors\Node\Selector;
 use Souplette\Css\Selectors\Node\SelectorList;
 use Souplette\Css\Selectors\Node\Simple\ClassSelector;
-use Souplette\Css\Selectors\Node\Simple\IdSelector;
 use Souplette\Css\Selectors\Query\QueryContext;
 use Souplette\Css\Syntax\Tokenizer\Tokenizer;
 use Souplette\Css\Syntax\TokenStream\TokenStream;
+use Souplette\Dom\Element;
+use Souplette\Dom\Internal\Idioms;
+use Souplette\Dom\ParentNode;
 use Souplette\Dom\Traversal\ElementTraversal;
 
 final class SelectorQuery

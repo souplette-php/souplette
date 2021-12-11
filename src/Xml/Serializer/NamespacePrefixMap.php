@@ -2,8 +2,6 @@
 
 namespace Souplette\Xml\Serializer;
 
-use Souplette\Dom\Namespaces;
-
 /**
  * @see https://w3c.github.io/DOM-Parsing/#the-namespace-prefix-map
  */

@@ -2,13 +2,10 @@
 
 namespace Souplette\Html\Parser;
 
-use JetBrains\PhpStorm\Pure;
-
 final class InputPreprocessor
 {
     private const BOM = "\u{FEFF}";
 
-    #[Pure]
     public static function removeBOM(string $input): string
     {
         // One leading U+FEFF BYTE ORDER MARK character must be ignored if any are present.
