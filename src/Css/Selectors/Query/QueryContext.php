@@ -5,6 +5,7 @@ namespace Souplette\Css\Selectors\Query;
 use Souplette\Dom\Document;
 use Souplette\Dom\Element;
 use Souplette\Css\Selectors\Node\ComplexSelector;
+use Souplette\Dom\Internal\DocumentMode;
 use Souplette\Dom\ParentNode;
 
 final class QueryContext
@@ -65,7 +66,7 @@ final class QueryContext
             throw new \RuntimeException('HierarchyRequestError');
         }
         $isHtmlDoc = $document->isHTML;
-        $isQuirksMode = $isHtmlDoc && self::isQuirksMode($document);
+        $isQuirksMode = $isHtmlDoc && $document->_mode === DocumentMode::QUIRKS;;
 
         return new self(
             $document,
@@ -105,10 +106,5 @@ final class QueryContext
             return $cache;
         }
         return $this->hasMatchedCache[$key] = new \SplObjectStorage();
-    }
-
-    private static function isQuirksMode(Document $document): bool
-    {
-        return $document->getCompatMode() === Document::COMPAT_MODE_BACK;
     }
 }

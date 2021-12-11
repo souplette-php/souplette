@@ -5,10 +5,10 @@ namespace Souplette\Tests\Dom;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\Dom\Document;
-use Souplette\Dom\DocumentModes;
 use Souplette\Dom\DocumentType;
 use Souplette\Dom\Element;
 use Souplette\Dom\Implementation;
+use Souplette\Dom\Internal\DocumentMode;
 
 final class DomImplementationTest extends TestCase
 {
@@ -18,8 +18,8 @@ final class DomImplementationTest extends TestCase
         $doc = $dom->createHTMLDocument();
         // document
         Assert::assertInstanceOf(Document::class, $doc);
-        Assert::assertSame(DocumentModes::NO_QUIRKS, $doc->mode);
-        Assert::assertSame(Document::COMPAT_MODE_CSS1, $doc->compatMode);
+        Assert::assertSame(DocumentMode::NO_QUIRKS, $doc->_mode);
+        Assert::assertSame('CSS1Compat', $doc->compatMode);
         // doctype
         $doctype = $doc->firstChild;
         Assert::assertInstanceOf(DocumentType::class, $doctype);

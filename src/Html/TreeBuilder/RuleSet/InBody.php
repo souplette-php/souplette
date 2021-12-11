@@ -2,7 +2,7 @@
 
 namespace Souplette\Html\TreeBuilder\RuleSet;
 
-use Souplette\Dom\DocumentModes;
+use Souplette\Dom\Internal\DocumentMode;
 use Souplette\Dom\Namespaces;
 use Souplette\Html\Tokenizer\Token;
 use Souplette\Html\Tokenizer\TokenizerState;
@@ -423,7 +423,7 @@ final class InBody extends RuleSet
             } else if ($tagName === 'table') {
                 // If the Document is not set to quirks mode, and the stack of open elements has a p element in button scope,
                 if (
-                    $tree->compatMode !== DocumentModes::QUIRKS
+                    $tree->document->_mode !== DocumentMode::QUIRKS
                     && $tree->openElements->hasTagInButtonScope('p')
                 ) {
                     // then close a p element.

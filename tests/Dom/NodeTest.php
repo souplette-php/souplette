@@ -4,11 +4,39 @@ namespace Souplette\Tests\Dom;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
+use Souplette\Dom\Document;
 use Souplette\Dom\Element;
+use Souplette\Dom\Exception\UndefinedProperty;
 use Souplette\Dom\Node;
 
 final class NodeTest extends TestCase
 {
+    private static function createDummyNode(): Node
+    {
+        return new class extends Node {
+            protected function clone(?Document $document, bool $deep = false): static {
+                return new self();
+            }
+            public function isEqualNode(?Node $otherNode): bool {
+                return false;
+            }
+        };
+    }
+
+    public function testItThrowsUndefinedPropertyForGetters()
+    {
+        $this->expectException(UndefinedProperty::class);
+        $node = self::createDummyNode();
+        $frobnicator = $node->snafucated;
+    }
+
+    public function testItThrowsUndefinedPropertyForSetters()
+    {
+        $this->expectException(UndefinedProperty::class);
+        $node = self::createDummyNode();
+        $node->snafucated = 'frobnicator';
+    }
+
     /**
      * @dataProvider containsProvider
      */

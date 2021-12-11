@@ -2,19 +2,18 @@
 
 namespace Souplette\Dom;
 
-use Souplette\Css\Selectors\SelectorQuery;
 use Souplette\Dom\Api\NonElementParentNodeInterface;
 use Souplette\Dom\Exception\HierarchyRequestError;
 use Souplette\Dom\Exception\InvalidCharacterError;
 use Souplette\Dom\Exception\NamespaceError;
 use Souplette\Dom\Exception\NotFoundError;
 use Souplette\Dom\Exception\NotSupportedError;
+use Souplette\Dom\Internal\CompatMode;
+use Souplette\Dom\Internal\DocumentMode;
 use Souplette\Dom\Internal\ElementsByIdMap;
 use Souplette\Dom\Internal\NodeFlags;
-use Souplette\Dom\Internal\TreeOrderedMap;
 use Souplette\Dom\Traits\GetElementsByClassNameTrait;
 use Souplette\Dom\Traits\GetElementsByTagNameTrait;
-use Souplette\Dom\Traits\NonElementParentNodeTrait;
 use Souplette\Dom\Traversal\ElementTraversal;
 use Souplette\Xml\QName;
 
@@ -32,12 +31,8 @@ use Souplette\Xml\QName;
  */
 class Document extends ParentNode implements NonElementParentNodeInterface
 {
-    //use NonElementParentNodeTrait;
     use GetElementsByTagNameTrait;
     use GetElementsByClassNameTrait;
-
-    const COMPAT_MODE_BACK = 'BackCompat';
-    const COMPAT_MODE_CSS1 = 'CSS1Compat';
 
     public readonly int $nodeType;
     public readonly string $nodeName;
@@ -45,12 +40,12 @@ class Document extends ParentNode implements NonElementParentNodeInterface
 
     public string $encoding = 'UTF-8';
 
-    protected string $mode = DocumentModes::NO_QUIRKS;
-
     private ?ElementsByIdMap $elementsById = null;
 
     /** @internal */
     public Implementation $_implementation;
+    /** @internal  */
+    public DocumentMode $_mode = DocumentMode::NO_QUIRKS;
     /** @internal */
     public ?DocumentType $_doctype = null;
 
@@ -69,7 +64,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
     {
         return match ($prop) {
             'implementation' => $this->getImplementation(),
-            'mode' => $this->mode,
+            'mode' => $this->getMode(),
             'compatMode' => $this->getCompatMode(),
             'doctype' => $this->getDoctype(),
             'documentElement' => $this->getFirstElementChild(),
@@ -94,14 +89,20 @@ class Document extends ParentNode implements NonElementParentNodeInterface
         return $this->_implementation ??= new Implementation();
     }
 
+    /**
+     * @see https://dom.spec.whatwg.org/#concept-document-mode
+     */
     public function getMode(): string
     {
-        return $this->mode;
+        return $this->_mode->value;
     }
 
     public function getCompatMode(): string
     {
-        return $this->mode === DocumentModes::QUIRKS ? self::COMPAT_MODE_BACK : self::COMPAT_MODE_CSS1;
+        return match ($this->_mode) {
+            DocumentMode::QUIRKS => CompatMode::BACK->value,
+            default => CompatMode::CSS1->value,
+        };
     }
 
     public function getDoctype(): ?DocumentType

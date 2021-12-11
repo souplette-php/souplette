@@ -4,10 +4,10 @@ namespace Souplette\Html;
 
 use Souplette\Dom\Attr;
 use Souplette\Dom\Document;
-use Souplette\Dom\DocumentModes;
 use Souplette\Dom\DocumentType;
 use Souplette\Dom\Element;
 use Souplette\Dom\Implementation;
+use Souplette\Dom\Internal\DocumentMode;
 use Souplette\Dom\Namespaces;
 use Souplette\Dom\Node;
 use Souplette\Dom\Text;
@@ -67,10 +67,6 @@ final class TreeBuilder
     private Implementation $dom;
     public Document $document;
 
-    /**
-     * @see https://dom.spec.whatwg.org/#concept-document-mode
-     */
-    public string $compatMode = DocumentModes::NO_QUIRKS;
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#the-insertion-mode
      */
@@ -155,7 +151,11 @@ final class TreeBuilder
         // Otherwise, the node document of the context element is in limited-quirks mode,
         // then let the Document be in limited-quirks mode.
         // Otherwise, leave the Document in no-quirks mode.
-        $this->compatMode = $contextElement->ownerDocument->compatMode ?? DocumentModes::NO_QUIRKS;
+        $this->document->_mode = match ($contextElement->ownerDocument?->_mode) {
+            DocumentMode::QUIRKS => DocumentMode::QUIRKS,
+            DocumentMode::LIMITED_QUIRKS => DocumentMode::LIMITED_QUIRKS,
+            default => DocumentMode::NO_QUIRKS,
+        };
         // 4. Set the state of the HTML parser's tokenization stage as follows, switching on the context element:
         $contextTag = $this->contextElement->localName;
         $contextNS = $this->contextElement->namespaceURI;
@@ -173,9 +173,9 @@ final class TreeBuilder
             $tokenizerState = TokenizerState::DATA;
         }
         // 5. Let root be a new html element with no attributes.
-        $root = $this->document->createElementNS(Namespaces::HTML, 'html');
+        $root = new Element('html', Namespaces::HTML);
         // 6. Append the element root to the Document node created above.
-        $this->document->appendChild($root);
+        $this->document->parserInsertBefore($root, null);
         // 7. Set up the parser's stack of open elements so that it contains just the single element root.
         $this->openElements->push($root);
         $this->insertionMode = InsertionModes::BEFORE_HEAD;
@@ -211,7 +211,6 @@ final class TreeBuilder
 
     private function reset(): void
     {
-        $this->compatMode = DocumentModes::NO_QUIRKS;
         $this->framesetOK = true;
         $this->isBuildingFragment = false;
         $this->openElements = new OpenElementsStack();
