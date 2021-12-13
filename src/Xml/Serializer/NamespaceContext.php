@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Souplette\Dom\Serialization;
+namespace Souplette\Xml\Serializer;
 
 use Souplette\Dom\Element;
 
@@ -60,5 +60,46 @@ final class NamespaceContext
     public function candidatePrefixes(string $namespace): array
     {
         return $this->nsToPrefixes[$namespace] ?? [];
+    }
+
+    /**
+     * https://w3c.github.io/DOM-Parsing/#dfn-retrieving-a-preferred-prefix-string
+     */
+    public function retrievePreferredPrefix(string $ns, ?string $preferredPrefix): ?string
+    {
+        $nsForPreferred = $this->prefixToNS[$preferredPrefix] ?? null;
+        // Preserve the prefix if the prefix is used in the scope and the namespace
+        // for it is matches to the node's one.
+        // This is equivalent to the following step in the specification:
+        // 2.1. If prefix matches preferred prefix, then stop running these steps and
+        // return prefix.
+
+        // weak comparison is intentional so that null equals ''
+        if ($preferredPrefix && $nsForPreferred && $ns == $nsForPreferred) {
+            return $preferredPrefix;
+        }
+        $candidates = $this->nsToPrefixes[$ns] ?? [];
+        // Get the last effective prefix.
+        //
+        // <el1 xmlns:p="U1" xmlns:q="U1">
+        //   <el2 xmlns:q="U2">
+        //    el2.setAttributeNS(U1, 'n', 'v');
+        // We should get 'p'.
+        //
+        // <el1 xmlns="U1">
+        //  el1.setAttributeNS(U1, 'n', 'v');
+        // We should not get '' for attributes.
+        for ($i = \count($candidates) - 1; $i >= 0; $i--) {
+            $candidate = $candidates[$i];
+            $nsForCandidate = $this->prefixToNS[$candidate] ?? null;
+            // weak comparison is intentional so that null equals ''
+            if ($nsForCandidate == $ns) return $candidate;
+        }
+        // No prefixes for |ns|.
+        // Preserve the prefix if the prefix is not used in the current scope.
+        if ($preferredPrefix && !$nsForPreferred) return $preferredPrefix;
+        // If a prefix is not specified, or the prefix is mapped to a
+        // different namespace, we should generate new prefix.
+        return null;
     }
 }

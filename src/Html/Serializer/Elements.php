@@ -2,15 +2,27 @@
 
 namespace Souplette\Html\Serializer;
 
-use Souplette\Html\TreeBuilder\Elements as TreeBuilderElements;
-
 final class Elements
 {
-    const VOID_ELEMENTS = TreeBuilderElements::VOID_ELEMENTS + [
+    const VOID_ELEMENTS = [
+        'area' => true,
+        'base' => true,
         'basefont' => true,
         'bgsound' => true,
+        'br' => true,
+        'col' => true,
+        'embed' => true,
         'frame' => true,
+        'hr' => true,
+        'img' => true,
+        'input' => true,
         'keygen' => true,
+        'link' => true,
+        'meta' => true,
+        'param' => true,
+        'source' => true,
+        'track' => true,
+        'wbr' => true,
     ];
 
     const RCDATA_ELEMENTS = [
