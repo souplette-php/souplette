@@ -6,6 +6,9 @@ use Souplette\Dom\Exception\InvalidCharacterError;
 use Souplette\Dom\Exception\NamespaceError;
 use Souplette\Dom\Namespaces;
 
+/**
+ * @internal
+ */
 final class QName
 {
     const QNAME_PATTERN = <<<'REGEXP'
@@ -53,7 +56,7 @@ final class QName
     public static function validateAndExtract(string $qualifiedName, ?string $namespace = null): array
     {
         // 1. If namespace is the empty string, then set it to null.
-        if ($namespace === '') $namespace = null;
+        $namespace = $namespace ?: null;
         // 2. Validate qualifiedName.
         // To validate a qualifiedName,
         // throw an "InvalidCharacterError" DOMException if qualifiedName does not match the QName production.
@@ -71,18 +74,18 @@ final class QName
         $localName = $matches['localName'];
         // 6. If prefix is non-null and namespace is null, then throw a "NamespaceError" DOMException.
         if ($prefix && !$namespace) {
-            throw new NamespaceError();
+            throw new NamespaceError('Prefix given with no namespace.');
         }
         // 7. If prefix is "xml" and namespace is not the XML namespace, then throw a "NamespaceError" DOMException.
         if ($prefix === 'xml' && $namespace !== Namespaces::XML) {
-            throw new NamespaceError();
+            throw new NamespaceError('The "xml" prefix must be in the XML namespace.');
         }
         // 8. If either qualifiedName or prefix is "xmlns" and namespace is not the XMLNS namespace, then throw a "NamespaceError" DOMException.
         if (
             ($prefix === 'xmlns' || $qualifiedName === 'xmlns')
             && $namespace !== Namespaces::XMLNS
         ) {
-            throw new NamespaceError();
+            throw new NamespaceError('xmlns prefix or QName must be in the XMLNS namespace.');
         }
         // 9. If namespace is the XMLNS namespace and neither qualifiedName nor prefix is "xmlns", then throw a "NamespaceError" DOMException.
         //if ($namespace === Namespaces::XMLNS)

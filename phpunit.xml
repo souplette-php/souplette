@@ -23,6 +23,7 @@
     <testsuite name="dom">
       <directory>tests/Dom</directory>
       <directory>tests/WebPlatformTests/Dom</directory>
+      <directory>tests/WebPlatformTests/DomParsing</directory>
     </testsuite>
     <testsuite name="html">
       <directory>tests/Html</directory>

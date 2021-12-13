@@ -54,8 +54,8 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
     {
         $this->nodeType = Node::ELEMENT_NODE;
         $this->localName = $localName;
-        $this->namespaceURI = $namespace;
-        $this->prefix = $prefix;
+        $this->namespaceURI = $namespace ?: null;
+        $this->prefix = $prefix ?: null;
         $this->qualifiedName = $prefix ? "{$prefix}:{$localName}" : $localName;
         $this->_flags |= NodeFlags::IS_CONTAINER;
         $this->_flags |= match ($namespace) {
@@ -415,8 +415,8 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
             if ($attr->prefix === 'xmlns' && $attr->namespaceURI === Namespaces::XMLNS && $attr->localName === $prefix) {
                 return $attr->localName;
             } else if (
-                $prefix === null
-                && $attr->localName === 'xmlns' && !$attr->prefix && $attr->namespaceURI === Namespaces::XMLNS
+                !$prefix && !$attr->prefix
+                && $attr->localName === 'xmlns' && $attr->namespaceURI === Namespaces::XMLNS
             ) {
                 return $attr->_value ?: null;
             }

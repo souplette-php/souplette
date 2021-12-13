@@ -133,17 +133,15 @@ final class SerializerTest extends TestCase
                 ->attr('xml:lang', 'en', Namespaces::XML)
                 ->getDocument(),
             '<div xml:lang="en"></div>',
-            // wierd, but this is by the spec...
-            // see https://github.com/w3c/DOM-Parsing/issues/29
-            '<div xmlns="http://www.w3.org/1999/xhtml" xmlns:ns1="http://www.w3.org/XML/1998/namespace" ns1:lang="en"></div>',
+            '<div xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"></div>',
         ];
         yield 'xlink:href attribute' => [
             DomBuilder::html()->tag('div')
                 ->attr('xlink:href', '#foo', Namespaces::XLINK)
                 ->getDocument(),
             '<div xlink:href="#foo"></div>',
-            // also see https://github.com/w3c/DOM-Parsing/issues/29
-            '<div xmlns="http://www.w3.org/1999/xhtml" xmlns:ns1="http://www.w3.org/1999/xlink" ns1:href="#foo"></div>',
+            // see https://github.com/w3c/DOM-Parsing/issues/29
+            '<div xmlns="http://www.w3.org/1999/xhtml" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#foo"></div>',
         ];
         yield 'xmlns attributes' => [
             DomBuilder::html()->tag('div')
@@ -158,7 +156,7 @@ final class SerializerTest extends TestCase
                 ->getDocument(),
             '<div foo:bar="baz"></div>',
             // also see https://github.com/w3c/DOM-Parsing/issues/29
-            '<div xmlns="http://www.w3.org/1999/xhtml" xmlns:ns1="http://example.com" ns1:bar="baz"></div>',
+            '<div xmlns="http://www.w3.org/1999/xhtml" xmlns:foo="http://example.com" foo:bar="baz"></div>',
         ];
     }
 

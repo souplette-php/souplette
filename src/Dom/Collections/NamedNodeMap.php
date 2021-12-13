@@ -6,10 +6,12 @@ use Souplette\Dom\Attr;
 use Souplette\Dom\Element;
 use Souplette\Dom\Exception\InUseAttributeError;
 use Souplette\Dom\Exception\NotFoundError;
-use Souplette\Dom\Exception\UndefinedProperty;
+use Souplette\Exception\UndefinedProperty;
 use Traversable;
 
 /**
+ * @internal
+ *
  * Work-in-progress, so just
  * @codeCoverageIgnore
  *

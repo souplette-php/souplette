@@ -8,27 +8,43 @@ use Souplette\Dom\Node;
 use Souplette\Dom\XmlDocument;
 use Souplette\Html\TreeBuilder\Elements;
 
+/**
+ * @template T of Document
+ */
 final class DomBuilder
 {
+    /** @var T  */
     protected Document $document;
     protected \SplStack $openElements;
 
+    /**
+     * @param T $document
+     */
     private function __construct(Document $document)
     {
         $this->document = $document;
         $this->openElements = new \SplStack();
     }
 
+    /**
+     * @return DomBuilder<Document>
+     */
     public static function html(): self
     {
-        return new self(new Document('html'));
+        return new self(new Document());
     }
 
+    /**
+     * @return DomBuilder<XmlDocument>
+     */
     public static function xml(): self
     {
         return new self(new XmlDocument());
     }
 
+    /**
+     * @return T
+     */
     public function getDocument(): Document
     {
         while (!$this->openElements->isEmpty()) {
@@ -37,7 +53,7 @@ final class DomBuilder
         return $this->document;
     }
 
-    public function tag(string $name, string $namespace = Namespaces::HTML): self
+    public function tag(string $name, ?string $namespace = Namespaces::HTML): self
     {
         $this->closeVoidElements();
         $element = $this->document->createElementNS($namespace, $name);

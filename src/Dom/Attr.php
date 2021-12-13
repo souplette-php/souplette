@@ -12,13 +12,17 @@ final class Attr extends Node
     public readonly int $nodeType;
     public readonly string $nodeName;
     public readonly string $name;
+    public readonly ?string $namespaceURI;
+    public readonly ?string $prefix;
 
     public function __construct(
         public readonly string $localName,
-        public readonly ?string $namespaceURI = null,
-        public readonly ?string $prefix = null,
+        ?string $namespaceURI = null,
+        ?string $prefix = null,
     ) {
         $this->nodeType = Node::ATTRIBUTE_NODE;
+        $this->namespaceURI = $namespaceURI ?: null;
+        $this->prefix = $prefix ?: null;
         $this->name = $prefix ? "{$prefix}:{$localName}" : $localName;
         $this->nodeName = $this->name;
         $this->_value = '';

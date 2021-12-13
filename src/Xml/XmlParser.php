@@ -35,6 +35,8 @@ final class XmlParser
      */
     public function parse(string $xml): XmlDocument
     {
+        $declaration = $this->parseXmlDeclaration($xml);
+
         libxml_set_external_entity_loader($this->resolveEntities(...));
         $internalErrors = libxml_use_internal_errors(true);
 
@@ -44,7 +46,11 @@ final class XmlParser
         $reader->setParserProperty(XMLReader::SUBST_ENTITIES, true);
 
         try {
-            return $this->read($reader);
+            $doc = $this->read($reader);
+            if ($declaration) {
+                $this->handleXMLDeclaration($doc, $declaration['version'], $declaration['encoding'], $declaration['standalone']);
+            }
+            return $doc;
         } finally {
             $reader->close();
             libxml_clear_errors();
@@ -96,7 +102,7 @@ final class XmlParser
                 XMLReader::COMMENT => $this->handleComment($reader, $parent, $document),
                 XMLReader::DOC_TYPE => $this->handleDocumentType($reader, $parent, $document),
                 XMLReader::PI => $this->handleProcessingInstruction($reader, $parent, $document),
-                XMLReader::DOC => null,
+                XMLReader::XML_DECLARATION => $this->handleXMLDeclaration($reader, $document),
                 default => throw ParseError::unsupportedNodeType($reader->nodeType),
             };
         }
@@ -125,6 +131,14 @@ final class XmlParser
             }
         }
         return $result;
+    }
+
+    private function handleXMLDeclaration(Document $document, string $version, string $encoding, string $standalone)
+    {
+        $document->_hasXmlDeclaration = true;
+        $document->_xmlVersion = $version;
+        if ($encoding) $document->encoding = $encoding;
+        if ($standalone) $document->_xmlStandalone = $standalone === 'yes';
     }
 
     /**
@@ -210,7 +224,7 @@ final class XmlParser
         (?: \s+ (?:
             SYSTEM \s+ (?<q>["']) (?<systemId> (?!\k<q>).* ) \k<q>
             |
-            PUBLIC \s+ (?<q>["']) (?<publicId> (?!\k<q>).* ) \k<q> \s+ (?<q>["']) (?<systemId> (?!\k<q>).* ) \k<q>
+            PUBLIC \s+ (?<q>["']) (?<publicId> (?!\k<q>).* ) \k<q> \s+ (?<q1>["']) (?<systemId> (?!\k<q1>).* ) \k<q1>
         ) )?
         \s* (?: (?&InternalSubset) \s* )?
         >
@@ -224,6 +238,32 @@ final class XmlParser
             return new DocumentType($m['name'], $m['publicId'] ?? '', $m['systemId'] ?? '');
         }
         return null;
+    }
+
+    private const XML_DECL_PATTERN = <<<'REGEXP'
+    /
+    ^ \s*
+    <\?xml \s+ version = (?<q1>["']) (?<version> 1\.[0-9]+ ) \k<q1>
+        (?:
+            \s+ encoding =  (?<q2>["']) (?<encoding> [A-Za-z] ([A-Za-z0-9._-])* ) \k<q2>
+            | \s+ standalone =  (?<q3>["']) (?<standalone> yes | no ) \k<q3>
+        )*
+        \s*
+    \?>
+    /Jx
+    REGEXP;
+
+
+    private function parseXmlDeclaration(string $xml): array
+    {
+        if (preg_match(self::XML_DECL_PATTERN, $xml, $m, \PREG_UNMATCHED_AS_NULL)) {
+            return [
+                'version' => $m['version'],
+                'encoding' => $m['encoding'],
+                'standalone' => $m['standalone'],
+            ];
+        }
+        return [];
     }
 
     private function preprocessFragment(string $xml, Element $context): string

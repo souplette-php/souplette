@@ -9,6 +9,8 @@ use Souplette\Dom\Internal\Idioms;
  *
  * @see https://dom.spec.whatwg.org/#ordered-sets
  * @see https://dom.spec.whatwg.org/#interface-domtokenlist
+ *
+ * @internal
  */
 final class OrderedTokenSet implements \Countable, \IteratorAggregate, \ArrayAccess
 {

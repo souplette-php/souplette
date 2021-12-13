@@ -16,7 +16,7 @@ final class SerializerAssert
         Assert::assertSame($expected, $result, 'Using HTML serialization');
         if ($xhtml !== null) {
             $serializer = new XmlSerializer();
-            Assert::assertSame($xhtml, $serializer->serialize($input, false), 'Using XHTML serialization');
+            Assert::assertSame($xhtml, $serializer->serialize($input), 'Using XHTML serialization');
         }
     }
 }

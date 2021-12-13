@@ -53,6 +53,13 @@ class Document extends ParentNode implements NonElementParentNodeInterface
     /** @internal */
     public string $_contentType = 'application/xml';
 
+    /** @internal */
+    public bool $_hasXmlDeclaration = false;
+    /** @internal */
+    public string $_xmlVersion = '1.0';
+    /** @internal */
+    public bool $_xmlStandalone = true;
+
     public function __construct() {
         $this->nodeType = Node::DOCUMENT_NODE;
         $this->nodeName = '#document';
