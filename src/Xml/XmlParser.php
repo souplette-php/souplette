@@ -11,6 +11,9 @@ use Souplette\Dom\Text;
 use Souplette\Dom\Traversal\ElementTraversal;
 use Souplette\Dom\XmlDocument;
 use Souplette\Xml\Exception\ParseError;
+use Souplette\Xml\Parser\EntityLoaderChain;
+use Souplette\Xml\Parser\ExternalEntityLoaderInterface;
+use Souplette\Xml\Parser\HtmlEntityLoader;
 use XMLReader;
 
 /**
@@ -18,17 +21,22 @@ use XMLReader;
  */
 final class XmlParser
 {
-    private const HTML_PUBLIC_IDS = [
-        '-//W3C//DTD XHTML 1.0 Transitional//EN' => true,
-        '-//W3C//DTD XHTML 1.1//EN' => true,
-        '-//W3C//DTD XHTML 1.0 Strict//EN' => true,
-        '-//W3C//DTD XHTML 1.0 Frameset//EN' => true,
-        '-//W3C//DTD XHTML Basic 1.0//EN' => true,
-        '-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN' => true,
-        '-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN' => true,
-        '-//W3C//DTD MathML 2.0//EN' => true,
-        '-//WAPFORUM//DTD XHTML Mobile 1.0//EN' => true,
-    ];
+    private EntityLoaderChain $entityLoader;
+
+    public function __construct()
+    {
+        $this->entityLoader = new EntityLoaderChain([
+            new HtmlEntityLoader(),
+        ]);
+    }
+
+    public function withExternalEntityLoader(ExternalEntityLoaderInterface ...$loaders): self
+    {
+        foreach ($loaders as $loader) {
+            $this->entityLoader->add($loader);
+        }
+        return $this;
+    }
 
     /**
      * @throws DomException|ParseError
@@ -37,7 +45,7 @@ final class XmlParser
     {
         $declaration = $this->parseXmlDeclaration($xml);
 
-        libxml_set_external_entity_loader($this->resolveEntities(...));
+        libxml_set_external_entity_loader($this->entityLoader);
         $internalErrors = libxml_use_internal_errors(true);
 
         $reader = new XMLReader();
@@ -102,20 +110,11 @@ final class XmlParser
                 XMLReader::COMMENT => $this->handleComment($reader, $parent, $document),
                 XMLReader::DOC_TYPE => $this->handleDocumentType($reader, $parent, $document),
                 XMLReader::PI => $this->handleProcessingInstruction($reader, $parent, $document),
-                XMLReader::XML_DECLARATION => $this->handleXMLDeclaration($reader, $document),
                 default => throw ParseError::unsupportedNodeType($reader->nodeType),
             };
         }
         $openElements->pop();
         return $document;
-    }
-
-    private function resolveEntities(string $publicId, string $systemId, array $context): ?string
-    {
-        if (isset(self::HTML_PUBLIC_IDS[$publicId])) {
-            return __DIR__ . '/Parser/html.dtd';
-        }
-        return null;
     }
 
     /**
@@ -133,7 +132,7 @@ final class XmlParser
         return $result;
     }
 
-    private function handleXMLDeclaration(Document $document, string $version, string $encoding, string $standalone)
+    private function handleXMLDeclaration(Document $document, string $version, ?string $encoding, ?string $standalone)
     {
         $document->_hasXmlDeclaration = true;
         $document->_xmlVersion = $version;
