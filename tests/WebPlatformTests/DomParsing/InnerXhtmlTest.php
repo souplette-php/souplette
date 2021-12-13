@@ -22,7 +22,7 @@ final class InnerXhtmlTest extends TestCase
         $this->expectException(InvalidStateError::class);
         $doc = (new Implementation)->createDocument(Namespaces::HTML, 'html');
         $doc->documentElement->textContent = "\f";
-        $html = $doc->documentElement->getInnerHTML();
+        $html = $doc->documentElement->innerHTML;
     }
 
     public function testItThrowsOnInvalidCharactersInLocalName()
@@ -30,7 +30,7 @@ final class InnerXhtmlTest extends TestCase
         $doc = (new Implementation)->createDocument(Namespaces::HTML, 'html');
         $doc->documentElement->appendChild($doc->createElement('test:test'));
         $this->expectException(InvalidStateError::class);
-        $html = $doc->documentElement->getInnerHTML();
+        $html = $doc->documentElement->innerHTML;
     }
 
     /**

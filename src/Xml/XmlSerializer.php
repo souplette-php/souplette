@@ -473,6 +473,10 @@ final class XmlSerializer
             '"' => '&quot;',
             '<' => '&lt;',
             '>' => '&gt;',
+            // https://github.com/w3c/DOM-Parsing/issues/59
+            "\n" => '&#xA;',
+            "\t" => '&#x9;',
+            "\r" => '&#xD;',
         ]);
     }
 
