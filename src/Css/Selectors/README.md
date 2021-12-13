@@ -126,6 +126,4 @@ https://drafts.csswg.org/selectors-4/#attribute-selectors
 
 https://www.w3.org/TR/css-pseudo-4
 
-All pseudo elements are parsed but,
-due to the limitations of the internal DOM implementation,
-none of them actually match anything.
+All pseudo elements are parsed but none of them actually match anything.
