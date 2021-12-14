@@ -252,7 +252,6 @@ final class XmlParser
     /Jx
     REGEXP;
 
-
     private function parseXmlDeclaration(string $xml): array
     {
         if (preg_match(self::XML_DECL_PATTERN, $xml, $m, \PREG_UNMATCHED_AS_NULL)) {

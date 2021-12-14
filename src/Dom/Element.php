@@ -16,6 +16,7 @@ use Souplette\Dom\Traits\DomParsingTrait;
 use Souplette\Dom\Traits\GetElementsByClassNameTrait;
 use Souplette\Dom\Traits\GetElementsByTagNameTrait;
 use Souplette\Dom\Traits\NonDocumentTypeChildNodeTrait;
+use Souplette\Dom\Traits\SanitizerApiTrait;
 use Souplette\Xml\QName;
 
 /**
@@ -33,6 +34,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
     use GetElementsByTagNameTrait;
     use GetElementsByClassNameTrait;
     use DomParsingTrait;
+    use SanitizerApiTrait;
 
     public readonly int $nodeType;
     public readonly string $nodeName;
@@ -456,7 +458,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
             $copy->_attrs[] = $copyAttribute;
         }
         if ($deep) {
-            for ($child = $this->_first; $child; $child = $this->_next) {
+            for ($child = $this->_first; $child; $child = $child->_next) {
                 $childCopy = $child->clone($copy->_doc, true);
                 $copy->uncheckedAppendChild($childCopy);
             }

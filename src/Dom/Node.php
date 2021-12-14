@@ -437,7 +437,10 @@ abstract class Node implements NodeInterface
     // Mutation algorithms
     // ==============================================================
 
-    protected function unlink(): void
+    /**
+     * @internal
+     */
+    public function unlink(): void
     {
         if ($parent = $this->_parent) {
             if ($parent->_first === $this) {

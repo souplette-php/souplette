@@ -143,4 +143,21 @@ abstract class NodeTraversal
         assert($bParent === null);
         return null;
     }
+
+    public static function nextSkippingChildren(Node $node, ?Node $within = null): ?Node
+    {
+        if ($node === $within) return null;
+        if ($node->_next) return $node->_next;
+        return self::nextAncestorSibling($node, $within);
+    }
+
+    public static function nextAncestorSibling(Node $node, ?Node $within = null): ?Node
+    {
+        if ($node === $within) return null;
+        foreach (self::ancestorsOf($node) as $parent) {
+            if ($within && $parent === $within) return null;
+            if ($parent->_next) return $parent->_next;
+        }
+        return null;
+    }
 }

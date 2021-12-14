@@ -46,6 +46,9 @@ abstract class ParentNode extends Node implements ParentNodeInterface
         return $this->_first !== null;
     }
 
+    /**
+     * @return Node[]
+     */
     public function getChildNodes(): array
     {
         $nodes = [];

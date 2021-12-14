@@ -24,6 +24,7 @@
       <directory>tests/Dom</directory>
       <directory>tests/WebPlatformTests/Dom</directory>
       <directory>tests/WebPlatformTests/DomParsing</directory>
+      <directory>tests/WebPlatformTests/SanitizerApi</directory>
     </testsuite>
     <testsuite name="html">
       <directory>tests/Html</directory>
