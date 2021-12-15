@@ -6,6 +6,8 @@
   backupGlobals="false"
   cacheResultFile="tools/.phpunit.result.cache"
   colors="true"
+  stopOnError="true"
+  executionOrder="depends,defects"
 >
   <coverage cacheDirectory="tmp/coverage-cache" processUncoveredFiles="true">
     <include>

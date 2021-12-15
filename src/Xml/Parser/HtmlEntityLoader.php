@@ -16,7 +16,7 @@ final class HtmlEntityLoader implements ExternalEntityLoaderInterface
         '-//WAPFORUM//DTD XHTML Mobile 1.0//EN' => true,
     ];
 
-    public function __invoke(string $publicId, string $systemId, array $context): string|null
+    public function __invoke(?string $publicId, string $systemId, array $context): string|null
     {
         if (isset(self::HTML_PUBLIC_IDS[$publicId])) {
             return __DIR__ . '/html.dtd';

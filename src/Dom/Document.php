@@ -21,8 +21,11 @@ use Souplette\Xml\QName;
  * @property-read Implementation $implementation
  * @property-read string $mode
  * @property-read string $compatMode
- * @property-read string $characterSet
  * @property-read string $contentType
+ * @property-read string $charset
+ * @property-read string $xmlEncoding
+ * @property-read string $xmlVersion
+ * @property-read bool $xmlStandalone
  * @property-read ?DocumentType $doctype
  * @property-read ?Element $documentElement
  * @property-read ?Element $head
@@ -39,7 +42,8 @@ class Document extends ParentNode implements NonElementParentNodeInterface
     public readonly string $nodeName;
     public readonly bool $isHTML;
 
-    public string $encoding = 'UTF-8';
+    public string $characterSet = 'UTF-8';
+    public string $inputEncoding = 'UTF-8';
 
     protected string $type = 'html';
     private ?ElementsByIdMap $elementsById = null;
@@ -58,7 +62,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
     /** @internal */
     public string $_xmlVersion = '1.0';
     /** @internal */
-    public bool $_xmlStandalone = true;
+    public bool $_xmlStandalone = false;
 
     public function __construct() {
         $this->nodeType = Node::DOCUMENT_NODE;
@@ -76,6 +80,9 @@ class Document extends ParentNode implements NonElementParentNodeInterface
             'mode' => $this->getMode(),
             'compatMode' => $this->getCompatMode(),
             'contentType' => $this->getContentType(),
+            'charset', 'xmlEncoding' => $this->characterSet,
+            'xmlVersion' => $this->getXmlVersion(),
+            'xmlStandalone' => $this->isXmlStandalone(),
             'doctype' => $this->getDoctype(),
             'documentElement' => $this->getDocumentElement(),
             'head' => $this->getHead(),
@@ -119,6 +126,16 @@ class Document extends ParentNode implements NonElementParentNodeInterface
     public function getContentType(): string
     {
         return $this->_contentType;
+    }
+
+    public function getXmlVersion(): string
+    {
+        return $this->_xmlVersion;
+    }
+
+    public function isXmlStandalone(): bool
+    {
+        return $this->_xmlStandalone;
     }
 
     public function getDoctype(): ?DocumentType

@@ -136,7 +136,7 @@ trait DomParsingTrait
         $contextDocument = $this->getDocumentNode();
         if ($contextDocument->isHTML) {
             $parser = new HtmlParser();
-            $newChildren = $parser->parseFragment($contextElement, $markup, $this->_doc?->encoding ?? 'utf-8');
+            $newChildren = $parser->parseFragment($contextElement, $markup, $this->_doc?->characterSet ?? 'utf-8');
         } else {
             $parser = new XmlParser();
             $newChildren = $parser->parseFragment($markup, $contextElement);

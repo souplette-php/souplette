@@ -11,6 +11,7 @@ use Souplette\Dom\Text;
 use Souplette\Dom\Traversal\ElementTraversal;
 use Souplette\Dom\XmlDocument;
 use Souplette\Xml\Exception\ParseError;
+use Souplette\Xml\Parser\DoctypeParserEntityLoader;
 use Souplette\Xml\Parser\EntityLoaderChain;
 use Souplette\Xml\Parser\ExternalEntityLoaderInterface;
 use Souplette\Xml\Parser\HtmlEntityLoader;
@@ -22,10 +23,12 @@ use XMLReader;
 final class XmlParser
 {
     private EntityLoaderChain $entityLoader;
+    private DoctypeParserEntityLoader $doctypeParser;
 
     public function __construct()
     {
         $this->entityLoader = new EntityLoaderChain([
+            $this->doctypeParser = new DoctypeParserEntityLoader(),
             new HtmlEntityLoader(),
         ]);
     }
@@ -98,6 +101,7 @@ final class XmlParser
         $document = new XmlDocument();
         $openElements = new \SplStack();
         $openElements->push($document);
+        $this->doctypeParser->setDocument($document);
 
         while ($this->readWithErrorHandling($reader)) {
             $parent = $openElements->top();
@@ -136,7 +140,7 @@ final class XmlParser
     {
         $document->_hasXmlDeclaration = true;
         $document->_xmlVersion = $version;
-        if ($encoding) $document->encoding = $encoding;
+        if ($encoding) $document->inputEncoding = $encoding;
         if ($standalone) $document->_xmlStandalone = $standalone === 'yes';
     }
 
@@ -169,12 +173,8 @@ final class XmlParser
      */
     private function handleDocumentType(XMLReader $reader, Node $parent, Document $document)
     {
-        $node = $this->parseDoctype($reader->readOuterXml());
-        if (!$node) {
-            $node = new DocumentType($reader->name);
-        }
-        $node->_doc = $document;
-        $parent->appendChild($node);
+        if ($document->_doctype) return;
+        $document->parserInsertBefore(new DocumentType($reader->name), null);
     }
 
     /**
@@ -213,35 +213,9 @@ final class XmlParser
         $parent->appendChild($document->createProcessingInstruction($reader->name, $reader->value));
     }
 
-    private const DOCTYPE_PATTERN = <<<'REGEXP'
-    ~
-    (?(DEFINE)
-        (?<InternalSubset> \[ (?: [^\[\]] | (?&InternalSubset) )* ] )
-    )
-    ^
-        <!DOCTYPE \s+ (?<name>\S+)
-        (?: \s+ (?:
-            SYSTEM \s+ (?<q>["']) (?<systemId> (?!\k<q>).* ) \k<q>
-            |
-            PUBLIC \s+ (?<q>["']) (?<publicId> (?!\k<q>).* ) \k<q> \s+ (?<q1>["']) (?<systemId> (?!\k<q1>).* ) \k<q1>
-        ) )?
-        \s* (?: (?&InternalSubset) \s* )?
-        >
-    $
-    ~Jx
-    REGEXP;
-
-    private function parseDoctype(string $xml): ?DocumentType
-    {
-        if (preg_match(self::DOCTYPE_PATTERN, $xml, $m)) {
-            return new DocumentType($m['name'], $m['publicId'] ?? '', $m['systemId'] ?? '');
-        }
-        return null;
-    }
-
     private const XML_DECL_PATTERN = <<<'REGEXP'
     /
-    ^ \s*
+    ^
     <\?xml \s+ version = (?<q1>["']) (?<version> 1\.[0-9]+ ) \k<q1>
         (?:
             \s+ encoding =  (?<q2>["']) (?<encoding> [A-Za-z] ([A-Za-z0-9._-])* ) \k<q2>

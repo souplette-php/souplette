@@ -561,7 +561,7 @@ final class XmlSerializer
         return sprintf(
             '<?xml version="%s" encoding="%s" standalone="%s" ?>',
             $node->_xmlVersion,
-            $node->encoding ?: 'UTF-8',
+            $node->characterSet ?: 'UTF-8',
             $node->_xmlStandalone ? 'yes' : 'no',
         );
     }

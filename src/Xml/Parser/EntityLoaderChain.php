@@ -21,7 +21,7 @@ final class EntityLoaderChain implements ExternalEntityLoaderInterface
         $this->loaders[] = $loader;
     }
 
-    public function __invoke(string $publicId, string $systemId, array $context): string|null
+    public function __invoke(?string $publicId, string $systemId, array $context)
     {
         foreach ($this->loaders as $loader) {
             $result = $loader($publicId, $systemId, $context);
