@@ -50,7 +50,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
      * @var Attr[]
      */
     public array $_attrs = [];
-    protected TokenList $classList;
+    protected ?TokenList $classList = null;
 
     public function __construct(string $localName, ?string $namespace = null, ?string $prefix = null)
     {
@@ -492,23 +492,29 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
 
     protected function didAddAttribute(string $qualifiedName, string $value): void
     {
-        if ($qualifiedName === 'id') {
-            $this->updateId(null, $value);
-        }
+        match ($qualifiedName) {
+            'id' => $this->updateId(null, $value),
+            'class' => $this->updateClass(null, $value),
+            default => null,
+        };
     }
 
     protected function didModifyAttribute(string $qualifiedName, string $oldValue, string $newValue): void
     {
-        if ($qualifiedName === 'id') {
-            $this->updateId($oldValue, $newValue);
-        }
+        match ($qualifiedName) {
+            'id' => $this->updateId($oldValue, $newValue),
+            'class' => $this->updateClass($oldValue, $newValue),
+            default => null,
+        };
     }
 
     protected function didRemoveAttribute(string $qualifiedName, string $oldValue): void
     {
-        if ($qualifiedName === 'id') {
-            $this->updateId($oldValue, null);
-        }
+        match ($qualifiedName) {
+            'id' => $this->updateId($oldValue, null),
+            'class' => $this->updateClass($oldValue, null),
+            default => null,
+        };
     }
 
     private function updateId(?string $oldId, ?string $newId): void
@@ -525,6 +531,13 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
         }
         if ($newId) {
             $treeScope->addElementById($newId, $this);
+        }
+    }
+
+    private function updateClass(?string $oldValue, ?string $newValue): void
+    {
+        if ($this->classList && $newValue !== $oldValue) {
+            $this->classList->notifyAttributeChanged($oldValue, $newValue);
         }
     }
 }

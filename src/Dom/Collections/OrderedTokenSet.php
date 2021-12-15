@@ -90,25 +90,6 @@ final class OrderedTokenSet implements \Countable, \IteratorAggregate, \ArrayAcc
         return true;
     }
 
-    public function toggle(string $token, ?bool $force = null): bool
-    {
-        if ($force === null) {
-            if ($this->contains($token)) {
-                $this->remove($token);
-                return false;
-            }
-            $this->add($token);
-            return true;
-        }
-        if ($force) {
-            $this->add($token);
-            return true;
-        }
-
-        $this->remove($token);
-        return false;
-    }
-
     public function count(): int
     {
         return \count($this->tokens);
@@ -124,9 +105,9 @@ final class OrderedTokenSet implements \Countable, \IteratorAggregate, \ArrayAcc
         return isset($this->tokens[$offset]);
     }
 
-    public function offsetGet($offset): string
+    public function offsetGet($offset): ?string
     {
-        return $this->tokens[$offset];
+        return $this->tokens[$offset] ?? null;
     }
 
     public function offsetSet($offset, $value): void

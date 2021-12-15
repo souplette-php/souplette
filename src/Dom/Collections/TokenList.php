@@ -5,6 +5,7 @@ namespace Souplette\Dom\Collections;
 use Souplette\Dom\Element;
 use Souplette\Dom\Exception\InvalidCharacterError;
 use Souplette\Dom\Exception\SyntaxError;
+use Souplette\Exception\UndefinedProperty;
 use WeakReference;
 
 /**
@@ -21,54 +22,52 @@ final class TokenList implements \Countable, \IteratorAggregate
      */
     private readonly WeakReference $elementRef;
     private readonly string $attributeName;
-    private string $previousValue;
+    private bool $isUpdating = false;
 
     public function __construct(Element $element, string $attributeName)
     {
         $this->tokenSet = new OrderedTokenSet();
         $this->elementRef = WeakReference::create($element);
         $this->attributeName = $attributeName;
-        $this->previousValue = $element->getAttribute($attributeName) ?? '';
-        $this->tokenSet->parse($this->previousValue);
+        $this->tokenSet->parse($element->getAttribute($attributeName) ?? '');
     }
 
-    public function __get(string $name)
+    public function __get(string $prop)
     {
-        return match ($name) {
+        return match ($prop) {
             'value' => $this->getValue(),
             'length' => $this->count(),
+            default => throw UndefinedProperty::forRead($this, $prop),
         };
     }
 
-    public function __set(string $name, string $value)
+    public function __set(string $prop, string $value)
     {
-        match ($name) {
+        match ($prop) {
             'value' => $this->setValue($value),
+            default => throw UndefinedProperty::forWrite($this, $prop),
         };
     }
 
     public function setValue(string $value): void
     {
-        $this->tokenSet->parse($value);
-        $this->updateAttribute();
+        $this->elementRef->get()?->setAttribute($this->attributeName, $value);
     }
 
     public function getValue(): string
     {
-        $this->synchronize();
         return $this->tokenSet->serialize();
     }
 
     public function contains(string $token): bool
     {
-        $this->synchronize();
         return $this->tokenSet->contains($token);
     }
 
     public function add(string ...$tokens): void
     {
+        if (!$tokens) return;
         $this->validateTokens(...$tokens);
-        $this->synchronize();
         foreach ($tokens as $token) {
             $this->tokenSet->add($token);
         }
@@ -77,8 +76,8 @@ final class TokenList implements \Countable, \IteratorAggregate
 
     public function remove(string ...$tokens): void
     {
+        if (!$tokens) return;
         $this->validateTokens(...$tokens);
-        $this->synchronize();
         foreach ($tokens as $token) {
             $this->tokenSet->remove($token);
         }
@@ -88,35 +87,42 @@ final class TokenList implements \Countable, \IteratorAggregate
     public function replace(string $old, string $new): void
     {
         $this->validateTokens($old, $new);
-        $this->synchronize();
         $this->tokenSet->replace($old, $new);
         $this->updateAttribute();
     }
 
     public function toggle(string $token, ?bool $force = null): bool
     {
-        $this->synchronize();
         $this->validateTokens($token);
-        $result = $this->tokenSet->toggle($token, $force);
-        $this->updateAttribute();
-        return $result;
+        if ($this->tokenSet->contains($token)) {
+            if (!$force) {
+                $this->tokenSet->remove($token);
+                $this->updateAttribute();
+                return false;
+            }
+            return true;
+        }
+        if ($force || $force === null) {
+            $this->tokenSet->add($token);
+            $this->updateAttribute();
+            return true;
+        }
+        return false;
     }
 
-    public function item(int $offset)
+    public function item(int $offset): ?string
     {
         return $this->tokenSet->offsetGet($offset);
     }
 
     public function count(): int
     {
-        $this->synchronize();
         return $this->tokenSet->count();
     }
 
     public function getIterator(): \Traversable
     {
-        $this->synchronize();
-        return $this->tokenSet->getIterator();
+        yield from $this->tokenSet;
     }
 
     public function __toString()
@@ -135,36 +141,19 @@ final class TokenList implements \Countable, \IteratorAggregate
         }
     }
 
-    private function getAttributeValue(): string
-    {
-        /** @var Element $element */
-        $element = $this->elementRef->get();
-        return $element->getAttribute($this->attributeName) ?? '';
-    }
-
-    private function synchronize()
-    {
-        $value = $this->getAttributeValue();
-        if ($value === $this->previousValue) {
-            return;
-        }
-        $this->previousValue = $value;
-        $this->tokenSet->parse($value);
-    }
-
     private function updateAttribute()
     {
-        /** @var Element $element */
-        $element = $this->elementRef->get();
-        if (!$element) return;
-        // 1. If the associated element does not have an associated attribute and token set is empty, then return.
-        if (!$element->hasAttribute($this->attributeName) && $this->tokenSet->isEmpty()) {
-            return;
-        }
-        // 2. Set an attribute value for the associated element using associated attribute’s local name
-        // and the result of running the ordered set serializer for token set.
-        $newValue = $this->tokenSet->serialize();
-        $element->setAttribute($this->attributeName, $newValue);
-        $this->previousValue = $newValue;
+        $this->isUpdating = true;
+        $this->elementRef->get()?->setAttribute($this->attributeName, $this->tokenSet->serialize());
+        $this->isUpdating = false;
+    }
+
+    /**
+     * @internal
+     */
+    public function notifyAttributeChanged(?string $oldValue, ?string $newValue): void
+    {
+        if ($this->isUpdating) return;
+        $this->tokenSet->parse($newValue ?? '');
     }
 }
