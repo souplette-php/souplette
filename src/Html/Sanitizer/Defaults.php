@@ -2,8 +2,19 @@
 
 namespace Souplette\Html\Sanitizer;
 
+use Souplette\Dom\Namespaces;
+
 final class Defaults
 {
+    const NAMESPACES = [
+        'html' => Namespaces::HTML,
+        'math' => Namespaces::MATHML,
+        'svg' => Namespaces::SVG,
+        'xlink' => Namespaces::XLINK,
+        'xml' => Namespaces::XML,
+        'xmlns' => Namespaces::XMLNS,
+    ];
+
     const ALLOW_ELEMENTS = [
         'a' => true,
         'abbr' => true,

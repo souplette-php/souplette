@@ -136,6 +136,7 @@ final class Sanitizer
     private function sanitizeElement(Element $node, ParentNode $fragment): ?Node
     {
         $name = strtolower($node->qualifiedName);
+        $ns = $node->namespaceURI;
         // 1. Let kind be element’s element kind.
         // 2. If kind is regular and element does not match any name in the baseline element allow list: Return drop.
         if (Baseline::DROP_ELEMENTS[$name] ?? false) {
@@ -147,23 +148,19 @@ final class Sanitizer
         if ($isCustom && !$this->config->shouldAllowCustomElements()) {
             return $this->drop($node, $fragment);
         }
-        if (!$node->isHTML) {
-            // TODO: handle svg & mathml properly
-            return $this->drop($node, $fragment);
-        }
         // 4. If element matches any name in config’s element drop list: Return drop.
-        if ($this->config->shouldDropElement($name)) {
+        if ($this->config->shouldDropElement($name, $ns)) {
             return $this->drop($node, $fragment);
         }
         // 5. If element matches any name in config’s element block list: Return block.
-        if ($this->config->shouldBlockElement($name)) {
+        if ($this->config->shouldBlockElement($name, $ns)) {
             return $this->block($node, $fragment);
         }
         // 6. If element allow list exists in config:
         //    1. Then : Let allow list be |config|["allowElements"].
         //    2. Otherwise: Let allow list be the default configuration's element allow list.
         // 7. If element matches any name in allow list: Return block.
-        if (!$this->config->shouldAllowElement($name)) {
+        if (!$this->config->shouldAllowElement($name, $ns)) {
             return $this->block($node, $fragment);
         }
         $this->handleFunkyElements($node, $name, $fragment);

@@ -2,24 +2,29 @@
 
 namespace Souplette\Html\Sanitizer;
 
+use Souplette\Dom\Namespaces;
+
 final class SanitizerConfig
 {
+    private ?string $defaultNamespace = null;
+    private array $namespaces = [];
+
     /**
      * The element allow list is a sequence of strings with elements
      * that the sanitizer should retain in the input.
-     * @var array<string, bool>
+     * @var array<string, array<string, bool>>
      */
     private array $allowedElements = [];
     /**
      * The element block list is a sequence of strings with elements
      * where the sanitizer should remove the elements from the input, but retain their children.
-     * @var array<string, bool>
+     * @var array<string, array<string, bool>>
      */
     private array $blockedElements = [];
     /**
      * The element drop list is a sequence of strings with elements
      * that the sanitizer should remove from the input, including its children.
-     * @var array<string, bool>
+     * @var array<string, array<string, bool>>
      */
     private array $droppedElements = [];
     /**
@@ -46,9 +51,20 @@ final class SanitizerConfig
      */
     private bool $allowsCustomElements = false;
 
-    public static function create(): self
+    public function __construct(?array $namespaces = null, ?string $defaultNamespace = null)
     {
-        return new self();
+        $this->defaultNamespace = $defaultNamespace;
+        if ($namespaces === null) {
+            $this->namespaces = Defaults::NAMESPACES;
+        } else {
+            $this->namespaces = $namespaces;
+        }
+    }
+
+
+    public static function create(?array $namespaces = null, ?string $defaultNamespace = null): self
+    {
+        return new self($namespaces, $defaultNamespace);
     }
 
     public static function from(self $other): self
@@ -56,10 +72,31 @@ final class SanitizerConfig
         return clone $other;
     }
 
+    public function withDefaultNamespace(?string $namespace): self
+    {
+        $this->defaultNamespace = $namespace ?: null;
+        return $this;
+    }
+
+    /**
+     * @param array<string, string> $namespaces
+     */
+    public function withNamespaces(array $namespaces): self
+    {
+        $this->namespaces = $namespaces;
+        return $this;
+    }
+
+    public function getDefaultNamespace(): ?string
+    {
+        return $this->defaultNamespace;
+    }
+
     public function allowElements(string ...$elements): self
     {
         foreach ($elements as $element) {
-            $this->allowedElements[strtolower($element)] = true;
+            [$ns, $localName] = $this->normalizeCssQualifiedName($element);
+            $this->allowedElements[$ns][$localName] = true;
         }
         return $this;
     }
@@ -67,7 +104,8 @@ final class SanitizerConfig
     public function blockElements(string ...$elements): self
     {
         foreach ($elements as $element) {
-            $this->blockedElements[strtolower($element)] = true;
+            [$ns, $localName] = $this->normalizeCssQualifiedName($element);
+            $this->blockedElements[$ns][$localName] = true;
         }
         return $this;
     }
@@ -75,7 +113,8 @@ final class SanitizerConfig
     public function dropElements(string ...$elements): self
     {
         foreach ($elements as $element) {
-            $this->droppedElements[strtolower($element)] = true;
+            [$ns, $localName] = $this->normalizeCssQualifiedName($element);
+            $this->droppedElements[$ns][$localName] = true;
         }
         return $this;
     }
@@ -140,22 +179,25 @@ final class SanitizerConfig
         return $this->allowsCustomElements;
     }
 
-    public function shouldAllowElement(string $name): bool
+    public function shouldAllowElement(string $name, ?string $namespace): bool
     {
         if (!$this->allowedElements) {
             return Defaults::ALLOW_ELEMENTS[$name] ?? false;
         }
-        return $this->allowedElements[$name] ?? false;
+        if (isset($this->allowedElements['*'][$name])) return true;
+        return $this->allowedElements[$namespace][$name] ?? false;
     }
 
-    public function shouldDropElement(string $name): bool
+    public function shouldDropElement(string $name, ?string $namespace): bool
     {
-        return $this->droppedElements[$name] ?? false;
+        if (isset($this->droppedElements['*'][$name])) return true;
+        return $this->droppedElements[$namespace][$name] ?? false;
     }
 
-    public function shouldBlockElement(string $name): bool
+    public function shouldBlockElement(string $name, ?string $namespace): bool
     {
-        return $this->blockedElements[$name] ?? false;
+        if (isset($this->blockedElements['*'][$name])) return true;
+        return $this->blockedElements[$namespace][$name] ?? false;
     }
 
     public function shouldAllowAttribute(string $attr, string $element): bool
@@ -175,5 +217,33 @@ final class SanitizerConfig
             isset($this->droppedAttributes[$attr][$element])
             || isset($this->droppedAttributes[$attr]['*'])
         );
+    }
+
+    /**
+     * @return array{?string, string}
+     */
+    private function normalizeCssQualifiedName(string $qualifiedName): array
+    {
+        $localName = $qualifiedName;
+        $ns = null;
+
+        $parts = explode('|', $qualifiedName, 2);
+        if (\count($parts) === 1) {
+            $ns = $this->defaultNamespace ?? '*';
+        } else {
+            [$prefix, $localName] = $parts;
+            if ($prefix) {
+                if (!isset($this->namespaces[$prefix])) {
+                    throw new \RuntimeException(sprintf(
+                        'No namespace provided for prefix "%s".',
+                        $prefix,
+                    ));
+                }
+                $ns = $this->namespaces[$prefix];
+            }
+        }
+
+        // TODO: case-sensitivity
+        return [$ns, strtolower($localName)];
     }
 }
