@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-use Souplette\Html\Tokenizer\Tokenizer;
+use Souplette\HTML\Tokenizer\Tokenizer;
 use Souplette\Tests\Html5Lib\JsonFile;
 
 require __DIR__.'/../vendor/autoload.php';

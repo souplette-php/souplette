@@ -2,8 +2,8 @@
 
 namespace Souplette\Tests;
 
-use Souplette\Dom\Element;
-use Souplette\Dom\Node;
+use Souplette\DOM\Element;
+use Souplette\DOM\Node;
 
 final class Utils
 {

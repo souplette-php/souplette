@@ -4,8 +4,8 @@ namespace Souplette\Tests;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Dom\Document;
-use Souplette\Dom\Implementation;
+use Souplette\DOM\Document;
+use Souplette\DOM\Implementation;
 use Souplette\Souplette;
 
 final class SoupletteTest extends TestCase
@@ -13,7 +13,7 @@ final class SoupletteTest extends TestCase
     public function testParseHtml()
     {
         $html = '<!doctype html>';
-        $doc = Souplette::parseHtml($html, 'utf-8');
+        $doc = Souplette::parseHTML($html, 'utf-8');
         Assert::assertInstanceOf(Document::class, $doc);
     }
 

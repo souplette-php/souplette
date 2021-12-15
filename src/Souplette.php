@@ -2,37 +2,37 @@
 
 namespace Souplette;
 
-use Souplette\Dom\Document;
-use Souplette\Dom\Exception\DomException;
-use Souplette\Dom\Exception\NotSupportedError;
-use Souplette\Dom\XmlDocument;
-use Souplette\Html\HtmlParser;
-use Souplette\Html\HtmlSerializer;
-use Souplette\Xml\XmlParser;
-use Souplette\Xml\XmlSerializer;
+use Souplette\DOM\Document;
+use Souplette\DOM\Exception\DOMException;
+use Souplette\DOM\Exception\NotSupportedError;
+use Souplette\DOM\XMLDocument;
+use Souplette\HTML\HTMLParser;
+use Souplette\HTML\HTMLSerializer;
+use Souplette\XML\XMLParser;
+use Souplette\XML\XMLSerializer;
 
 final class Souplette
 {
-    public static function parseHtml(string $html, ?string $encoding = null): Document
+    public static function parseHTML(string $html, ?string $encoding = null): Document
     {
-        $parser = new HtmlParser();
+        $parser = new HTMLParser();
         return $parser->parse($html, $encoding);
     }
 
     /**
-     * @throws DomException
+     * @throws DOMException
      */
-    public static function parseXml(string $markup, string $contentType): XmlDocument
+    public static function parseXML(string $markup, string $contentType): XMLDocument
     {
         $contentType = $contentType ?: 'application/xml';
         if ($contentType === 'text/html') {
             throw new NotSupportedError(sprintf(
-                '%s cannot parse "text/html" documents. Please use %s::parseHtml() instead.',
+                '%s cannot parse "text/html" documents. Please use %s::parseHTML() instead.',
                 __METHOD__,
                 self::class,
             ));
         }
-        $parser = new XmlParser();
+        $parser = new XMLParser();
         $document = $parser->parse($markup);
         $document->_contentType = $contentType;
         return $document;
@@ -40,11 +40,11 @@ final class Souplette
 
     public static function serializeDocument(Document $document): string
     {
-        if ($document instanceof XmlDocument) {
-            $serializer = new XmlSerializer();
+        if ($document instanceof XMLDocument) {
+            $serializer = new XMLSerializer();
             return $serializer->serialize($document);
         }
-        $serializer = new HtmlSerializer();
+        $serializer = new HTMLSerializer();
         return $serializer->serialize($document);
     }
 }

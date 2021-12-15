@@ -17,7 +17,7 @@ final class HtmlDtdGenerator extends EntityLookupGenerator
 
     protected function getOutputFile(): string
     {
-        return __DIR__ . '/../src/Xml/Parser/html.dtd';
+        return __DIR__ . '/../src/XML/Parser/html.dtd';
     }
 
     protected function generateLookupTable(): array

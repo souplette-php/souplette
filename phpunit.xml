@@ -14,32 +14,32 @@
       <directory suffix=".php">src</directory>
     </include>
     <exclude>
-      <directory suffix=".php">src/Dom/Exception</directory>
+      <directory suffix=".php">src/DOM/Exception</directory>
     </exclude>
   </coverage>
   <testsuites>
     <testsuite name="base">
       <directory>tests/Encoding</directory>
-      <directory>tests/Xml</directory>
+      <directory>tests/XML</directory>
     </testsuite>
     <testsuite name="dom">
-      <directory>tests/Dom</directory>
-      <directory>tests/WebPlatformTests/Dom</directory>
-      <directory>tests/WebPlatformTests/DomParsing</directory>
+      <directory>tests/DOM</directory>
+      <directory>tests/WebPlatformTests/DOM</directory>
+      <directory>tests/WebPlatformTests/DOMParsing</directory>
       <directory>tests/WebPlatformTests/SanitizerApi</directory>
     </testsuite>
     <testsuite name="html">
-      <directory>tests/Html</directory>
-      <directory>tests/Html5Lib</directory>
+      <directory>tests/HTML</directory>
+      <directory>tests/HTML5Lib</directory>
       <file>tests/SoupletteTest.php</file>
     </testsuite>
     <testsuite name="css-syntax">
-      <directory>tests/Css/Syntax</directory>
+      <directory>tests/CSS/Syntax</directory>
     </testsuite>
     <testsuite name="css-selectors">
-      <directory>tests/Css/Selectors/Parser</directory>
-      <directory>tests/Css/Selectors/Node</directory>
-      <directory>tests/WebPlatformTests/Css/Selectors</directory>
+      <directory>tests/CSS/Selectors/Parser</directory>
+      <directory>tests/CSS/Selectors/Node</directory>
+      <directory>tests/WebPlatformTests/CSS/Selectors</directory>
     </testsuite>
   </testsuites>
 </phpunit>

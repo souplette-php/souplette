@@ -4,14 +4,14 @@ namespace Souplette\Tests\WebPlatformTests\SanitizerApi;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Souplette\Dom\Document;
-use Souplette\Dom\DocumentFragment;
-use Souplette\Html\HtmlParser;
-use Souplette\Html\HtmlSerializer;
-use Souplette\Html\Sanitizer\Sanitizer;
-use Souplette\Html\Sanitizer\SanitizerConfig;
+use Souplette\DOM\Document;
+use Souplette\DOM\DocumentFragment;
+use Souplette\HTML\HTMLParser;
+use Souplette\HTML\HTMLSerializer;
+use Souplette\HTML\Sanitizer\Sanitizer;
+use Souplette\HTML\Sanitizer\SanitizerConfig;
 use Souplette\Souplette;
-use Souplette\Tests\Dom\DomBuilder;
+use Souplette\Tests\DOM\DOMBuilder;
 
 final class SanitizerSanitizeTest extends TestCase
 {
@@ -21,10 +21,10 @@ final class SanitizerSanitizeTest extends TestCase
     public function testSanitizeDocument(?SanitizerConfig $config, string $input, string $expected)
     {
         $sanitizer = $config ? new Sanitizer($config) : Sanitizer::getDefault();
-        $doc = Souplette::parseHtml("<!DOCTYPE html><body>{$input}");
+        $doc = Souplette::parseHTML("<!DOCTYPE html><body>{$input}");
         $fragment = $sanitizer->sanitize($doc);
         Assert::assertInstanceOf(DocumentFragment::class, $fragment);
-        $result = (new HtmlSerializer())->serialize($fragment);
+        $result = (new HTMLSerializer())->serialize($fragment);
         Assert::assertSame($expected, $result);
     }
 
@@ -35,12 +35,12 @@ final class SanitizerSanitizeTest extends TestCase
     {
         $sanitizer = $config ? new Sanitizer($config) : Sanitizer::getDefault();
         $doc = new Document();
-        $nodes = (new HtmlParser())->parseFragment($doc->createElement('template'), $input);
+        $nodes = (new HTMLParser())->parseFragment($doc->createElement('template'), $input);
         $content = $doc->createDocumentFragment();
         $content->append(...$nodes);
         $fragment = $sanitizer->sanitize($content);
         Assert::assertInstanceOf(DocumentFragment::class, $fragment);
-        $result = (new HtmlSerializer())->serialize($fragment);
+        $result = (new HTMLSerializer())->serialize($fragment);
         Assert::assertSame($expected, $result);
     }
 
