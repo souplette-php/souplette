@@ -192,8 +192,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
         }
         foreach ($this->_attrs as $attr) {
             if ($attr->name === $qualifiedName) {
-                $this->didModifyAttribute($qualifiedName, $attr->_value, $value);
-                $attr->_value = $value;
+                $this->didModifyAttribute($qualifiedName, $attr->_value, $attr->_value = $value);
                 return;
             }
         }
@@ -222,8 +221,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
             $this->didAddAttribute($qualifiedName, $value);
             return;
         }
-        $this->didModifyAttribute($qualifiedName, $attr->_value, $value);
-        $attr->_value = $value;
+        $this->didModifyAttribute($qualifiedName, $attr->_value, $attr->_value = $value);
     }
 
     public function removeAttribute(string $qualifiedName): ?Attr
