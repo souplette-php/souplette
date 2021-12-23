@@ -102,7 +102,7 @@ final class Attr extends Node
         if (!$otherNode) return false;
         if ($otherNode === $this) return true;
         return $otherNode->nodeType === $this->nodeType && (
-            $this->name === $otherNode->name
+            $this->localName === $otherNode->localName
             && $this->_value === $otherNode->_value
             && $this->namespaceURI === $otherNode->namespaceURI
         );

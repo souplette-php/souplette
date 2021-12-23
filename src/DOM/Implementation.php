@@ -26,9 +26,9 @@ final class Implementation
             $doc->parserInsertBefore($element, null);
         }
         $doc->_contentType = match ($namespace) {
-            Namespaces::HTML => 'application/xhtml+xml',
-            Namespaces::SVG => 'image/svg+xml',
-            default => 'application/xml',
+            Namespaces::HTML => ContentTypes::XHTML,
+            Namespaces::SVG => ContentTypes::SVG,
+            default => ContentTypes::XML,
         };
         $doc->_flags |= match ($namespace) {
             Namespaces::HTML => NodeFlags::NS_TYPE_HTML,
@@ -46,7 +46,7 @@ final class Implementation
     {
         $doc = new Document();
         $doc->_implementation = $this;
-        $doc->_contentType = 'text/html';
+        $doc->_contentType = ContentTypes::HTML;
         $doc->parserInsertBefore($this->createDocumentType('html'), null);
         $doc->parserInsertBefore($html = $doc->createElement('html'), null);
         $html->parserInsertBefore($head = $doc->createElement('head'), null);

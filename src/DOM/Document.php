@@ -167,7 +167,7 @@ class Document extends ParentNode implements NonElementParentNodeInterface
             ));
         }
         $namespace = null;
-        if ($this->isHTML) {
+        if ($this->isHTML || $this->_contentType === ContentTypes::XHTML) {
             $localName = strtolower($localName);
             $namespace = Namespaces::HTML;
         }

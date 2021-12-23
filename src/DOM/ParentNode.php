@@ -217,15 +217,17 @@ abstract class ParentNode extends Node implements ParentNodeInterface
 
     protected function areChildrenEqual(?Node $other): bool
     {
-        for (
-            $child = $this->_first, $otherChild = $other->_first;
-            $child && $otherChild;
-            $child = $child->_next, $otherChild = $otherChild->_next
-        ) {
+        $child = $this->_first;
+        $otherChild = $other->_first;
+        while ($child) {
             if (!$child->isEqualNode($otherChild)) {
                 return false;
             }
+            $child = $child->_next;
+            $otherChild = $otherChild->_next;
         }
+
+        if ($otherChild) return false;
         return true;
     }
 

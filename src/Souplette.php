@@ -2,6 +2,7 @@
 
 namespace Souplette;
 
+use Souplette\DOM\ContentTypes;
 use Souplette\DOM\Document;
 use Souplette\DOM\Exception\DOMException;
 use Souplette\DOM\Exception\NotSupportedError;
@@ -24,8 +25,8 @@ final class Souplette
      */
     public static function parseXML(string $markup, string $contentType): XMLDocument
     {
-        $contentType = $contentType ?: 'application/xml';
-        if ($contentType === 'text/html') {
+        $contentType = $contentType ?: ContentTypes::XML;
+        if ($contentType === ContentTypes::HTML) {
             throw new NotSupportedError(sprintf(
                 '%s cannot parse "text/html" documents. Please use %s::parseHTML() instead.',
                 __METHOD__,
