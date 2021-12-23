@@ -97,6 +97,11 @@ final class DOMBuilder
         return $this->attr('class', $className);
     }
 
+    public function prefix(string $prefix, string $namespace): self
+    {
+        return $this->attr("xmlns:{$prefix}", $namespace, Namespaces::XMLNS);
+    }
+
     public function comment(string $data): self
     {
         $this->closeVoidElements();
@@ -118,6 +123,14 @@ final class DOMBuilder
         $this->closeVoidElements();
         $node = $this->document->implementation->createDocumentType($name, $pub, $sys);
         $this->document->appendChild($node);
+        return $this;
+    }
+
+    public function pi(string $target, string $data): self
+    {
+        $this->closeVoidElements();
+        $node = $this->document->createProcessingInstruction($target, $data);
+        $this->getParent()->appendChild($node);
         return $this;
     }
 

@@ -482,8 +482,10 @@ abstract class Node implements NodeInterface
 
     protected function locateNamespace(?string $prefix): ?string
     {
-        if (!$this->_parent) return null;
-        return $this->_parent->locateNamespace($prefix);
+        if ($this->_parent?->nodeType === Node::ELEMENT_NODE) {
+            return $this->_parent->locateNamespace($prefix);
+        }
+        return null;
     }
 
     protected function locateNamespacePrefix(string $namespace): ?string

@@ -413,7 +413,7 @@ class Element extends ParentNode implements ChildNodeInterface, NonDocumentTypeC
         }
         foreach ($this->_attrs as $attr) {
             if ($attr->prefix === 'xmlns' && $attr->namespaceURI === Namespaces::XMLNS && $attr->localName === $prefix) {
-                return $attr->localName;
+                return $attr->_value ?: null;
             } else if (
                 !$prefix && !$attr->prefix
                 && $attr->localName === 'xmlns' && $attr->namespaceURI === Namespaces::XMLNS
