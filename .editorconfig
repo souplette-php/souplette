@@ -11,3 +11,6 @@ tab_width = 2
 
 [{*.xml, *.html, *.json, *.ts, *.js}]
 indent_size = 2
+
+[Makefile]
+indent_style = tab
