@@ -18,22 +18,22 @@ final class Tokenizer extends AbstractTokenizer
     public function tokenize(TokenizerState $startState = TokenizerState::DATA, ?string $appropriateEndTag = null): Traversable
     {
         $this->reset($startState, $appropriateEndTag);
-        while (true) {
-            INITIAL:
-            $cc = $this->input[$this->position] ?? '';
-            switch ($this->state) {
-            {% for current_state in state_names ~%}
-                case TokenizerState::{{ current_state }}:
-                {{ current_state }}: {
-                    {{~ include(["tokenizer/#{current_state|lower}.php.twig", 'tokenizer/_unknown_state.php.twig'])|indent(5) }}
-                }
-                break;
-            {%- endfor ~%}
-                default:
-                    throw new \LogicException("Unknown state: {$this->state}");
-                    break;
+        INITIAL:
+        $cc = $this->input[$this->position] ?? '';
+        switch ($this->state) {
+        {% for current_state in state_names ~%}
+            case TokenizerState::{{ current_state }}:
+            {{ current_state }}: {
+                {{~ include(["tokenizer/#{current_state|lower}.php.twig", 'tokenizer/_unknown_state.php.twig'])|indent(4) }}
             }
-        };
+            break;
+        {%- endfor ~%}
+            // @codeCoverageIgnoreStart
+            default:
+                throw new \LogicException("Unknown state: {$this->state}");
+                break;
+            // @codeCoverageIgnoreEnd
+        }
         return null;
     }
 }
