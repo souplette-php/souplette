@@ -11,8 +11,6 @@ use Souplette\Tests\ResourceCollector;
 
 final class EncodingSnifferTest extends TestCase
 {
-    const RESOURCE_PATH = __DIR__.'/../../resources/html5lib-tests/encoding';
-
     #[DataProvider('encodingSniffingProvider')]
     public function testEncodingSniffing(string $input, string $expectedEncoding, ?string $skipped = null)
     {
@@ -25,8 +23,8 @@ final class EncodingSnifferTest extends TestCase
 
     public static function encodingSniffingProvider(): iterable
     {
-        $xfails = require __DIR__ . '/../../resources/html5lib-xfails.php';
-        foreach (ResourceCollector::collect(self::RESOURCE_PATH) as $relPath => $fileInfo) {
+        $xfails = include ResourceCollector::path('html5lib-xfails.php');
+        foreach (ResourceCollector::collect('html5lib-tests/encoding') as $relPath => $fileInfo) {
             if (str_starts_with($relPath, 'scripted/')) {
                 // TODO: implement a scripting engine 😁
                 continue;

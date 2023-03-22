@@ -6,6 +6,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use Souplette\Tests\HTML5Lib\DataFile;
+use Souplette\Tests\HTML5Lib\Failures\ExpectedFailures;
 use Souplette\Tests\ResourceCollector;
 
 class TreeConstructionTest extends TestCase
@@ -50,10 +51,13 @@ class TreeConstructionTest extends TestCase
      */
     private static function collectDataFiles(): iterable
     {
-        $rootPath = __DIR__ . '/../../resources/html5lib-tests/tree-construction';
-        foreach (ResourceCollector::collect($rootPath, 'dat') as $relPath => $fileInfo) {
+        foreach (ResourceCollector::collect('html5lib-tests/tree-construction', '*.dat') as $relPath => $fileInfo) {
             if (str_starts_with($relPath, 'scripted/')) {
                 // TODO: implement a scripting engine 😁
+                continue;
+            }
+            if ($fileInfo->getFilename() === 'search-element.dat') {
+                // experimental feature, see https://github.com/html5lib/html5lib-tests/issues/156
                 continue;
             }
             yield $relPath => new DataFile($fileInfo->getPathname());

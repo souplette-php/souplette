@@ -63,8 +63,7 @@ class TokenizationTest extends TestCase
      */
     private static function collectJsonFiles(): iterable
     {
-        $path = __DIR__.'/../../resources/html5lib-tests/tokenizer';
-        foreach (ResourceCollector::collect($path, 'test') as $relPath => $fileInfo) {
+        foreach (ResourceCollector::collect('html5lib-tests/tokenizer', '*.test') as $relPath => $fileInfo) {
             if ($relPath === 'xmlViolation.test') {
                 // Skip XML violation tests since they are dependant on the DOM implementation
                 continue;

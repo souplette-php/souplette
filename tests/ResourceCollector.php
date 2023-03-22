@@ -9,10 +9,15 @@ use SplFileInfo;
 
 class ResourceCollector
 {
-    public static function collect(string $rootPath, ?string $extension = null): iterable
+    public static function path(string $relPath): string
+    {
+        return __DIR__ . '/resources/' . ltrim($relPath, '/');
+    }
+
+    public static function collect(string $path, ?string $pattern = null): iterable
     {
         $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(
-            $rootPath,
+            self::path($path),
             FilesystemIterator::CURRENT_AS_FILEINFO | FilesystemIterator::SKIP_DOTS
         ));
         /** @var SplFileInfo $fileInfo */
@@ -20,7 +25,7 @@ class ResourceCollector
             if ($fileInfo->isDir()) {
                 continue;
             }
-            if ($extension && $fileInfo->getExtension() !== $extension) {
+            if ($pattern && !fnmatch($pattern, $fileInfo->getPathname())) {
                 continue;
             }
             yield $it->getSubpathname() => $fileInfo;
