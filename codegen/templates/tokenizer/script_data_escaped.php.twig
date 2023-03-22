@@ -5,7 +5,7 @@
 
 if ($cc === '-') {
     // Emit a U+002D HYPHEN-MINUS character token.
-    $this->tokenQueue->enqueue(new Character('-'));
+    yield new Character('-');
     // Switch to the script data escaped dash state.
     {{ h.advance_to('SCRIPT_DATA_ESCAPED_DASH') }}
 } elseif ($cc === '<') {
@@ -15,7 +15,7 @@ if ($cc === '-') {
     // This is an unexpected-null-character parse error.
     {{ h.parse_error('UNEXPECTED_NULL_CHARACTER') }}
     // Emit a U+FFFD REPLACEMENT CHARACTER character token.
-    $this->tokenQueue->enqueue(new Character("\u{FFFD}"));
+    yield new Character("\u{FFFD}");
     {{ h.consume(current_state) }}
 } elseif ({{ h.is_eof() }}) {
     // This is an eof-in-script-html-comment-like-text parse error.
@@ -25,6 +25,6 @@ if ($cc === '-') {
 } else {
     // Emit the current input character as a character token.
     {{ h.chars_until("-<\0") }}
-    $this->tokenQueue->enqueue(new Character($chars));
+    yield new Character($chars);
     {{ h.update_and_continue(current_state) }}
 }

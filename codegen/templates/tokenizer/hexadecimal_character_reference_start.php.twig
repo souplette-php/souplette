@@ -10,7 +10,7 @@ if (\ctype_xdigit($cc)) {
     // This is an absence-of-digits-in-numeric-character-reference parse error.
     {{ h.parse_error('ABSENCE_OF_DIGITS_IN_NUMERIC_CHARACTER_REFERENCE') }}
     // Flush code points consumed as a character reference.
-    $this->flushCodePointsConsumedAsACharacterReference();
+    {{ h.emit_char_ref() }}
     // Reconsume in the return state.
     {{ h.reconsume_in_return_state() }}
 }

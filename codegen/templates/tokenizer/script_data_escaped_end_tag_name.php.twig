@@ -24,7 +24,7 @@ if ({{ h.is_whitespace() }}) {
     // then switch to the data state and emit the current tag token.
     // Otherwise, treat it as per the "anything else" entry below.
     if ({{ h.is_appropriate_end_tag() }}) {
-        {{ h.emit_and_resume_in('DATA') }}
+        {{ h.emit_and_resume_in('DATA', true) }}
     } else {
         goto {{ current_state }}_ANYTHING_ELSE;
     }
@@ -39,7 +39,7 @@ if ({{ h.is_whitespace() }}) {
     {{ current_state }}_ANYTHING_ELSE:
     // Emit a U+003C LESS-THAN SIGN character token, a U+002F SOLIDUS character token,
     // and a character token for each of the characters in the temporary buffer (in the order they were added to the buffer).
-    $this->tokenQueue->enqueue(new Character('</' . $this->temporaryBuffer));
+    yield new Character('</' . $this->temporaryBuffer);
     // Reconsume in the script data escaped state.
     {{ h.reconsume_in('SCRIPT_DATA_ESCAPED') }}
 }

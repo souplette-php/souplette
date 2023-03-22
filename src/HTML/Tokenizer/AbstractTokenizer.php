@@ -7,6 +7,7 @@ use Souplette\HTML\Tokenizer\Token\EndTag;
 use Souplette\HTML\Tokenizer\Token\EOF;
 use Souplette\HTML\Tokenizer\Token\StartTag;
 use SplQueue;
+use Traversable;
 
 abstract class AbstractTokenizer
 {
@@ -14,7 +15,6 @@ abstract class AbstractTokenizer
     public \Closure $allowCdata;
     protected int $position = 0;
     protected TokenizerState $returnState = TokenizerState::DATA;
-    protected SplQueue $tokenQueue;
     protected Token $currentToken;
     protected array $parseErrors = [];
     /**
@@ -41,36 +41,25 @@ abstract class AbstractTokenizer
         return $this->parseErrors;
     }
 
-    abstract public function nextToken(): bool;
-
     /**
-     * @return iterable<Token>
+     * @return Traversable<int, Token>
      */
-    final public function tokenize(TokenizerState $startState = TokenizerState::DATA, ?string $appropriateEndTag = null): iterable
+    abstract public function tokenize(TokenizerState $startState = TokenizerState::DATA, ?string $appropriateEndTag = null): Traversable;
+
+    final protected function reset(TokenizerState $startState = TokenizerState::DATA, ?string $appropriateEndTag = null): void
     {
-        $this->reset();
         $this->state = $startState;
         $this->appropriateEndTag = $appropriateEndTag;
-        do {
-            $carryOn = $this->nextToken();
-            yield from $this->tokenQueue;
-        } while ($carryOn);
-        yield new EOF();
-    }
-
-    private function reset(): void
-    {
         $this->position = 0;
         $this->temporaryBuffer = '';
-        $this->tokenQueue = new SplQueue();
-        $this->tokenQueue->setIteratorMode(\SplDoublyLinkedList::IT_MODE_DELETE|\SplDoublyLinkedList::IT_MODE_FIFO);
         $this->parseErrors = [];
     }
 
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#tokenization
+     * @return Traversable<int, Token>
      */
-    final protected function emitCurrentToken(): void
+    final protected function emitCurrentTagToken(): Traversable
     {
         $token = $this->currentToken;
         if ($token::TYPE === TokenType::START_TAG) {
@@ -100,13 +89,14 @@ abstract class AbstractTokenizer
                 $token->selfClosing = false;
             }
         }
-        $this->tokenQueue->enqueue($token);
+        yield $token;
     }
 
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#flush-code-points-consumed-as-a-character-reference
+     * @return Traversable<int, Token>
      */
-    final protected function flushCodePointsConsumedAsACharacterReference(): void
+    final protected function flushCodePointsConsumedAsACharacterReference(): Traversable
     {
         // https://html.spec.whatwg.org/multipage/parsing.html#charref-in-attribute
         $rs = $this->returnState;
@@ -121,7 +111,7 @@ abstract class AbstractTokenizer
             $this->currentToken->attributes[array_key_last($this->currentToken->attributes)][1] .= $this->temporaryBuffer;
             return;
         }
-        $this->tokenQueue->enqueue(new Character($this->temporaryBuffer));
+        yield new Character($this->temporaryBuffer);
     }
 
     /**

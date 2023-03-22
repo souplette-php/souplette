@@ -11,7 +11,7 @@ if ({{ h.is_whitespace() }}) {
     {{ h.advance_to('SELF_CLOSING_START_TAG') }}
 } else if ($cc === '>') {
     // Switch to the data state. Emit the current tag token.
-    {{ h.emit_and_resume_in('DATA') }}
+    {{ h.emit_and_resume_in('DATA', true) }}
 } else if ({{ h.is_eof() }}) {
     // This is an eof-in-tag parse error.
     {{ h.parse_error('EOF_IN_TAG') }}

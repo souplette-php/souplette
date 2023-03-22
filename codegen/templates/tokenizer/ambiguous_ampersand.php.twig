@@ -11,7 +11,7 @@ if (\ctype_alnum($cc)) {
         {{ h.append_to_attr_value('$chars') }}
     } else {
         // Otherwise, emit the current input character as a character token.
-        $this->tokenQueue->enqueue(new Character($chars));
+        yield new Character($chars);
     }
     {{ h.update_and_continue(current_state) }}
 } else if ($cc === ';') {

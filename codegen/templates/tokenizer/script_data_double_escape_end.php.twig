@@ -5,7 +5,7 @@
 
 if ({{ h.is_whitespace() }} || {{ cc_in('/', '>') }}) {
     // Emit the current input character as a character token.
-    $this->tokenQueue->enqueue(new Character($cc));
+    yield new Character($cc);
     // If the temporary buffer is the string "script", then switch to the script data escaped state.
     if ($this->temporaryBuffer === 'script') {
         {{ h.advance_to('SCRIPT_DATA_ESCAPED') }}
@@ -18,7 +18,7 @@ if ({{ h.is_whitespace() }} || {{ cc_in('/', '>') }}) {
     {{ h.chars_while_alpha() }}
     $this->temporaryBuffer .= strtolower($chars);
     // Emit the current input character as a character token.
-    $this->tokenQueue->enqueue(new Character($chars));
+    yield new Character($chars);
     {{ h.update_and_continue(current_state) }}
 } else {
     // Reconsume in the script data double escaped state.

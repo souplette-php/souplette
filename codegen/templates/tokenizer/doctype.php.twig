@@ -17,7 +17,7 @@ if ({{ h.is_whitespace() }}) {
     // Set its force-quirks flag to on.
     $token->forceQuirks = true;
     // Emit the token. Emit an end-of-file token.
-    $this->tokenQueue->enqueue($token);
+    yield $token;
     {{ h.emit_eof() }}
 } else {
     // This is a missing-whitespace-before-doctype-name parse error.

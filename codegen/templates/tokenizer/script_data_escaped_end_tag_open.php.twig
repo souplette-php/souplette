@@ -10,7 +10,7 @@ if ({{ h.is_alpha() }}) {
     {{ h.reconsume_in('SCRIPT_DATA_ESCAPED_END_TAG_NAME') }}
 } else {
     // Emit a U+003C LESS-THAN SIGN character token and a U+002F SOLIDUS character token.
-    $this->tokenQueue->enqueue(new Character('</'));
+    yield new Character('</');
     // Reconsume in the script data escaped state.
     {{ h.reconsume_in('SCRIPT_DATA_ESCAPED') }}
 }

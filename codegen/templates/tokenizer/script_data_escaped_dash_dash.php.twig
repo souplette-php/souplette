@@ -5,21 +5,21 @@
 
 if ($cc === '-') {
     // Emit a U+002D HYPHEN-MINUS character token.
-    $this->tokenQueue->enqueue(new Character('-'));
+    yield new Character('-');
     {{ h.consume(current_state) }}
 } else if ($cc === '<') {
     // Switch to the script data escaped less-than sign state.
     {{ h.advance_to('SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN') }}
 } else if ($cc === '>') {
     // Emit a U+003E GREATER-THAN SIGN character token.
-    $this->tokenQueue->enqueue(new Character('>'));
+    yield new Character('>');
     // Switch to the script data state.
     {{ h.advance_to('SCRIPT_DATA') }}
 } else if ($cc === "\0") {
     // This is an unexpected-null-character parse error.
     {{ h.parse_error('UNEXPECTED_NULL_CHARACTER') }}
     // Emit a U+FFFD REPLACEMENT CHARACTER character token.
-    $this->tokenQueue->enqueue(new Character("\u{FFFD}"));
+    yield new Character("\u{FFFD}");
     // Switch to the script data escaped state
     {{ h.advance_to('SCRIPT_DATA_ESCAPED') }}
 } else if ({{ h.is_eof() }}) {
@@ -30,6 +30,6 @@ if ($cc === '-') {
 } else {
     // Emit the current input character as a character token.
     {{ h.chars_until("-<>\0") }}
-    $this->tokenQueue->enqueue(new Character($chars));
+    yield new Character($chars);
     {{ h.update_and_reconsume_in('SCRIPT_DATA_ESCAPED') }}
 }

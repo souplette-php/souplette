@@ -16,7 +16,7 @@ if ({{ h.is_whitespace() }}) {
     // This is a missing-attribute-value parse error.
     {{ h.parse_error('MISSING_ATTRIBUTE_VALUE') }}
     // Switch to the data state. Emit the current tag token.
-    {{ h.emit_and_resume_in('DATA') }}
+    {{ h.emit_and_resume_in('DATA', true) }}
 } else {
     // Reconsume in the attribute value (unquoted) state.
     {{ h.reconsume_in('ATTRIBUTE_VALUE_UNQUOTED') }}

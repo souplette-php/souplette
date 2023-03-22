@@ -63,6 +63,6 @@ if ($refCode === 0x00) {
 // Append a code point equal to the character reference code to the temporary buffer.
 $this->temporaryBuffer = \IntlChar::chr($this->characterReferenceCode);
 // Flush code points consumed as a character reference.
-$this->flushCodePointsConsumedAsACharacterReference();
+{{ h.emit_char_ref() }}
 // Switch to the return state.
 {{ h.reconsume_in_return_state() }}

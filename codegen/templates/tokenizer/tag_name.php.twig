@@ -10,7 +10,7 @@ if ({{ h.is_whitespace() }}) {
     {{ h.advance_to('SELF_CLOSING_START_TAG') }}
 } else if ($cc === '>') {
     // Switch to the data state. Emit the current tag token.
-    {{ h.emit_and_resume_in('DATA') }}
+    {{ h.emit_and_resume_in('DATA', true) }}
 } else if ($cc === "\0") {
     // This is an unexpected-null-character parse error.
     {{ h.parse_error('UNEXPECTED_NULL_CHARACTER') }}

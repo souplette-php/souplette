@@ -31,7 +31,7 @@ if ($lastTerminalIndex !== null) {
     ) {
         // then, for historical reasons, flush code points consumed as a character reference
         $this->temporaryBuffer .= $buffer;
-        $this->flushCodePointsConsumedAsACharacterReference();
+        {{ h.emit_char_ref() }}
         // and switch to the return state.
         {{ h.reconsume_in_return_state() }}
     } else {
@@ -44,14 +44,14 @@ if ($lastTerminalIndex !== null) {
         // 2. Set the temporary buffer to the empty string. Append the decoded character reference to the temporary buffer.
         $this->temporaryBuffer = EntityLookup::NAMED_ENTITIES[$buffer];
         // 3. Flush code points consumed as a character reference.
-        $this->flushCodePointsConsumedAsACharacterReference();
+        {{ h.emit_char_ref() }}
         // Switch to the return state.
         {{ h.reconsume_in_return_state() }}
     }
 } else {
     $this->temporaryBuffer = '&';
     // Flush code points consumed as a character reference.
-    $this->flushCodePointsConsumedAsACharacterReference();
+    {{ h.emit_char_ref() }}
     // Switch to the ambiguous ampersand state.
     {{ h.reconsume_in('AMBIGUOUS_AMPERSAND') }}
 }

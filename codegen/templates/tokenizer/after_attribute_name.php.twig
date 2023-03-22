@@ -14,7 +14,7 @@ if ({{ h.is_whitespace() }}) {
     {{ h.advance_to('BEFORE_ATTRIBUTE_VALUE') }}
 } elseif ($cc === '>') {
     // Switch to the data state. Emit the current tag token.
-    {{ h.emit_and_resume_in('DATA') }}
+    {{ h.emit_and_resume_in('DATA', true) }}
 } elseif ({{ h.is_eof() }}) {
     // This is an eof-in-tag parse error.
     {{ h.parse_error('EOF_IN_TAG') }}
