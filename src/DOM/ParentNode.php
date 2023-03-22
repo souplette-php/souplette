@@ -329,6 +329,8 @@ abstract class ParentNode extends Node implements ParentNodeInterface
         } else {
             $this->uncheckedInsertBefore($node, $child);
         }
+        // TODO: this has a non-negligible cost during parsing,
+        // we should find a way to reduce this
         $node->insertedInto($this);
     }
 

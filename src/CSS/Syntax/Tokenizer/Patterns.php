@@ -72,7 +72,7 @@ final class Patterns
             | \d+ \. \d+
             | \d+
         )
-        (?: e [+-] \d+ )?
+        (?: e [+-]? \d+ )?
     /xiA
     REGEXP;
 
