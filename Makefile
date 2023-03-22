@@ -5,7 +5,7 @@ test: codegen
 	XDEBUG_MODE=off php tools/phpunit.phar
 
 coverage: codegen
-	XDEBUG_MODE=coverage php tools/phpunit.phar --coverage-html tmp/coverage
+	XDEBUG_MODE=off php -dpcov.enabled=1 tools/phpunit.phar --coverage-html tmp/coverage
 
 codegen: \
 	src/Encoding/EncodingLookup.php \
