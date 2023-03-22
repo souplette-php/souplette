@@ -10,6 +10,11 @@
       "email": "jules.bernable@gmail.com"
     }
   ],
+  "scripts": {
+    "test": "XDEBUG_MODE=off php tools/phpunit.phar",
+    "coverage": "XDEBUG_MODE=off php -dpcov.enabled=1 tools/phpunit.phar --coverage-html=tmp/coverage",
+    "bench": "XDEBUG_MODE=off php tools/phpbench.phar run --report=aggregate"
+  },
   "autoload": {
     "psr-4": {
       "Souplette\\": "src"
@@ -18,6 +23,7 @@
   "autoload-dev": {
     "psr-4": {
       "Souplette\\Tests\\": "tests",
+      "Souplette\\Benchmarks\\": "bench",
       "Souplette\\Codegen\\": "codegen"
     }
   },

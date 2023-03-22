@@ -1,11 +1,14 @@
 
 .PHONY: test coverage codegen
 
+bench: codegen
+	composer bench
+
 test: codegen
-	XDEBUG_MODE=off php tools/phpunit.phar
+	composer test
 
 coverage: codegen
-	XDEBUG_MODE=off php -dpcov.enabled=1 tools/phpunit.phar --coverage-html tmp/coverage
+	compsoer coverage
 
 codegen: \
 	src/Encoding/EncodingLookup.php \
