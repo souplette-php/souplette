@@ -5,6 +5,10 @@ namespace Souplette\HTML\TreeBuilder;
 use Souplette\DOM\Element;
 use Souplette\DOM\Namespaces;
 
+/**
+ * @link https://html.spec.whatwg.org/multipage/parsing.html#the-stack-of-open-elements
+ * @extends Stack<Element>
+ */
 final class OpenElementsStack extends Stack
 {
     private const SCOPE_BASE = [

@@ -193,7 +193,7 @@ final class AnPlusBParser
         return $this->handleIdentifier($token);
     }
 
-    private function isSignedInteger($token)
+    private function isSignedInteger($token): bool
     {
         if ($token::TYPE === TokenType::NUMBER && $token->isInteger) {
             return $token->representation[0] === '+' || $token->representation[0] === '-';
@@ -201,7 +201,7 @@ final class AnPlusBParser
         return false;
     }
 
-    private function isSignlessInteger($token)
+    private function isSignlessInteger($token): bool
     {
         if ($token::TYPE === TokenType::NUMBER && $token->isInteger) {
             return ctype_digit($token->representation[0]);
@@ -209,7 +209,7 @@ final class AnPlusBParser
         return false;
     }
 
-    private function isSign($token)
+    private function isSign($token): bool
     {
         return $token::TYPE === TokenType::DELIM && ($token->value === '+' || $token->value === '-');
     }

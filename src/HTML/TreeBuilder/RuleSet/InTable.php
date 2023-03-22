@@ -13,7 +13,7 @@ use Souplette\HTML\TreeBuilder\RuleSet;
  */
 final class InTable extends RuleSet
 {
-    public static function process(Token $token, TreeBuilder $tree)
+    public static function process(Token $token, TreeBuilder $tree): void
     {
         $type = $token::KIND;
         $currentNode = $tree->openElements->top();

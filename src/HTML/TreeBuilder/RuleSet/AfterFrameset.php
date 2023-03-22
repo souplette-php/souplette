@@ -13,7 +13,7 @@ use Souplette\HTML\TreeBuilder\RuleSet;
  */
 final class AfterFrameset extends RuleSet
 {
-    public static function process(Token $token, TreeBuilder $tree)
+    public static function process(Token $token, TreeBuilder $tree): void
     {
         $type = $token::KIND;
         if ($type === TokenKind::Characters) {

@@ -7,7 +7,7 @@ use Souplette\DOM\Namespaces;
 
 /**
  * @see https://html.spec.whatwg.org/multipage/parsing.html#the-list-of-active-formatting-elements
- * @extends Stack<Element>
+ * @extends Stack<Element|null>
  */
 final class ActiveFormattingElementList extends Stack
 {

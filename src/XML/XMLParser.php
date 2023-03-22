@@ -136,7 +136,7 @@ final class XMLParser
         return $result;
     }
 
-    private function handleXMLDeclaration(Document $document, string $version, ?string $encoding, ?string $standalone)
+    private function handleXMLDeclaration(Document $document, string $version, ?string $encoding, ?string $standalone): void
     {
         $document->_hasXMLDeclaration = true;
         $document->_xmlVersion = $version;
@@ -147,7 +147,7 @@ final class XMLParser
     /**
      * @throws DOMException
      */
-    private function handleElement(XMLReader $reader, Node $parent, Document $document, \SplStack $openElements)
+    private function handleElement(XMLReader $reader, Node $parent, Document $document, \SplStack $openElements): void
     {
         $isBlank = $reader->isEmptyElement;
         if ($ns = $reader->namespaceURI) {
@@ -171,7 +171,7 @@ final class XMLParser
     /**
      * @throws DOMException
      */
-    private function handleDocumentType(XMLReader $reader, Node $parent, Document $document)
+    private function handleDocumentType(XMLReader $reader, Node $parent, Document $document): void
     {
         if ($document->_doctype) return;
         $document->parserInsertBefore(new DocumentType($reader->name), null);
@@ -180,7 +180,7 @@ final class XMLParser
     /**
      * @throws DOMException
      */
-    private function handleText(XMLReader $reader, Node $parent, Document $document)
+    private function handleText(XMLReader $reader, Node $parent, Document $document): void
     {
         if (($prev = $parent->_last) && $prev instanceof Text) {
             $prev->appendData($reader->value);
@@ -192,7 +192,7 @@ final class XMLParser
     /**
      * @throws DOMException
      */
-    private function handleCdataSection(XMLReader $reader, Node $parent, Document $document)
+    private function handleCdataSection(XMLReader $reader, Node $parent, Document $document): void
     {
         $parent->appendChild($document->createCDATASection($reader->value));
     }
@@ -200,7 +200,7 @@ final class XMLParser
     /**
      * @throws DOMException
      */
-    private function handleComment(XMLReader $reader, Node $parent, Document $document)
+    private function handleComment(XMLReader $reader, Node $parent, Document $document): void
     {
         $parent->appendChild($document->createComment($reader->value));
     }
@@ -208,7 +208,7 @@ final class XMLParser
     /**
      * @throws DOMException
      */
-    private function handleProcessingInstruction(XMLReader $reader, Node $parent, Document $document)
+    private function handleProcessingInstruction(XMLReader $reader, Node $parent, Document $document): void
     {
         $parent->appendChild($document->createProcessingInstruction($reader->name, $reader->value));
     }

@@ -94,7 +94,7 @@ abstract class AbstractTokenStream implements TokenStreamInterface
         return $token;
     }
 
-    public function expectValue(TokenType $tokenType, string $value)
+    public function expectValue(TokenType $tokenType, string $value): Token
     {
         $token = $this->current();
         if ($token::TYPE !== $tokenType) {
@@ -103,5 +103,6 @@ abstract class AbstractTokenStream implements TokenStreamInterface
         if ($token->value !== $value) {
             throw UnexpectedValue::expecting($token->value, $value);
         }
+        return $token;
     }
 }

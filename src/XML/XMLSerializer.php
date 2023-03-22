@@ -93,7 +93,7 @@ final class XMLSerializer
         $this->requireWellFormed = $requireWellFormed;
     }
 
-    private function serializeNode(Node $node, bool $childrenOnly = false)
+    private function serializeNode(Node $node, bool $childrenOnly = false): void
     {
         if (!$node instanceof Element) {
             if (!$childrenOnly) {
@@ -281,7 +281,7 @@ final class XMLSerializer
             }
             // 12.5.3. Append to qualified name the concatenation of prefix, ":" (U+003A COLON), and node's localName.
             // 12.5.4. Append the value of qualified name to markup.
-            $this->markup .= $this->formatStartTagOpen($prefix, $element->localName);;
+            $this->markup .= $this->formatStartTagOpen($prefix, $element->localName);
             $serializedPrefix = $prefix;
             // 12.5.5. Append the following to markup, in the order listed:
             $this->markup .= ' ' . $this->formatAttribute('xmlns', $prefix, $ns);
@@ -300,7 +300,7 @@ final class XMLSerializer
             // 12.6.3. Let the value of inherited ns be ns.
             $namespaceContext->contextNamespace = $ns;
             // 12.6.4. Append the value of qualified name to markup.
-            $this->markup .= $this->formatStartTagOpen($element->prefix, $element->localName);;
+            $this->markup .= $this->formatStartTagOpen($element->prefix, $element->localName);
             // 12.6.5. Append the following to markup, in the order listed:
             $this->markup .= ' ' . $this->formatAttribute('', 'xmlns', $ns ?? '');
             return [$serializedPrefix, $ignoreNamespaceDefinition];
@@ -310,11 +310,11 @@ final class XMLSerializer
         // let the value of inherited ns be ns,
         // and append the value of qualified name to markup.
         $namespaceContext->contextNamespace = $ns;
-        $this->markup .= $this->formatStartTagOpen($element->prefix, $element->localName);;
+        $this->markup .= $this->formatStartTagOpen($element->prefix, $element->localName);
         return [$serializedPrefix, $ignoreNamespaceDefinition];
     }
 
-    private function appendStartTagClose(Element $node)
+    private function appendStartTagClose(Element $node): void
     {
         if ($this->shouldSelfClose($node)) {
             $this->markup .= $node->isHTML ? ' />' : '/>';
@@ -323,7 +323,7 @@ final class XMLSerializer
         $this->markup .= '>';
     }
 
-    private function appendEndTag(Element $node, ?string $prefixOverride)
+    private function appendEndTag(Element $node, ?string $prefixOverride): void
     {
         if ($this->shouldSelfClose($node)) {
             return;
@@ -349,7 +349,7 @@ final class XMLSerializer
         return true;
     }
 
-    private function appendAttribute(Element $node, Attr $attr)
+    private function appendAttribute(Element $node, Attr $attr): void
     {
         // https://w3c.github.io/DOM-Parsing/#serializing-an-element-s-attributes
         if ($this->requireWellFormed) {
@@ -429,7 +429,7 @@ final class XMLSerializer
         return $attr->namespaceURI != $this->lookupNamespaceURI($candidatePrefix);
     }
 
-    private function appendNamespace(string $prefix, string $namespace)
+    private function appendNamespace(string $prefix, string $namespace): void
     {
         $uri = $this->lookupNamespaceURI($prefix);
         // weak comparison is intentional so that null equals ''

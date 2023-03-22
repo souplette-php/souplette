@@ -19,6 +19,7 @@ use Souplette\CSS\Syntax\Tokenizer\Token\SingleCharToken;
 use Souplette\CSS\Syntax\Tokenizer\Token\Str;
 use Souplette\CSS\Syntax\Tokenizer\Token\Url;
 use Souplette\CSS\Syntax\Tokenizer\Token\Whitespace;
+use Traversable;
 
 /**
  * @see https://www.w3.org/TR/css-syntax-3/#tokenization
@@ -33,7 +34,7 @@ final class Tokenizer implements \IteratorAggregate
         $this->input = $input;
     }
 
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         $this->position = 0;
         do {

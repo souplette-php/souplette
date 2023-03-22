@@ -112,14 +112,16 @@ class Stack extends \SplStack
         return false;
     }
 
-    public function clear()
+    public function clear(): void
     {
         while (!$this->isEmpty()) {
             $this->pop();
         }
     }
+
     /**
      * @param T $value
+     * @return T|null
      */
     public function popUntil($value)
     {

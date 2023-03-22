@@ -87,7 +87,7 @@ trait DocumentTreeAccessorsTrait
     {
         $root = $this->getDocumentElement();
         if ($root->localName === 'svg' && $root->namespaceURI === Namespaces::SVG) {
-            $title = $this->getTitleElement(Namespaces::SVG, $root);;
+            $title = $this->getTitleElement(Namespaces::SVG, $root);
             if (!$title) {
                 $title = $this->createElementNS(Namespaces::SVG, 'title');
                 $root->appendChild($title);

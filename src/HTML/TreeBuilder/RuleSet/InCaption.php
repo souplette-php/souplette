@@ -37,7 +37,7 @@ final class InCaption extends RuleSet
         'tr' => true,
     ];
 
-    public static function process(Token $token, TreeBuilder $tree)
+    public static function process(Token $token, TreeBuilder $tree): void
     {
         $type = $token::KIND;
         if ($type === TokenKind::EndTag && $token->name === 'caption') {

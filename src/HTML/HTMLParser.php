@@ -78,8 +78,6 @@ final class HTMLParser
             $input = Utf8Converter::convert($input, $encoding);
         }
         $input = InputPreprocessor::removeBOM($input);
-        $input = InputPreprocessor::normalizeNewlines($input);
-
-        return $input;
+        return InputPreprocessor::normalizeNewlines($input);
     }
 }

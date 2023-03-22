@@ -2746,7 +2746,7 @@ final class Tokenizer extends AbstractTokenizer
                     throw new \LogicException("Unknown state: {$this->state}");
                     break;
             }
-        };
+        }
         return null;
     }
 }

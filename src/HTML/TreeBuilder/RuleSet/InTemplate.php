@@ -34,7 +34,7 @@ final class InTemplate extends RuleSet
         'thead' => true,
     ];
 
-    public static function process(Token $token, TreeBuilder $tree)
+    public static function process(Token $token, TreeBuilder $tree): void
     {
         $type = $token::KIND;
         if (

@@ -14,7 +14,7 @@ use Souplette\HTML\TreeBuilder\RuleSet;
  */
 final class AfterBody extends RuleSet
 {
-    public static function process(Token $token, TreeBuilder $tree)
+    public static function process(Token $token, TreeBuilder $tree): void
     {
         $type = $token::KIND;
         if ($type === TokenKind::Characters && ctype_space($token->data)) {

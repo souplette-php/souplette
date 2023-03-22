@@ -231,7 +231,7 @@ final class Sanitizer
     /**
      * https://wicg.github.io/sanitizer-api/#handle-funky-elements
      */
-    private function handleFunkyElements(Element $element, string $name, ParentNode $fragment)
+    private function handleFunkyElements(Element $element, string $name, ParentNode $fragment): void
     {
         if (!$element->isHTML) return;
         switch ($name) {

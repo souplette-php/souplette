@@ -9,5 +9,5 @@ abstract class RuleSet
 {
     final private function __construct() {}
 
-    abstract public static function process(Token $token, TreeBuilder $tree);
+    abstract public static function process(Token $token, TreeBuilder $tree): void;
 }

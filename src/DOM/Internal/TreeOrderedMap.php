@@ -23,7 +23,7 @@ abstract class TreeOrderedMap
 
     abstract public function get(string $key, ParentNode $parent): ?Element;
 
-    public function add(string $key, Element $element)
+    public function add(string $key, Element $element): void
     {
         if ($entry = $this->entries[$key] ?? null) {
             $entry->element = null;
@@ -34,7 +34,7 @@ abstract class TreeOrderedMap
         $this->entries[$key] = new TreeOrderedMapEntry($element);
     }
 
-    public function remove(string $key, Element $element)
+    public function remove(string $key, Element $element): void
     {
         $entry = $this->entries[$key] ?? null;
         if (!$entry) return;

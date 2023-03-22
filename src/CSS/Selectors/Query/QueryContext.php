@@ -66,7 +66,7 @@ final class QueryContext
             throw new \RuntimeException('HierarchyRequestError');
         }
         $isHtmlDoc = $document->isHTML;
-        $isQuirksMode = $isHtmlDoc && $document->_mode === DocumentMode::QUIRKS;;
+        $isQuirksMode = $isHtmlDoc && $document->_mode === DocumentMode::QUIRKS;
 
         return new self(
             $document,

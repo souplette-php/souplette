@@ -294,7 +294,7 @@ final class Parser
             // Reconsume the current input token.
             // Consume a component value.
             $value = $this->consumeComponentValue();
-            // Append the returned value to the qualified rule’s prelude. 
+            // Append the returned value to the qualified rule’s prelude.
             $rule->prelude[] = $value;
         }
 
@@ -339,7 +339,7 @@ final class Parser
                         break;
                     }
                     $tmp[] = $this->tokenStream->consume();
-                };
+                }
                 // Consume a declaration from the temporary list.
                 $stream = $this->tokenStream;
                 $this->tokenStream = new TokenRange($tmp);
@@ -358,7 +358,7 @@ final class Parser
                         break;
                     }
                     $this->consumeComponentValue();
-                };
+                }
             }
         }
     }

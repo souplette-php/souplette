@@ -228,7 +228,7 @@ final class TreeBuilder
         };
     }
 
-    private function run(TokenizerState $tokenizerState)
+    private function run(TokenizerState $tokenizerState): void
     {
         $previousToken = null;
         foreach ($this->tokenizer->tokenize($tokenizerState) as $token) {
@@ -283,7 +283,7 @@ final class TreeBuilder
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#reset-the-insertion-mode-appropriately
      */
-    public function resetInsertionModeAppropriately()
+    public function resetInsertionModeAppropriately(): void
     {
         // Shortcut for steps 6, 7, 8, 9, 10 & 13
         $nextModes = [
@@ -389,7 +389,7 @@ final class TreeBuilder
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#closing-elements-that-have-implied-end-tags
      */
-    public function generateImpliedEndTags(?string $excluded = null, bool $thoroughly = false)
+    public function generateImpliedEndTags(?string $excluded = null, bool $thoroughly = false): void
     {
         $impliedTags = $thoroughly ? Elements::END_TAG_IMPLIED_THOROUGH : Elements::END_TAG_IMPLIED;
         while (true) {
@@ -503,7 +503,7 @@ final class TreeBuilder
         return new DocumentType($token->name, $token->publicIdentifier ?: '', $token->systemIdentifier ?: '');
     }
 
-    public function insertCharacter(Token\Character $token, ?string $data = null)
+    public function insertCharacter(Token\Character $token, ?string $data = null): void
     {
         // 1. Let data be the characters passed to the algorithm, or,
         // if no characters were explicitly specified, the character of the character token being processed.
@@ -529,7 +529,7 @@ final class TreeBuilder
         }
     }
 
-    public function insertComment(Token\Comment $token, ?InsertionLocation $position = null)
+    public function insertComment(Token\Comment $token, ?InsertionLocation $position = null): void
     {
         // 1. Let data be the data given in the comment token being processed.
         $data = $token->data;
@@ -632,7 +632,7 @@ final class TreeBuilder
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#acknowledge-self-closing-flag
      */
-    public function acknowledgeSelfClosingFlag(Token\StartTag $token)
+    public function acknowledgeSelfClosingFlag(Token\StartTag $token): void
     {
         if ($token->selfClosing && !isset(Elements::VOID_ELEMENTS[$token->name])) {
             // When a start tag token is emitted with its self-closing flag set,
@@ -644,7 +644,7 @@ final class TreeBuilder
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-elements-that-contain-only-text
      */
-    public function followTheGenericTextElementParsingAlgorithm(Token\StartTag $token, bool $rawtext = false)
+    public function followTheGenericTextElementParsingAlgorithm(Token\StartTag $token, bool $rawtext = false): void
     {
         $this->insertElement($token);
         $this->tokenizer->state = $rawtext ? TokenizerState::RAWTEXT : TokenizerState::RCDATA;
@@ -652,14 +652,14 @@ final class TreeBuilder
         $this->insertionMode = InsertionModes::TEXT;
     }
 
-    public function adjustSvgTagName(Token\StartTag $token)
+    public function adjustSvgTagName(Token\StartTag $token): void
     {
         if (isset(Elements::NORMALIZED_SVG_TAGS[$token->name])) {
             $token->name = Elements::NORMALIZED_SVG_TAGS[$token->name];
         }
     }
 
-    public function adjustSvgAttributes(Token\StartTag $token)
+    public function adjustSvgAttributes(Token\StartTag $token): void
     {
         if (!$token->attributes) return;
         foreach ($token->attributes as $name => $value) {
@@ -671,7 +671,7 @@ final class TreeBuilder
         }
     }
 
-    public function adjustMathMlAttributes(Token\StartTag $token)
+    public function adjustMathMlAttributes(Token\StartTag $token): void
     {
         if (!$token->attributes) return;
         foreach ($token->attributes as $name => $value) {
@@ -683,7 +683,7 @@ final class TreeBuilder
         }
     }
 
-    public function adjustForeignAttributes(Token\StartTag $token)
+    public function adjustForeignAttributes(Token\StartTag $token): void
     {
         if (!$token->attributes) return;
         foreach ($token->attributes as $qname => $value) {
@@ -700,7 +700,7 @@ final class TreeBuilder
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#reconstruct-the-active-formatting-elements
      */
-    public function reconstructTheListOfActiveElements()
+    public function reconstructTheListOfActiveElements(): void
     {
         // 1. If there are no entries in the list of active formatting elements, then there is nothing to reconstruct;
         // stop this algorithm.
@@ -747,7 +747,7 @@ final class TreeBuilder
         }
     }
 
-    public function changeTheEncoding(string $label)
+    public function changeTheEncoding(string $label): void
     {
         $currentEncoding = $this->encoding->name;
         // 1. If the encoding that is already being used to interpret the input stream is a UTF-16 encoding,

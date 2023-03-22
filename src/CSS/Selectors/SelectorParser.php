@@ -613,7 +613,7 @@ final class SelectorParser
         return new SelectorList($selectors);
     }
 
-    private function consumeToFunctionEnd()
+    private function consumeToFunctionEnd(): void
     {
         $this->tokenStream->consumeAndSkipWhitespace();
         $this->tokenStream->eat(TokenType::RPAREN);

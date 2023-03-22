@@ -48,7 +48,7 @@ final class NamespaceContext
         return $this->prefixToNS[$prefix] ?? null;
     }
 
-    public function inheritLocalDefaultNamespace(?string $localDefaultNamespace)
+    public function inheritLocalDefaultNamespace(?string $localDefaultNamespace): void
     {
         if ($localDefaultNamespace === null) return;
         $this->contextNamespace = $localDefaultNamespace;

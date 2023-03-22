@@ -33,7 +33,7 @@ final class InSelectInTable extends RuleSet
         'th' => true,
     ];
 
-    public static function process(Token $token, TreeBuilder $tree)
+    public static function process(Token $token, TreeBuilder $tree): void
     {
         $type = $token::KIND;
         if ($type === TokenKind::StartTag && isset(self::PARSE_ERROR_START_TAGS[$token->name])) {
