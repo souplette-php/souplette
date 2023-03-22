@@ -3,6 +3,7 @@
 namespace Souplette\Tests\WebPlatformTests\DOMParsing;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\DOM\Element;
 use Souplette\DOM\Exception\InvalidStateError;
@@ -33,15 +34,13 @@ final class InnerXHTMLTest extends TestCase
         $html = $doc->documentElement->innerHTML;
     }
 
-    /**
-     * @dataProvider xhtmlSerializationProvider
-     */
+    #[DataProvider('xhtmlSerializationProvider')]
     public function testXhtmlSerialization(Element $element, string $expected)
     {
         Assert::assertSame($expected, $element->innerHTML);
     }
 
-    public function xhtmlSerializationProvider(): iterable
+    public static function xhtmlSerializationProvider(): iterable
     {
         $doc = DOMBuilder::xml()->tag('html')
             ->tag('xmp')

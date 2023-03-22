@@ -3,6 +3,7 @@
 namespace Souplette\Tests\DOM;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\DOM\Document;
 use Souplette\DOM\Element;
@@ -37,15 +38,13 @@ final class NodeTest extends TestCase
         $node->snafucated = 'frobnicator';
     }
 
-    /**
-     * @dataProvider containsProvider
-     */
+    #[DataProvider('containsProvider')]
     public function testContains(Node $parent, ?Node $target, bool $expected)
     {
         Assert::assertSame($expected, $parent->contains($target));
     }
 
-    public function containsProvider(): iterable
+    public static function containsProvider(): iterable
     {
         yield 'returns true when document contains element' => [
             $doc = DOMBuilder::html()
@@ -89,15 +88,13 @@ final class NodeTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider parentElementProvider
-     */
+    #[DataProvider('parentElementProvider')]
     public function testParentElement(Node $node, ?Element $expected)
     {
         Assert::assertSame($expected, $node->parentElement);
     }
 
-    public function parentElementProvider(): iterable
+    public static function parentElementProvider(): iterable
     {
         yield 'returns null for document' => [
             DOMBuilder::html()->getDocument(),

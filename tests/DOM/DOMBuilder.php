@@ -7,6 +7,7 @@ use Souplette\DOM\Namespaces;
 use Souplette\DOM\Node;
 use Souplette\DOM\XMLDocument;
 use Souplette\HTML\TreeBuilder\Elements;
+use SplStack;
 
 /**
  * @template T of Document
@@ -15,7 +16,7 @@ final class DOMBuilder
 {
     /** @var T  */
     protected Document $document;
-    protected \SplStack $openElements;
+    protected SplStack $openElements;
 
     /**
      * @param T $document
@@ -23,7 +24,7 @@ final class DOMBuilder
     private function __construct(Document $document)
     {
         $this->document = $document;
-        $this->openElements = new \SplStack();
+        $this->openElements = new SplStack();
     }
 
     /**

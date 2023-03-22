@@ -2,12 +2,11 @@
 
 namespace Souplette\Tests\CSS\Selectors\Node\Simple;
 
-use Souplette\DOM\Document;
-use Souplette\DOM\Element;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Souplette\CSS\Selectors\Node\Simple\TypeSelector;
 use Souplette\CSS\Selectors\Specificity;
+use Souplette\DOM\Element;
 use Souplette\DOM\Namespaces;
-use Souplette\DOM\XMLDocument;
 use Souplette\Tests\CSS\Selectors\QueryAssert;
 use Souplette\Tests\CSS\Selectors\SelectorAssert;
 use Souplette\Tests\CSS\Selectors\SelectorTestCase;
@@ -15,14 +14,14 @@ use Souplette\Tests\DOM\DOMBuilder;
 
 final class TypeTest extends SelectorTestCase
 {
-    public function toStringProvider(): iterable
+    public static function toStringProvider(): iterable
     {
         yield [new TypeSelector('foo', '*'), 'foo'];
         yield [new TypeSelector('foo', 'svg'), 'svg|foo'];
         yield [new TypeSelector('foo', null), '|foo'];
     }
 
-    public function specificityProvider(): iterable
+    public static function specificityProvider(): iterable
     {
         $spec = new Specificity(0, 0, 1);
         yield [new TypeSelector('foo', '*'), $spec];
@@ -30,15 +29,13 @@ final class TypeTest extends SelectorTestCase
         yield [new TypeSelector('foo', null), $spec];
     }
 
-    /**
-     * @dataProvider anyNamespaceProvider
-     */
+    #[DataProvider('anyNamespaceProvider')]
     public function testAnyNamespace(Element $element, TypeSelector $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function anyNamespaceProvider(): iterable
+    public static function anyNamespaceProvider(): iterable
     {
         $dom = DOMBuilder::html()
             ->tag('g', Namespaces::SVG)->close()
@@ -61,16 +58,14 @@ final class TypeTest extends SelectorTestCase
         ];
     }
 
-    /**
-     * @dataProvider explicitNamespaceProvider
-     */
+    #[DataProvider('explicitNamespaceProvider')]
     public function testExplicitNamespace(Element $element, TypeSelector $selector, bool $expected)
     {
         $this->markTestSkipped('Namespaces in CSS are a lie.');
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function explicitNamespaceProvider(): iterable
+    public static function explicitNamespaceProvider(): iterable
     {
         $dom = DOMBuilder::html()
             ->tag('svg:g', Namespaces::SVG)->close()
@@ -93,15 +88,13 @@ final class TypeTest extends SelectorTestCase
         ];
     }
 
-    /**
-     * @dataProvider nullNamespaceProvider
-     */
+    #[DataProvider('nullNamespaceProvider')]
     public function testNullNamespace(Element $element, TypeSelector $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function nullNamespaceProvider(): iterable
+    public static function nullNamespaceProvider(): iterable
     {
         $dom = DOMBuilder::html()
             ->tag('foo', '')->close()

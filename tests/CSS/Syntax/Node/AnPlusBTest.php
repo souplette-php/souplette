@@ -3,20 +3,19 @@
 namespace Souplette\Tests\CSS\Syntax\Node;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\CSS\Syntax\Node\AnPlusB;
 
 final class AnPlusBTest extends TestCase
 {
-    /**
-     * @dataProvider toStringProvider
-     */
+    #[DataProvider('toStringProvider')]
     public function testToString(AnPlusB $input, string $expected)
     {
         Assert::assertSame($expected, (string)$input);
     }
 
-    public function toStringProvider(): iterable
+    public static function toStringProvider(): iterable
     {
         yield [new AnPlusB(0, 1), '1'];
         yield [new AnPlusB(0, 2), '2'];

@@ -2,6 +2,7 @@
 
 namespace Souplette\Tests\CSS\Selectors\Parser;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Souplette\CSS\Selectors\Node\SelectorList;
 use Souplette\CSS\Selectors\Node\Simple\AttributeSelector;
 use Souplette\CSS\Selectors\Node\Simple\ClassSelector;
@@ -17,10 +18,10 @@ use Souplette\Tests\CSS\Selectors\SelectorUtils;
 final class CompoundSelectorParsingTest extends SelectorParserTestCase
 {
     /**
-     * @dataProvider parseSelectorListWithCompoundSelectorsProvider
      * @param string $input
      * @param SimpleSelector[] $expected
      */
+    #[DataProvider('parseSelectorListWithCompoundSelectorsProvider')]
     public function testParseSelectorListWithCompoundSelectors(string $input, array $expected)
     {
         $selector = SelectorUtils::parseSelectorList($input);
@@ -30,7 +31,7 @@ final class CompoundSelectorParsingTest extends SelectorParserTestCase
         SelectorAssert::selectorListEquals($expected, $selector);
     }
 
-    public function parseSelectorListWithCompoundSelectorsProvider(): iterable
+    public static function parseSelectorListWithCompoundSelectorsProvider(): iterable
     {
         yield 'foo.bar' => [
             'foo.bar',

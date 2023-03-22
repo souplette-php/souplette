@@ -12,7 +12,7 @@ use Souplette\Tests\CSS\Selectors\SelectorUtils;
 
 final class IsTest extends SelectorTestCase
 {
-    public function toStringProvider(): iterable
+    public static function toStringProvider(): iterable
     {
         yield [
             new Is(SelectorUtils::toSelectorList([
@@ -23,7 +23,7 @@ final class IsTest extends SelectorTestCase
         ];
     }
 
-    public function specificityProvider(): iterable
+    public static function specificityProvider(): iterable
     {
         yield [
             new Is(SelectorUtils::toSelectorList([

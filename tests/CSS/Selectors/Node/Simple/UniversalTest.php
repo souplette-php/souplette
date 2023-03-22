@@ -11,14 +11,14 @@ use Souplette\Tests\DOM\DOMBuilder;
 
 final class UniversalTest extends SelectorTestCase
 {
-    public function toStringProvider(): iterable
+    public static function toStringProvider(): iterable
     {
         yield [new UniversalSelector('*'), '*'];
         yield [new UniversalSelector(null), '|*'];
         yield [new UniversalSelector('svg'), 'svg|*'];
     }
 
-    public function specificityProvider(): iterable
+    public static function specificityProvider(): iterable
     {
         yield [new UniversalSelector(), new Specificity(0, 0, 0)];
     }

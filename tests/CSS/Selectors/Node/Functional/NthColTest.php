@@ -11,12 +11,12 @@ use Souplette\Tests\DOM\DOMBuilder;
 
 final class NthColTest extends SelectorTestCase
 {
-    public function toStringProvider(): iterable
+    public static function toStringProvider(): iterable
     {
         yield [new NthCol(new AnPlusB(2, 1)), ':nth-col(odd)'];
     }
 
-    public function specificityProvider(): iterable
+    public static function specificityProvider(): iterable
     {
         yield [new NthCol(new AnPlusB(2, 1)), new Specificity(0, 1, 0)];
     }

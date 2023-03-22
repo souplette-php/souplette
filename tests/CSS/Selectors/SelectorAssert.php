@@ -2,14 +2,14 @@
 
 namespace Souplette\Tests\CSS\Selectors;
 
-use Souplette\DOM\Document;
-use Souplette\DOM\Element;
 use PHPUnit\Framework\Assert;
 use Souplette\CSS\Selectors\Node\ComplexSelector;
 use Souplette\CSS\Selectors\Node\Selector;
 use Souplette\CSS\Selectors\Node\SelectorList;
 use Souplette\CSS\Selectors\SelectorQuery;
 use Souplette\CSS\Selectors\Specificity;
+use Souplette\DOM\Document;
+use Souplette\DOM\Element;
 use Souplette\Tests\Utils as TestUtils;
 
 final class SelectorAssert

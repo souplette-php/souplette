@@ -2,10 +2,10 @@
 
 namespace Souplette\Tests\CSS\Selectors;
 
-use Souplette\DOM\Element;
 use PHPUnit\Framework\Assert;
 use Souplette\CSS\Selectors\Node\Selector;
 use Souplette\CSS\Selectors\Query\QueryContext;
+use Souplette\DOM\Element;
 use Souplette\Tests\Utils;
 
 final class QueryAssert

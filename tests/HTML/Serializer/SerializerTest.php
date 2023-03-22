@@ -2,6 +2,7 @@
 
 namespace Souplette\Tests\HTML\Serializer;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\DOM\Document;
 use Souplette\DOM\Namespaces;
@@ -10,15 +11,13 @@ use Souplette\Tests\DOM\DOMBuilder;
 
 final class SerializerTest extends TestCase
 {
-    /**
-     * @dataProvider doctypeProvider
-     */
+    #[DataProvider('doctypeProvider')]
     public function testDoctype(Document $input, string $expected, ?string $xhtml = null)
     {
         SerializerAssert::assertSerializationEquals($input, $expected, $xhtml);
     }
 
-    public function doctypeProvider(): iterable
+    public static function doctypeProvider(): iterable
     {
         yield 'html doctype' => [
             DOMBuilder::html()->doctype('html')->getDocument(),
@@ -41,15 +40,13 @@ final class SerializerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider commentsProvider
-     */
+    #[DataProvider('commentsProvider')]
     public function testComments(Document $input, string $expected, ?string $xhtml = null)
     {
         SerializerAssert::assertSerializationEquals($input, $expected, $xhtml);
     }
 
-    public function commentsProvider(): iterable
+    public static function commentsProvider(): iterable
     {
         yield 'simple comment' => [
             DOMBuilder::html()->comment('foobar')->getDocument(),
@@ -63,15 +60,13 @@ final class SerializerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider elementsProvider
-     */
+    #[DataProvider('elementsProvider')]
     public function testElements(Node $input, string $expected, ?string $xhtml = null)
     {
         SerializerAssert::assertSerializationEquals($input, $expected, $xhtml);
     }
 
-    public function elementsProvider(): iterable
+    public static function elementsProvider(): iterable
     {
         yield '<div>' => [
             DOMBuilder::html()->tag('div')->getDocument(),
@@ -98,15 +93,13 @@ final class SerializerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider attributesProvider
-     */
+    #[DataProvider('attributesProvider')]
     public function testAttributes(Document $input, string $expected, ?string $xhtml = null)
     {
         SerializerAssert::assertSerializationEquals($input, $expected, $xhtml);
     }
 
-    public function attributesProvider(): iterable
+    public static function attributesProvider(): iterable
     {
         yield 'double quote escaping' => [
             DOMBuilder::html()->tag('span')->attr('title', 'foo"bar')->getDocument(),
@@ -160,15 +153,13 @@ final class SerializerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider characterDataEscapingProvider
-     */
+    #[DataProvider('characterDataEscapingProvider')]
     public function testCharacterDataEscaping(Document $input, string $expected, ?string $xhtml = null)
     {
         SerializerAssert::assertSerializationEquals($input, $expected, $xhtml);
     }
 
-    public function characterDataEscapingProvider(): iterable
+    public static function characterDataEscapingProvider(): iterable
     {
         yield 'character data' => [
             DOMBuilder::html()->tag('span')->text("<foo> & bar\u{00A0}baz")->getDocument(),
@@ -182,15 +173,13 @@ final class SerializerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider booleanAttributesProvider
-     */
+    #[DataProvider('booleanAttributesProvider')]
     public function testBooleanAttributes(Document $input, string $expected, ?string $xhtml = null)
     {
         SerializerAssert::assertSerializationEquals($input, $expected, $xhtml);
     }
 
-    public function booleanAttributesProvider(): iterable
+    public static function booleanAttributesProvider(): iterable
     {
         yield '<div hidden="">' => [
             DOMBuilder::html()->tag('div')->attr('hidden')->getDocument(),

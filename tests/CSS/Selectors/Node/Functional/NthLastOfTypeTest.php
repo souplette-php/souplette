@@ -2,34 +2,33 @@
 
 namespace Souplette\Tests\CSS\Selectors\Node\Functional;
 
-use Souplette\DOM\Element;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Souplette\CSS\Selectors\Node\Functional\NthLastOfType;
 use Souplette\CSS\Selectors\Specificity;
 use Souplette\CSS\Syntax\Node\AnPlusB;
+use Souplette\DOM\Element;
 use Souplette\Tests\CSS\Selectors\QueryAssert;
 use Souplette\Tests\CSS\Selectors\SelectorTestCase;
 use Souplette\Tests\DOM\DOMBuilder;
 
 final class NthLastOfTypeTest extends SelectorTestCase
 {
-    public function toStringProvider(): iterable
+    public static function toStringProvider(): iterable
     {
         yield [new NthLastOfType(new AnPlusB(2, 1)), ':nth-last-of-type(odd)'];
     }
 
-    public function specificityProvider(): iterable
+    public static function specificityProvider(): iterable
     {
         yield [new NthLastOfType(new AnPlusB(2, 1)), new Specificity(0, 1, 0)];
     }
-    /**
-     * @dataProvider simpleAnPlusBProvider
-     */
+    #[DataProvider('simpleAnPlusBProvider')]
     public function testSimpleAnPlusB(Element $element, NthLastOfType $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function simpleAnPlusBProvider(): iterable
+    public static function simpleAnPlusBProvider(): iterable
     {
         $dom = DOMBuilder::html()->tag('html')
             ->tag('a')->close()
@@ -53,15 +52,13 @@ final class NthLastOfTypeTest extends SelectorTestCase
         }
     }
 
-    /**
-     * @dataProvider aNPlusBProvider
-     */
+    #[DataProvider('aNPlusBProvider')]
     public function testAnPlusB(Element $element, NthLastOfType $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function aNPlusBProvider(): iterable
+    public static function aNPlusBProvider(): iterable
     {
         $dom = DOMBuilder::html()->tag('html')
             ->tag('a')->close()

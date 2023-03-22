@@ -3,6 +3,7 @@
 namespace Souplette\Tests\CSS\Syntax;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\CSS\Syntax\Node\CSSAtRule;
 use Souplette\CSS\Syntax\Node\CSSDeclaration;
@@ -21,16 +22,14 @@ use Souplette\CSS\Syntax\Tokenizer\Tokenizer;
 
 final class ParserTest extends TestCase
 {
-    /**
-     * @dataProvider parseStylesheetProvider
-     */
+    #[DataProvider('parseStylesheetProvider')]
     public function testParseStylesheet(string $input, mixed $expected)
     {
         $parser = new Parser(new Tokenizer($input));
         Assert::assertEquals($expected, $parser->parseStylesheet());
     }
 
-    public function parseStylesheetProvider(): iterable
+    public static function parseStylesheetProvider(): iterable
     {
         yield [
             '@namespace svg "//foo/bar"; baz{qux:666};',
@@ -53,16 +52,14 @@ final class ParserTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider parseRuleListProvider
-     */
+    #[DataProvider('parseRuleListProvider')]
     public function testParseRuleList(string $input, mixed $expected)
     {
         $parser = new Parser(new Tokenizer($input));
         Assert::assertEquals($expected, $parser->parseRuleList());
     }
 
-    public function parseRuleListProvider(): iterable
+    public static function parseRuleListProvider(): iterable
     {
         yield [
             '@foo; bar{}',
@@ -76,16 +73,14 @@ final class ParserTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider parseRuleProvider
-     */
+    #[DataProvider('parseRuleProvider')]
     public function testParseRule(string $input, mixed $expected)
     {
         $parser = new Parser(new Tokenizer($input));
         Assert::assertEquals($expected, $parser->parseRule());
     }
 
-    public function parseRuleProvider(): iterable
+    public static function parseRuleProvider(): iterable
     {
         yield ['@media(foo)', new CSSAtRule('media', [
             new CSSSimpleBlock('(', [new Identifier('foo', 7)]),
@@ -96,31 +91,27 @@ final class ParserTest extends TestCase
         )];
     }
 
-    /**
-     * @dataProvider parseDeclarationProvider
-     */
+    #[DataProvider('parseDeclarationProvider')]
     public function testParseDeclaration(string $input, mixed $expected)
     {
         $parser = new Parser(new Tokenizer($input));
         Assert::assertEquals($expected, $parser->parseDeclaration());
     }
 
-    public function parseDeclarationProvider(): iterable
+    public static function parseDeclarationProvider(): iterable
     {
         yield ['foo: bar', new CSSDeclaration('foo', [new Identifier('bar', 5)])];
         yield ['foo: bar !IMPORTANT', new CSSDeclaration('foo', [new Identifier('bar', 5)], true)];
     }
 
-    /**
-     * @dataProvider parseDeclarationListProvider
-     */
+    #[DataProvider('parseDeclarationListProvider')]
     public function testParseDeclarationList(string $input, mixed $expected)
     {
         $parser = new Parser(new Tokenizer($input));
         Assert::assertEquals($expected, $parser->parseDeclarationList());
     }
 
-    public function parseDeclarationListProvider(): iterable
+    public static function parseDeclarationListProvider(): iterable
     {
         yield ['foo:bar; baz:42', [
             new CSSDeclaration('foo', [new Identifier('bar', 4)]),
@@ -128,16 +119,14 @@ final class ParserTest extends TestCase
         ]];
     }
 
-    /**
-     * @dataProvider parseComponentValueProvider
-     */
+    #[DataProvider('parseComponentValueProvider')]
     public function testParseComponentValue(string $input, mixed $expected)
     {
         $parser = new Parser(new Tokenizer($input));
         Assert::assertEquals($expected, $parser->parseComponentValue());
     }
 
-    public function parseComponentValueProvider(): iterable
+    public static function parseComponentValueProvider(): iterable
     {
         yield ['foo()', new CSSFunction('foo')];
         yield ['{}', new CSSSimpleBlock('{')];
@@ -146,16 +135,14 @@ final class ParserTest extends TestCase
         yield ['any', new Identifier('any', 0)];
     }
 
-    /**
-     * @dataProvider parseComponentValueListProvider
-     */
+    #[DataProvider('parseComponentValueListProvider')]
     public function testParseComponentValueList(string $input, mixed $expected)
     {
         $parser = new Parser(new Tokenizer($input));
         Assert::assertEquals($expected, $parser->parseComponentValueList());
     }
 
-    public function parseComponentValueListProvider(): iterable
+    public static function parseComponentValueListProvider(): iterable
     {
         yield [
             'foo() anything',
@@ -175,16 +162,14 @@ final class ParserTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider parseCommaSeparatedComponentValueListProvider
-     */
+    #[DataProvider('parseCommaSeparatedComponentValueListProvider')]
     public function testParseCommaSeparatedComponentValueList(string $input, mixed $expected)
     {
         $parser = new Parser(new Tokenizer($input));
         Assert::assertEquals($expected, $parser->parseCommaSeparatedComponentValueList());
     }
 
-    public function parseCommaSeparatedComponentValueListProvider(): iterable
+    public static function parseCommaSeparatedComponentValueListProvider(): iterable
     {
         yield [
             'foo(),anything',

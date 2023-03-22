@@ -3,6 +3,7 @@
 namespace Souplette\Tests\WebPlatformTests\SanitizerApi;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\DOM\Document;
 use Souplette\DOM\DocumentFragment;
@@ -11,13 +12,10 @@ use Souplette\HTML\HTMLSerializer;
 use Souplette\HTML\Sanitizer\Sanitizer;
 use Souplette\HTML\Sanitizer\SanitizerConfig;
 use Souplette\Souplette;
-use Souplette\Tests\DOM\DOMBuilder;
 
 final class SanitizerSanitizeTest extends TestCase
 {
-    /**
-     * @dataProvider jsonTestCasesProvider
-     */
+    #[DataProvider('jsonTestCasesProvider')]
     public function testSanitizeDocument(?SanitizerConfig $config, string $input, string $expected)
     {
         $sanitizer = $config ? new Sanitizer($config) : Sanitizer::getDefault();
@@ -28,9 +26,7 @@ final class SanitizerSanitizeTest extends TestCase
         Assert::assertSame($expected, $result);
     }
 
-    /**
-     * @dataProvider jsonTestCasesProvider
-     */
+    #[DataProvider('jsonTestCasesProvider')]
     public function testSanitizeTemplate(?SanitizerConfig $config, string $input, string $expected)
     {
         $sanitizer = $config ? new Sanitizer($config) : Sanitizer::getDefault();
@@ -44,7 +40,7 @@ final class SanitizerSanitizeTest extends TestCase
         Assert::assertSame($expected, $result);
     }
 
-    public function jsonTestCasesProvider(): iterable
+    public static function jsonTestCasesProvider(): iterable
     {
         $data = json_decode(file_get_contents(__DIR__ . '/testcases.json'), true);
         foreach ($data as $i => $datum) {

@@ -3,6 +3,7 @@
 namespace Souplette\Tests\WebPlatformTests\CSS\Selectors;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\DOM\Document;
 use Souplette\DOM\Element;
@@ -156,9 +157,7 @@ final class HasRelativeArgumentTest extends TestCase
         return array_map(fn($el) => $el->id, $elements);
     }
 
-    /**
-     * @dataProvider querySelectorAllProvider
-     */
+    #[DataProvider('querySelectorAllProvider')]
     public function testQuerySelectorAll(string $selector, array $expected)
     {
         $main = self::$document->getElementById('main');
@@ -166,7 +165,7 @@ final class HasRelativeArgumentTest extends TestCase
         Assert::assertEquals($expected, $this->formatElements($actual));
     }
 
-    public function querySelectorAllProvider(): iterable
+    public static function querySelectorAllProvider(): iterable
     {
         yield ['.x:has(.a)', ['d02', 'd06', 'd07', 'd09', 'd12']];
         yield ['.x:has(.a > .b)', ['d09']];
@@ -213,9 +212,9 @@ final class HasRelativeArgumentTest extends TestCase
         yield ['.x:has(+ .y:has(.g .h) .i) ~ .j', ['d77', 'd80']];
         yield ['.x:has(~ .y:has(> .g .h) .i)', ['d61', 'd62', 'd69', 'd70']];
         yield ['.x:has(~ .y:has(.g .h) .i)', ['d61', 'd62', 'd63', 'd69', 'd70']];
-        
+
         yield ['.d .x:has(.e)', ['d51', 'd52']];
-        
+
         yield ['.d ~ .x:has(~ .e)', ['d57', 'd58']];
 
     }

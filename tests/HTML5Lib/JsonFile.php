@@ -2,6 +2,8 @@
 
 namespace Souplette\Tests\HTML5Lib;
 
+use UnexpectedValueException;
+
 final class JsonFile extends TestFile
 {
     protected function parse(string $fileName): array
@@ -13,7 +15,7 @@ final class JsonFile extends TestFile
         if (isset($data['xmlViolationTests'])) {
             return $data['xmlViolationTests'];
         }
-        throw new \UnexpectedValueException(sprintf(
+        throw new UnexpectedValueException(sprintf(
             'Invalid JSON test file: %s',
             $this->fileName
         ));

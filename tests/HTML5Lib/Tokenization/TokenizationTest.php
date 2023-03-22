@@ -2,8 +2,11 @@
 
 namespace Souplette\Tests\HTML5Lib\Tokenization;
 
+use IntlChar;
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Souplette\HTML\Parser\InputPreprocessor;
 use Souplette\HTML\Tokenizer\Token;
 use Souplette\HTML\Tokenizer\Tokenizer;
@@ -11,13 +14,15 @@ use Souplette\HTML\Tokenizer\TokenizerState;
 use Souplette\HTML\Tokenizer\TokenType;
 use Souplette\Tests\HTML5Lib\JsonFile;
 use Souplette\Tests\ResourceCollector;
+use SplDoublyLinkedList;
+use UnexpectedValueException;
 
 class TokenizationTest extends TestCase
 {
     /**
-     * @dataProvider tokenizationProvider
      * @param array $test
      */
+    #[DataProvider('tokenizationProvider')]
     public function testTokenization(array $test)
     {
         $doubleEscaped = $test['doubleEscaped'] ?? false;
@@ -43,9 +48,9 @@ class TokenizationTest extends TestCase
         }
     }
 
-    public function tokenizationProvider(): iterable
+    public static function tokenizationProvider(): iterable
     {
-        foreach ($this->collectJsonFiles() as $relPath => $jsonFile) {
+        foreach (self::collectJsonFiles() as $relPath => $jsonFile) {
             foreach ($jsonFile as $i => $test) {
                 $key = sprintf('%s::%s', $relPath, $i);
                 yield $key => [$test];
@@ -56,7 +61,7 @@ class TokenizationTest extends TestCase
     /**
      * @return iterable<JsonFile>
      */
-    private function collectJsonFiles(): iterable
+    private static function collectJsonFiles(): iterable
     {
         $path = __DIR__.'/../../resources/html5lib-tests/tokenizer';
         foreach (ResourceCollector::collect($path, 'test') as $relPath => $fileInfo) {
@@ -104,7 +109,7 @@ class TokenizationTest extends TestCase
                     $tokens[] = Token::endTag($args[0]);
                     break;
                 default:
-                    throw new \UnexpectedValueException($type);
+                    throw new UnexpectedValueException($type);
             }
         }
 
@@ -117,7 +122,7 @@ class TokenizationTest extends TestCase
      */
     private static function concatenateCharacterTokens(array $tokens): array
     {
-        $output = new \SplDoublyLinkedList();
+        $output = new SplDoublyLinkedList();
         foreach ($tokens as $i => $token) {
             if ($output->isEmpty()) {
                 $output->push($token);
@@ -137,7 +142,7 @@ class TokenizationTest extends TestCase
     private static function unescape(string $input): string
     {
         return preg_replace_callback('/\\\\u(?P<cp>[a-zA-Z0-9]{4})/', function($matches) {
-            return \IntlChar::chr(hexdec($matches['cp']));
+            return IntlChar::chr(hexdec($matches['cp']));
         }, $input);
     }
 
@@ -173,7 +178,7 @@ class TokenizationTest extends TestCase
         $lines = preg_split('/\r\n|\n/', $source, -1, PREG_SPLIT_OFFSET_CAPTURE);
         $line = $lines[$lineno - 1] ?? null;
         if ($line === null) {
-            throw new \RuntimeException("No such line: $lineno");
+            throw new RuntimeException("No such line: $lineno");
         }
         [, $offset] = $line;
 

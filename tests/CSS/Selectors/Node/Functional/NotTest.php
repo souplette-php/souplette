@@ -2,13 +2,14 @@
 
 namespace Souplette\Tests\CSS\Selectors\Node\Functional;
 
-use Souplette\DOM\Element;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Souplette\CSS\Selectors\Node\Functional\Not;
 use Souplette\CSS\Selectors\Node\SelectorList;
 use Souplette\CSS\Selectors\Node\Simple\ClassSelector;
 use Souplette\CSS\Selectors\Node\Simple\IdSelector;
 use Souplette\CSS\Selectors\Node\Simple\TypeSelector;
 use Souplette\CSS\Selectors\Specificity;
+use Souplette\DOM\Element;
 use Souplette\Tests\CSS\Selectors\QueryAssert;
 use Souplette\Tests\CSS\Selectors\SelectorTestCase;
 use Souplette\Tests\CSS\Selectors\SelectorUtils;
@@ -16,7 +17,7 @@ use Souplette\Tests\DOM\DOMBuilder;
 
 final class NotTest extends SelectorTestCase
 {
-    public function toStringProvider(): iterable
+    public static function toStringProvider(): iterable
     {
         yield [
             new Not(SelectorUtils::toSelectorList([
@@ -27,7 +28,7 @@ final class NotTest extends SelectorTestCase
         ];
     }
 
-    public function specificityProvider(): iterable
+    public static function specificityProvider(): iterable
     {
         yield [
             new Not(SelectorUtils::toSelectorList([
@@ -39,15 +40,13 @@ final class NotTest extends SelectorTestCase
         ];
     }
 
-    /**
-     * @dataProvider matchesProvider
-     */
+    #[DataProvider('matchesProvider')]
     public function testMatches(Element $element, Not $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function matchesProvider(): iterable
+    public static function matchesProvider(): iterable
     {
         $dom = DOMBuilder::html()->tag('html')
             ->tag('a')->close()

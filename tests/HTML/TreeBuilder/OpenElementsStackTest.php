@@ -2,9 +2,9 @@
 
 namespace Souplette\Tests\HTML\TreeBuilder;
 
-use Souplette\DOM\Element;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
+use Souplette\DOM\Element;
 use Souplette\DOM\Namespaces;
 use Souplette\HTML\TreeBuilder\OpenElementsStack;
 

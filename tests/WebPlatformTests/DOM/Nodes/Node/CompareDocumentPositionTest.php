@@ -3,16 +3,16 @@
 namespace Souplette\Tests\WebPlatformTests\DOM\Nodes\Node;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\DOM\Node;
 use Souplette\DOM\Traversal\NodeTraversal;
 use Souplette\Tests\WebPlatformTests\DOM\CommonProvider;
+use Traversable;
 
 final class CompareDocumentPositionTest extends TestCase
 {
-    /**
-     * @dataProvider compareDocumentPositionProvider
-     */
+    #[DataProvider('compareDocumentPositionProvider')]
     public function testCompareDocumentPosition(Node $reference, Node $other, array|int $expected)
     {
         $result = $reference->compareDocumentPosition($other);
@@ -23,7 +23,7 @@ final class CompareDocumentPositionTest extends TestCase
         }
     }
 
-    public function compareDocumentPositionProvider(): \Traversable
+    public static function compareDocumentPositionProvider(): Traversable
     {
         /** @var Node[] $nodes */
         $nodes = iterator_to_array(CommonProvider::testNodes());

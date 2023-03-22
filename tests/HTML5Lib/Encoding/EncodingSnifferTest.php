@@ -3,6 +3,7 @@
 namespace Souplette\Tests\HTML5Lib\Encoding;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\HTML\Parser\EncodingSniffer;
 use Souplette\Tests\HTML5Lib\DataFile;
@@ -12,12 +13,7 @@ final class EncodingSnifferTest extends TestCase
 {
     const RESOURCE_PATH = __DIR__.'/../../resources/html5lib-tests/encoding';
 
-    /**
-     * @dataProvider provideEncodingSniffing
-     * @param string $input
-     * @param string $expectedEncoding
-     * @param string|null $skipped
-     */
+    #[DataProvider('encodingSniffingProvider')]
     public function testEncodingSniffing(string $input, string $expectedEncoding, ?string $skipped = null)
     {
         if ($skipped !== null) {
@@ -27,7 +23,7 @@ final class EncodingSnifferTest extends TestCase
         Assert::assertSame($expectedEncoding, strtolower($encoding));
     }
 
-    public function provideEncodingSniffing(): iterable
+    public static function encodingSniffingProvider(): iterable
     {
         $xfails = require __DIR__ . '/../../resources/html5lib-xfails.php';
         foreach (ResourceCollector::collect(self::RESOURCE_PATH) as $relPath => $fileInfo) {

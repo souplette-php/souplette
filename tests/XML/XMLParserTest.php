@@ -7,13 +7,10 @@ use PHPUnit\Framework\TestCase;
 use Souplette\DOM\CDATASection;
 use Souplette\DOM\Comment;
 use Souplette\DOM\Element;
-use Souplette\DOM\Namespaces;
-use Souplette\DOM\Node;
 use Souplette\DOM\ProcessingInstruction;
 use Souplette\DOM\Text;
 use Souplette\DOM\XMLDocument;
 use Souplette\Souplette;
-use Souplette\Tests\DOM\DOMBuilder;
 use Souplette\XML\Parser\ExternalEntityLoaderInterface;
 use Souplette\XML\XMLParser;
 

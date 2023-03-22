@@ -3,6 +3,7 @@
 namespace Souplette\Tests\WebPlatformTests\DOMParsing;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\DOM\Namespaces;
 use Souplette\DOM\Node;
@@ -25,16 +26,14 @@ final class XMLSerializerTest extends TestCase
         return (new XMLParser())->parse($xml);
     }
 
-    /**
-     * @dataProvider specOutliersProvider
-     */
+    #[DataProvider('specOutliersProvider')]
     public function testSpecOutliers(Node $node, string $expected)
     {
         $serializer = new XMLSerializer();
         Assert::assertSame($expected, $serializer->serialize($node));
     }
 
-    public function specOutliersProvider(): iterable
+    public static function specOutliersProvider(): iterable
     {
         // Following test cases are changed because of issues in the spec
         // https://github.com/w3c/DOM-Parsing/issues/48
@@ -126,16 +125,14 @@ final class XMLSerializerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider serializeProvider
-     */
+    #[DataProvider('serializeProvider')]
     public function testSerialize(Node $node, string $expected)
     {
         $serializer = new XMLSerializer();
         Assert::assertSame($expected, $serializer->serialize($node));
     }
 
-    public function serializeProvider(): iterable
+    public static function serializeProvider(): iterable
     {
         $doc = self::createDefaultDocument();
         yield 'it can serialize a simple document.' => [$doc, '<root><child1>value1</child1></root>'];

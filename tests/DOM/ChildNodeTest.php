@@ -3,15 +3,14 @@
 namespace Souplette\Tests\DOM;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\DOM\Document;
 use Souplette\DOM\Node;
 
 final class ChildNodeTest extends TestCase
 {
-    /**
-     * @dataProvider removeProvider
-     */
+    #[DataProvider('removeProvider')]
     public function testRemove(Document $doc, Node $node)
     {
         $parent = $node->parentNode;
@@ -22,7 +21,7 @@ final class ChildNodeTest extends TestCase
         Assert::assertNull($parent->lastChild);
     }
 
-    public function removeProvider(): iterable
+    public static function removeProvider(): iterable
     {
         yield 'works on text nodes' => [
             $doc = DOMBuilder::html()->tag('html')->text('foo')->getDocument(),
@@ -38,9 +37,7 @@ final class ChildNodeTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider beforeProvider
-     */
+    #[DataProvider('beforeProvider')]
     public function testBefore(Node $target, array $nodes)
     {
         $target->before(...$nodes);
@@ -55,7 +52,7 @@ final class ChildNodeTest extends TestCase
         }
     }
 
-    public function beforeProvider(): iterable
+    public static function beforeProvider(): iterable
     {
         $doc = DOMBuilder::html()->tag('html')->tag('test')->getDocument();
         yield 'works on elements' => [
@@ -85,9 +82,7 @@ final class ChildNodeTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider afterProvider
-     */
+    #[DataProvider('afterProvider')]
     public function testAfter(Node $target, array $nodes)
     {
         $target->after(...$nodes);
@@ -102,7 +97,7 @@ final class ChildNodeTest extends TestCase
         }
     }
 
-    public function afterProvider(): iterable
+    public static function afterProvider(): iterable
     {
         $doc = DOMBuilder::html()->tag('html')->tag('test')->getDocument();
         yield 'works on elements' => [
@@ -132,9 +127,7 @@ final class ChildNodeTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider replaceWithProvider
-     */
+    #[DataProvider('replaceWithProvider')]
     public function testReplaceWith(Node $target, array $nodes)
     {
         $parent = $target->parentNode;
@@ -151,7 +144,7 @@ final class ChildNodeTest extends TestCase
         }
     }
 
-    public function replaceWithProvider(): iterable
+    public static function replaceWithProvider(): iterable
     {
         $doc = DOMBuilder::html()->tag('html')
             ->tag('test')

@@ -2,11 +2,12 @@
 
 namespace Souplette\Tests\CSS\Selectors;
 
-use Souplette\DOM\Document;
-use Souplette\DOM\Element;
+use DOMXPath;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Souplette\CSS\Selectors\SelectorQuery;
+use Souplette\DOM\Document;
+use Souplette\DOM\Element;
 use Souplette\Tests\Utils;
 
 class SelectorQueryTestCase extends TestCase
@@ -62,7 +63,7 @@ class SelectorQueryTestCase extends TestCase
      */
     private static function elements(Document $doc): iterable
     {
-        $xpath = new \DOMXPath($doc);
+        $xpath = new DOMXPath($doc);
         yield from $xpath->query('//*');
     }
 }

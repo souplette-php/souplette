@@ -2,6 +2,7 @@
 
 namespace Souplette\Tests\WebPlatformTests\DOM\Nodes;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\DOM\Comment;
 use Souplette\DOM\DocumentType;
@@ -15,15 +16,15 @@ final class PreInsertionValidationTest extends TestCase
 {
     /**
      * @see wpt/dom/nodes/pre-insertion-validation-hierarchy.js
-     * @dataProvider hierarchyRequestErrorProvider
      */
+    #[DataProvider('hierarchyRequestErrorProvider')]
     public function testHierarchyRequestError(callable $insert)
     {
         $this->expectException(HierarchyRequestError::class);
         $insert();
     }
 
-    public function hierarchyRequestErrorProvider(): iterable
+    public static function hierarchyRequestErrorProvider(): iterable
     {
         $methods = [
             'appendChild',
@@ -38,15 +39,15 @@ final class PreInsertionValidationTest extends TestCase
 
     /**
      * @see wpt/dom/nodes/pre-insertion-validation-notfound.js
-     * @dataProvider notFoundErrorProvider
      */
+    #[DataProvider('notFoundErrorProvider')]
     public function testNotFoundError(callable $insert, string $expected)
     {
         $this->expectException($expected);
         $insert();
     }
 
-    public function notFoundErrorProvider(): iterable
+    public static function notFoundErrorProvider(): iterable
     {
         $methods = [
             'insertBefore',

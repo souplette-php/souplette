@@ -2,6 +2,8 @@
 
 namespace Souplette\Tests\HTML\Tokenizer;
 
+use IntlChar;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\HTML\Tokenizer\EntityLookup;
 use Souplette\HTML\Tokenizer\ParseErrors;
@@ -10,16 +12,16 @@ use Souplette\HTML\Tokenizer\Token;
 class EntitiesTest extends TestCase
 {
     /**
-     * @dataProvider entitiesInDataProvider
      * @param string $input
      * @param array $expected
      */
+    #[DataProvider('entitiesInDataProvider')]
     public function testEntitiesInData(string $input, array $expected)
     {
         TokenizerAssert::tokensEquals($input, $expected);
     }
 
-    public function entitiesInDataProvider(): iterable
+    public static function entitiesInDataProvider(): iterable
     {
         yield ['&amp;', ['&']];
         yield ['&Abreve', ['&', 'Abreve']];
@@ -38,17 +40,17 @@ class EntitiesTest extends TestCase
     }
 
     /**
-     * @dataProvider invalidEntitiesInDataProvider
      * @param string $input
      * @param array $expectedTokens
      * @param array $expectedErrors
      */
+    #[DataProvider('invalidEntitiesInDataProvider')]
     public function testInvalidEntitiesInData(string $input, array $expectedTokens, array $expectedErrors = [])
     {
         TokenizerAssert::tokensEquals($input, $expectedTokens, $expectedErrors);
     }
 
-    public function invalidEntitiesInDataProvider(): iterable
+    public static function invalidEntitiesInDataProvider(): iterable
     {
         yield ['&test=', ['&', 'test', '=']];
         yield ['&foobar;', ['&', 'foobar', ';'], [
@@ -57,7 +59,7 @@ class EntitiesTest extends TestCase
         // Control character reference replacements
         foreach (EntityLookup::NUMERIC_CTRL_REPLACEMENTS as $char => $replacement) {
             $input = sprintf('&#%d;', $char);
-            $output = \IntlChar::chr($replacement);
+            $output = IntlChar::chr($replacement);
             $key = sprintf('Control char replacement: %s => \u{%X}', $input, $replacement);
             yield $key => [$input, [Token::character($output)], [
                 [ParseErrors::CONTROL_CHARACTER_REFERENCE, \strlen($input)],
@@ -76,16 +78,16 @@ class EntitiesTest extends TestCase
     }
 
     /**
-     * @dataProvider entitiesInAttributeProvider
      * @param string $input
      * @param array $expectedTokens
      */
+    #[DataProvider('entitiesInAttributeProvider')]
     public function testEntitiesInAttribute(string $input, array $expectedTokens)
     {
         TokenizerAssert::tokensEquals($input, $expectedTokens);
     }
 
-    public function entitiesInAttributeProvider(): iterable
+    public static function entitiesInAttributeProvider(): iterable
     {
         yield ['<a b="I\'m &notit; I tell you">', [
             Token::startTag('a', false, [

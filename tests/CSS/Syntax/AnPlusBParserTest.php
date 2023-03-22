@@ -3,6 +3,7 @@
 namespace Souplette\Tests\CSS\Syntax;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\CSS\Syntax\AnPlusBParser;
 use Souplette\CSS\Syntax\AnPlusBStringParser;
@@ -20,16 +21,14 @@ final class AnPlusBParserTest extends TestCase
         return $parser->parse();
     }
 
-    /**
-     * @dataProvider parseProvider
-     */
+    #[DataProvider('parseProvider')]
     public function testParse(string $input, int $a, int $b)
     {
         $result = self::parse($input);
         Assert::assertEquals(new AnPlusB($a, $b), $result);
     }
 
-    public function parseProvider(): iterable
+    public static function parseProvider(): iterable
     {
         // odd -> { a: 2, b: 1 }
         yield 'odd' => ['odd', 2, 1];
@@ -69,16 +68,14 @@ final class AnPlusBParserTest extends TestCase
         yield 'dashndashdigit-ident' => ['-n-666', -1, -666];
     }
 
-    /**
-     * @dataProvider parseErrorsProvider
-     */
+    #[DataProvider('parseErrorsProvider')]
     public function testParseErrors(string $input)
     {
         $this->expectException(ParseError::class);
         self::parse($input);
     }
 
-    public function parseErrorsProvider(): iterable
+    public static function parseErrorsProvider(): iterable
     {
         yield 'unknown identifier' => ['food'];
         yield 'hash token' => ['#even'];
@@ -94,18 +91,14 @@ final class AnPlusBParserTest extends TestCase
         yield 'spec invalid example #10.3' => ['+ 2'];
     }
 
-    /**
-     * @dataProvider parseProvider
-     */
+    #[DataProvider('parseProvider')]
     public function testParseWithRegexp(string $input, int $a, int $b)
     {
         $result = self::parseRegexp($input);
         Assert::assertEquals(new AnPlusB($a, $b), $result);
     }
 
-    /**
-     * @dataProvider parseErrorsProvider
-     */
+    #[DataProvider('parseErrorsProvider')]
     public function testParseErrorsWithRegexp(string $input)
     {
         $this->expectException(ParseError::class);

@@ -2,7 +2,12 @@
 
 namespace Souplette\Tests\HTML5Lib;
 
-abstract class TestFile implements \ArrayAccess, \IteratorAggregate
+use ArrayAccess;
+use ArrayIterator;
+use IteratorAggregate;
+use Traversable;
+
+abstract class TestFile implements ArrayAccess, IteratorAggregate
 {
     protected string $fileName;
     protected array $tests;
@@ -15,9 +20,9 @@ abstract class TestFile implements \ArrayAccess, \IteratorAggregate
 
     abstract protected function parse(string $fileName): array;
 
-    public function getIterator(): \Traversable
+    public function getIterator(): Traversable
     {
-        return new \ArrayIterator($this->tests);
+        return new ArrayIterator($this->tests);
     }
 
     public function offsetExists($offset): bool

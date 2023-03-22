@@ -3,6 +3,7 @@
 namespace Souplette\Tests\DOM;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\DOM\CDATASection;
 use Souplette\DOM\CharacterData;
@@ -12,9 +13,7 @@ use Souplette\DOM\Text;
 
 final class CharacterDataTest extends TestCase
 {
-    /**
-     * @dataProvider itIsConstructedWithValueAndLengthProvider
-     */
+    #[DataProvider('itIsConstructedWithValueAndLengthProvider')]
     public function testItIsConstructedWithValueAndLength(CharacterData $node, string $data, int $expectedLength)
     {
         Assert::assertSame($data, $node->getData());
@@ -29,7 +28,7 @@ final class CharacterDataTest extends TestCase
         Assert::assertSame($data, $node->nodeValue, '$nodeValue property');
     }
 
-    public function itIsConstructedWithValueAndLengthProvider(): iterable
+    public static function itIsConstructedWithValueAndLengthProvider(): iterable
     {
         yield 'empty text node' => [new Text(), '', 0];
         yield 'empty comment node' => [new Comment(), '', 0];

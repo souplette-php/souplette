@@ -2,6 +2,7 @@
 
 namespace Souplette\Tests\CSS\Selectors\Parser;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Souplette\CSS\Selectors\Node\Combinator;
 use Souplette\CSS\Selectors\Node\ComplexSelector;
 use Souplette\CSS\Selectors\Node\RelationType;
@@ -13,9 +14,7 @@ use Souplette\Tests\CSS\Selectors\SelectorUtils;
 
 final class ComplexSelectorParsingTest extends SelectorParserTestCase
 {
-    /**
-     * @dataProvider parseSelectorListWithComplexSelectorsProvider
-     */
+    #[DataProvider('parseSelectorListWithComplexSelectorsProvider')]
     public function testParseSelectorListWithComplexSelectors(string $input, ComplexSelector $expected)
     {
         $selector = SelectorUtils::parseSelectorList($input);
@@ -23,7 +22,7 @@ final class ComplexSelectorParsingTest extends SelectorParserTestCase
         SelectorAssert::selectorListEquals($expected, $selector);
     }
 
-    public function parseSelectorListWithComplexSelectorsProvider(): iterable
+    public static function parseSelectorListWithComplexSelectorsProvider(): iterable
     {
         foreach (Combinator::cases() as $combinator) {
             $inputs = [

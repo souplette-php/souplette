@@ -11,7 +11,7 @@ use Souplette\Tests\CSS\Selectors\SelectorUtils;
 
 final class SelectorListTest extends SelectorTestCase
 {
-    public function toStringProvider(): iterable
+    public static function toStringProvider(): iterable
     {
         yield [
             SelectorUtils::toSelectorList([
@@ -23,7 +23,7 @@ final class SelectorListTest extends SelectorTestCase
         ];
     }
 
-    public function specificityProvider(): iterable
+    public static function specificityProvider(): iterable
     {
         yield [
             SelectorUtils::toSelectorList([

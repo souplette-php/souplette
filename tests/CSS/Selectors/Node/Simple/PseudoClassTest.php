@@ -8,12 +8,12 @@ use Souplette\Tests\CSS\Selectors\SelectorTestCase;
 
 final class PseudoClassTest extends SelectorTestCase
 {
-    public function toStringProvider(): iterable
+    public static function toStringProvider(): iterable
     {
         yield [PseudoClassSelector::of('foo'), ':foo'];
     }
 
-    public function specificityProvider(): iterable
+    public static function specificityProvider(): iterable
     {
         yield [PseudoClassSelector::of('foo'), new Specificity(0, 1, 0)];
     }

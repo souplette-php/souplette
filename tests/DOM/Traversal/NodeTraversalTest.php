@@ -3,6 +3,7 @@
 namespace Souplette\Tests\DOM\Traversal;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\DOM\Node;
 use Souplette\DOM\Traversal\NodeTraversal;
@@ -110,16 +111,14 @@ final class NodeTraversalTest extends TestCase
         Assert::assertSame($c0, NodeTraversal::previousPostOrder($c10));
     }
 
-    /**
-     * @dataProvider commonAncestorProvider
-     */
+    #[DataProvider('commonAncestorProvider')]
     public function testCommonAncestor(?Node $expected, Node $a, Node $b)
     {
         Assert::assertSame($expected, NodeTraversal::commonAncestor($a, $b));
         Assert::assertSame($expected, NodeTraversal::commonAncestor($b, $a));
     }
 
-    public function commonAncestorProvider(): iterable
+    public static function commonAncestorProvider(): iterable
     {
         $doc = DOMBuilder::html()->tag('html')
             ->tag('div')->id('c0')

@@ -2,11 +2,12 @@
 
 namespace Souplette\Tests\CSS\Selectors\Node;
 
-use Souplette\DOM\Element;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\CSS\Selectors\Node\Selector;
 use Souplette\CSS\Selectors\Node\Simple\ClassSelector;
 use Souplette\CSS\Selectors\Node\Simple\TypeSelector;
+use Souplette\DOM\Element;
 use Souplette\Tests\CSS\Selectors\QueryAssert;
 use Souplette\Tests\CSS\Selectors\SelectorUtils;
 use Souplette\Tests\DOM\DOMBuilder;
@@ -14,15 +15,13 @@ use function in_array;
 
 final class CompoundSelectorTest extends TestCase
 {
-    /**
-     * @dataProvider itMatchesClassesProvider
-     */
+    #[DataProvider('itMatchesClassesProvider')]
     public function testItMatchesClasses(Element $element, Selector $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function itMatchesClassesProvider(): iterable
+    public static function itMatchesClassesProvider(): iterable
     {
         $dom = DOMBuilder::html()->tag('html')
             ->tag('a')->class('a')->close()

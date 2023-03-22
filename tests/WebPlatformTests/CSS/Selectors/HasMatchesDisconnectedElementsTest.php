@@ -3,6 +3,7 @@
 namespace Souplette\Tests\WebPlatformTests\CSS\Selectors;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\DOM\Document;
 use Souplette\DOM\Element;
@@ -13,16 +14,14 @@ use Souplette\DOM\Element;
  */
 final class HasMatchesDisconnectedElementsTest extends TestCase
 {
-    /**
-     * @dataProvider itMatchesDisconnectedElementsProvider
-     */
+    #[DataProvider('itMatchesDisconnectedElementsProvider')]
     public function testItMatchesDisconnectedElements(Element $subject, string $selector, bool $expected)
     {
         $msg = sprintf('Selector %s %s', $selector, $expected ? 'matches' : 'does not match');
         Assert::assertSame($expected, $subject->matches($selector), $msg);
     }
 
-    public function itMatchesDisconnectedElementsProvider(): iterable
+    public static function itMatchesDisconnectedElementsProvider(): iterable
     {
         $doc = new Document('html');
 

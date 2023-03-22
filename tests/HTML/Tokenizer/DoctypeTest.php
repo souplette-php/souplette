@@ -2,6 +2,7 @@
 
 namespace Souplette\Tests\HTML\Tokenizer;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\HTML\Tokenizer\Token;
 
@@ -9,16 +10,16 @@ class DoctypeTest extends TestCase
 {
 
     /**
-     * @dataProvider doctypeProvider
      * @param string $input
      * @param array $expected
      */
+    #[DataProvider('doctypeProvider')]
     public function testDoctype(string $input, array $expected)
     {
         TokenizerAssert::tokensEquals($input, $expected);
     }
 
-    public function doctypeProvider(): iterable
+    public static function doctypeProvider(): iterable
     {
         yield ['<!DOCTYPE html>', [Token::doctype('html')]];
         yield [

@@ -3,6 +3,7 @@
 namespace Souplette\Tests\WebPlatformTests\DOM\Nodes\Node;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\DOM\Namespaces;
 use Souplette\DOM\Node;
@@ -14,15 +15,13 @@ use Souplette\Tests\DOM\DOMBuilder;
  */
 final class IsDefaultNamespaceTest extends TestCase
 {
-    /**
-     * @dataProvider isDefaultNamespaceProvider
-     */
+    #[DataProvider('isDefaultNamespaceProvider')]
     public function testIsDefaultNamespace(Node $node, ?string $namespace, bool $expected): void
     {
         Assert::assertSame($expected, $node->isDefaultNamespace($namespace));
     }
 
-    public function isDefaultNamespaceProvider(): iterable
+    public static function isDefaultNamespaceProvider(): iterable
     {
         $doc = DOMBuilder::xml()->doctype('html')
             ->tag('root', null)

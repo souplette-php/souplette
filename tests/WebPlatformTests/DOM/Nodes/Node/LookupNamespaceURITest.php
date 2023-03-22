@@ -3,6 +3,7 @@
 namespace Souplette\Tests\WebPlatformTests\DOM\Nodes\Node;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\DOM\Namespaces;
 use Souplette\DOM\Node;
@@ -14,15 +15,13 @@ use Souplette\Tests\DOM\DOMBuilder;
  */
 final class LookupNamespaceURITest extends TestCase
 {
-    /**
-     * @dataProvider lookupNamespaceURIProvider
-     */
+    #[DataProvider('lookupNamespaceURIProvider')]
     public function testLookupNamespaceURI(Node $node, ?string $prefix, ?string $expected): void
     {
         Assert::assertSame($expected, $node->lookupNamespaceURI($prefix));
     }
 
-    public function lookupNamespaceURIProvider(): iterable
+    public static function lookupNamespaceURIProvider(): iterable
     {
         $doc = DOMBuilder::xml()->doctype('html')
             ->tag('root', null)

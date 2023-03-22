@@ -3,6 +3,7 @@
 namespace Souplette\Tests\WebPlatformTests\CSS\Selectors;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\DOM\Document;
 use Souplette\DOM\Element;
@@ -59,9 +60,7 @@ final class HasArgumentWithExplicitScopeTest extends TestCase
         return array_map(fn($el) => $el->id, $elements);
     }
 
-    /**
-     * @dataProvider querySelectorAllProvider
-     */
+    #[DataProvider('querySelectorAllProvider')]
     public function testQuerySelectorAll(string $scopeId, string $selector, array $expected)
     {
         $scope = self::$document->getElementById($scopeId);
@@ -69,7 +68,7 @@ final class HasArgumentWithExplicitScopeTest extends TestCase
         Assert::assertEquals($expected, $this->formatElements($actual));
     }
 
-    public function querySelectorAllProvider(): iterable
+    public static function querySelectorAllProvider(): iterable
     {
         // descendants of a scope element cannot have the scope element as its descendant
         yield ['scope1', ':has(:scope)', []];
@@ -82,9 +81,7 @@ final class HasArgumentWithExplicitScopeTest extends TestCase
         yield ['scope2', '.c:has(:is(:scope .d))', []];
     }
 
-    /**
-     * @dataProvider compareSelectorAllProvider
-     */
+    #[DataProvider('compareSelectorAllProvider')]
     public function testCompareSelectorAll(string $scopeId, string $selector1, string $selector2)
     {
         $scope = self::$document->getElementById($scopeId);
@@ -93,7 +90,7 @@ final class HasArgumentWithExplicitScopeTest extends TestCase
         Assert::assertEquals($this->formatElements($result1), $this->formatElements($result2));
     }
 
-    public function compareSelectorAllProvider(): iterable
+    public static function compareSelectorAllProvider(): iterable
     {
         // there can be more simple and efficient alternative for a ':scope' in ':has'
         yield ['scope1', '.a:has(:scope) .c', ':is(.a :scope .c)'];

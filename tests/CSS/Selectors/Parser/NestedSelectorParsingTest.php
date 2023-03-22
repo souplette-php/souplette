@@ -3,6 +3,7 @@
 namespace Souplette\Tests\CSS\Selectors\Parser;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Souplette\CSS\Selectors\Node\Functional\Is;
 use Souplette\CSS\Selectors\Node\Functional\Where;
 use Souplette\CSS\Selectors\Node\SelectorList;
@@ -13,9 +14,7 @@ use Souplette\Tests\CSS\Selectors\SelectorUtils;
 
 final class NestedSelectorParsingTest extends SelectorParserTestCase
 {
-    /**
-     * @dataProvider parseIsProvider
-     */
+    #[DataProvider('parseIsProvider')]
     public function testParseIs(string $selectorText, array $expected)
     {
         $selector = SelectorUtils::parseSelectorList($selectorText);
@@ -25,7 +24,7 @@ final class NestedSelectorParsingTest extends SelectorParserTestCase
         Assert::assertEquals($expected, $selector);
     }
 
-    public function parseIsProvider(): iterable
+    public static function parseIsProvider(): iterable
     {
         yield ':is(foo)' => [
             ':is(foo)',
@@ -49,9 +48,7 @@ final class NestedSelectorParsingTest extends SelectorParserTestCase
         yield 'forgiving :is(?, &&&)' => [':is(?, &&&)', []];
     }
 
-    /**
-     * @dataProvider parseWhereProvider
-     */
+    #[DataProvider('parseWhereProvider')]
     public function testParseWhere(string $selectorText, array $expected)
     {
         $selector = SelectorUtils::parseSelectorList($selectorText);
@@ -61,7 +58,7 @@ final class NestedSelectorParsingTest extends SelectorParserTestCase
         Assert::assertEquals($expected, $selector);
     }
 
-    public function parseWhereProvider(): iterable
+    public static function parseWhereProvider(): iterable
     {
         yield ':where(foo)' => [
             ':where(foo)',

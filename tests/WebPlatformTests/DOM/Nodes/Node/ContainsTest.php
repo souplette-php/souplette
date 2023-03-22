@@ -3,21 +3,20 @@
 namespace Souplette\Tests\WebPlatformTests\DOM\Nodes\Node;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\DOM\Node;
 use Souplette\Tests\WebPlatformTests\DOM\CommonProvider;
 
 final class ContainsTest extends TestCase
 {
-    /**
-     * @dataProvider containsProvider
-     */
+    #[DataProvider('containsProvider')]
     public function testContains(Node $reference, ?Node $other, bool $expected)
     {
         Assert::assertSame($expected, $reference->contains($other));
     }
 
-    public function containsProvider(): iterable
+    public static function containsProvider(): iterable
     {
         /** @var Node[] $nodes */
         $nodes = iterator_to_array(CommonProvider::testNodes());

@@ -2,29 +2,28 @@
 
 namespace Souplette\Tests\CSS\Selectors\Node\Simple;
 
-use Souplette\DOM\Element;
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Souplette\CSS\Selectors\Node\Simple\IdSelector;
 use Souplette\CSS\Selectors\Query\QueryContext;
 use Souplette\CSS\Selectors\Specificity;
+use Souplette\DOM\Element;
 use Souplette\Tests\CSS\Selectors\SelectorTestCase;
 use Souplette\Tests\DOM\DOMBuilder;
 
 final class IdTest extends SelectorTestCase
 {
-    public function toStringProvider(): iterable
+    public static function toStringProvider(): iterable
     {
         yield [new IdSelector('foo'), '#foo'];
     }
 
-    public function specificityProvider(): iterable
+    public static function specificityProvider(): iterable
     {
         yield [new IdSelector('foo'), new Specificity(1, 0, 0)];
     }
 
-    /**
-     * @dataProvider matchesProvider
-     */
+    #[DataProvider('matchesProvider')]
     public function testItMatches(Element $element, string $id, bool $caseInsensitive, bool $expected)
     {
         $evaluator = new IdSelector($id);
@@ -33,7 +32,7 @@ final class IdTest extends SelectorTestCase
         Assert::assertSame($expected, $evaluator->matches($ctx, $element));
     }
 
-    public function matchesProvider(): iterable
+    public static function matchesProvider(): iterable
     {
         $dom = DOMBuilder::html()
             ->tag('foo')->id('yep')

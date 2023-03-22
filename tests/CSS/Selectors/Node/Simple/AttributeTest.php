@@ -2,16 +2,17 @@
 
 namespace Souplette\Tests\CSS\Selectors\Node\Simple;
 
-use Souplette\DOM\Element;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Souplette\CSS\Selectors\Node\Simple\AttributeSelector;
 use Souplette\CSS\Selectors\Specificity;
+use Souplette\DOM\Element;
 use Souplette\Tests\CSS\Selectors\QueryAssert;
 use Souplette\Tests\CSS\Selectors\SelectorTestCase;
 use Souplette\Tests\DOM\DOMBuilder;
 
 final class AttributeTest extends SelectorTestCase
 {
-    public function toStringProvider(): iterable
+    public static function toStringProvider(): iterable
     {
         yield [AttributeSelector::exists('foo'), '[foo]'];
         yield [AttributeSelector::exists('foo', 'bar'), '[bar|foo]'];
@@ -36,20 +37,18 @@ final class AttributeTest extends SelectorTestCase
         yield [AttributeSelector::dashMatch('foo', 'bar', 'baz', 'i'), '[baz|foo|="bar" i]'];
     }
 
-    public function specificityProvider(): iterable
+    public static function specificityProvider(): iterable
     {
         yield [new AttributeSelector('foo'), new Specificity(0, 1, 0)];
     }
 
-    /**
-     * @dataProvider existsProvider
-     */
+    #[DataProvider('existsProvider')]
     public function testExists(Element $element, AttributeSelector $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function existsProvider(): iterable
+    public static function existsProvider(): iterable
     {
         $dom = DOMBuilder::html()
             ->tag('foo')->attr('bar', 'baz')->close()
@@ -72,15 +71,13 @@ final class AttributeTest extends SelectorTestCase
         ];
     }
 
-    /**
-     * @dataProvider equalsProvider
-     */
+    #[DataProvider('equalsProvider')]
     public function testEquals(Element $element, AttributeSelector $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function equalsProvider(): iterable
+    public static function equalsProvider(): iterable
     {
         $dom = DOMBuilder::html()
             ->tag('foo')->attr('foo', 'bar')
@@ -108,15 +105,13 @@ final class AttributeTest extends SelectorTestCase
         ];
     }
 
-    /**
-     * @dataProvider dashMatchProvider
-     */
+    #[DataProvider('dashMatchProvider')]
     public function testDashMatch(Element $element, AttributeSelector $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function dashMatchProvider(): iterable
+    public static function dashMatchProvider(): iterable
     {
         $dom = DOMBuilder::html()->tag('html')
             ->tag('foo')->attr('lang', 'en')->close()
@@ -146,15 +141,13 @@ final class AttributeTest extends SelectorTestCase
         ];
     }
 
-    /**
-     * @dataProvider includesProvider
-     */
+    #[DataProvider('includesProvider')]
     public function testIncludes(Element $element, AttributeSelector $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function includesProvider(): iterable
+    public static function includesProvider(): iterable
     {
         $doc = DOMBuilder::html()
             ->tag('foo')->attr('rel', 'nofollow noopener noreferer')->close()
@@ -195,15 +188,13 @@ final class AttributeTest extends SelectorTestCase
         ];
     }
 
-    /**
-     * @dataProvider prefixProvider
-     */
+    #[DataProvider('prefixProvider')]
     public function testPrefix(Element $element, AttributeSelector $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function prefixProvider(): iterable
+    public static function prefixProvider(): iterable
     {
         $dom = DOMBuilder::html()
             ->tag('foo')->attr('bar', 'bazqux')->close()
@@ -226,15 +217,13 @@ final class AttributeTest extends SelectorTestCase
         ];
     }
 
-    /**
-     * @dataProvider suffixProvider
-     */
+    #[DataProvider('suffixProvider')]
     public function testSuffix(Element $element, AttributeSelector $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function suffixProvider(): iterable
+    public static function suffixProvider(): iterable
     {
         $dom = DOMBuilder::html()
             ->tag('foo')->attr('bar', 'bazqux')->close()
@@ -257,15 +246,13 @@ final class AttributeTest extends SelectorTestCase
         ];
     }
 
-    /**
-     * @dataProvider substringProvider
-     */
+    #[DataProvider('substringProvider')]
     public function testSubstring(Element $element, AttributeSelector $selector, bool $expected)
     {
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function substringProvider(): iterable
+    public static function substringProvider(): iterable
     {
         $dom = DOMBuilder::html()
             ->tag('a')->attr('b', 'foobarbaz')->close()

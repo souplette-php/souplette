@@ -10,12 +10,12 @@ use Souplette\Tests\DOM\DOMBuilder;
 
 final class PseudoElementTest extends SelectorTestCase
 {
-    public function toStringProvider(): iterable
+    public static function toStringProvider(): iterable
     {
         yield [new PseudoElementSelector('before'), '::before'];
     }
 
-    public function specificityProvider(): iterable
+    public static function specificityProvider(): iterable
     {
         yield [new PseudoElementSelector('before'), new Specificity(0, 0, 1)];
     }

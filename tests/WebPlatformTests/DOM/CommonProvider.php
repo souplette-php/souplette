@@ -5,13 +5,14 @@ namespace Souplette\Tests\WebPlatformTests\DOM;
 use Souplette\DOM\Document;
 use Souplette\DOM\Element;
 use Souplette\Tests\DOM\DOMBuilder;
+use Traversable;
 
 /**
  * @see wpt/dom/common.js
  */
 final class CommonProvider
 {
-    public static function testNodesShort(): \Traversable
+    public static function testNodesShort(): Traversable
     {
         $nodes = self::createNodes();
         yield 'paragraphs[0]' => $nodes['paragraphs'][0];
@@ -38,7 +39,7 @@ final class CommonProvider
         yield 'foreignDoctype' => $nodes['foreignDoctype'];
     }
 
-    public static function testNodes(): \Traversable
+    public static function testNodes(): Traversable
     {
         $nodes = self::createNodes();
         yield 'paragraphs[0]' => $nodes['paragraphs'][0];
@@ -168,7 +169,7 @@ final class CommonProvider
 
         $vars = get_defined_vars();
         foreach ($GLOBALS as $k => $v) unset($vars[$k]);
-        
+
         return $vars;
     }
 

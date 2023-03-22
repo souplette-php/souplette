@@ -3,6 +3,7 @@
 namespace Souplette\Tests\WebPlatformTests\CSS\Selectors;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\DOM\Document;
 use Souplette\DOM\Element;
@@ -41,9 +42,7 @@ final class IsWhereBasicTest extends TestCase
         return implode(',', array_map(fn($el) => $el->id, $elements));
     }
 
-    /**
-     * @dataProvider querySelectorAllProvider
-     */
+    #[DataProvider('querySelectorAllProvider')]
     public function testQuerySelectorAll(string $selector, string $expected)
     {
         /** @var Element $main */
@@ -52,7 +51,7 @@ final class IsWhereBasicTest extends TestCase
         Assert::assertEquals($expected, $this->formatElements($actual));
     }
 
-    public function querySelectorAllProvider(): iterable
+    public static function querySelectorAllProvider(): iterable
     {
         yield [':is()', ''];
         yield [':is(#a)', 'a'];

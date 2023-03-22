@@ -3,6 +3,7 @@
 namespace Souplette\Tests\WebPlatformTests\CSS\Selectors;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\DOM\Document;
 use Souplette\DOM\Element;
@@ -58,9 +59,7 @@ final class HasBasicTest extends TestCase
         return array_map(fn($el) => $el->id, $elements);
     }
 
-    /**
-     * @dataProvider querySelectorAllProvider
-     */
+    #[DataProvider('querySelectorAllProvider')]
     public function testQuerySelectorAll(string $selector, array $expected)
     {
         /** @var Element $main */
@@ -69,7 +68,7 @@ final class HasBasicTest extends TestCase
         Assert::assertEquals($expected, $this->formatElements($actual));
     }
 
-    public function querySelectorAllProvider(): iterable
+    public static function querySelectorAllProvider(): iterable
     {
         yield [':has(#a)', []];
         yield [':has(.ancestor)', ['a']];
@@ -93,9 +92,7 @@ final class HasBasicTest extends TestCase
         yield ['.parent:has(~ #h)', ['b', 'f']];
     }
 
-    /**
-     * @dataProvider querySelectorProvider
-     */
+    #[DataProvider('querySelectorProvider')]
     public function testQuerySelector(string $selector, string $expected)
     {
         /** @var Element $main */
@@ -104,14 +101,12 @@ final class HasBasicTest extends TestCase
         Assert::assertEquals($expected, $actual->id);
     }
 
-    public function querySelectorProvider(): iterable
+    public static function querySelectorProvider(): iterable
     {
         yield ['.sibling:has(.descendant)', 'c'];
     }
 
-    /**
-     * @dataProvider closestProvider
-     */
+    #[DataProvider('closestProvider')]
     public function testClosest(string $subject, string $selector, string $expected)
     {
         $subject = self::$document->getElementById($subject);
@@ -119,14 +114,12 @@ final class HasBasicTest extends TestCase
         Assert::assertEquals($expected, $actual->id);
     }
 
-    public function closestProvider(): iterable
+    public static function closestProvider(): iterable
     {
         yield ['k', '.ancestor:has(.descendant)', 'h'];
     }
 
-    /**
-     * @dataProvider matchesProvider
-     */
+    #[DataProvider('matchesProvider')]
     public function testMatches(string $subject, string $selector, bool $expected)
     {
         $subject = self::$document->getElementById($subject);
@@ -134,7 +127,7 @@ final class HasBasicTest extends TestCase
         Assert::assertSame($expected, $actual);
     }
 
-    public function matchesProvider(): iterable
+    public static function matchesProvider(): iterable
     {
         yield ['h', ':has(.target ~ .sibling .descendant)', true];
     }

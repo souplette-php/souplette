@@ -2,21 +2,22 @@
 
 namespace Souplette\Tests\HTML\Tokenizer;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class CharacterTest extends TestCase
 {
     /**
-     * @dataProvider characterInDataProvider
      * @param string $input
      * @param array $expected
      */
+    #[DataProvider('characterInDataProvider')]
     public function testCharacterInData(string $input, array $expected)
     {
         TokenizerAssert::tokensEquals($input, $expected);
     }
 
-    public function characterInDataProvider(): iterable
+    public static function characterInDataProvider(): iterable
     {
         yield [
             'foo',

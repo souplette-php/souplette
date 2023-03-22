@@ -3,6 +3,7 @@
 namespace Souplette\Tests\HTML\TreeBuilder;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\HTML\TreeBuilder\Stack;
 
@@ -25,18 +26,18 @@ class StackTest extends TestCase
     }
 
     /**
-     * @dataProvider getProvider
      * @param array $init
      * @param int $offset
      * @param string $expected
      */
+    #[DataProvider('getProvider')]
     public function testGet(array $init, int $offset, string $expected)
     {
         $stack = new Stack($init);
         Assert::assertSame($expected, $stack->get($offset));
     }
 
-    public function getProvider(): iterable
+    public static function getProvider(): iterable
     {
         $init = ['a', 'b', 'c', 'd'];
         // negative index yields in reverse order
@@ -59,11 +60,11 @@ class StackTest extends TestCase
     }
 
     /**
-     * @dataProvider removeProvider
      * @param array $init
      * @param string $rm
      * @param array $expected
      */
+    #[DataProvider('removeProvider')]
     public function testRemove(array $init, string $rm, array $expected)
     {
         $stack = new Stack($init);
@@ -71,7 +72,7 @@ class StackTest extends TestCase
         Assert::assertSame($expected, iterator_to_array($stack));
     }
 
-    public function removeProvider(): iterable
+    public static function removeProvider(): iterable
     {
         $init = ['a', 'b', 'c'];
         yield [$init, 'a', [1 => 'c', 0 => 'b']];
@@ -80,11 +81,11 @@ class StackTest extends TestCase
     }
 
     /**
-     * @dataProvider replaceProvider
      * @param array $init
      * @param array $replace
      * @param array $expected
      */
+    #[DataProvider('replaceProvider')]
     public function testReplace(array $init, array $replace, array $expected)
     {
         $stack = new Stack($init);
@@ -92,7 +93,7 @@ class StackTest extends TestCase
         Assert::assertSame($expected, iterator_to_array($stack));
     }
 
-    public function replaceProvider(): iterable
+    public static function replaceProvider(): iterable
     {
         $init = ['a', 'b', 'c'];
         $rep = 'ins';
@@ -116,11 +117,11 @@ class StackTest extends TestCase
     }
 
     /**
-     * @dataProvider insertProvider
      * @param array $init
      * @param array $insert
      * @param array $expected
      */
+    #[DataProvider('insertProvider')]
     public function testInsert(array $init, array $insert, array $expected)
     {
         $stack = new Stack($init);
@@ -128,7 +129,7 @@ class StackTest extends TestCase
         Assert::assertSame($expected, iterator_to_array($stack));
     }
 
-    public function insertProvider(): iterable
+    public static function insertProvider(): iterable
     {
         $init = ['a', 'b', 'c', 'd'];
         $ins = 'ins';

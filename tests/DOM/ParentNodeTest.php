@@ -3,15 +3,14 @@
 namespace Souplette\Tests\DOM;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\DOM\Element;
 use Souplette\DOM\ParentNode;
 
 final class ParentNodeTest extends TestCase
 {
-    /**
-     * @dataProvider childrenProvider
-     */
+    #[DataProvider('childrenProvider')]
     public function testChildren(ParentNode $parent, array $expected)
     {
         $children = $parent->children;
@@ -21,7 +20,7 @@ final class ParentNodeTest extends TestCase
         }
     }
 
-    public function childrenProvider(): iterable
+    public static function childrenProvider(): iterable
     {
         $doc = DOMBuilder::html()
             ->comment('bar')
@@ -41,15 +40,13 @@ final class ParentNodeTest extends TestCase
         yield 'works on element' => [$doc->firstChild, ['A', 'B']];
     }
 
-    /**
-     * @dataProvider firstElementChildProvider
-     */
+    #[DataProvider('firstElementChildProvider')]
     public function testFirstElementChild(ParentNode $parent, Element $expected)
     {
         Assert::assertSame($expected, $parent->firstElementChild);
     }
 
-    public function firstElementChildProvider(): iterable
+    public static function firstElementChildProvider(): iterable
     {
         $doc = DOMBuilder::html()
             ->comment('foo')
@@ -67,15 +64,13 @@ final class ParentNodeTest extends TestCase
         yield 'works on element' => [$doc->firstChild, $doc->firstChild->lastChild->previousSibling];
     }
 
-    /**
-     * @dataProvider lastElementChildProvider
-     */
+    #[DataProvider('lastElementChildProvider')]
     public function testLastElementChild(ParentNode $parent, Element $expected)
     {
         Assert::assertSame($expected, $parent->lastElementChild);
     }
 
-    public function lastElementChildProvider(): iterable
+    public static function lastElementChildProvider(): iterable
     {
         $doc = DOMBuilder::html()
             ->comment('foo')
@@ -93,9 +88,7 @@ final class ParentNodeTest extends TestCase
         yield 'works on element' => [$doc->firstChild, $doc->firstChild->lastChild->previousSibling];
     }
 
-    /**
-     * @dataProvider prependProvider
-     */
+    #[DataProvider('prependProvider')]
     public function testPrepend($parent, $nodes, $expectedChildren)
     {
         $parent->prepend(...$nodes);
@@ -111,7 +104,7 @@ final class ParentNodeTest extends TestCase
         }
     }
 
-    public function prependProvider(): iterable
+    public static function prependProvider(): iterable
     {
         $doc = DOMBuilder::html()
             ->tag('a')->close()
@@ -134,9 +127,7 @@ final class ParentNodeTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider appendProvider
-     */
+    #[DataProvider('appendProvider')]
     public function testAppend($parent, $nodes, $expectedChildren)
     {
         $parent->append(...$nodes);
@@ -152,7 +143,7 @@ final class ParentNodeTest extends TestCase
         }
     }
 
-    public function appendProvider(): iterable
+    public static function appendProvider(): iterable
     {
         $doc = DOMBuilder::html()
             ->comment('foo')

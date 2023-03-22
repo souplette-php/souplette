@@ -2,13 +2,14 @@
 
 namespace Souplette\Tests\CSS\Selectors\Node\Functional;
 
-use Souplette\DOM\Document;
-use Souplette\DOM\Element;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Souplette\CSS\Selectors\Node\Functional\Has;
 use Souplette\CSS\Selectors\Node\Simple\ClassSelector;
 use Souplette\CSS\Selectors\Node\Simple\IdSelector;
 use Souplette\CSS\Selectors\Node\Simple\TypeSelector;
 use Souplette\CSS\Selectors\Specificity;
+use Souplette\DOM\Document;
+use Souplette\DOM\Element;
 use Souplette\Tests\CSS\Selectors\QueryAssert;
 use Souplette\Tests\CSS\Selectors\SelectorAssert;
 use Souplette\Tests\CSS\Selectors\SelectorTestCase;
@@ -17,7 +18,7 @@ use Souplette\Tests\DOM\DOMBuilder;
 
 final class HasTest extends SelectorTestCase
 {
-    public function toStringProvider(): iterable
+    public static function toStringProvider(): iterable
     {
         yield [
             new Has(SelectorUtils::toSelectorList([
@@ -28,7 +29,7 @@ final class HasTest extends SelectorTestCase
         ];
     }
 
-    public function specificityProvider(): iterable
+    public static function specificityProvider(): iterable
     {
         yield [
             new Has(SelectorUtils::toSelectorList([
@@ -39,16 +40,14 @@ final class HasTest extends SelectorTestCase
             new Specificity(1, 0, 0),
         ];
     }
-    /**
-     * @dataProvider matchesProvider
-     */
+    #[DataProvider('matchesProvider')]
     public function testMatches(Element $element, string $selectorText, bool $expected)
     {
         $selector = SelectorUtils::parseSelectorList($selectorText);
         QueryAssert::elementMatchesSelector($element, $selector, $expected);
     }
 
-    public function matchesProvider(): iterable
+    public static function matchesProvider(): iterable
     {
         $dom = DOMBuilder::html()->tag('html')
             ->tag('a')
@@ -87,15 +86,13 @@ final class HasTest extends SelectorTestCase
         ];
     }
 
-    /**
-     * @dataProvider scopeProvider
-     */
+    #[DataProvider('scopeProvider')]
     public function testScope(Document $doc, string $selector, array $matchingPaths)
     {
         SelectorAssert::assertQueryAll($doc, $selector, $matchingPaths, $doc->documentElement);
     }
 
-    public function scopeProvider(): iterable
+    public static function scopeProvider(): iterable
     {
         $doc = DOMBuilder::html()->tag('main')
             ->tag('div')

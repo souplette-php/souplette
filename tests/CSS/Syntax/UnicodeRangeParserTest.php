@@ -3,6 +3,7 @@
 namespace Souplette\Tests\CSS\Syntax;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\CSS\Syntax\Exception\ParseError;
 use Souplette\CSS\Syntax\Tokenizer\Tokenizer;
@@ -11,9 +12,7 @@ use Souplette\CSS\Syntax\UnicodeRangeParser;
 
 final class UnicodeRangeParserTest extends TestCase
 {
-    /**
-     * @dataProvider unicodeRangeProvider
-     */
+    #[DataProvider('unicodeRangeProvider')]
     public function testUnicodeRange(string $input, string $expected)
     {
         $tokens = new TokenStream(new Tokenizer($input), 1);
@@ -22,7 +21,7 @@ final class UnicodeRangeParserTest extends TestCase
         Assert::assertSame($expected, (string)$urange);
     }
 
-    public function unicodeRangeProvider(): iterable
+    public static function unicodeRangeProvider(): iterable
     {
         // First exercise all the clauses individually
         //<urange> = u '+' <ident-token> '?'* |
@@ -82,9 +81,7 @@ final class UnicodeRangeParserTest extends TestCase
         yield '<+> <?>+ #3' => ["u+?????", "U+0-FFFFF"];
     }
 
-    /**
-     * @dataProvider invalidUnicodeRangeProvider
-     */
+    #[DataProvider('invalidUnicodeRangeProvider')]
     public function testInvalidUnicodeRange(string $input)
     {
         $this->expectException(ParseError::class);
@@ -93,7 +90,7 @@ final class UnicodeRangeParserTest extends TestCase
         $parser->parse();
     }
 
-    public function invalidUnicodeRangeProvider(): iterable
+    public static function invalidUnicodeRangeProvider(): iterable
     {
         // only hex
         yield ["u+efg"];
@@ -128,7 +125,7 @@ final class UnicodeRangeParserTest extends TestCase
         // Too large!
         yield ["u+22222a"];
         //  u <number-token> '?'* |
-        yield ["u/**/0"];        
+        yield ["u/**/0"];
         yield ["u+0000000"];
         yield ["u+0?a"];
         yield ["u+000000?"];

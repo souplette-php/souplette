@@ -3,6 +3,7 @@
 namespace Souplette\Tests\WebPlatformTests\DOM\Nodes\Node;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\DOM\Comment;
 use Souplette\DOM\Document;
@@ -21,15 +22,13 @@ use Souplette\DOM\Text;
  */
 final class IsEqualNodeTest extends TestCase
 {
-    /**
-     * @dataProvider documentTypeProvider
-     */
+    #[DataProvider('documentTypeProvider')]
     public function testDocumentType(DocumentType $node, DocumentType $other, bool $expected)
     {
         Assert::assertSame($expected, $node->isEqualNode($other));
     }
 
-    public function documentTypeProvider(): iterable
+    public static function documentTypeProvider(): iterable
     {
         $impl = new Implementation();
         $doctype1 = $impl->createDocumentType('qname', 'pubId', 'sysId');
@@ -45,15 +44,13 @@ final class IsEqualNodeTest extends TestCase
         yield 'different systemId' => [$doctype1, $doctype5, false];
     }
 
-    /**
-     * @dataProvider elementProvider
-     */
+    #[DataProvider('elementProvider')]
     public function testElement(Element $node, Element $other, bool $expected)
     {
         Assert::assertSame($expected, $node->isEqualNode($other));
     }
 
-    public function elementProvider(): iterable
+    public static function elementProvider(): iterable
     {
         $doc = new Document();
         $element1 = $doc->createElementNS('namespace', 'prefix:localName');
@@ -73,15 +70,13 @@ final class IsEqualNodeTest extends TestCase
         yield 'different number of attributes' => [$element1, $element6, false];
     }
 
-    /**
-     * @dataProvider attributesProvider
-     */
+    #[DataProvider('attributesProvider')]
     public function testAttributes(Element $node, Element $other, bool $expected): void
     {
         Assert::assertSame($expected, $node->isEqualNode($other));
     }
 
-    public function attributesProvider()
+    public static function attributesProvider()
     {
         $doc = new Document();
         $element1 = $doc->createElement('element');
@@ -110,9 +105,7 @@ final class IsEqualNodeTest extends TestCase
         yield 'attribute with different value' => [$element1, $element6, false];
     }
 
-    /**
-     * @dataProvider processingInstructionProvider
-     */
+    #[DataProvider('processingInstructionProvider')]
     public function testProcessingInstruction(
         ProcessingInstruction $node,
         ProcessingInstruction $other,
@@ -121,7 +114,7 @@ final class IsEqualNodeTest extends TestCase
         Assert::assertSame($expected, $node->isEqualNode($other));
     }
 
-    public function processingInstructionProvider(): iterable
+    public static function processingInstructionProvider(): iterable
     {
         $doc = new Document();
         $pi1 = $doc->createProcessingInstruction('target', 'data');
@@ -135,15 +128,13 @@ final class IsEqualNodeTest extends TestCase
         yield 'different data' => [$pi1, $pi4, false];
     }
 
-    /**
-     * @dataProvider textProvider
-     */
+    #[DataProvider('textProvider')]
     public function testText(Text $node, Text $other, bool $expected): void
     {
         Assert::assertSame($expected, $node->isEqualNode($other));
     }
 
-    public function textProvider(): iterable
+    public static function textProvider(): iterable
     {
         $doc = new Document();
         $text1 = $doc->createTextNode('data');
@@ -155,15 +146,13 @@ final class IsEqualNodeTest extends TestCase
         yield 'different data' => [$text1, $text3, false];
     }
 
-    /**
-     * @dataProvider commentProvider
-     */
+    #[DataProvider('commentProvider')]
     public function testComment(Comment $node, Comment $other, bool $expected): void
     {
         Assert::assertSame($expected, $node->isEqualNode($other));
     }
 
-    public function commentProvider(): iterable
+    public static function commentProvider(): iterable
     {
         $doc = new Document();
         $comment1 = $doc->createComment('data');
@@ -175,15 +164,13 @@ final class IsEqualNodeTest extends TestCase
         yield 'different data' => [$comment1, $comment3, false];
     }
 
-    /**
-     * @dataProvider documentFragmentProvider
-     */
+    #[DataProvider('documentFragmentProvider')]
     public function testDocumentFragment(DocumentFragment $node, DocumentFragment $other, bool $expected): void
     {
         Assert::assertSame($expected, $node->isEqualNode($other));
     }
 
-    public function documentFragmentProvider(): iterable
+    public static function documentFragmentProvider(): iterable
     {
         $doc = new Document();
         $documentFragment1 = $doc->createDocumentFragment();
@@ -193,15 +180,13 @@ final class IsEqualNodeTest extends TestCase
         yield 'same properties' => [$documentFragment1, $documentFragment2, true];
     }
 
-    /**
-     * @dataProvider documentProvider
-     */
+    #[DataProvider('documentProvider')]
     public function testDocument(Document $node, Document $other, bool $expected): void
     {
         Assert::assertSame($expected, $node->isEqualNode($other));
     }
 
-    public function documentProvider(): iterable
+    public static function documentProvider(): iterable
     {
         $impl = new Implementation();
         $doc1 = $impl->createDocument('', '');
@@ -219,15 +204,13 @@ final class IsEqualNodeTest extends TestCase
         yield 'default HTML documents, created different ways' => [$doc3, $doc4, true];
     }
 
-    /**
-     * @dataProvider deepEqualityProvider
-     */
+    #[DataProvider('deepEqualityProvider')]
     public function testDeepEquality(Node $node, Node $other, bool $expected): void
     {
         Assert::assertSame($expected, $node->isEqualNode($other));
     }
 
-    public function deepEqualityProvider(): iterable
+    public static function deepEqualityProvider(): iterable
     {
         $doc = new Document();
         $factory = static function(callable $parentFactory) use ($doc) {

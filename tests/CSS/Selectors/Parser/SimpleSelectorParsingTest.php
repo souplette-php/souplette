@@ -2,6 +2,7 @@
 
 namespace Souplette\Tests\CSS\Selectors\Parser;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Souplette\CSS\Selectors\Exception\UndeclaredNamespacePrefix;
 use Souplette\CSS\Selectors\Node\PseudoClass\FirstChildPseudo;
 use Souplette\CSS\Selectors\Node\PseudoClass\RootPseudo;
@@ -15,9 +16,7 @@ use Souplette\Tests\CSS\Selectors\SelectorUtils;
 
 final class SimpleSelectorParsingTest extends SelectorParserTestCase
 {
-    /**
-     * @dataProvider parseSelectorListWithSimpleSelectorsProvider
-     */
+    #[DataProvider('parseSelectorListWithSimpleSelectorsProvider')]
     public function testParseSelectorListWithSimpleSelectors(string $input, $expected, array $namespaces = [])
     {
         $selector = SelectorUtils::parseSelectorList($input, $namespaces);
@@ -27,7 +26,7 @@ final class SimpleSelectorParsingTest extends SelectorParserTestCase
         SelectorAssert::selectorListEquals($expected, $selector);
     }
 
-    public function parseSelectorListWithSimpleSelectorsProvider(): iterable
+    public static function parseSelectorListWithSimpleSelectorsProvider(): iterable
     {
         // Type selectors
         yield from SimpleSelectorProvider::typeSelectors();
@@ -47,16 +46,14 @@ final class SimpleSelectorParsingTest extends SelectorParserTestCase
         // TODO: :is() :not() :has() :where()
     }
 
-    /**
-     * @dataProvider undeclaredNamespacePrefixesProvider
-     */
+    #[DataProvider('undeclaredNamespacePrefixesProvider')]
     public function testUndeclaredNamespacePrefixes(string $input)
     {
         $this->expectException(UndeclaredNamespacePrefix::class);
         SelectorUtils::parseSelectorList($input);
     }
 
-    public function undeclaredNamespacePrefixesProvider(): iterable
+    public static function undeclaredNamespacePrefixesProvider(): iterable
     {
         foreach (SimpleSelectorProvider::namespacedTypeSelectors() as $key => [$input,]) {
             yield $key => [$input];

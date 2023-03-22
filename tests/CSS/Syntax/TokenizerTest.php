@@ -3,6 +3,7 @@
 namespace Souplette\Tests\CSS\Syntax;
 
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Souplette\CSS\Syntax\Tokenizer\Token\AtKeyword;
 use Souplette\CSS\Syntax\Tokenizer\Token\Comma;
@@ -27,15 +28,13 @@ final class TokenizerTest extends TestCase
         Assert::assertEquals($expected, $tokens);
     }
 
-    /**
-     * @dataProvider commentsProvider
-     */
+    #[DataProvider('commentsProvider')]
     public function testComments(string $input, array $expected)
     {
         self::assertTokenizationResult($input, $expected);
     }
 
-    public function commentsProvider(): iterable
+    public static function commentsProvider(): iterable
     {
         yield 'skips lone comment' => ['/* foo */', []];
         yield 'skip comments' => ['foo/* nope *//* neither */bar', [
@@ -49,30 +48,26 @@ final class TokenizerTest extends TestCase
         ]];
     }
 
-    /**
-     * @dataProvider whitespaceProvider
-     */
+    #[DataProvider('whitespaceProvider')]
     public function testWhitespace(string $input, array $expected)
     {
         self::assertTokenizationResult($input, $expected);
     }
 
-    public function whitespaceProvider(): iterable
+    public static function whitespaceProvider(): iterable
     {
         yield 'aggregates whitespace' => ["  \n\t   ", [
             new Whitespace(0),
         ]];
     }
 
-    /**
-     * @dataProvider stringsProvider
-     */
+    #[DataProvider('stringsProvider')]
     public function testStrings(string $input, array $expected)
     {
         self::assertTokenizationResult($input, $expected);
     }
 
-    public function stringsProvider(): iterable
+    public static function stringsProvider(): iterable
     {
         yield 'double quoted string' => ['"foo bar"', [
             new Str('foo bar', 0),
@@ -87,9 +82,7 @@ final class TokenizerTest extends TestCase
         ]];
     }
 
-    /**
-     * @dataProvider stringEscapesProvider
-     */
+    #[DataProvider('stringEscapesProvider')]
     public function testStringEscapes(string $input, string $expectedValue, string $expectedRepr)
     {
 
@@ -100,7 +93,7 @@ final class TokenizerTest extends TestCase
         Assert::assertSame($expectedRepr, $token->representation);
     }
 
-    public function stringEscapesProvider(): iterable
+    public static function stringEscapesProvider(): iterable
     {
         yield 'escaped double quote' => ['"foo\\"bar"', 'foo"bar', '"foo\\"bar"'];
         yield 'escaped single quote' => ["'foo\\'bar'", "foo'bar", '"foo\\\'bar"'];
@@ -108,15 +101,13 @@ final class TokenizerTest extends TestCase
         yield 'unicode escape' => ['"poo\\1F4A9 bar"', 'poo💩bar', '"poo\\1F4A9 bar"'];
     }
 
-    /**
-     * @dataProvider tokenizationProvider
-     */
+    #[DataProvider('tokenizationProvider')]
     public function testTokenization(string $input, array $expected)
     {
         self::assertTokenizationResult($input, $expected);
     }
 
-    public function tokenizationProvider(): iterable
+    public static function tokenizationProvider(): iterable
     {
         yield 'at-keyword' => ['@foo', [
             new AtKeyword('foo', 0),

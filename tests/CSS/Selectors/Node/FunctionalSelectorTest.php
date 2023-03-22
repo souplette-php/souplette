@@ -8,12 +8,12 @@ use Souplette\Tests\CSS\Selectors\SelectorTestCase;
 
 final class FunctionalSelectorTest extends SelectorTestCase
 {
-    public function toStringProvider(): iterable
+    public static function toStringProvider(): iterable
     {
         yield [new FunctionalSelector('foo', ['bar', 'baz']), ':foo(bar, baz)'];
     }
 
-    public function specificityProvider(): iterable
+    public static function specificityProvider(): iterable
     {
         yield [new FunctionalSelector('foo', ['bar', 'baz']), new Specificity(0, 1, 0)];
     }
