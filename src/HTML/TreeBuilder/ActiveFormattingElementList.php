@@ -11,33 +11,6 @@ use Souplette\DOM\Namespaces;
  */
 final class ActiveFormattingElementList extends Stack
 {
-    public static function areNodesEqual(Element $node, Element $other): bool
-    {
-        if ($node->localName !== $other->localName) {
-            return false;
-        }
-        if ($node->namespaceURI !== $other->namespaceURI) {
-            return false;
-        }
-        if (\count($node->_attrs) !== \count($other->_attrs)) {
-            return false;
-        }
-        foreach ($node->_attrs as $attr) {
-            $otherAttr = $other->getAttributeNode($attr->name);
-            if (!$otherAttr) {
-                return false;
-            }
-            if ($attr->namespaceURI !== $otherAttr->namespaceURI) {
-                return false;
-            }
-            if ($attr->_value !== $otherAttr->_value) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     /**
      * @see https://html.spec.whatwg.org/multipage/parsing.html#push-onto-the-list-of-active-formatting-elements
      * @param Element|null $value
@@ -54,7 +27,7 @@ final class ActiveFormattingElementList extends Stack
                 if (self::areNodesEqual($entry, $value)) {
                     $equalCount++;
                 }
-                if ($equalCount === 3) {
+                if ($equalCount === 3 && $this->offsetExists($i)) {
                     $this->offsetUnset($i);
                 }
                 $i++;
@@ -111,5 +84,32 @@ final class ActiveFormattingElementList extends Stack
             }
         }
         return false;
+    }
+
+    private static function areNodesEqual(Element $node, Element $other): bool
+    {
+        if ($node->localName !== $other->localName) {
+            return false;
+        }
+        if ($node->namespaceURI !== $other->namespaceURI) {
+            return false;
+        }
+        if (\count($node->_attrs) !== \count($other->_attrs)) {
+            return false;
+        }
+        foreach ($node->_attrs as $attr) {
+            $otherAttr = $other->getAttributeNode($attr->name);
+            if (!$otherAttr) {
+                return false;
+            }
+            if ($attr->namespaceURI !== $otherAttr->namespaceURI) {
+                return false;
+            }
+            if ($attr->_value !== $otherAttr->_value) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
