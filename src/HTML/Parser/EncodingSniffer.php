@@ -7,14 +7,22 @@ use Souplette\HTML\Tokenizer\Tokenizer;
 
 final class EncodingSniffer
 {
+    private const BOM_RX = <<<'REGEXP'
+    /^(?:
+        \xEF\xBB\xBF    (*MARK:utf8)
+        | \xFE\xFF      (*MARK:utf16be)
+        | \xFF\xFE      (*MARK:utf16le)
+    )/Sx
+    REGEXP;
+
     public static function sniffBOM(string $input): ?string
     {
-        if (str_starts_with($input, "\xEF\xBB\xBF")) {
-            return EncodingLookup::UTF_8;
-        } else if (str_starts_with($input, "\xFE\xFF")) {
-            return EncodingLookup::UTF_16BE;
-        } else if (str_starts_with($input, "\xFF\xFE")) {
-            return EncodingLookup::UTF_16LE;
+        if (preg_match(self::BOM_RX, $input, $m)) {
+            return match ($m['MARK']) {
+                'utf8' => EncodingLookup::UTF_8,
+                'utf16be' => EncodingLookup::UTF_16BE,
+                'utf16le' => EncodingLookup::UTF_16LE,
+            };
         }
         return null;
     }
