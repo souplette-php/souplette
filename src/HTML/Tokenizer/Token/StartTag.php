@@ -2,9 +2,9 @@
 
 namespace Souplette\HTML\Tokenizer\Token;
 
-use Souplette\HTML\Tokenizer\TokenType;
+use Souplette\HTML\Tokenizer\TokenKind;
 
 final class StartTag extends Tag
 {
-    const TYPE = TokenType::START_TAG;
+    const KIND = TokenKind::StartTag;
 }

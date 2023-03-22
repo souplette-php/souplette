@@ -6,7 +6,7 @@ use Souplette\Encoding\EncodingLookup;
 use Souplette\HTML\Tokenizer\Token\StartTag;
 use Souplette\HTML\Tokenizer\Tokenizer;
 use Souplette\HTML\Tokenizer\TokenizerState;
-use Souplette\HTML\Tokenizer\TokenType;
+use Souplette\HTML\Tokenizer\TokenKind;
 
 final class MetaCharsetParser
 {
@@ -65,17 +65,17 @@ final class MetaCharsetParser
         $inHead = true;
         $charset = null;
         foreach ($this->tokenizer->tokenize() as $token) {
-            $tt = $token::TYPE;
-            if ($tt === TokenType::START_TAG && $token->name === 'meta') {
+            $tt = $token::KIND;
+            if ($tt === TokenKind::StartTag && $token->name === 'meta') {
                 if ($charset = self::encodingFromMetaAttributes($token->attributes ?? [])) {
                     return $charset;
                 }
                 $this->updateTokenizerState($token);
-            } else if ($tt === TokenType::START_TAG) {
+            } else if ($tt === TokenKind::StartTag) {
                 if (!isset(self::ALLOWED_START_TAGS[$token->name])) {
                     $inHead = false;
                 }
-            } else if ($tt === TokenType::END_TAG) {
+            } else if ($tt === TokenKind::EndTag) {
                 if (!isset(self::ALLOWED_END_TAGS[$token->name])) {
                     $inHead = false;
                 }

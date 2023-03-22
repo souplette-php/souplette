@@ -3,11 +3,11 @@
 namespace Souplette\HTML\Tokenizer\Token;
 
 use Souplette\HTML\Tokenizer\Token;
-use Souplette\HTML\Tokenizer\TokenType;
+use Souplette\HTML\Tokenizer\TokenKind;
 
 final class Comment extends Token
 {
-    const TYPE = TokenType::COMMENT;
+    const KIND = TokenKind::Comment;
 
     public function __construct(
         public string $data = '',

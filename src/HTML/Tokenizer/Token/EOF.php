@@ -3,9 +3,9 @@
 namespace Souplette\HTML\Tokenizer\Token;
 
 use Souplette\HTML\Tokenizer\Token;
-use Souplette\HTML\Tokenizer\TokenType;
+use Souplette\HTML\Tokenizer\TokenKind;
 
 final class EOF extends Token
 {
-    const TYPE = TokenType::EOF;
+    const KIND = TokenKind::EOF;
 }

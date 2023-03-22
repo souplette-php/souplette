@@ -3,7 +3,7 @@
 namespace Souplette\HTML\TreeBuilder\RuleSet;
 
 use Souplette\HTML\Tokenizer\Token;
-use Souplette\HTML\Tokenizer\TokenType;
+use Souplette\HTML\Tokenizer\TokenKind;
 use Souplette\HTML\TreeBuilder;
 use Souplette\HTML\TreeBuilder\InsertionModes;
 use Souplette\HTML\TreeBuilder\RuleSet;
@@ -39,14 +39,14 @@ final class InTableBody extends RuleSet
 
     public static function process(Token $token, TreeBuilder $tree)
     {
-        $type = $token::TYPE;
-        if ($type === TokenType::START_TAG && $token->name === 'tr') {
+        $type = $token::KIND;
+        if ($type === TokenKind::StartTag && $token->name === 'tr') {
             // Clear the stack back to a table body context.
             self::clearTheStackBackToATableBodyContext($tree);
             // Insert an HTML element for the token, then switch the insertion mode to "in row".
             $tree->insertElement($token);
             $tree->insertionMode = InsertionModes::IN_ROW;
-        } else if ($type === TokenType::START_TAG && ($token->name === 'th' || $token->name === 'td')) {
+        } else if ($type === TokenKind::StartTag && ($token->name === 'th' || $token->name === 'td')) {
             // TODO: Parse error.
             // Clear the stack back to a table body context.
             self::clearTheStackBackToATableBodyContext($tree);
@@ -56,7 +56,7 @@ final class InTableBody extends RuleSet
             $tree->insertionMode = InsertionModes::IN_ROW;
             // Reprocess the current token.
             $tree->processToken($token);
-        } else if ($type === TokenType::END_TAG && isset(self::SWITCH_TO_TABLE_END_TAGS[$token->name])) {
+        } else if ($type === TokenKind::EndTag && isset(self::SWITCH_TO_TABLE_END_TAGS[$token->name])) {
             // If the stack of open elements does not have an element in table scope
             // that is an HTML element with the same tag name as the token, this is a parse error; ignore the token.
             if (!$tree->openElements->hasTagInTableScope($token->name)) {
@@ -70,8 +70,8 @@ final class InTableBody extends RuleSet
             $tree->openElements->pop();
             $tree->insertionMode = InsertionModes::IN_TABLE;
         } else if (
-            ($type === TokenType::START_TAG && isset(self::SWITCH_TO_TABLE_START_TAGS[$token->name]))
-            || ($type === TokenType::END_TAG && $token->name === 'table')
+            ($type === TokenKind::StartTag && isset(self::SWITCH_TO_TABLE_START_TAGS[$token->name]))
+            || ($type === TokenKind::EndTag && $token->name === 'table')
         ) {
             // If the stack of open elements does not have a tbody, thead, or tfoot element in table scope,
             // this is a parse error; ignore the token.
@@ -87,7 +87,7 @@ final class InTableBody extends RuleSet
             $tree->insertionMode = InsertionModes::IN_TABLE;
             // Reprocess the token.
             $tree->processToken($token);
-        } else if ($type === TokenType::END_TAG && isset(self::PARSE_ERROR_END_TAGS[$token->name])) {
+        } else if ($type === TokenKind::EndTag && isset(self::PARSE_ERROR_END_TAGS[$token->name])) {
             // TODO: Parse error.
             // Ignore the token.
             return;

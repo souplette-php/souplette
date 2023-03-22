@@ -3,7 +3,7 @@
 namespace Souplette\HTML\TreeBuilder\RuleSet;
 
 use Souplette\HTML\Tokenizer\Token;
-use Souplette\HTML\Tokenizer\TokenType;
+use Souplette\HTML\Tokenizer\TokenKind;
 use Souplette\HTML\TreeBuilder;
 use Souplette\HTML\TreeBuilder\InsertionModes;
 use Souplette\HTML\TreeBuilder\RuleSet;
@@ -22,32 +22,32 @@ final class BeforeHead extends RuleSet
 
     public static function process(Token $token, TreeBuilder $tree)
     {
-        $type = $token::TYPE;
-        if ($type === TokenType::CHARACTER) {
+        $type = $token::KIND;
+        if ($type === TokenKind::Characters) {
             if (!$token->removeLeadingWhitespace()) {
                 // Ignore the token.
                 return;
             }
         }
-        if ($type === TokenType::COMMENT) {
+        if ($type === TokenKind::Comment) {
             $tree->insertComment($token);
             return;
         }
-        if ($type === TokenType::DOCTYPE) {
+        if ($type === TokenKind::Doctype) {
             // TODO: Parse error. Ignore the token.
             return;
         }
-        if ($type === TokenType::START_TAG && $token->name === 'html') {
+        if ($type === TokenKind::StartTag && $token->name === 'html') {
             InBody::process($token, $tree);
             return;
         }
-        if ($type === TokenType::START_TAG && $token->name === 'head') {
+        if ($type === TokenKind::StartTag && $token->name === 'head') {
             $head = $tree->insertElement($token);
             $tree->headElement = $head;
             $tree->insertionMode = InsertionModes::IN_HEAD;
             return;
         }
-        if ($type === TokenType::END_TAG) {
+        if ($type === TokenKind::EndTag) {
             if (isset(self::HEAD_INSERTION_END_TAGS[$token->name])) {
                 // Act as described in the "anything else" entry below.
             } else {

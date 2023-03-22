@@ -6,7 +6,7 @@ use Souplette\DOM\Internal\DocumentMode;
 use Souplette\DOM\Namespaces;
 use Souplette\HTML\Tokenizer\Token;
 use Souplette\HTML\Tokenizer\TokenizerState;
-use Souplette\HTML\Tokenizer\TokenType;
+use Souplette\HTML\Tokenizer\TokenKind;
 use Souplette\HTML\TreeBuilder;
 use Souplette\HTML\TreeBuilder\Elements;
 use Souplette\HTML\TreeBuilder\InsertionModes;
@@ -76,8 +76,8 @@ final class InBody extends RuleSet
 
     public static function process(Token $token, TreeBuilder $tree)
     {
-        $type = $token::TYPE;
-        if ($type === TokenType::EOF) {
+        $type = $token::KIND;
+        if ($type === TokenKind::EOF) {
             // If the stack of template insertion modes is not empty,
             // then process the token using the rules for the "in template" insertion mode.
             if (!$tree->templateInsertionModes->isEmpty()) {
@@ -90,7 +90,7 @@ final class InBody extends RuleSet
             // then this is a parse error.
             // 2. TODO: Stop parsing
             return;
-        } else if ($type === TokenType::CHARACTER) {
+        } else if ($type === TokenKind::Characters) {
             $data = $token->data;
             if ($tree->shouldSkipNextNewLine && $data[0] === "\n") {
                 if (\strlen($data) === 1) {
@@ -115,13 +115,13 @@ final class InBody extends RuleSet
                 $tree->framesetOK = false;
             }
             return;
-        } else if ($type === TokenType::COMMENT) {
+        } else if ($type === TokenKind::Comment) {
             $tree->insertComment($token);
             return;
-        } else if ($type === TokenType::DOCTYPE) {
+        } else if ($type === TokenKind::Doctype) {
             // TODO: Parse error. Ignore the token.
             return;
-        } else if ($type === TokenType::START_TAG) {
+        } else if ($type === TokenKind::StartTag) {
             $tagName = $token->name;
             if ($tagName === 'html') {
                 // TODO: Parse error.
@@ -667,7 +667,7 @@ final class InBody extends RuleSet
             }
             return;
         // endif StartTag
-        } else if ($type === TokenType::END_TAG) {
+        } else if ($type === TokenKind::EndTag) {
             $tagName = $token->name;
             if ($tagName === 'template') {
                 // Process the token using the rules for the "in head" insertion mode.

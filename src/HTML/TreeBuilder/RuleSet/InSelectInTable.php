@@ -3,7 +3,7 @@
 namespace Souplette\HTML\TreeBuilder\RuleSet;
 
 use Souplette\HTML\Tokenizer\Token;
-use Souplette\HTML\Tokenizer\TokenType;
+use Souplette\HTML\Tokenizer\TokenKind;
 use Souplette\HTML\TreeBuilder;
 use Souplette\HTML\TreeBuilder\RuleSet;
 
@@ -35,8 +35,8 @@ final class InSelectInTable extends RuleSet
 
     public static function process(Token $token, TreeBuilder $tree)
     {
-        $type = $token::TYPE;
-        if ($type === TokenType::START_TAG && isset(self::PARSE_ERROR_START_TAGS[$token->name])) {
+        $type = $token::KIND;
+        if ($type === TokenKind::StartTag && isset(self::PARSE_ERROR_START_TAGS[$token->name])) {
             // TODO: Parse error.
             // Pop elements from the stack of open elements until a select element has been popped from the stack.
             $tree->openElements->popUntilTag('select');
@@ -44,7 +44,7 @@ final class InSelectInTable extends RuleSet
             $tree->resetInsertionModeAppropriately();
             // Reprocess the token.
             $tree->processToken($token);
-        } else if ($type === TokenType::END_TAG && isset(self::PARSE_ERROR_END_TAGS[$token->name])) {
+        } else if ($type === TokenKind::EndTag && isset(self::PARSE_ERROR_END_TAGS[$token->name])) {
             // TODO: Parse error.
             // If the stack of open elements does not have an element in table scope
             // that is an HTML element with the same tag name as that of the token, then ignore the token.

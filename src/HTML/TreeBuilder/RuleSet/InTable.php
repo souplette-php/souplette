@@ -3,7 +3,7 @@
 namespace Souplette\HTML\TreeBuilder\RuleSet;
 
 use Souplette\HTML\Tokenizer\Token;
-use Souplette\HTML\Tokenizer\TokenType;
+use Souplette\HTML\Tokenizer\TokenKind;
 use Souplette\HTML\TreeBuilder;
 use Souplette\HTML\TreeBuilder\InsertionModes;
 use Souplette\HTML\TreeBuilder\RuleSet;
@@ -15,13 +15,13 @@ final class InTable extends RuleSet
 {
     public static function process(Token $token, TreeBuilder $tree)
     {
-        $type = $token::TYPE;
+        $type = $token::KIND;
         $currentNode = $tree->openElements->top();
-        if ($type === TokenType::EOF) {
+        if ($type === TokenKind::EOF) {
             // Process the token using the rules for the "in body" insertion mode.
             InBody::process($token, $tree);
             return;
-        } else if ($type === TokenType::CHARACTER && (
+        } else if ($type === TokenKind::Characters && (
             $currentNode->localName === 'table'
             || $currentNode->localName === 'tbody'
             || $currentNode->localName === 'tfoot'
@@ -36,14 +36,14 @@ final class InTable extends RuleSet
             $tree->insertionMode = InsertionModes::IN_TABLE_TEXT;
             $tree->processToken($token);
             return;
-        } else if ($type === TokenType::COMMENT) {
+        } else if ($type === TokenKind::Comment) {
             $tree->insertComment($token);
             return;
-        } else if ($type === TokenType::DOCTYPE) {
+        } else if ($type === TokenKind::Doctype) {
             // TODO: Parse error.
             // Ignore the token
             return;
-        } else if ($type === TokenType::START_TAG) {
+        } else if ($type === TokenKind::StartTag) {
             $tagName = $token->name;
             if ($tagName === 'caption') {
                 // Clear the stack back to a table context. (See below.)
@@ -152,7 +152,7 @@ final class InTable extends RuleSet
                 $tree->openElements->pop();
                 return;
             }
-        } else if ($type === TokenType::END_TAG) {
+        } else if ($type === TokenKind::EndTag) {
             $tagName = $token->name;
             if ($tagName === 'table') {
                 // If the stack of open elements does not have a table element in table scope,

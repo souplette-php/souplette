@@ -7,7 +7,7 @@ use Souplette\Encoding\EncodingLookup;
 use Souplette\HTML\Parser\MetaCharsetParser;
 use Souplette\HTML\Tokenizer\Token;
 use Souplette\HTML\Tokenizer\TokenizerState;
-use Souplette\HTML\Tokenizer\TokenType;
+use Souplette\HTML\Tokenizer\TokenKind;
 use Souplette\HTML\TreeBuilder;
 use Souplette\HTML\TreeBuilder\InsertionModes;
 use Souplette\HTML\TreeBuilder\RuleSet;
@@ -19,8 +19,8 @@ final class InHead extends RuleSet
 {
     public static function process(Token $token, TreeBuilder $tree)
     {
-        $type = $token::TYPE;
-        if ($type === TokenType::CHARACTER) {
+        $type = $token::KIND;
+        if ($type === TokenKind::Characters) {
             $l = strspn($token->data, " \n\t\f");
             if ($l === \strlen($token->data)) {
                 $tree->insertCharacter($token);
@@ -30,13 +30,13 @@ final class InHead extends RuleSet
                 $tree->insertCharacter($token, substr($token->data, 0, $l));
                 $token->data = substr($token->data, $l);
             }
-        } else if ($type === TokenType::COMMENT) {
+        } else if ($type === TokenKind::Comment) {
             $tree->insertComment($token);
             return;
-        } else if ($type === TokenType::DOCTYPE) {
+        } else if ($type === TokenKind::Doctype) {
             // TODO: Parse error. Ignore the token.
             return;
-        } else if ($type === TokenType::START_TAG) {
+        } else if ($type === TokenKind::StartTag) {
             $name = $token->name;
             if ($name === 'html') {
                 InBody::process($token, $tree);
@@ -124,7 +124,7 @@ final class InHead extends RuleSet
                 // TODO: Parse error. Ignore the token.
                 return;
             }
-        } else if ($type === TokenType::END_TAG) {
+        } else if ($type === TokenKind::EndTag) {
             $name = $token->name;
             if ($name === 'head') {
                 $tree->openElements->pop();

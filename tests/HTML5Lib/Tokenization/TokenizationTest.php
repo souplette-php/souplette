@@ -11,7 +11,7 @@ use Souplette\HTML\Parser\InputPreprocessor;
 use Souplette\HTML\Tokenizer\Token;
 use Souplette\HTML\Tokenizer\Tokenizer;
 use Souplette\HTML\Tokenizer\TokenizerState;
-use Souplette\HTML\Tokenizer\TokenType;
+use Souplette\HTML\Tokenizer\TokenKind;
 use Souplette\Tests\HTML5Lib\JsonFile;
 use Souplette\Tests\ResourceCollector;
 use SplDoublyLinkedList;
@@ -128,7 +128,7 @@ class TokenizationTest extends TestCase
                 continue;
             }
             $last = $output->top();
-            if ($token::TYPE === TokenType::CHARACTER && $last::TYPE === $token::TYPE) {
+            if ($token::KIND === TokenKind::Characters && $last::KIND === $token::KIND) {
                 $last->data .= $token->data;
             } else {
                 $output->push($token);

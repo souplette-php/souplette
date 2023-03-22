@@ -3,11 +3,11 @@
 namespace Souplette\HTML\Tokenizer\Token;
 
 use Souplette\HTML\Tokenizer\Token;
-use Souplette\HTML\Tokenizer\TokenType;
+use Souplette\HTML\Tokenizer\TokenKind;
 
 final class Doctype extends Token
 {
-    const TYPE = TokenType::DOCTYPE;
+    const KIND = TokenKind::Doctype;
     public string $name = '';
     public ?string $publicIdentifier = null;
     public ?string $systemIdentifier = null;

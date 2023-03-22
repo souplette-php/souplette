@@ -4,7 +4,7 @@ namespace Souplette\HTML\TreeBuilder\RuleSet;
 
 use Souplette\DOM\Namespaces;
 use Souplette\HTML\Tokenizer\Token;
-use Souplette\HTML\Tokenizer\TokenType;
+use Souplette\HTML\Tokenizer\TokenKind;
 use Souplette\HTML\TreeBuilder;
 use Souplette\HTML\TreeBuilder\InsertionLocation;
 use Souplette\HTML\TreeBuilder\InsertionModes;
@@ -17,20 +17,20 @@ final class BeforeHtml extends RuleSet
 {
     public static function process(Token $token, TreeBuilder $tree)
     {
-        $type = $token::TYPE;
-        if ($type === TokenType::DOCTYPE) {
+        $type = $token::KIND;
+        if ($type === TokenKind::Doctype) {
             // TODO: Parse error. Ignore the token.
             return;
-        } else if ($type === TokenType::COMMENT) {
+        } else if ($type === TokenKind::Comment) {
             $tree->insertComment($token, new InsertionLocation($tree->document));
             return;
-        } else if ($type === TokenType::CHARACTER) {
+        } else if ($type === TokenKind::Characters) {
             if (!$token->removeLeadingWhitespace()) {
                 // Ignore the token.
                 return;
             }
             goto ANYTHING_ELSE;
-        } else if ($type === TokenType::START_TAG && $token->name === 'html') {
+        } else if ($type === TokenKind::StartTag && $token->name === 'html') {
             // Create an element for the token in the HTML namespace, with the Document as the intended parent.
             $element = $tree->createElement($token, Namespaces::HTML, $tree->document);
             // Append it to the Document object.
@@ -40,7 +40,7 @@ final class BeforeHtml extends RuleSet
             // Switch the insertion mode to "before head".
             $tree->insertionMode = InsertionModes::BEFORE_HEAD;
             return;
-        } else if ($type === TokenType::END_TAG) {
+        } else if ($type === TokenKind::EndTag) {
             if ($token->name === 'head' || $token->name === 'body' || $token->name === 'html' || $token->name === 'br') {
                 // Act as described in the "anything else" entry below.
                 goto ANYTHING_ELSE;

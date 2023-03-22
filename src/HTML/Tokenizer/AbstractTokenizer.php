@@ -62,7 +62,7 @@ abstract class AbstractTokenizer
     final protected function emitCurrentTagToken(): Traversable
     {
         $token = $this->currentToken;
-        if ($token::TYPE === TokenType::START_TAG) {
+        if ($token::KIND === TokenKind::StartTag) {
             /** @var StartTag $token */
             $this->appropriateEndTag = $token->name;
             if ($token->attributes) {
@@ -76,7 +76,7 @@ abstract class AbstractTokenizer
                 }
                 $token->attributes = $attrs;
             }
-        } else if ($token::TYPE === TokenType::END_TAG) {
+        } else if ($token::KIND === TokenKind::EndTag) {
             /** @var EndTag $token */
             if ($token->attributes) {
                 // This is an end-tag-with-attributes parse error.

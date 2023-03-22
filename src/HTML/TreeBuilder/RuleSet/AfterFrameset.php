@@ -3,7 +3,7 @@
 namespace Souplette\HTML\TreeBuilder\RuleSet;
 
 use Souplette\HTML\Tokenizer\Token;
-use Souplette\HTML\Tokenizer\TokenType;
+use Souplette\HTML\Tokenizer\TokenKind;
 use Souplette\HTML\TreeBuilder;
 use Souplette\HTML\TreeBuilder\InsertionModes;
 use Souplette\HTML\TreeBuilder\RuleSet;
@@ -15,8 +15,8 @@ final class AfterFrameset extends RuleSet
 {
     public static function process(Token $token, TreeBuilder $tree)
     {
-        $type = $token::TYPE;
-        if ($type === TokenType::CHARACTER) {
+        $type = $token::KIND;
+        if ($type === TokenKind::Characters) {
             $data = preg_replace('/[^ \n\t\f\r]+/S', '', $token->data, -1, $count);
             if ($count > 0) {
                 // TODO: Parse error. Ignore the character tokens.
@@ -25,22 +25,22 @@ final class AfterFrameset extends RuleSet
             }
             // Insert the character.
             $tree->insertCharacter($token);
-        } else if ($type === TokenType::COMMENT) {
+        } else if ($type === TokenKind::Comment) {
             // Insert a comment.
             $tree->insertComment($token);
-        } else if ($type === TokenType::DOCTYPE) {
+        } else if ($type === TokenKind::Doctype) {
             // TODO: Parse error. Ignore the token.
             return;
-        } else if ($type === TokenType::START_TAG && $token->name === 'html') {
+        } else if ($type === TokenKind::StartTag && $token->name === 'html') {
             // Process the token using the rules for the "in body" insertion mode.
             InBody::process($token, $tree);
-        } else if ($type === TokenType::END_TAG && $token->name === 'html') {
+        } else if ($type === TokenKind::EndTag && $token->name === 'html') {
             // Switch the insertion mode to "after after frameset".
             $tree->insertionMode = InsertionModes::AFTER_AFTER_FRAMESET;
-        } else if ($type === TokenType::START_TAG && $token->name === 'noframes') {
+        } else if ($type === TokenKind::StartTag && $token->name === 'noframes') {
             // Process the token using the rules for the "in head" insertion mode.
             InHead::process($token, $tree);
-        } else if ($type === TokenType::EOF) {
+        } else if ($type === TokenKind::EOF) {
             // TODO: Stop parsing.
             return;
         } else {

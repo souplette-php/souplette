@@ -3,11 +3,11 @@
 namespace Souplette\HTML\Tokenizer\Token;
 
 use Souplette\HTML\Tokenizer\Token;
-use Souplette\HTML\Tokenizer\TokenType;
+use Souplette\HTML\Tokenizer\TokenKind;
 
 final class Character extends Token
 {
-    const TYPE = TokenType::CHARACTER;
+    const KIND = TokenKind::Characters;
 
     public function __construct(
         public string $data = '',

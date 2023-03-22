@@ -3,7 +3,7 @@
 namespace Souplette\HTML\TreeBuilder\RuleSet;
 
 use Souplette\HTML\Tokenizer\Token;
-use Souplette\HTML\Tokenizer\TokenType;
+use Souplette\HTML\Tokenizer\TokenKind;
 use Souplette\HTML\TreeBuilder;
 use Souplette\HTML\TreeBuilder\InsertionModes;
 use Souplette\HTML\TreeBuilder\RuleSet;
@@ -24,15 +24,15 @@ final class InHeadNoscript extends RuleSet
 
     public static function process(Token $token, TreeBuilder $tree)
     {
-        $type = $token::TYPE;
-        if ($type === TokenType::DOCTYPE) {
+        $type = $token::KIND;
+        if ($type === TokenKind::Doctype) {
             // TODO: Parse error. Ignore the token.
             return;
-        } else if ($type === TokenType::START_TAG && $token->name === 'html') {
+        } else if ($type === TokenKind::StartTag && $token->name === 'html') {
             // Process the token using the rules for the "in body" insertion mode.
             InBody::process($token, $tree);
             return;
-        } else if ($type === TokenType::END_TAG && $token->name === 'noscript') {
+        } else if ($type === TokenKind::EndTag && $token->name === 'noscript') {
             // Pop the current node (which will be a noscript element) from the stack of open elements;
             // the new current node will be a head element.
             $tree->openElements->pop();
@@ -40,19 +40,19 @@ final class InHeadNoscript extends RuleSet
             $tree->insertionMode = InsertionModes::IN_HEAD;
             return;
         } else if (
-            ($type === TokenType::CHARACTER && ctype_space($token->data))
-            || $type === TokenType::COMMENT
-            || ($type === TokenType::START_TAG && isset(self::SWITCH_TO_IN_HEAD_START_TAGS[$token->name]))
+            ($type === TokenKind::Characters && ctype_space($token->data))
+            || $type === TokenKind::Comment
+            || ($type === TokenKind::StartTag && isset(self::SWITCH_TO_IN_HEAD_START_TAGS[$token->name]))
         ) {
             // Process the token using the rules for the "in head" insertion mode.
             InHead::process($token, $tree);
             return;
-        } else if ($type === TokenType::END_TAG && $token->name === 'br') {
+        } else if ($type === TokenKind::EndTag && $token->name === 'br') {
             // Act as described in the "anything else" entry below.
             goto ANYTHING_ELSE;
         } else if (
-            ($type === TokenType::START_TAG && ($token->name === 'head' || $token->name === 'noscript'))
-            || $type === TokenType::END_TAG
+            ($type === TokenKind::StartTag && ($token->name === 'head' || $token->name === 'noscript'))
+            || $type === TokenKind::EndTag
         ) {
             // TODO: Parse error. Ignore the token.
             return;

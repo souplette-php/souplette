@@ -38,7 +38,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto TAG_OPEN;
                         } elseif ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Emit the current input character as a character token.
                             yield new Character($cc);
                             $cc = $this->input[++$this->position] ?? '';
@@ -74,7 +74,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto RCDATA_LESS_THAN_SIGN;
                         } elseif ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Emit a U+FFFD REPLACEMENT CHARACTER character token.
                             yield new Character("\u{FFFD}");
                             $cc = $this->input[++$this->position] ?? '';
@@ -103,7 +103,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto RAWTEXT_LESS_THAN_SIGN;
                         } elseif ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Emit a U+FFFD REPLACEMENT CHARACTER character token.
                             yield new Character("\u{FFFD}");
                             $cc = $this->input[++$this->position] ?? '';
@@ -132,7 +132,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto SCRIPT_DATA_LESS_THAN_SIGN;
                         } elseif ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Emit a U+FFFD REPLACEMENT CHARACTER character token.
                             yield new Character("\u{FFFD}");
                             $cc = $this->input[++$this->position] ?? '';
@@ -156,7 +156,7 @@ final class Tokenizer extends AbstractTokenizer
                     PLAINTEXT: {
                         if ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Emit a U+FFFD REPLACEMENT CHARACTER character token.
                             yield new Character("\u{FFFD}");
                             $cc = $this->input[++$this->position] ?? '';
@@ -196,7 +196,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto TAG_NAME;
                         } elseif ($cc === '?') {
                             // This is an unexpected-question-mark-instead-of-tag-name parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_QUESTION_MARK_INSTEAD_OF_TAG_NAME, $this->position];
                             // Create a comment token whose data is the empty string.
                             $this->currentToken = new Comment('');
                             // Reconsume in the bogus comment state.
@@ -204,14 +204,14 @@ final class Tokenizer extends AbstractTokenizer
                             goto BOGUS_COMMENT;
                         } elseif ($cc === '') {
                             // This is an eof-before-tag-name parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_BEFORE_TAG_NAME, $this->position];
                             // Emit a U+003C LESS-THAN SIGN character token and an end-of-file token.
                             yield new Character('<');
                             yield new EOF();
                             return null;
                         } else {
                             // This is an invalid-first-character-of-tag-name parse error.
-
+                            $this->parseErrors[] = [ParseErrors::INVALID_FIRST_CHARACTER_OF_TAG_NAME, $this->position];
                             // Emit a U+003C LESS-THAN SIGN character token.
                             yield new Character('<');
                             // Reconsume in the data state.
@@ -230,7 +230,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto TAG_NAME;
                         } elseif ($cc === '>') {
                             // This is a missing-end-tag-name parse error.
-
+                            $this->parseErrors[] = [ParseErrors::MISSING_END_TAG_NAME, $this->position];
                             // Switch to the data state.
                             $this->state = TokenizerState::DATA;
                             $cc = $this->input[++$this->position] ?? '';
@@ -243,7 +243,7 @@ final class Tokenizer extends AbstractTokenizer
                             return null;
                         } else {
                             // This is an invalid-first-character-of-tag-name parse error.
-
+                            $this->parseErrors[] = [ParseErrors::INVALID_FIRST_CHARACTER_OF_TAG_NAME, $this->position];
                             // Create a comment token whose data is the empty string.
                             $this->currentToken = new Comment('');
                             // Reconsume in the bogus comment state.
@@ -272,14 +272,14 @@ final class Tokenizer extends AbstractTokenizer
                             goto INITIAL;
                         } elseif ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Append a U+FFFD REPLACEMENT CHARACTER character to the current tag token's tag name.
                             $this->currentToken->name .= "\u{FFFD}";
                             $cc = $this->input[++$this->position] ?? '';
                             goto TAG_NAME;
                         } elseif ($cc === '') {
                             // This is an eof-in-tag parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_TAG, $this->position];
                             // Emit an end-of-file token.
                             yield new EOF();
                             return null;
@@ -623,14 +623,14 @@ final class Tokenizer extends AbstractTokenizer
                             goto SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN;
                         } elseif ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Emit a U+FFFD REPLACEMENT CHARACTER character token.
                             yield new Character("\u{FFFD}");
                             $cc = $this->input[++$this->position] ?? '';
                             goto SCRIPT_DATA_ESCAPED;
                         } elseif ($cc === '') {
                             // This is an eof-in-script-html-comment-like-text parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_SCRIPT_HTML_COMMENT_LIKE_TEXT, $this->position];
                             // Emit an end-of-file token.
                             yield new EOF();
                             return null;
@@ -661,7 +661,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto SCRIPT_DATA_ESCAPED_LESS_THAN_SIGN;
                         } elseif ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Emit a U+FFFD REPLACEMENT CHARACTER character token.
                             yield new Character("\u{FFFD}");
                             // Switch to the script data escaped state
@@ -670,7 +670,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto SCRIPT_DATA_ESCAPED;
                         } elseif ($cc === '') {
                             // This is an eof-in-script-html-comment-like-text parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_SCRIPT_HTML_COMMENT_LIKE_TEXT, $this->position];
                             // Emit an end-of-file token.
                             yield new EOF();
                             return null;
@@ -707,7 +707,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto SCRIPT_DATA;
                         } elseif ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Emit a U+FFFD REPLACEMENT CHARACTER character token.
                             yield new Character("\u{FFFD}");
                             // Switch to the script data escaped state
@@ -716,7 +716,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto SCRIPT_DATA_ESCAPED;
                         } elseif ($cc === '') {
                             // This is an eof-in-script-html-comment-like-text parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_SCRIPT_HTML_COMMENT_LIKE_TEXT, $this->position];
                             // Emit an end-of-file token.
                             yield new EOF();
                             return null;
@@ -881,14 +881,14 @@ final class Tokenizer extends AbstractTokenizer
                             goto SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN;
                         } elseif ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Emit a U+FFFD REPLACEMENT CHARACTER character token.
                             yield new Character("\u{FFFD}");
                             $cc = $this->input[++$this->position] ?? '';
                             goto SCRIPT_DATA_DOUBLE_ESCAPED;
                         } elseif ($cc === '') {
                             // This is an eof-in-script-html-comment-like-text parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_SCRIPT_HTML_COMMENT_LIKE_TEXT, $this->position];
                             // Emit an end-of-file token.
                             yield new EOF();
                             return null;
@@ -921,7 +921,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto SCRIPT_DATA_DOUBLE_ESCAPED_LESS_THAN_SIGN;
                         } elseif ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Emit a U+FFFD REPLACEMENT CHARACTER character token.
                             yield new Character("\u{FFFD}");
                             // Switch to the script data double escaped state
@@ -930,7 +930,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto SCRIPT_DATA_DOUBLE_ESCAPED;
                         } elseif ($cc === '') {
                             // This is an eof-in-script-html-comment-like-text parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_SCRIPT_HTML_COMMENT_LIKE_TEXT, $this->position];
                             // Emit an end-of-file token.
                             yield new EOF();
                             return null;
@@ -969,7 +969,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto SCRIPT_DATA;
                         } elseif ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Emit a U+FFFD REPLACEMENT CHARACTER character token.
                             yield new Character("\u{FFFD}");
                             // Switch to the script data double escaped state
@@ -978,7 +978,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto SCRIPT_DATA_DOUBLE_ESCAPED;
                         } elseif ($cc === '') {
                             // This is an eof-in-script-html-comment-like-text parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_SCRIPT_HTML_COMMENT_LIKE_TEXT, $this->position];
                             // Emit an end-of-file token.
                             yield new EOF();
                             return null;
@@ -1059,7 +1059,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto AFTER_ATTRIBUTE_NAME;
                         } elseif ($cc === '=') {
                             // This is an unexpected-equals-sign-before-attribute-name parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_EQUALS_SIGN_BEFORE_ATTRIBUTE_NAME, $this->position];
                             // Start a new attribute in the current tag token. Set that attribute's name to the current input character, and its value to the empty string.
                             $this->currentToken->attributes[] = [$cc, ''];
                             // Switch to the attribute name state.
@@ -1088,14 +1088,14 @@ final class Tokenizer extends AbstractTokenizer
                             goto BEFORE_ATTRIBUTE_VALUE;
                         } elseif ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Append a U+FFFD REPLACEMENT CHARACTER character to the current attribute's name.
                             $this->currentToken->attributes[\count($this->currentToken->attributes) - 1][0] .= "\u{FFFD}";
                             $cc = $this->input[++$this->position] ?? '';
                             goto ATTRIBUTE_NAME;
                         } elseif ($cc === '"' || $cc === '\'' || $cc === '<') {
                             // This is an unexpected-character-in-attribute-name parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_CHARACTER_IN_ATTRIBUTE_NAME, $this->position];
                             // Treat it as per the "anything else" entry below.
                             $this->currentToken->attributes[\count($this->currentToken->attributes) - 1][0] .= $cc;
                             $cc = $this->input[++$this->position] ?? '';
@@ -1135,7 +1135,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto INITIAL;
                         } elseif ($cc === '') {
                             // This is an eof-in-tag parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_TAG, $this->position];
                             // Emit an end-of-file token.
                             yield new EOF();
                             return null;
@@ -1166,7 +1166,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto ATTRIBUTE_VALUE_SINGLE_QUOTED;
                         } elseif ($cc === '>') {
                             // This is a missing-attribute-value parse error.
-
+                            $this->parseErrors[] = [ParseErrors::MISSING_ATTRIBUTE_VALUE, $this->position];
                             // Switch to the data state. Emit the current tag token.
                             ++$this->position;
                             $this->state = TokenizerState::DATA;
@@ -1195,14 +1195,14 @@ final class Tokenizer extends AbstractTokenizer
                             goto CHARACTER_REFERENCE;
                         } elseif ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Append a U+FFFD REPLACEMENT CHARACTER character to the current attribute's value.
                             $this->currentToken->attributes[\count($this->currentToken->attributes) - 1][1] .= "\u{FFFD}";
                             $cc = $this->input[++$this->position] ?? '';
                             goto ATTRIBUTE_VALUE_DOUBLE_QUOTED;
                         } elseif ($cc === '') {
                             // This is an eof-in-tag parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_TAG, $this->position];
                             // Emit an end-of-file token.
                             yield new EOF();
                             return null;
@@ -1233,14 +1233,14 @@ final class Tokenizer extends AbstractTokenizer
                             goto CHARACTER_REFERENCE;
                         } elseif ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Append a U+FFFD REPLACEMENT CHARACTER character to the current attribute's value.
                             $this->currentToken->attributes[\count($this->currentToken->attributes) - 1][1] .= "\u{FFFD}";
                             $cc = $this->input[++$this->position] ?? '';
                             goto ATTRIBUTE_VALUE_SINGLE_QUOTED;
                         } elseif ($cc === '') {
                             // This is an eof-in-tag parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_TAG, $this->position];
                             // Emit an end-of-file token.
                             yield new EOF();
                             return null;
@@ -1277,21 +1277,21 @@ final class Tokenizer extends AbstractTokenizer
                             goto INITIAL;
                         } elseif ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Append a U+FFFD REPLACEMENT CHARACTER to the current attribute's value.
                             $this->currentToken->attributes[\count($this->currentToken->attributes) - 1][1] .= "\u{FFFD}";
                             $cc = $this->input[++$this->position] ?? '';
                             goto ATTRIBUTE_VALUE_UNQUOTED;
                         } elseif ($cc === '"' || $cc === '\'' || $cc === '<' || $cc === '=' || $cc === '`') {
                             // This is an unexpected-character-in-unquoted-attribute-value parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_CHARACTER_IN_UNQUOTED_ATTRIBUTE_VALUE, $this->position];
                             // Treat it as per the "anything else" entry below.
                             $this->currentToken->attributes[\count($this->currentToken->attributes) - 1][1] .= $cc;
                             $cc = $this->input[++$this->position] ?? '';
                             goto ATTRIBUTE_VALUE_UNQUOTED;
                         } elseif ($cc === '') {
                             // This is an eof-in-tag parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_TAG, $this->position];
                             // Emit an end-of-file token.
                             yield new EOF();
                             return null;
@@ -1326,13 +1326,13 @@ final class Tokenizer extends AbstractTokenizer
                             goto INITIAL;
                         } elseif ($cc === '') {
                             // This is an eof-in-tag parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_TAG, $this->position];
                             // Emit an end-of-file token.
                             yield new EOF();
                             return null;
                         } else {
                             // This is a missing-whitespace-between-attributes parse error.
-
+                            $this->parseErrors[] = [ParseErrors::MISSING_WHITESPACE_BETWEEN_ATTRIBUTES, $this->position];
                             // Reconsume in the before attribute name state.
                             $this->state = TokenizerState::BEFORE_ATTRIBUTE_NAME;
                             goto BEFORE_ATTRIBUTE_NAME;
@@ -1351,13 +1351,13 @@ final class Tokenizer extends AbstractTokenizer
                             goto INITIAL;
                         } elseif ($cc === '') {
                             // This is an eof-in-tag parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_TAG, $this->position];
                             // Emit an end-of-file token.
                             yield new EOF();
                             return null;
                         } else {
                             // This is an unexpected-solidus-in-tag parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_SOLIDUS_IN_TAG, $this->position];
                             // Reconsume in the before attribute name state.
                             $this->state = TokenizerState::BEFORE_ATTRIBUTE_NAME;
                             goto BEFORE_ATTRIBUTE_NAME;
@@ -1379,7 +1379,7 @@ final class Tokenizer extends AbstractTokenizer
                             return null;
                         } elseif ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Append a U+FFFD REPLACEMENT CHARACTER character to the comment token's data.
                             $this->currentToken->data .= "\u{FFFD}";
                             $cc = $this->input[++$this->position] ?? '';
@@ -1424,7 +1424,7 @@ final class Tokenizer extends AbstractTokenizer
                                 goto CDATA_SECTION;
                             } else {
                                 // this is a cdata-in-html-content parse error.
-
+                                $this->parseErrors[] = [ParseErrors::CDATA_IN_HTML_CONTENT, $this->position];
                                 // Create a comment token whose data is the "[CDATA[" string.
                                 $this->currentToken = new Comment('[CDATA[');
                                 // Switch to the bogus comment state.
@@ -1433,7 +1433,7 @@ final class Tokenizer extends AbstractTokenizer
                             }
                         } else {
                             // This is an incorrectly-opened-comment parse error.
-
+                            $this->parseErrors[] = [ParseErrors::INCORRECTLY_OPENED_COMMENT, $this->position];
                             // Create a comment token whose data is the empty string.
                             $this->currentToken = new Comment('');
                             // Switch to the bogus comment state (don't consume anything in the current state).
@@ -1451,7 +1451,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto COMMENT_START_DASH;
                         } elseif ($cc === '>') {
                             // This is an abrupt-closing-of-empty-comment parse error.
-
+                            $this->parseErrors[] = [ParseErrors::ABRUPT_CLOSING_OF_EMPTY_COMMENT, $this->position];
                             // Switch to the data state. Emit the comment token.
                             ++$this->position;
                             $this->state = TokenizerState::DATA;
@@ -1473,7 +1473,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto COMMENT_END;
                         } elseif ($cc === '>') {
                             // This is an abrupt-closing-of-empty-comment parse error.
-
+                            $this->parseErrors[] = [ParseErrors::ABRUPT_CLOSING_OF_EMPTY_COMMENT, $this->position];
                             // Switch to the data state. Emit the comment token.
                             ++$this->position;
                             $this->state = TokenizerState::DATA;
@@ -1481,7 +1481,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto INITIAL;
                         } elseif ($cc === '') {
                             // This is an eof-in-comment parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_COMMENT, $this->position];
                             // Emit the comment token.
                             yield $this->currentToken;
                             // Emit an end-of-file token.
@@ -1512,14 +1512,14 @@ final class Tokenizer extends AbstractTokenizer
                             goto COMMENT_END_DASH;
                         } elseif ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Append a U+FFFD REPLACEMENT CHARACTER character to the comment token's data.
                             $this->currentToken->data .= "\u{FFFD}";
                             $cc = $this->input[++$this->position] ?? '';
                             goto COMMENT;
                         } elseif ($cc === '') {
                             // This is an eof-in-comment parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_COMMENT, $this->position];
                             // Emit the comment token. Emit an end-of-file token.
                             yield $this->currentToken;
                             yield new EOF();
@@ -1592,7 +1592,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto COMMENT_END;
                         } else {
                             // This is a nested-comment parse error.
-
+                            $this->parseErrors[] = [ParseErrors::NESTED_COMMENT, $this->position];
                             // Reconsume in the comment end state.
                             $this->state = TokenizerState::COMMENT_END;
                             goto COMMENT_END;
@@ -1608,7 +1608,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto COMMENT_END;
                         } elseif ($cc === '') {
                             // This is an eof-in-comment parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_COMMENT, $this->position];
                             // Emit the comment token. Emit an end-of-file token.
                             yield $this->currentToken;
                             yield new EOF();
@@ -1641,7 +1641,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto COMMENT_END;
                         } elseif ($cc === '') {
                             // This is an eof-in-comment parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_COMMENT, $this->position];
                             // Emit the comment token. Emit an end-of-file token.
                             yield $this->currentToken;
                             yield new EOF();
@@ -1666,7 +1666,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto COMMENT_END_DASH;
                         } elseif ($cc === '>') {
                             // This is an incorrectly-closed-comment parse error.
-
+                            $this->parseErrors[] = [ParseErrors::INCORRECTLY_CLOSED_COMMENT, $this->position];
                             // Switch to the data state. Emit the comment token.
                             ++$this->position;
                             $this->state = TokenizerState::DATA;
@@ -1674,7 +1674,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto INITIAL;
                         } elseif ($cc === '') {
                             // This is an eof-in-comment parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_COMMENT, $this->position];
                             // Emit the comment token. Emit an end-of-file token.
                             yield $this->currentToken;
                             yield new EOF();
@@ -1701,7 +1701,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto BEFORE_DOCTYPE_NAME;
                         } elseif ($cc === '') {
                             // This is an eof-in-doctype parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_DOCTYPE, $this->position];
                             // Create a new DOCTYPE token.
                             $token = new Doctype();
                             // Set its force-quirks flag to on.
@@ -1712,7 +1712,7 @@ final class Tokenizer extends AbstractTokenizer
                             return null;
                         } else {
                             // This is a missing-whitespace-before-doctype-name parse error.
-
+                            $this->parseErrors[] = [ParseErrors::MISSING_WHITESPACE_BEFORE_DOCTYPE_NAME, $this->position];
                             // Reconsume in the before DOCTYPE name state.
                             $this->state = TokenizerState::BEFORE_DOCTYPE_NAME;
                             goto BEFORE_DOCTYPE_NAME;
@@ -1727,7 +1727,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto BEFORE_DOCTYPE_NAME;
                         } elseif ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Create a new DOCTYPE token.
                             $this->currentToken = new Doctype();
                             // Set the token's name to a U+FFFD REPLACEMENT CHARACTER character.
@@ -1738,7 +1738,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto DOCTYPE_NAME;
                         } elseif ($cc === '>') {
                             // This is a missing-doctype-name parse error.
-
+                            $this->parseErrors[] = [ParseErrors::MISSING_DOCTYPE_NAME, $this->position];
                             // Create a new DOCTYPE token.
                             $this->currentToken = new Doctype();
                             // Set its force-quirks flag to on.
@@ -1750,7 +1750,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto INITIAL;
                         } elseif ($cc === '') {
                             // This is an eof-in-doctype parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_DOCTYPE, $this->position];
                             // Create a new DOCTYPE token.
                             $this->currentToken = new Doctype();
                             // Set its force-quirks flag to on.
@@ -1786,14 +1786,14 @@ final class Tokenizer extends AbstractTokenizer
                             goto INITIAL;
                         } elseif ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's name.
                             $this->currentToken->name .= "\u{FFFD}";
                             $cc = $this->input[++$this->position] ?? '';
                             goto DOCTYPE_NAME;
                         } elseif ($cc === '') {
                             // This is an eof-in-doctype parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_DOCTYPE, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Emit the token. Emit an end-of-file token.
@@ -1825,7 +1825,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto INITIAL;
                         } elseif ($cc === '') {
                             // This is an eof-in-doctype parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_DOCTYPE, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Emit the token. Emit an end-of-file token.
@@ -1847,7 +1847,7 @@ final class Tokenizer extends AbstractTokenizer
                                 goto AFTER_DOCTYPE_SYSTEM_KEYWORD;
                             } else {
                                 // This is an invalid-character-sequence-after-doctype-name parse error.
-
+                                $this->parseErrors[] = [ParseErrors::INVALID_CHARACTER_SEQUENCE_AFTER_DOCTYPE_NAME, $this->position];
                                 // Set the DOCTYPE token's force-quirks flag to on.
                                 $this->currentToken->forceQuirks = true;
                                 // Reconsume in the bogus DOCTYPE state.
@@ -1866,7 +1866,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto BEFORE_DOCTYPE_PUBLIC_IDENTIFIER;
                         } elseif ($cc === '"') {
                             // This is a missing-whitespace-after-doctype-public-keyword parse error.
-
+                            $this->parseErrors[] = [ParseErrors::MISSING_WHITESPACE_AFTER_DOCTYPE_PUBLIC_KEYWORD, $this->position];
                             // Set the DOCTYPE token's public identifier to the empty string (not missing)
                             $this->currentToken->publicIdentifier = '';
                             // switch to the DOCTYPE public identifier (double-quoted) state.
@@ -1875,7 +1875,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED;
                         } elseif ($cc === "'") {
                             // This is a missing-whitespace-after-doctype-public-keyword parse error.
-
+                            $this->parseErrors[] = [ParseErrors::MISSING_WHITESPACE_AFTER_DOCTYPE_PUBLIC_KEYWORD, $this->position];
                             // Set the DOCTYPE token's public identifier to the empty string (not missing)
                             $this->currentToken->publicIdentifier = '';
                             // switch to the DOCTYPE public identifier (single-quoted) state.
@@ -1884,7 +1884,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED;
                         } elseif ($cc === '>') {
                             // This is a missing-doctype-public-identifier parse error.
-
+                            $this->parseErrors[] = [ParseErrors::MISSING_DOCTYPE_PUBLIC_IDENTIFIER, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Switch to the data state. Emit that DOCTYPE token.
@@ -1894,7 +1894,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto INITIAL;
                         } elseif ($cc === '') {
                             // This is an eof-in-doctype parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_DOCTYPE, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Emit that DOCTYPE token. Emit an end-of-file token.
@@ -1903,7 +1903,7 @@ final class Tokenizer extends AbstractTokenizer
                             return null;
                         } else {
                             // This is a missing-quote-before-doctype-public-identifier parse error.
-
+                            $this->parseErrors[] = [ParseErrors::MISSING_QUOTE_BEFORE_DOCTYPE_PUBLIC_IDENTIFIER, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Reconsume in the bogus DOCTYPE state.
@@ -1934,7 +1934,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED;
                         } elseif ($cc === '>') {
                             // This is a missing-doctype-public-identifier parse error.
-
+                            $this->parseErrors[] = [ParseErrors::MISSING_DOCTYPE_PUBLIC_IDENTIFIER, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Switch to the data state. Emit that DOCTYPE token.
@@ -1944,7 +1944,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto INITIAL;
                         } elseif ($cc === '') {
                             // This is an eof-in-doctype parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_DOCTYPE, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Emit that DOCTYPE token. Emit an end-of-file token.
@@ -1953,7 +1953,7 @@ final class Tokenizer extends AbstractTokenizer
                             return null;
                         } else {
                             // This is a missing-quote-before-doctype-public-identifier parse error.
-
+                            $this->parseErrors[] = [ParseErrors::MISSING_QUOTE_BEFORE_DOCTYPE_PUBLIC_IDENTIFIER, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Reconsume in the bogus DOCTYPE state.
@@ -1971,7 +1971,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto AFTER_DOCTYPE_PUBLIC_IDENTIFIER;
                         } elseif ($cc === '>') {
                             // This is an abrupt-doctype-public-identifier parse error.
-
+                            $this->parseErrors[] = [ParseErrors::ABRUPT_DOCTYPE_PUBLIC_IDENTIFIER, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Switch to the data state. Emit that DOCTYPE token.
@@ -1981,14 +1981,14 @@ final class Tokenizer extends AbstractTokenizer
                             goto INITIAL;
                         } elseif ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's public identifier.
                             $this->currentToken->publicIdentifier .= "\u{FFFD}";
                             $cc = $this->input[++$this->position] ?? '';
                             goto DOCTYPE_PUBLIC_IDENTIFIER_DOUBLE_QUOTED;
                         } elseif ($cc === '') {
                             // This is an eof-in-doctype parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_DOCTYPE, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Emit that DOCTYPE token. Emit an end-of-file token.
@@ -2015,7 +2015,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto AFTER_DOCTYPE_PUBLIC_IDENTIFIER;
                         } elseif ($cc === '>') {
                             // This is an abrupt-doctype-public-identifier parse error.
-
+                            $this->parseErrors[] = [ParseErrors::ABRUPT_DOCTYPE_PUBLIC_IDENTIFIER, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Switch to the data state. Emit that DOCTYPE token.
@@ -2025,14 +2025,14 @@ final class Tokenizer extends AbstractTokenizer
                             goto INITIAL;
                         } elseif ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's public identifier.
                             $this->currentToken->publicIdentifier .= "\u{FFFD}";
                             $cc = $this->input[++$this->position] ?? '';
                             goto DOCTYPE_PUBLIC_IDENTIFIER_SINGLE_QUOTED;
                         } elseif ($cc === '') {
                             // This is an eof-in-doctype parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_DOCTYPE, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Emit that DOCTYPE token. Emit an end-of-file token.
@@ -2065,7 +2065,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto INITIAL;
                         } elseif ($cc === '"') {
                             // This is a missing-whitespace-between-doctype-public-and-system-identifiers parse error.
-
+                            $this->parseErrors[] = [ParseErrors::MISSING_WHITESPACE_BETWEEN_DOCTYPE_PUBLIC_AND_SYSTEM_IDENTIFIERS, $this->position];
                             // Set the DOCTYPE token's system identifier to the empty string (not missing)
                             $this->currentToken->systemIdentifier = '';
                             // switch to the DOCTYPE system identifier (double-quoted) state.
@@ -2074,7 +2074,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
                         } elseif ($cc === "'") {
                             // This is a missing-whitespace-between-doctype-public-and-system-identifiers parse error.
-
+                            $this->parseErrors[] = [ParseErrors::MISSING_WHITESPACE_BETWEEN_DOCTYPE_PUBLIC_AND_SYSTEM_IDENTIFIERS, $this->position];
                             // Set the DOCTYPE token's system identifier to the empty string (not missing)
                             $this->currentToken->systemIdentifier = '';
                             // switch to the DOCTYPE system identifier (single-quoted) state.
@@ -2083,7 +2083,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
                         } elseif ($cc === '') {
                             // This is an eof-in-doctype parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_DOCTYPE, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Emit that DOCTYPE token. Emit an end-of-file token.
@@ -2092,7 +2092,7 @@ final class Tokenizer extends AbstractTokenizer
                             return null;
                         } else {
                             // This is a missing-quote-before-doctype-system-identifier parse error.
-
+                            $this->parseErrors[] = [ParseErrors::MISSING_QUOTE_BEFORE_DOCTYPE_SYSTEM_IDENTIFIER, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Reconsume in the bogus DOCTYPE state.
@@ -2129,7 +2129,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
                         } elseif ($cc === '') {
                             // This is an eof-in-doctype parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_DOCTYPE, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Emit that DOCTYPE token. Emit an end-of-file token.
@@ -2138,7 +2138,7 @@ final class Tokenizer extends AbstractTokenizer
                             return null;
                         } else {
                             // This is a missing-quote-before-doctype-system-identifier parse error.
-
+                            $this->parseErrors[] = [ParseErrors::MISSING_QUOTE_BEFORE_DOCTYPE_SYSTEM_IDENTIFIER, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Reconsume in the bogus DOCTYPE state.
@@ -2156,7 +2156,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto BEFORE_DOCTYPE_SYSTEM_IDENTIFIER;
                         } elseif ($cc === '"') {
                             // This is a missing-whitespace-after-doctype-system-keyword parse error.
-
+                            $this->parseErrors[] = [ParseErrors::MISSING_WHITESPACE_AFTER_DOCTYPE_SYSTEM_KEYWORD, $this->position];
                             // Set the DOCTYPE token's system identifier to the empty string (not missing)
                             $this->currentToken->systemIdentifier = '';
                             // switch to the DOCTYPE system identifier (double-quoted) state.
@@ -2165,7 +2165,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
                         } elseif ($cc === "'") {
                             // This is a missing-whitespace-after-doctype-system-keyword parse error.
-
+                            $this->parseErrors[] = [ParseErrors::MISSING_WHITESPACE_AFTER_DOCTYPE_SYSTEM_KEYWORD, $this->position];
                             // Set the DOCTYPE token's system identifier to the empty string (not missing)
                             $this->currentToken->systemIdentifier = '';
                             // switch to the DOCTYPE system identifier (single-quoted) state.
@@ -2174,7 +2174,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
                         } elseif ($cc === '>') {
                             // This is a missing-doctype-system-identifier parse error.
-
+                            $this->parseErrors[] = [ParseErrors::MISSING_DOCTYPE_SYSTEM_IDENTIFIER, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Switch to the data state. Emit that DOCTYPE token.
@@ -2184,7 +2184,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto INITIAL;
                         } elseif ($cc === '') {
                             // This is an eof-in-doctype parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_DOCTYPE, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Emit that DOCTYPE token. Emit an end-of-file token.
@@ -2193,7 +2193,7 @@ final class Tokenizer extends AbstractTokenizer
                             return null;
                         } else {
                             // This is a missing-quote-before-doctype-system-identifier parse error.
-
+                            $this->parseErrors[] = [ParseErrors::MISSING_QUOTE_BEFORE_DOCTYPE_SYSTEM_IDENTIFIER, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Reconsume in the bogus DOCTYPE state.
@@ -2224,7 +2224,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
                         } elseif ($cc === '>') {
                             // This is a missing-doctype-system-identifier parse error.
-
+                            $this->parseErrors[] = [ParseErrors::MISSING_DOCTYPE_SYSTEM_IDENTIFIER, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             // Switch to the data state. Emit that DOCTYPE token.
                             ++$this->position;
@@ -2233,7 +2233,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto INITIAL;
                         } elseif ($cc === '') {
                             // This is an eof-in-doctype parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_DOCTYPE, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Emit that DOCTYPE token. Emit an end-of-file token.
@@ -2242,7 +2242,7 @@ final class Tokenizer extends AbstractTokenizer
                             return null;
                         } else {
                             // This is a missing-quote-before-doctype-system-identifier parse error.
-
+                            $this->parseErrors[] = [ParseErrors::MISSING_QUOTE_BEFORE_DOCTYPE_SYSTEM_IDENTIFIER, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Reconsume in the bogus DOCTYPE state.
@@ -2260,7 +2260,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto AFTER_DOCTYPE_SYSTEM_IDENTIFIER;
                         } elseif ($cc === '>') {
                             // This is an abrupt-doctype-system-identifier parse error.
-
+                            $this->parseErrors[] = [ParseErrors::ABRUPT_DOCTYPE_SYSTEM_IDENTIFIER, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Switch to the data state. Emit that DOCTYPE token.
@@ -2270,14 +2270,14 @@ final class Tokenizer extends AbstractTokenizer
                             goto INITIAL;
                         } elseif ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's system identifier.
                             $this->currentToken->systemIdentifier .= "\u{FFFD}";
                             $cc = $this->input[++$this->position] ?? '';
                             goto DOCTYPE_SYSTEM_IDENTIFIER_DOUBLE_QUOTED;
                         } elseif ($cc === '') {
                             // This is an eof-in-doctype parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_DOCTYPE, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Emit that DOCTYPE token. Emit an end-of-file token.
@@ -2304,7 +2304,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto AFTER_DOCTYPE_SYSTEM_IDENTIFIER;
                         } elseif ($cc === '>') {
                             // This is an abrupt-doctype-system-identifier parse error.
-
+                            $this->parseErrors[] = [ParseErrors::ABRUPT_DOCTYPE_SYSTEM_IDENTIFIER, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Switch to the data state. Emit that DOCTYPE token.
@@ -2314,14 +2314,14 @@ final class Tokenizer extends AbstractTokenizer
                             goto INITIAL;
                         } elseif ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's system identifier.
                             $this->currentToken->systemIdentifier .= "\u{FFFD}";
                             $cc = $this->input[++$this->position] ?? '';
                             goto DOCTYPE_SYSTEM_IDENTIFIER_SINGLE_QUOTED;
                         } elseif ($cc === '') {
                             // This is an eof-in-doctype parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_DOCTYPE, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Emit that DOCTYPE token. Emit an end-of-file token.
@@ -2353,7 +2353,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto INITIAL;
                         } elseif ($cc === '') {
                             // This is an eof-in-doctype parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_DOCTYPE, $this->position];
                             // Set the DOCTYPE token's force-quirks flag to on.
                             $this->currentToken->forceQuirks = true;
                             // Emit that DOCTYPE token. Emit an end-of-file token.
@@ -2362,7 +2362,7 @@ final class Tokenizer extends AbstractTokenizer
                             return null;
                         } else {
                             // This is an unexpected-character-after-doctype-system-identifier parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_CHARACTER_AFTER_DOCTYPE_SYSTEM_IDENTIFIER, $this->position];
                             // Reconsume in the bogus DOCTYPE state. (This does not set the DOCTYPE token's force-quirks flag to on.)
                             $this->state = TokenizerState::BOGUS_DOCTYPE;
                             goto BOGUS_DOCTYPE;
@@ -2379,7 +2379,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto INITIAL;
                         } elseif ($cc === "\0") {
                             // This is an unexpected-null-character parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNEXPECTED_NULL_CHARACTER, $this->position];
                             // Ignore the character.
                             $cc = $this->input[++$this->position] ?? '';
                             goto BOGUS_DOCTYPE;
@@ -2411,7 +2411,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto CDATA_SECTION;
                         } elseif ($cc === '') {
                             // This is an eof-in-cdata parse error.
-
+                            $this->parseErrors[] = [ParseErrors::EOF_IN_CDATA, $this->position];
                             // Emit an end-of-file token.
                             yield new EOF();
                             return null;
@@ -2530,6 +2530,7 @@ final class Tokenizer extends AbstractTokenizer
                                 // 1. If the last character matched is not a U+003B SEMICOLON character (;),
                                 if ($buffer[-1] !== ';') {
                                     // This is a missing-semicolon-after-character-reference parse error.
+                                    $this->parseErrors[] = [ParseErrors::MISSING_SEMICOLON_AFTER_CHARACTER_REFERENCE, $this->position];
                                 }
                                 // 2. Set the temporary buffer to the empty string. Append the decoded character reference to the temporary buffer.
                                 $this->temporaryBuffer = EntityLookup::NAMED_ENTITIES[$buffer];
@@ -2575,7 +2576,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto HEXADECIMAL_CHARACTER_REFERENCE;
                         } else {
                             // This is an absence-of-digits-in-numeric-character-reference parse error.
-
+                            $this->parseErrors[] = [ParseErrors::ABSENCE_OF_DIGITS_IN_NUMERIC_CHARACTER_REFERENCE, $this->position];
                             // Flush code points consumed as a character reference.
                             yield from $this->flushCodePointsConsumedAsACharacterReference();
                             // Reconsume in the return state.
@@ -2592,7 +2593,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto DECIMAL_CHARACTER_REFERENCE;
                         } else {
                             // This is an absence-of-digits-in-numeric-character-reference parse error.
-
+                            $this->parseErrors[] = [ParseErrors::ABSENCE_OF_DIGITS_IN_NUMERIC_CHARACTER_REFERENCE, $this->position];
                             // Flush code points consumed as a character reference.
                             yield from $this->flushCodePointsConsumedAsACharacterReference();
                             // Reconsume in the return state.
@@ -2615,7 +2616,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto NUMERIC_CHARACTER_REFERENCE_END;
                         } else {
                             // This is a missing-semicolon-after-character-reference parse error.
-
+                            $this->parseErrors[] = [ParseErrors::MISSING_SEMICOLON_AFTER_CHARACTER_REFERENCE, $this->position];
                             // Reconsume in the numeric character reference end state.
                             $this->state = TokenizerState::NUMERIC_CHARACTER_REFERENCE_END;
                             goto NUMERIC_CHARACTER_REFERENCE_END;
@@ -2636,7 +2637,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto NUMERIC_CHARACTER_REFERENCE_END;
                         } else {
                             // This is a missing-semicolon-after-character-reference parse error.
-
+                            $this->parseErrors[] = [ParseErrors::MISSING_SEMICOLON_AFTER_CHARACTER_REFERENCE, $this->position];
                             // Reconsume in the numeric character reference end state.
                             $this->state = TokenizerState::NUMERIC_CHARACTER_REFERENCE_END;
                             goto NUMERIC_CHARACTER_REFERENCE_END;
@@ -2648,18 +2649,18 @@ final class Tokenizer extends AbstractTokenizer
                         $refCode = $this->characterReferenceCode;
                         if ($refCode === 0x00) {
                             // This is a null-character-reference parse error.
-
+                            $this->parseErrors[] = [ParseErrors::NULL_CHARACTER_REFERENCE, $this->position];
                             // Set the character reference code to 0xFFFD.
                             $this->characterReferenceCode = 0xFFFD;
                         } elseif ($refCode > 0x10FFFF) {
                             // This is a character-reference-outside-unicode-range parse error.
-
+                            $this->parseErrors[] = [ParseErrors::CHARACTER_REFERENCE_OUTSIDE_UNICODE_RANGE, $this->position];
                             // Set the character reference code to 0xFFFD.
                             $this->characterReferenceCode = 0xFFFD;
                         } elseif ($refCode >= 0xD800 && $refCode <= 0xDFFF) {
                             // A surrogate is a code point that is in the range U+D800 to U+DFFF, inclusive.
                             // This is a surrogate-character-reference parse error.
-
+                            $this->parseErrors[] = [ParseErrors::SURROGATE_CHARACTER_REFERENCE, $this->position];
                             // Set the character reference code to 0xFFFD.
                             $this->characterReferenceCode = 0xFFFD;
                         } elseif (
@@ -2684,6 +2685,7 @@ final class Tokenizer extends AbstractTokenizer
                             || $refCode === 0x10FFFE || $refCode === 0x10FFFF
                         ) {
                             // This is a noncharacter-character-reference parse error.
+                            $this->parseErrors[] = [ParseErrors::NONCHARACTER_CHARACTER_REFERENCE, $this->position];
                         } elseif (
                             // the number is 0x0D
                             $refCode === 0x0D
@@ -2696,7 +2698,7 @@ final class Tokenizer extends AbstractTokenizer
                             )
                         ) {
                             // This is a control-character-reference parse error
-
+                            $this->parseErrors[] = [ParseErrors::CONTROL_CHARACTER_REFERENCE, $this->position];
                             if (isset(EntityLookup::NUMERIC_CTRL_REPLACEMENTS[$refCode])) {
                                 $this->characterReferenceCode = EntityLookup::NUMERIC_CTRL_REPLACEMENTS[$refCode];
                             }
@@ -2729,7 +2731,7 @@ final class Tokenizer extends AbstractTokenizer
                             goto AMBIGUOUS_AMPERSAND;
                         } elseif ($cc === ';') {
                             // This is an unknown-named-character-reference parse error.
-
+                            $this->parseErrors[] = [ParseErrors::UNKNOWN_NAMED_CHARACTER_REFERENCE, $this->position];
                             // Reconsume in the return state.
                             $this->state = $this->returnState;
                             goto INITIAL;

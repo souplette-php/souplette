@@ -3,7 +3,7 @@
 namespace Souplette\HTML\TreeBuilder\RuleSet;
 
 use Souplette\HTML\Tokenizer\Token;
-use Souplette\HTML\Tokenizer\TokenType;
+use Souplette\HTML\Tokenizer\TokenKind;
 use Souplette\HTML\TreeBuilder;
 use Souplette\HTML\TreeBuilder\InsertionLocation;
 use Souplette\HTML\TreeBuilder\RuleSet;
@@ -15,21 +15,21 @@ final class AfterAfterFrameset extends RuleSet
 {
     public static function process(Token $token, TreeBuilder $tree)
     {
-        $type = $token::TYPE;
-        if ($type === TokenType::COMMENT) {
+        $type = $token::KIND;
+        if ($type === TokenKind::Comment) {
             // Insert a comment as the last child of the Document object.
             $tree->insertComment($token, new InsertionLocation($tree->document));
         } else if (
-            $type === TokenType::DOCTYPE
-            || ($type === TokenType::CHARACTER && strspn($token->data, "\t\n\f\r ") === \strlen($token->data))
-            || ($type === TokenType::START_TAG && $token->name === 'html')
+            $type === TokenKind::Doctype
+            || ($type === TokenKind::Characters && strspn($token->data, "\t\n\f\r ") === \strlen($token->data))
+            || ($type === TokenKind::StartTag && $token->name === 'html')
         ) {
             // Process the token using the rules for the "in body" insertion mode.
             InBody::process($token, $tree);
-        } else if ($type === TokenType::EOF) {
+        } else if ($type === TokenKind::EOF) {
             // TODO: Stop parsing.
             return;
-        } else if ($type === TokenType::START_TAG && $token->name === 'noframes') {
+        } else if ($type === TokenKind::StartTag && $token->name === 'noframes') {
             // Process the token using the rules for the "in head" insertion mode.
             InHead::process($token, $tree);
         } else {

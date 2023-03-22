@@ -2,25 +2,25 @@
 
 namespace Souplette\HTML\Tokenizer;
 
-enum TokenType
+enum TokenKind
 {
-    case UNKNOWN;
+    case Unknown;
     case EOF;
-    case DOCTYPE;
-    case START_TAG;
-    case END_TAG;
-    case COMMENT;
-    case CHARACTER;
+    case Doctype;
+    case StartTag;
+    case EndTag;
+    case Comment;
+    case Characters;
 
     /**
      * Convenience method for printing a token type.
      *
      * @codeCoverageIgnore
      */
-    public static function nameOf(Token|TokenType $tokenOrType): string
+    public static function nameOf(Token|TokenKind $tokenOrType): string
     {
         if ($tokenOrType instanceof Token) {
-            $type = $tokenOrType::TYPE;
+            $type = $tokenOrType::KIND;
         } else {
             $type = $tokenOrType;
         }
