@@ -1,6 +1,6 @@
 {
-  "name": "ju1ius/souplette",
-  "description": "Standard compliant HTML parser.",
+  "name": "souplette/souplette",
+  "description": "Standard compliant HTML, DOM and CSS selector implementation.",
   "type": "library",
   "version": "0.0.1",
   "license": "MIT",
@@ -34,7 +34,8 @@
   },
   "require-dev": {
     "ext-json": "*",
+    "ext-dom": "*",
     "twig/twig": "^3.0",
-    "blackfire/php-sdk": "^1.21"
+    "rector/rector": "^0.15.22"
   }
 }
