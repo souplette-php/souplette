@@ -8,41 +8,42 @@
 // Append each character to the temporary buffer when it's consumed.
 $pos = $this->position;
 $node = $this->entitySearch;
-$lastTerminalIndex = null;
-$buffer = '';
-while (true) {
-    $c = $this->input[$pos] ?? null;
-    if ($c === null || !isset($node->children[$c])) break;
+$entityName = '';
+$entityValue = $lastMatchPosition = null;
+while (($c = $this->input[$pos] ?? null) !== null && isset($node->children[$c])) {
     $node = $node->children[$c];
-    if ($node->value) $lastTerminalIndex = $pos - $this->position;
-    $buffer .= $c;
+    if ($node->value) {
+        $entityValue = $node->value;
+        $lastMatchPosition = $pos - $this->position;
+    }
+    $entityName .= $c;
     $pos++;
 }
-if ($lastTerminalIndex !== null) {
-    $buffer = \substr($buffer, 0, $lastTerminalIndex + 1);
-    $this->position += $lastTerminalIndex + 1;
+if ($lastMatchPosition !== null) {
+    $entityName = \substr($entityName, 0, $lastMatchPosition + 1);
+    $this->position += $lastMatchPosition + 1;
     if (
         // If the character reference was consumed as part of an attribute,
         ({{ h.is_attribute_return_state() }})
         // and the last character matched is not a U+003B SEMICOLON character (;),
-        && $buffer[-1] !== ';'
+        && $entityName[-1] !== ';'
         // and the next input character is either a U+003D EQUALS SIGN character (=) or an ASCII alphanumeric,
         && 1 === \strspn($this->input, '='.Characters::ALNUM, $this->position, 1)
     ) {
         // then, for historical reasons, flush code points consumed as a character reference
-        $this->temporaryBuffer .= $buffer;
+        $this->temporaryBuffer .= $entityName;
         {{ h.emit_char_ref() }}
         // and switch to the return state.
         {{ h.reconsume_in_return_state() }}
     } else {
         // Otherwise:
         // 1. If the last character matched is not a U+003B SEMICOLON character (;),
-        if ($buffer[-1] !== ';') {
+        if ($entityName[-1] !== ';') {
             // This is a missing-semicolon-after-character-reference parse error.
             {{ h.parse_error('MISSING_SEMICOLON_AFTER_CHARACTER_REFERENCE') }}
         }
         // 2. Set the temporary buffer to the empty string. Append the decoded character reference to the temporary buffer.
-        $this->temporaryBuffer = EntityLookup::NAMED_ENTITIES[$buffer];
+        $this->temporaryBuffer = $entityValue;
         // 3. Flush code points consumed as a character reference.
         {{ h.emit_char_ref() }}
         // Switch to the return state.

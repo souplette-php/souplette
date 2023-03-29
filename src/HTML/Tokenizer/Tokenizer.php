@@ -2493,33 +2493,30 @@ final class Tokenizer extends AbstractTokenizer
                     // Append each character to the temporary buffer when it's consumed.
                     $pos = $this->position;
                     $node = $this->entitySearch;
-                    $lastTerminalIndex = null;
-                    $buffer = '';
-                    while (true) {
-                        $c = $this->input[$pos] ?? null;
-                        if ($c === null || !isset($node->children[$c])) {
-                            break;
-                        }
+                    $entityName = '';
+                    $entityValue = $lastMatchPosition = null;
+                    while (($c = $this->input[$pos] ?? null) !== null && isset($node->children[$c])) {
                         $node = $node->children[$c];
                         if ($node->value) {
-                            $lastTerminalIndex = $pos - $this->position;
+                            $entityValue = $node->value;
+                            $lastMatchPosition = $pos - $this->position;
                         }
-                        $buffer .= $c;
+                        $entityName .= $c;
                         $pos++;
                     }
-                    if ($lastTerminalIndex !== null) {
-                        $buffer = \substr($buffer, 0, $lastTerminalIndex + 1);
-                        $this->position += $lastTerminalIndex + 1;
+                    if ($lastMatchPosition !== null) {
+                        $entityName = \substr($entityName, 0, $lastMatchPosition + 1);
+                        $this->position += $lastMatchPosition + 1;
                         if (
                             // If the character reference was consumed as part of an attribute,
                             ($this->returnState === TokenizerState::ATTRIBUTE_VALUE_DOUBLE_QUOTED || $this->returnState === TokenizerState::ATTRIBUTE_VALUE_SINGLE_QUOTED || $this->returnState === TokenizerState::ATTRIBUTE_VALUE_UNQUOTED)
                             // and the last character matched is not a U+003B SEMICOLON character (;),
-                            && $buffer[-1] !== ';'
+                            && $entityName[-1] !== ';'
                             // and the next input character is either a U+003D EQUALS SIGN character (=) or an ASCII alphanumeric,
                             && 1 === \strspn($this->input, '='.Characters::ALNUM, $this->position, 1)
                         ) {
                             // then, for historical reasons, flush code points consumed as a character reference
-                            $this->temporaryBuffer .= $buffer;
+                            $this->temporaryBuffer .= $entityName;
                             yield from $this->flushCodePointsConsumedAsACharacterReference();
                             // and switch to the return state.
                             $this->state = $this->returnState;
@@ -2527,12 +2524,12 @@ final class Tokenizer extends AbstractTokenizer
                         } else {
                             // Otherwise:
                             // 1. If the last character matched is not a U+003B SEMICOLON character (;),
-                            if ($buffer[-1] !== ';') {
+                            if ($entityName[-1] !== ';') {
                                 // This is a missing-semicolon-after-character-reference parse error.
                                 $this->parseErrors[] = [ParseErrors::MISSING_SEMICOLON_AFTER_CHARACTER_REFERENCE, $this->position];
                             }
                             // 2. Set the temporary buffer to the empty string. Append the decoded character reference to the temporary buffer.
-                            $this->temporaryBuffer = EntityLookup::NAMED_ENTITIES[$buffer];
+                            $this->temporaryBuffer = $entityValue;
                             // 3. Flush code points consumed as a character reference.
                             yield from $this->flushCodePointsConsumedAsACharacterReference();
                             // Switch to the return state.
