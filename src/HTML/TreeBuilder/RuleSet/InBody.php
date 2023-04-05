@@ -69,6 +69,7 @@ final class InBody extends RuleSet
         'nav' => true,
         'ol' => true,
         'p' => true,
+        'search' => true,
         'section' => true,
         'summary' => true,
         'ul' => true,
@@ -727,6 +728,7 @@ final class InBody extends RuleSet
                 || $tagName === 'nav'
                 || $tagName === 'ol'
                 || $tagName === 'pre'
+                || $tagName === 'search'
                 || $tagName === 'section'
                 || $tagName === 'summary'
                 || $tagName === 'ul'

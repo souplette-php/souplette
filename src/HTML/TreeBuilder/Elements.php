@@ -127,6 +127,7 @@ final class Elements
             'plaintext' => true,
             'pre' => true,
             'script' => true,
+            'search' => true,
             'section' => true,
             'select' => true,
             'source' => true,

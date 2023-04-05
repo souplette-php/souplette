@@ -56,10 +56,6 @@ class TreeConstructionTest extends TestCase
                 // TODO: implement a scripting engine 😁
                 continue;
             }
-            if ($fileInfo->getFilename() === 'search-element.dat') {
-                // experimental feature, see https://github.com/html5lib/html5lib-tests/issues/156
-                continue;
-            }
             yield $relPath => new DataFile($fileInfo->getPathname());
         }
     }
