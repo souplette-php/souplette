@@ -6,7 +6,6 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use Souplette\Tests\HTML5Lib\DataFile;
-use Souplette\Tests\HTML5Lib\Failures\ExpectedFailures;
 use Souplette\Tests\ResourceCollector;
 
 class TreeConstructionTest extends TestCase

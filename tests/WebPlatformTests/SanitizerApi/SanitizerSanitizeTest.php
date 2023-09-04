@@ -18,7 +18,7 @@ final class SanitizerSanitizeTest extends TestCase
     #[DataProvider('jsonTestCasesProvider')]
     public function testSanitizeDocument(?SanitizerConfig $config, string $input, string $expected)
     {
-        $sanitizer = $config ? new Sanitizer($config) : Sanitizer::getDefault();
+        $sanitizer = $config ? Sanitizer::of($config) : Sanitizer::default();
         $doc = Souplette::parseHTML("<!DOCTYPE html><body>{$input}");
         $fragment = $sanitizer->sanitize($doc);
         Assert::assertInstanceOf(DocumentFragment::class, $fragment);
@@ -29,7 +29,7 @@ final class SanitizerSanitizeTest extends TestCase
     #[DataProvider('jsonTestCasesProvider')]
     public function testSanitizeTemplate(?SanitizerConfig $config, string $input, string $expected)
     {
-        $sanitizer = $config ? new Sanitizer($config) : Sanitizer::getDefault();
+        $sanitizer = $config ? Sanitizer::of($config) : Sanitizer::default();
         $doc = new Document();
         $nodes = (new HTMLParser())->parseFragment($doc->createElement('template'), $input);
         $content = $doc->createDocumentFragment();

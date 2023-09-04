@@ -14,23 +14,22 @@ use Souplette\HTML\Custom\CustomElement;
 final class Sanitizer
 {
     private static ?self $defaultInstance = null;
-    private static ?SanitizerConfig $defaultConfig = null;
+
     private SanitizerConfig $config;
 
-    public function __construct(SanitizerConfig $config)
+    private function __construct(SanitizerConfig $config)
     {
         $this->config = $config;
     }
 
-    public static function getDefaultConfiguration(): SanitizerConfig
+    public static function of(SanitizerConfig $config): self
     {
-        self::$defaultConfig ??= self::createDefaultConfig();
-        return SanitizerConfig::from(self::$defaultConfig);
+        return new self($config);
     }
 
-    public function getConfiguration(): SanitizerConfig
+    public static function default(): self
     {
-        return $this->config;
+        return self::$defaultInstance ??= new self(SanitizerConfig::default());
     }
 
     public function sanitize(Document|DocumentFragment $input): DocumentFragment
@@ -73,26 +72,6 @@ final class Sanitizer
         while ($newChild = $newElement->_first) {
             $element->appendChild($newChild);
         }
-    }
-
-    /**
-     * @internal
-     */
-    public static function getDefault(): self
-    {
-        self::$defaultConfig ??= self::createDefaultConfig();
-        return self::$defaultInstance ??= new self(self::$defaultConfig);
-    }
-
-    private static function createDefaultConfig(): SanitizerConfig
-    {
-        $config = SanitizerConfig::create()
-            ->allowElements(...array_keys(Defaults::ALLOW_ELEMENTS))
-        ;
-        foreach (Defaults::ALLOW_ATTRIBUTES as $attr => $_) {
-            $config->allowAttribute($attr, ['*']);
-        }
-        return $config;
     }
 
     /**

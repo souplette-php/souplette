@@ -51,7 +51,7 @@ final class SanitizerConfig
      */
     private bool $allowsCustomElements = false;
 
-    public function __construct(?array $namespaces = null, ?string $defaultNamespace = null)
+    private function __construct(?array $namespaces = null, ?string $defaultNamespace = null)
     {
         $this->defaultNamespace = $defaultNamespace;
         if ($namespaces === null) {
@@ -61,7 +61,6 @@ final class SanitizerConfig
         }
     }
 
-
     public static function create(?array $namespaces = null, ?string $defaultNamespace = null): self
     {
         return new self($namespaces, $defaultNamespace);
@@ -70,6 +69,17 @@ final class SanitizerConfig
     public static function from(self $other): self
     {
         return clone $other;
+    }
+
+    public static function default(): self
+    {
+        $config = self::create()
+            ->allowElements(...array_keys(Defaults::ALLOW_ELEMENTS))
+        ;
+        foreach (Defaults::ALLOW_ATTRIBUTES as $attr => $_) {
+            $config->allowAttribute($attr, ['*']);
+        }
+        return $config;
     }
 
     public function withDefaultNamespace(?string $namespace): self

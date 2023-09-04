@@ -15,7 +15,7 @@ trait SanitizerApiTrait
     {
         $sanitizer = $options['sanitizer'] ?? null;
         if (!$sanitizer instanceof Sanitizer) {
-            $sanitizer = Sanitizer::getDefault();
+            $sanitizer = Sanitizer::default();
         }
         $sanitizer->setHTML($this, $input);
     }
