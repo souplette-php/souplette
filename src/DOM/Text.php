@@ -12,6 +12,9 @@ class Text extends CharacterData
     public readonly int $nodeType;
     public readonly string $nodeName;
 
+    /**
+     * @internal
+     */
     public function __construct(string $data = '')
     {
         $this->nodeType = Node::TEXT_NODE;
@@ -68,5 +71,4 @@ class Text extends CharacterData
         $copy->_doc = $document ?? $this->_doc;
         return $copy;
     }
-
 }

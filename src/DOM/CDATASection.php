@@ -8,6 +8,7 @@ final class CDATASection extends Text
     public readonly string $nodeName;
 
     /**
+     * @internal
      * @noinspection PhpMissingParentConstructorInspection
      */
     public function __construct(string $data = '')

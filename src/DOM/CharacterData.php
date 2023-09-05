@@ -39,7 +39,7 @@ abstract class CharacterData extends Node implements ChildNodeInterface, NonDocu
 
     public function setData(?string $data): void
     {
-        $this->_value = $data ?? '';
+        $this->_value = Encoding::ensureUtf8($data ?? '');
         $this->length = mb_strlen($this->_value, 'utf-8');
     }
 
@@ -95,7 +95,7 @@ abstract class CharacterData extends Node implements ChildNodeInterface, NonDocu
 
     public function appendData(string $data): void
     {
-        $this->_value .= $data;
+        $this->_value .= Encoding::ensureUtf8($data);
         $this->length += mb_strlen($data, 'utf-8');
     }
 
@@ -107,6 +107,7 @@ abstract class CharacterData extends Node implements ChildNodeInterface, NonDocu
         if ($offset > $this->length) {
             throw $this->createInvalidOffsetError($offset);
         }
+        $data = Encoding::ensureUtf8($data);
 
         $head = mb_substr($this->_value, 0, $offset, 'utf-8');
         $tail = mb_substr($this->_value, $offset, null, 'utf-8');
@@ -137,6 +138,7 @@ abstract class CharacterData extends Node implements ChildNodeInterface, NonDocu
         if ($offset > $this->length) {
             throw $this->createInvalidOffsetError($offset);
         }
+        $data = Encoding::ensureUtf8($data);
         $head = mb_substr($this->_value, 0, $offset, 'utf-8');
         $tail = mb_substr($this->_value, $offset + $count, null, 'utf-8');
         $this->setData($head . $data . $tail);
